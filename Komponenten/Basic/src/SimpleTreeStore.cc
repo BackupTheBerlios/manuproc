@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.29 2002/12/19 07:43:48 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.30 2003/10/20 07:39:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,6 +34,7 @@
 #include <Misc/itos.h>
 #include <Misc/Trace.h>
 //#include <GType_cH_EntryValue.h>
+#include <gtkmm/treepath.h>
 
 void SimpleTreeModel_Proxy::setModel(SimpleTreeModel &_model)
 {  if (model_is_ours) { delete model; model_is_ours=false; }
@@ -148,13 +149,25 @@ void SimpleTreeStore::set_remember(const std::string &program, const std::string
 
 static const unsigned col1=0xffff,col0=0xcfff;
 
+namespace {
+class MyTreeModel_Class : public Glib::Class
+{public:
+	const Glib::Class& init();
+	static void class_init_function(void* g_class, void* class_data);
+};
+}
+
+static MyTreeModel_Class myclass;
 
 SimpleTreeStore::SimpleTreeStore(int max_col)
-	: node_creation(0), columns(max_col), max_column(max_col),
-	  showdeep(0), gp(0), 
-	  auffuellen_bool(false), expandieren_bool(false),
-	  color_bool(false), m_columns(max_col)
-{  m_refTreeStore=Gtk::TreeStore::create(m_columns);
+	: Glib::ObjectBase("SimpleTree_MyTreeModel"),
+	  Glib::Object(Glib::ConstructParams(myclass.init(), (char*) 0)),
+	  node_creation(), columns(max_col), max_column(max_col),
+	  showdeep(), gp(), 
+	  auffuellen_bool(), expandieren_bool(),
+	  color_bool(), m_columns(max_col)
+{  
+//m_refTreeStore=Gtk::TreeStore::create(m_columns);
    defaultSequence();
    getModel().signal_title_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_title_changed));
    getModel().signal_redraw_needed().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
@@ -175,26 +188,25 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
   assert(colors.size()==num_colors);
 }
 
-class TreeModelColumn_C : public Gtk::TreeModelColumnBase
-{public:
-	TreeModelColumn_C(GType t) : Gtk::TreeModelColumnBase(t)
-	{}
-};
-
 // eigentlich müssen versteckte Spalten gar nicht hinzugenommen werden
 // aber wie dann das Model neu aufbauen?
+
+#define MC_ADD(name) add(name); assert(name.index()==int(s_##name));
+
 SimpleTreeStore::ModelColumns::ModelColumns(int _cols)
 {  // GType t=cH_entry_value_get_type();
+   
+   MC_ADD(row);
+   MC_ADD(deep);
+   MC_ADD(childrens_deep);
+//   MC_ADD(value);
+   MC_ADD(leafdata);
+   MC_ADD(background);
    for (int i=0; i<_cols; ++i)
    {  cols.push_back(Gtk::TreeModelColumn<Glib::ustring>());
       add(cols.back());
+      assert(cols.back().index()==int(s_text_start)+i);
    }
-   add(row);
-   add(deep);
-   add(childrens_deep);
-   add(value);
-   add(leafdata);
-   add(background);
 }
 
 void SimpleTreeStore::on_title_changed(guint idx)
@@ -218,30 +230,20 @@ void SimpleTreeStore::fillSequence(sequence_t &seq) const
          seq.push_back(i);
 }
 
-void SimpleTreeStore::SummenAnzeigen(Gtk::TreeModel::Children parent)
-{for(iterator i = parent.begin(); i!=parent.end(); ++i)
- {  Handle<TreeRow> htr=(*i)[m_columns.row];
-    if (htr) SummenAnzeigen(*i,htr);
-
-    Gtk::TreeModel::Children ch=i->children();
-    if (ch.begin()!=ch.end()) SummenAnzeigen(ch);
- }
-}
-
 void SimpleTreeStore::redisplay()
 {
  
 // liste loeschen
- m_refTreeStore->clear();
+ root.children.clear();
 
  std::vector<cH_RowDataBase>::const_iterator i=getDataVec().begin();
  std::vector<cH_RowDataBase>::const_iterator j=getDataVec().end();
 
 // neu einordnen, Summen berechnen
  for(; i!=j; ++i)
-    insertLine(m_refTreeStore->children(),*i,currseq.begin(),0,false);
-
- SummenAnzeigen(m_refTreeStore->children());
+    insertLine(root,*i,currseq.begin(),0,false);
+    
+ needs_redisplay();
 
 #if 0
  show_or_hide_Spalten();
@@ -252,77 +254,48 @@ void SimpleTreeStore::redisplay()
 }
 
 void SimpleTreeStore::on_line_appended(cH_RowDataBase row)
-{  ManuProC::Trace(trace_channel,__FUNCTION__,row->Value(0,0)->getStrVal(),
-		row->Value(1,0)->getStrVal());
-   insertLine(m_refTreeStore->children(),row,currseq.begin(),0,true);
+{  ManuProC::Trace(trace_channel,__FUNCTION__,row->Value(0,ValueData())->getStrVal(),
+		row->Value(1,ValueData())->getStrVal());
+   insertLine(root,row,currseq.begin(),0,true);
 }
-
-namespace {
-class CompareValue
-{	Gtk::TreeModelColumn<cH_EntryValue> value;
-public:
-	CompareValue(Gtk::TreeModelColumn<cH_EntryValue> &v)
-		: value(v) {}
-	bool operator()(const Gtk::TreeStore::iterator &a, const cH_EntryValue &b)
-	{  return *static_cast<cH_EntryValue>((*a)[value]) < *b;
-	}
-	bool operator()(const cH_EntryValue &a, const Gtk::TreeStore::iterator &b)
-	{  return *a < *static_cast<cH_EntryValue>((*b)[value]);
-	}
-};
-}
-
-//#define DEBUG_NEW
 
 // these macros are a lot faster than x.size() because that needs a division
 #define KeinKind(x) ((x).begin()==(x).end())
 #define NurEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) == (x).end())
 #define MehrAlsEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) != (x).end())
 
-void SimpleTreeStore::SummenAnzeigen(const Gtk::TreeRow &row,const Handle<TreeRow> &htr)
-{  assert(htr);
-   assert(row[m_columns.childrens_deep]!=0);
-   unsigned i=row[m_columns.childrens_deep];
-   if (i<Cols()) 
-      row[m_columns.cols[i]]= "... "+htr->Value(currseq[i],ValueData())->getStrVal();
-   for (++i;i<Cols();++i)
-      row[m_columns.cols[i]]= htr->Value(currseq[i],ValueData())->getStrVal();
-}
-
-void SimpleTreeStore::insertLine(Gtk::TreeModel::Children parent,
+void SimpleTreeStore::insertLine(Node &parent,
             const cH_RowDataBase &v,  sequence_t::const_iterator seqit,
-            guint deep, bool summe_aktualisieren)
+            guint deep, bool live)
 {if (seqit==currseq.end()) return;
-recurse:
- Gtk::TreeStore::iterator current_iter=parent.begin();
- Gtk::TreeStore::iterator apiend = parent.end();
- Gtk::TreeStore::iterator upper_b=apiend;
+
+ iterator current_iter=parent.children.begin();
+ iterator apiend = parent.children.end();
+ iterator upper_b=apiend;
  sequence_t::const_iterator seqlast=--currseq.end();
  guint seqnr=*seqit;
  cH_EntryValue ev=v->Value(seqnr,ValueData());
-
+ 
 // node/leaf mit Wert<=ev suchen
 // optimization: we expect to need upper_bound if this is the last attribute
  if (seqit==seqlast) // !MehrAlsEinKind(selseq))
- {  std::pair<Gtk::TreeStore::iterator,Gtk::TreeStore::iterator> range 
- 		= std::equal_range(current_iter,apiend,ev,
- 				CompareValue(m_columns.value));
+ {  std::pair<iterator,iterator> range 
+ 		= parent.children.equal_range(ev);
     current_iter=range.first;	// lower_bound
     upper_b=range.second;	// upper_bound
  }
  else
-    current_iter=std::lower_bound(current_iter,apiend,ev,
- 				CompareValue(m_columns.value));
-
+    current_iter=parent.children.lower_bound(ev);
+ 				
  if(current_iter!=apiend) // dann einfuegen
    {//----------------- gleicher Wert ------------------
-    if ((ev) == (*current_iter)[m_columns.value])
+    if ((ev) == current_iter->first)
      { 
       if (seqit!=seqlast)
       // MehrAlsEinKind(selseq)) // ???? wenn Blatt noch nicht erreicht ???
       				// SimpleTree2: Summen stehen mit drin ...
       // eine neue Node erzeugen(?)
-      {  cH_RowDataBase v2=(*current_iter)[m_columns.leafdata];
+      {  cH_RowDataBase v2=current_iter->second.leafdata;
          guint child_s_deep=deep;
 
 	do 
@@ -330,19 +303,16 @@ recurse:
 	 ++child_s_deep;
 	 
 	 // darum muss sich eine andere Node kümmern
-         if (child_s_deep==(*current_iter)[m_columns.childrens_deep])
+         if (child_s_deep==current_iter->second.childrens_deep)
          {weiter_unten_einhaengen:
-            Handle<TreeRow> htr=(*current_iter)[m_columns.row];
+            Handle<TreeRow> htr=current_iter->second.row;
             if (htr) 
             {  htr->cumulate(v);
-               if (summe_aktualisieren) SummenAnzeigen(*current_iter,htr);
+               if (live) row_changed(getPath(current_iter),getIter(current_iter));
             }
-            // goto ist schneller als (end?)rekursion !!!
-            parent=current_iter->children();
-            deep=child_s_deep;
-            goto recurse;
-            // insertLine(current_iter->children(),v,seqit,child_s_deep);
-            // return;
+            // goto ist schneller als (end?)rekursion ?
+            insertLine(current_iter->second,v,seqit,child_s_deep,live);
+            return;
          }
          
         } while (seqit!=seqlast // MehrAlsEinKind(selseq) 
@@ -352,108 +322,76 @@ recurse:
 	 // mitten in current_iter einfügen 
 	 // (current_iter wandert nach unten rechts)
          // (man könnte dies auch aufbrechen nennen)
-         current_iter= MoveTree (current_iter,deep,child_s_deep,*seqit);
+ 	 current_iter= MoveTree (current_iter,deep,child_s_deep,*seqit,live);
          goto weiter_unten_einhaengen;
       }
       else // Blatt erreicht
       {  // als letztes der Gleichen an parent anhängen
          // upper_b steht schon richtig (s.o.)
-         Gtk::TreeRow newnode = *(m_refTreeStore->insert(upper_b));
-         InitColumns(newnode,deep,ev,v);
+         current_iter=upper_b;
       }
-      return;
      }
-     else // --------------- kleinerer Wert (davor Einfügen) ----------
-	{  Gtk::TreeRow newnode = *(m_refTreeStore->insert(current_iter));
-           InitColumns(newnode,deep,ev,v);
-	}
    }
- else //----------------- am Ende der Liste: anhängen ---------------------
-   {  Gtk::TreeRow newnode = *(m_refTreeStore->append(parent));
-      InitColumns(newnode,deep,ev,v);
-    }
+   // --------------- kleinerer Wert (davor Einfügen) ----------   
+   //----------------- oder am Ende der Liste: anhängen ---------------------
+   iterator newnode=parent.children.insert(current_iter,std::make_pair(ev,Node(deep,&parent,v)));
+   if (live) row_inserted(getPath(newnode),getIter(newnode));
 }                                
 
-// former initTCL, initDepth
-void SimpleTreeStore::InitColumns(Gtk::TreeRow &node, guint deep,
-	const cH_EntryValue &ev, const cH_RowDataBase &v)
-{  // node[m_columns.row]= Handle<TreeRow>();
-   node[m_columns.value]= ev;
-   node[m_columns.leafdata]= v;
-   node[m_columns.deep]=deep;
-   node[m_columns.background]= colors[deep%num_colors];
-   node[m_columns.childrens_deep]=0;
-   for (guint i=deep;i<Cols();++i)
-   {  node[m_columns.cols[i]]=v->Value(currseq[i],ValueData())->getStrVal();
-   }
-}
-
-Gtk::TreeRow SimpleTreeStore::CopyTree(Gtk::TreeRow src, Gtk::TreeModel::Children dest)
-{  Gtk::TreeRow newrow = *(m_refTreeStore->append(dest));
-
-// isn't there an easier way to copy _all_ columns?   
-   newrow[m_columns.row]= static_cast<Handle<TreeRow> >(src[m_columns.row]);
-   newrow[m_columns.value]= static_cast<cH_EntryValue>(src[m_columns.value]);
-   newrow[m_columns.leafdata]= static_cast<cH_RowDataBase>(src[m_columns.leafdata]);
-   newrow[m_columns.deep]= static_cast<guint>(src[m_columns.deep]);
-   newrow[m_columns.background]= static_cast<Gdk::Color>(src[m_columns.background]);
-   newrow[m_columns.childrens_deep]= static_cast<guint>(src[m_columns.childrens_deep]);
-   for (guint i=0;i<m_columns.cols.size();++i)
-      newrow[m_columns.cols[i]]= static_cast<Glib::ustring>(src[m_columns.cols[i]]);
-      
-   for (Gtk::TreeStore::iterator i=src.children().begin();
-   		i!=src.children().end();++i)
-      CopyTree(*i,newrow.children());
-   return newrow;
-}
-
 // deep    childs_deep   childrens_deep
-// -+ newnode
-//  |      +  oldnode2                        leafdata
-//  |                    + old2 children
-//  + (oldnode=current_iter)
-//                       + old children
+//  (vorher)
+// -+ (oldnode=current_iter)=A
+//                       + old children=B
+//  (hinterher)
+// -+ (oldnode=current_iter)
+//         +  newchild=A                      leafdata
+//                       + old children=B
 
-Gtk::TreeStore::iterator SimpleTreeStore::MoveTree(
-	Gtk::TreeStore::iterator current_iter,
-	guint deep,guint child_s_deep,guint value_index)
-{  Gtk::TreeStore::iterator new_iter= m_refTreeStore->insert(current_iter);
-   Gtk::TreeRow newnode = *new_iter;
-   Gtk::TreeRow oldnode = *current_iter;
-   Gtk::TreeRow oldnode2 = CopyTree(oldnode, newnode.children());
+SimpleTreeStore::iterator SimpleTreeStore::MoveTree(iterator current_iter,
+	guint deep,guint child_s_deep,guint value_index,bool live)
+{//  ManuProC::Trace(trace_channel,__FUNCTION__,deep,child_s_deep,value_index);
+   Node &oldnode=current_iter->second;
+   Node newnode(deep,oldnode.parent,oldnode.leafdata,child_s_deep);
+//   newnode.childrens_deep=child_s_deep;
 
-   // initialize the sum
-   //    this const_casting is for consistency only, 
-   //    a Handle<const TreeRow> argument is more logical
+//   InitColumns(newnode,deep,oldnode.parent,oldnode.leafdata);
+//   newnode.setRow();
    if (node_creation) 
-   {  Handle<TreeRow> htr= (*node_creation)(const_cast<const TreeRow*>
-		(&*static_cast<Handle<TreeRow> >(oldnode[m_columns.row])));
-      newnode[m_columns.row]= htr;
+   {  Handle<TreeRow> htr= (*node_creation)(&*oldnode.row);
+      newnode.row=htr;
       // leaves have no row (so initial sum is always 0), 
       // so we need to cumulate their data
-      if (!oldnode2[m_columns.childrens_deep] && htr) // leaf
-         htr->cumulate(oldnode2[m_columns.leafdata]);
+      if (!oldnode.childrens_deep && htr) // leaf
+         htr->cumulate(oldnode.leafdata);
    }
-   newnode[m_columns.leafdata]= static_cast<cH_RowDataBase>(oldnode[m_columns.leafdata]);
-   newnode[m_columns.childrens_deep]= child_s_deep;
-   newnode[m_columns.deep]= deep;
-   newnode[m_columns.background]= colors[deep%num_colors];
-   newnode[m_columns.value]= static_cast<cH_EntryValue>(oldnode[m_columns.value]);
-   for (guint i=deep;i<child_s_deep;++i)
-      newnode[m_columns.cols[i]]= static_cast<Glib::ustring>(oldnode[m_columns.cols[i]]);
-   newnode[m_columns.cols[child_s_deep]]= "...";
-   // aufklappen wenn child_s_deep < showdeep
 
-   for (guint i=deep;i<child_s_deep;++i) 
-      oldnode2[m_columns.cols[i]]= "";
-   oldnode2[m_columns.deep]= child_s_deep;
-   oldnode2[m_columns.background]= colors[child_s_deep%num_colors];
-   oldnode2[m_columns.value]= 
-   	static_cast<cH_RowDataBase>(oldnode2[m_columns.leafdata])
-   		->Value(value_index,ValueData());
+   // ein Kind an newnode anfügen (newchild)
+   cH_EntryValue val=oldnode.leafdata->Value(value_index,ValueData());
+   newnode.children.insert(std::make_pair(val,Node(deep,oldnode.parent)));
+   // dieser Knoten wird als oldnode im Baum hängen
+   Node &newchild=newnode.children.begin()->second;
 
-   m_refTreeStore->erase(current_iter);
-   return new_iter;
+   // newchild und oldnode vertauschen (Unterbaum ist dann außerhalb des Baumes
+   //		unterhalb von newnode, newchild ist dann im Baum)
+   // oldnode ist jetzt die unnötige Node, newchild die alte Node
+   std::swap(newchild,oldnode);
+   // row_has_child_toggled(oldnode), row_changed(oldnode)
+
+   // newnode und oldnode vertauschen (newnode+Kinder sind dann wieder im Baum)
+   //      nun muss newnode wieder leer sein und den Inhalt von newchild enthalten
+   // oldnode ist jetzt die neue Eltern-Node, newnode ist jetzt die unnötige
+   std::swap(newnode,oldnode);
+   newchild.parent=&oldnode;
+   newchild.deep=child_s_deep;
+   // oldnode's address has changed to newchild ...
+   for (iterator i=newchild.children.begin();i!=newchild.children.end();++i)
+   {  i->second.parent=&newchild;
+   }
+   // row_has_child_toggled(newnode), row_changed(newnode)
+   
+//   ManuProC::Trace(trace_channel,"",&oldnode,&newnode,&newchild);
+//   oldnode.fix_pointer();
+   return current_iter;
 }
 
 void SimpleTreeStore::setSequence(const sequence_t &neu)
@@ -473,22 +411,29 @@ unsigned SimpleTreeStore::ColumnFromIndex(unsigned idx) const
 
 const UniqueValue::value_t SimpleTreeStore::trace_channel
       = ManuProC::Tracer::channels.get();
+static ManuProC::Tracer::Environment trace_channele("TRACE",SimpleTreeStore::trace_channel);
 
 void SimpleTreeStore::on_line_removed(cH_RowDataBase r)
-{  std::list<Gtk::TreeStore::iterator> l=find_row(r);
+{  std::list<iterator> l=find_row(r,true);
    if (l.begin()!=l.end())
    {  ManuProC::Trace(trace_channel,__FUNCTION__,"depth=",l.size());
-      for (std::list<Gtk::TreeStore::iterator>::const_reverse_iterator i=l.rbegin();
-      		i!=const_cast<const std::list<Gtk::TreeStore::iterator>&>(l).rend();
+      for (std::list<iterator>::const_reverse_iterator i=l.rbegin();
+      		i!=const_cast<const std::list<iterator>&>(l).rend();
       		++i)
-      {  Handle<TreeRow> htr=(**i)[m_columns.row];
+      {  Handle<TreeRow> htr=(*i)->second.row;
          if (htr)
          {  htr->deduct(r);
-            SummenAnzeigen(**i,htr);
+            row_changed(getPath(*i),getIter(*i));
          }
       }
-      m_refTreeStore->erase(*l.begin());
-      // TODO: we might be able to eliminate the nodes if they no longer
+      Gtk::TreeModel::Path p=getPath(l.front());
+      if ((++l.begin())==l.end())
+         root.children.erase(*l.begin());
+      else
+      {  (*++l.begin())->second.children.erase(*l.begin());
+      }
+      row_deleted(p);
+      // we might be able to eliminate the nodes if they no longer
       //   have children
    }
 }
@@ -496,18 +441,36 @@ void SimpleTreeStore::on_line_removed(cH_RowDataBase r)
 // optimize indicates we could binary search by value (possible optimization)
 // this is impossible, if a value has already changed ...
 
-bool SimpleTreeStore::find_row(Gtk::TreeModel::Children parent, const cH_RowDataBase &r,bool optimize,std::list<Gtk::TreeStore::iterator> &result)
-{  for (iterator i= parent.begin(); i!=parent.end(); ++i)
-   {  Gtk::TreeModel::Children ch=i->children();
-      if (ch.begin()==ch.end())
-      {  cH_RowDataBase v2=(*i)[m_columns.leafdata];
-         if (&*v2==&*r) 
+bool SimpleTreeStore::find_row(Node &parent, const cH_RowDataBase &r,bool optimize,std::list<iterator> &result)
+{  if (parent.childrens_deep && optimize)
+   {  cH_EntryValue val=r->Value(currseq[parent.childrens_deep],ValueData());
+      std::pair<iterator,iterator> p=parent.children.equal_range(val);
+      if (p.first==p.second) return false;
+      if (!p.first->second.childrens_deep) // nodes
+      {  for (iterator i=p.first;i!=p.second;++i) 
+            if (&*i->second.leafdata==&*r)
+            {  result.push_back(i);
+               return true;
+            }
+      }
+      else 
+      {  if (find_row(p.first->second,r,optimize,result))
+         {  result.push_back(p.first);
+            return true;
+         }
+      }
+      return false;
+   }
+   
+   for (iterator i= parent.children.begin(); i!=parent.children.end(); ++i)
+   {  if (i->second.children.empty())
+      {  if (&*i->second.leafdata==&*r)
          {  result.push_back(i);
             return true;
          }
       }
       else 
-      {  if (find_row(ch,r,optimize,result))
+      {  if (find_row(i->second,r,optimize,result))
          {  result.push_back(i);
             return true;
          }
@@ -516,23 +479,309 @@ bool SimpleTreeStore::find_row(Gtk::TreeModel::Children parent, const cH_RowData
    return false;
 }
 
-std::list<Gtk::TreeStore::iterator> SimpleTreeStore::find_row(const cH_RowDataBase &r,bool optimize)
-{  std::list<Gtk::TreeStore::iterator> result;
-   find_row(m_refTreeStore->children(),r,optimize,result);
+std::list<SimpleTreeStore::iterator> SimpleTreeStore::find_row(const cH_RowDataBase &r,bool optimize)
+{  std::list<iterator> result;
+   find_row(root,r,optimize,result);
    return result;
 }
 
 void SimpleTreeStore::redisplay_old(cH_RowDataBase data, unsigned index)
 {  unsigned col=ColumnFromIndex(index);
    if (col==invisible_column) return;
-   std::list<Gtk::TreeStore::iterator> rows=find_row(data);
+   std::list<iterator> rows=find_row(data);
    if (rows.begin()!=rows.end())
-   {  Gtk::TreeRow row=**rows.begin();
-      row[m_columns.cols[col]] = data->Value(index,ValueData())->getStrVal();
+   {  // Node & row=**rows.begin();
+      // row[m_columns.cols[col]] = data->Value(index,ValueData())->getStrVal();
    }
 }
 
 void SimpleTreeStore::set_tree_column_visibility(unsigned index,bool visible)
 {  vec_hide_cols.at(index)=visible;
 #warning 2do: neu darstellen ?
+}
+
+Gtk::TreeModelFlags SimpleTreeStore::get_flags_vfunc()
+{  return Gtk::TreeModelFlags(0); }
+int SimpleTreeStore::get_n_columns_vfunc()
+{  return unsigned(s_text_start)+max_column; }
+
+// speed this up by an array?
+GType SimpleTreeStore::get_column_type_vfunc(int index)
+{  switch(e_spalten(index))
+   {  case s_row: return m_columns.row.type();
+      case s_deep: return m_columns.deep.type();
+      case s_childrens_deep: return m_columns.childrens_deep.type();
+      case s_leafdata: return m_columns.leafdata.type();
+      case s_background: return m_columns.background.type();
+      default: return G_TYPE_STRING;
+   }
+}
+
+int SimpleTreeStore::IterStamp() const
+{  return reinterpret_cast<int>(this);
+}
+
+SimpleTreeStore::iterator &SimpleTreeStore::iterconv(GtkTreeIter* iter)
+{  assert(iter->stamp==IterStamp());
+   return reinterpret_cast<SimpleTreeStore::iterator&>(iter->user_data);
+}
+
+const SimpleTreeStore::iterator &SimpleTreeStore::iterconv(const GtkTreeIter* iter) const
+{  assert(iter->stamp==IterStamp());
+   return reinterpret_cast<const SimpleTreeStore::iterator&>(iter->user_data);
+}
+
+void SimpleTreeStore::iterinit(GtkTreeIter* iter,const const_iterator &schema) const
+{  assert(3*sizeof(iter->user_data)>=sizeof(SimpleTreeStore::const_iterator));
+   iter->stamp=IterStamp();
+   reinterpret_cast<SimpleTreeStore::const_iterator&>(iter->user_data)=schema;
+   ManuProC::Trace(trace_channel,__FUNCTION__,iter->stamp,iter->user_data,
+   		iter->user_data2,iter->user_data3);
+}
+
+void SimpleTreeStore::iterinit(GtkTreeIter* iter,const iterator &schema) const
+{  iterinit(iter,static_cast<const_iterator>(schema));
+}
+
+void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter, int column, GValue* value)
+{  Node &nd=iterconv(iter->gobj())->second;
+   switch(e_spalten(column))
+   {  case s_row: g_value_init(value,m_columns.row.type());
+   	 g_value_set_boxed(value,&nd.row);
+         return;
+      case s_deep: g_value_init(value,m_columns.deep.type());
+   	 g_value_set_uint(value,nd.deep);
+         return;
+      case s_childrens_deep: g_value_init(value,m_columns.childrens_deep.type());
+   	 g_value_set_uint(value,nd.childrens_deep);
+         return;
+      case s_leafdata: g_value_init(value,m_columns.leafdata.type());
+   	 g_value_set_boxed(value,&nd.leafdata);
+         return;
+      case s_background: g_value_init(value,m_columns.background.type());
+         g_value_set_boxed(value,colors[nd.deep%num_colors].gobj());
+         return;
+      default:
+         if (int(s_text_start)<=column && column<int(s_text_start)+int(max_column))
+         {  g_value_init(value,G_TYPE_STRING);
+            int colno=column-int(s_text_start);
+            if (colno<0 || colno>=int(Cols())) return;
+            unsigned idx=currseq[colno];
+            if (nd.row)
+            {  if (colno<int(nd.deep)) return;
+               if (colno<int(nd.childrens_deep))
+               {  g_value_set_string(value,nd.leafdata->Value(idx,ValueData())->getStrVal().c_str());
+                  return;
+               }
+               const Glib::ustring s=nd.row->Value(idx,ValueData())->getStrVal();
+               if (colno==int(nd.childrens_deep))
+                  g_value_set_string(value,("..."+s).c_str());
+               else 
+                  g_value_set_string(value,s.c_str());
+            }
+            else // leaf
+            {  if (unsigned(colno)<nd.deep) return;
+               g_value_set_string(value,nd.leafdata->Value(idx,ValueData())->getStrVal().c_str());
+            }
+         }
+         return;
+   }
+}
+
+bool SimpleTreeStore::iter_next_vfunc(GtkTreeIter* iter)
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,iter->user_data);
+   iterator old=iterconv(iter),newit=old;
+   newit++;
+   if (!old->second.parent) return false;
+   if (newit==old->second.parent->children.end()) return false;
+   iterconv(iter)=newit;
+   ManuProC::Trace(trace_channel,"new iter",iter->user_data);
+   return true;
+}
+bool SimpleTreeStore::iter_children_vfunc(GtkTreeIter* iter, const GtkTreeIter* parent)
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,parent->user_data);
+   iterator p=iterconv(parent);
+   if (p->second.children.empty()) return false;
+   iterinit(iter,p->second.children.begin());
+   return true;
+}
+bool SimpleTreeStore::iter_has_child_vfunc(const GtkTreeIter* iter)
+{  return !(iterconv(iter)->second.children.empty());
+}
+int SimpleTreeStore::iter_n_children_vfunc(const GtkTreeIter* iter)
+{  return iterconv(iter)->second.children.size();
+}
+bool SimpleTreeStore::iter_nth_child_vfunc(GtkTreeIter* iter, const GtkTreeIter* parent, int n)
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,parent?parent->user_data:0,n);
+   iterator res,end;
+   if (parent)
+   {  iterator p=iterconv(parent);
+      res=p->second.children.begin();
+      end=p->second.children.end();
+   }
+   else
+   {  res=root.children.begin();
+      end=root.children.end();
+   }
+   
+   if (res==end) return false;
+   for (;n>0;--n) 
+   {  ++res;
+      if (res==end) return false;
+   }
+   iterinit(iter,res); 
+   return true;
+}
+
+bool SimpleTreeStore::iter_parent_vfunc(GtkTreeIter* iter, const GtkTreeIter* child)
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,child->user_data);
+   iterator c=iterconv(child);
+   if (!c->second.parent) return false;  
+   iterator p=iterbyNode(*c->second.parent);
+   if (p==c->second.parent->parent->children.end()) return false;
+   iterinit(iter,p);
+   return true;
+}
+Gtk::TreeModel::Path SimpleTreeStore::get_path_vfunc(const Gtk::TreeModel::iterator& iter)
+{ ManuProC::Trace _t(trace_channel, __FUNCTION__,iter->gobj()->user_data);
+  return getPath(iterconv(iter->gobj()));
+}
+bool SimpleTreeStore::get_iter_vfunc(GtkTreeIter* iter, const Gtk::TreeModel::Path& path)
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,path.to_string());
+   
+   iterator res=root.children.begin();
+   iterator end=root.children.end();
+   
+   for (Gtk::TreeModel::Path::const_iterator piter=path.begin();piter!=path.end();)
+   {  if (res==end) return false;
+      for (unsigned i=*piter;i>0;--i) 
+      {  ++res;
+         if (res==end) return false;
+      }
+      ++piter;
+      if (piter==path.end()) {  iterinit(iter,res); return true; }
+      end=res->second.children.end();
+      res=res->second.children.begin();
+   }
+   return false;
+}
+
+void MyTreeModel_Class::class_init_function(void* g_class, void* class_data)
+{
+}
+
+const Glib::Class& MyTreeModel_Class::init()
+{
+    if (!gtype_)
+    {
+        class_init_func_ = &MyTreeModel_Class::class_init_function;
+
+        static const GTypeInfo derived_info = 
+        {
+            sizeof(GObjectClass),
+            NULL,
+            NULL,
+            class_init_func_,
+            NULL,
+            NULL,
+            sizeof(GObject),
+            0,
+            0,
+            NULL,
+        };
+        
+        gtype_ = g_type_register_static(G_TYPE_OBJECT, "SimpleTree_MyTreeModel",
+            &derived_info, GTypeFlags(0));
+
+        Gtk::TreeModel::add_interface(get_type());
+    }
+
+    return *this;
+}
+
+SimpleTreeStore::iterator SimpleTreeStore::iterbyValue(Node &parent,const cH_EntryValue &val) const
+{  return parent.children.find(val);
+}
+
+std::ostream &operator<<(std::ostream &o,const SimpleTreeStore::iterator &i)
+{  return o << reinterpret_cast<const gconstpointer&>(i);
+//(&*i);
+}
+
+SimpleTreeStore::iterator SimpleTreeStore::iterbyNode(Node &nd) const
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,&nd);
+   cH_EntryValue val=nd.leafdata->Value(currseq[nd.deep],ValueData());
+//   ManuProC::Trace(trace_channel,"val",val->getStrVal());
+   std::pair<iterator,iterator> p=nd.parent->children.equal_range(val);
+//   ManuProC::Trace(trace_channel,"eq_r",p.first,p.second,nd.parent->children.end());
+   for (iterator i=p.first;i!=p.second;++i) 
+   {  ManuProC::Trace(trace_channel,"i",&i->second);
+      if (&i->second==&nd) return i;
+   }
+//for (iterator i=nd.parent->children.begin();i!=nd.parent->children.end();++i)
+//{  ManuProC::Trace(trace_channel,"i2",i,i->first->getStrVal(),&i->second);
+//}
+   return nd.parent->children.end();
+}
+
+void SimpleTreeStoreNode::swap(SimpleTreeStoreNode &b)
+{  std::swap(children,b.children);
+   std::swap(row,b.row);
+   std::swap(leafdata,b.leafdata);
+   std::swap(expanded,b.expanded);
+   std::swap(expanding_column,b.expanding_column);
+   std::swap(parent,b.parent);
+   std::swap(deep,b.deep);
+   std::swap(childrens_deep,b.childrens_deep);
+}
+
+void std::swap(SimpleTreeStoreNode &a,SimpleTreeStoreNode &b)
+{  a.swap(b);
+}
+
+void SimpleTreeStoreNode::fix_pointer()
+{  //ManuProC::Trace _t(SimpleTreeStore::trace_channel,__FUNCTION__);
+   for (iterator i=children.begin();i!=children.end();++i)
+   {  if (i->second.parent!=this)
+      {  ManuProC::Trace(SimpleTreeStore::trace_channel,__FUNCTION__,i->second.parent,this);
+         i->second.parent=this;
+      }
+      i->second.fix_pointer();
+   }
+}
+
+Gtk::TreeModel::iterator SimpleTreeStore::getIter(iterator it) const
+{  GtkTreeIter res;
+   iterinit(&res,it);
+   return Gtk::TreeModel::iterator(const_cast<GtkTreeModel*>(gobj()),&res);
+}
+
+Gtk::TreeModel::const_iterator SimpleTreeStore::getIter(const_iterator it) const
+{  GtkTreeIter res;
+   iterinit(&res,it);
+   return Gtk::TreeModel::iterator(const_cast<GtkTreeModel*>(gobj()),&res);
+}
+
+Gtk::TreeModel::Path SimpleTreeStore::getPath(iterator it) const
+{  std::vector<unsigned> store;
+   store.reserve(max_column);
+   while(true)
+   {  store.push_back(Node2nth_child(it->second));
+      if (it->second.parent==&root) break;
+      it=iterbyNode(*it->second.parent);
+   }
+   Gtk::TreeModel::Path res;
+   for (std::vector<unsigned>::reverse_iterator i=store.rbegin();i!=store.rend();++i)
+   {  res.push_back(*i);
+   }
+   ManuProC::Trace _t(trace_channel,__FUNCTION__,res.to_string());
+   return res;
+}
+
+unsigned SimpleTreeStore::Node2nth_child(const Node &nd) const
+{  unsigned res=0;
+   for (const_iterator i=nd.parent->children.begin();
+   			i!=nd.parent->children.end();++i,++res)
+      if (&i->second==&nd) return res;
+   abort();
 }

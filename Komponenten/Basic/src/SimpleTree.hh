@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.17 2003/10/14 07:41:40 christof Exp $
+// $Id: SimpleTree.hh,v 1.18 2003/10/20 07:39:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,40 +25,43 @@
 
 class SimpleTreeStore_Proxy
 {protected:
-	SimpleTreeStore sts;
+	SimpleTreeStore *ptr;
+	Glib::RefPtr<SimpleTreeStore> sts;
 public:
 	typedef SimpleTreeStore::sequence_t sequence_t;
 	typedef SimpleTreeStore::const_iterator const_iterator;
 
-	SimpleTreeStore_Proxy(unsigned int max_cols) : sts(max_cols) {}
+	SimpleTreeStore_Proxy(unsigned int max_cols) : 
+		ptr(new SimpleTreeStore(max_cols)), sts(ptr) {}
 
-	void set_remember(const std::string &program, const std::string &instance) {  sts.set_remember(program,instance); }
-	guint Cols() const  { return sts.Cols();}
+	void set_remember(const std::string &program, const std::string &instance) {  sts->set_remember(program,instance); }
+	guint Cols() const  { return sts->Cols();}
 
 	// these are from model
-	void setDataVec(const std::vector<cH_RowDataBase> &d) {  sts.getModel().setDataVec(d); }
-	void setTitles(const std::vector<std::string>& T) {  sts.getModel().setTitles(T); }
-	SimpleTreeStore &getStore() { return sts; }
-	SimpleTreeModel &getModel() { return sts.getModel(); }
-	const SimpleTreeStore &getStore() const { return sts; }
-	const std::string getColTitle(guint idx) const { return sts.getColTitle(idx); }
-	void set_NewNode(SimpleTreeStore::NewNode_fp n) { sts.set_NewNode(n); }
+	void setDataVec(const std::vector<cH_RowDataBase> &d) {  sts->getModel().setDataVec(d); }
+	void setTitles(const std::vector<std::string>& T) {  sts->getModel().setTitles(T); }
+	const Glib::RefPtr<SimpleTreeStore> &getStore() { return sts; }
+	const Glib::RefPtr<Gtk::TreeModel> getTreeModel() { return Glib::RefPtr<Gtk::TreeModel>(ptr); }
+	SimpleTreeModel &getModel() { return sts->getModel(); }
+	const Glib::RefPtr<const SimpleTreeStore> getStore() const { return Glib::RefPtr<const SimpleTreeStore>(ptr); }
+	const std::string getColTitle(guint idx) const { return sts->getColTitle(idx); }
+	void set_NewNode(SimpleTreeStore::NewNode_fp n) { sts->set_NewNode(n); }
 
-	const_iterator begin() const { return sts.begin(); }
-	const_iterator end() const { return sts.end(); }
+	const_iterator begin() const { return sts->begin(); }
+	const_iterator end() const { return sts->end(); }
 	void set_tree_column_visibility(unsigned index,bool visible)
-	{  sts.set_tree_column_visibility(index,visible); }
-	void clear() { sts.clear(); }
+	{  sts->set_tree_column_visibility(index,visible); }
+	void clear() { sts->clear(); }
 	unsigned ColumnFromIndex(unsigned i) const 
-	{  return sts.ColumnFromIndex(i); }
+	{  return sts->ColumnFromIndex(i); }
 	unsigned IndexFromColumn(unsigned c) const
-	{  return sts.IndexFromColumn(c); }
-	const SimpleTreeStore::sequence_t &get_seq() const {return sts.get_seq();}
+	{  return sts->IndexFromColumn(c); }
+	const SimpleTreeStore::sequence_t &get_seq() const {return sts->get_seq();}
 	
-	void set_column_visibility(unsigned index,bool on) { sts.set_tree_column_visibility(index,on); }
-	void set_value_data(gpointer _p) { sts.set_value_data(_p); }
+	void set_column_visibility(unsigned index,bool on) { sts->set_tree_column_visibility(index,on); }
+	void set_value_data(gpointer _p) { sts->set_value_data(_p); }
 	
-	void redisplay(cH_RowDataBase row, unsigned index) {  sts.redisplay_old(row,index); }
+	void redisplay(cH_RowDataBase row, unsigned index) {  sts->redisplay_old(row,index); }
 };
 
 // I took the more esoteric features out to SimpleTree, 
@@ -69,6 +72,7 @@ class SimpleTree_Basic : public Gtk::TreeView, public SimpleTreeStore_Proxy
 
 	void on_title_changed(guint nr);
 	void on_selection_changed();
+	void on_redisplay();
 	SigC::Signal0<void> _leaf_unselected;
 	SigC::Signal1<void,cH_RowDataBase> _leaf_selected;
 	SigC::Signal1<void,const TreeRow &> _node_selected;
@@ -117,10 +121,9 @@ private:
  template <class T> 
   void ForEachLeaf2(const_iterator b,const_iterator e, T &t) const
  {  for (const_iterator i=b;i!=e;++i)
-    {  if (!(*i)[getStore().m_columns.childrens_deep])
-          t((*i)[getStore().m_columns.leafdata]);
-       else if (i->children().begin()!=i->children().end())
-          ForEachLeaf2(i->children().begin(),i->children().end(),t);
+    {  if (!i->second.childrens_deep) t(i->second.leafdata);
+       else if (!i->second.children.empty())
+          ForEachLeaf2(i->second.children.begin(),i->second.children.end(),t);
     }
  }
  
@@ -128,14 +131,12 @@ private:
  			const_iterator e, const T &t,
  			bool only_one_line)
  {  for (const_iterator i=b;i!=e;++i)
-    {  if (!(*i)[getStore().m_columns.childrens_deep]
-          && static_cast<cH_RowDataBase>((*i)[getStore().m_columns.leafdata])
-          	==t)
-       {  get_selection()->select(*i);
+    {  if (!i->second.childrens_deep && i->second.leafdata==t)
+       {  get_selection()->select(getStore()->getIter(i));
           if (only_one_line) return;
        }
-       else if (i->children().begin()!=i->children().end())
-          selectMatchingLines2(i->children().begin(),i->children().end(),t,only_one_line);
+       else if (!i->second.children.empty())
+          selectMatchingLines2(i->second.children.begin(),i->second.children.end(),t,only_one_line);
     }
  }
 

@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.30 2002/12/19 07:42:45 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.31 2003/10/20 07:39:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,7 +21,7 @@
 #define SIMPLE_TREE_STORE_H
 
 #include <SimpleTreeModel.h>
-#include <gtkmm/treestore.h>
+#include <gtkmm/treemodel.h>
 #include <RowDataBase.h>
 #include <TreeRow.h>
 #include <deque>
@@ -29,6 +29,7 @@
 #include <Misc/UniqueValue.h>
 #include <list>
 #include <utility>
+#include <map>
 
 // for easily accessing model methods
 class SimpleTreeModel_Proxy
@@ -49,13 +50,59 @@ public:
 	void clear() { model->clear(); }
 };
 
-class SimpleTreeStore : public SigC::Object, public SimpleTreeModel_Proxy
+struct SimpleTreeStoreNode
+{	// Multimap wegen doppelter Zeilen (auf der untersten Ebene)
+	typedef std::multimap<cH_EntryValue,SimpleTreeStoreNode> map_t;
+	typedef map_t::const_iterator const_iterator;
+	typedef map_t::iterator iterator;
+
+	map_t children;
+	Handle<TreeRow> row; // die Datenstruktur hinter nodes
+	cH_RowDataBase leafdata; // die Datenstruktur hinter leaves
+	bool expanded;
+	int expanding_column;
+	SimpleTreeStoreNode *parent;
+	unsigned deep,childrens_deep;
+	// REMEMBER to change swap implementation if you add things here!
+	
+	// root?
+	// columns? pics?
+	// color, color_set?
+	// background
+	// value ist in map gespeichert (key)
+
+	SimpleTreeStoreNode(guint _deep=0, SimpleTreeStoreNode *_parent=0, 
+			const cH_RowDataBase &v=cH_RowDataBase(),
+			unsigned c_deep=0) 
+	        : leafdata(v), expanded(), expanding_column(-1), 
+	          parent(_parent), deep(_deep), childrens_deep(c_deep) {}
+		
+	void swap(SimpleTreeStoreNode &b);
+	void fix_pointer();
+};
+
+namespace std { // sigh
+void swap(SimpleTreeStoreNode &a,SimpleTreeStoreNode &b);
+};
+
+#if 0
+struct SimpleTreeModel_Class : public Glib::Class
 {public:
+	const Glib::Class& init();
+	static void class_init_function(void* g_class, void* class_data);
+};
+#endif
+
+class SimpleTreeStore : public Glib::Object, public Gtk::TreeModel, public SimpleTreeModel_Proxy
+{public:
+
 	// einen neuen Ast erzeugen, deep ist die Spalte, v der Wert dieser Spalte
 	typedef Handle<TreeRow> (*NewNode_fp)(const Handle<const TreeRow> &suminit);
+	typedef SimpleTreeStoreNode Node;
+
 	// sadly there's no real const_iterator
-	typedef Gtk::TreeStore::iterator const_iterator;
-	typedef Gtk::TreeStore::iterator iterator;
+	typedef Node::const_iterator const_iterator;
+	typedef Node::iterator iterator;
 	typedef std::deque<guint> sequence_t;
 	// first value is ":order", second is ":visible"
 	typedef void (*save_t)(const std::string&program, const std::string&instance, const std::pair<std::string,std::string>&value);
@@ -67,10 +114,10 @@ protected:
         static void default_save(const std::string&program, const std::string&instance, const std::pair<std::string,std::string>&value);
         static load_t load_vfunc;
         static save_t save_vfunc;
-
+        
 	friend class SimpleTree_Basic;
-	Glib::RefPtr<Gtk::TreeStore> m_refTreeStore;
 	sequence_t currseq; 
+	SimpleTreeStoreNode root;
 
 private:
 	NewNode_fp node_creation;
@@ -83,7 +130,7 @@ private:
 
 	bool auffuellen_bool:1; 
 	bool expandieren_bool:1; 
-	bool color_bool:1; // or in Widget?
+	bool color_bool:1; // or in Widget?, kann in SimpleTree, muss dann aber mitgespeichert werden
 
 	std::string mem_prog,mem_inst;
 	
@@ -97,38 +144,65 @@ private:
 	SigC::Signal0<void> spaltenzahl_geaendert;
 	void on_title_changed(guint idx);
 	
+	SigC::Signal0<void> needs_redisplay;
 	void redisplay();
-	void SummenAnzeigen(Gtk::TreeModel::Children parent);
-	void SummenAnzeigen(const Gtk::TreeRow &row,const Handle<TreeRow> &htr);
-	void InitColumns(Gtk::TreeRow &node, guint deep, const cH_EntryValue &ev, 
-			const cH_RowDataBase &v);
-	void insertLine(Gtk::TreeModel::Children parent,const cH_RowDataBase &d, 
+	void insertLine(Node &parent,const cH_RowDataBase &d, 
 			sequence_t::const_iterator q,guint deep,
 			bool summe_aktualisieren);
-	Gtk::TreeRow CopyTree(Gtk::TreeRow src, Gtk::TreeModel::Children dest);
-	Gtk::TreeStore::iterator MoveTree(
-		Gtk::TreeStore::iterator current_iter,
-		guint deep,guint child_s_deep,guint value_index);
+	iterator MoveTree(iterator current_iter,
+		guint deep,guint child_s_deep,guint value_index,bool live);
 	
 	void on_line_appended(cH_RowDataBase);
 	void on_line_removed(cH_RowDataBase);
-	std::list<Gtk::TreeStore::iterator> find_row(const cH_RowDataBase &,bool optimize=false);
-	bool find_row(Gtk::TreeModel::Children parent,const cH_RowDataBase &,bool optimize,std::list<Gtk::TreeStore::iterator> &result);
+	std::list<iterator> find_row(const cH_RowDataBase &,bool optimize=false);
+	bool find_row(Node &parent,const cH_RowDataBase &,bool optimize,std::list<iterator> &result);
+
+   int IterStamp() const;
+   iterator &iterconv(GtkTreeIter* iter);
+   const iterator &iterconv(const GtkTreeIter* iter) const;
+   void iterinit(GtkTreeIter* iter,const iterator &schema) const;
+   void iterinit(GtkTreeIter* iter,const const_iterator &schema) const;
+   Gtk::TreeModel::Path getPath(iterator it) const;
+   Gtk::TreeModel::iterator getIter(iterator it) const;
+   
+   iterator iterbyNode(Node &nd) const;
+   iterator iterbyValue(Node &parent,const cH_EntryValue &val) const;
+   unsigned Node2nth_child(const Node &nd) const;
+
+// vfunc overrides for my tree model
+   virtual Gtk::TreeModelFlags get_flags_vfunc();
+   virtual int get_n_columns_vfunc();
+   virtual GType get_column_type_vfunc(int index);
+   virtual void get_value_vfunc(const TreeModel::iterator& iter, int column, GValue* value);
+   virtual bool iter_next_vfunc(GtkTreeIter* iter);
+   virtual bool iter_children_vfunc(GtkTreeIter* iter, const GtkTreeIter* parent);
+   virtual bool iter_has_child_vfunc(const GtkTreeIter* iter);
+   virtual int iter_n_children_vfunc(const GtkTreeIter* iter);
+   virtual bool iter_nth_child_vfunc(GtkTreeIter* iter, const GtkTreeIter* parent, int n);
+   virtual bool iter_parent_vfunc(GtkTreeIter* iter, const GtkTreeIter* child);
+   virtual Gtk::TreeModel::Path get_path_vfunc(const Gtk::TreeModel::iterator& iter);
+   virtual bool get_iter_vfunc(GtkTreeIter* iter, const Gtk::TreeModel::Path& path);
+
+	enum e_spalten
+	{  s_row, s_deep, s_childrens_deep, s_leafdata, s_background,
+	   s_text_start
+        };
 public:
 	struct ModelColumns : public Gtk::TreeModelColumnRecord
-	{  std::vector<Gtk::TreeModelColumn<Glib::ustring> > cols;
-	   // since we would also need to 
+	{  // since we would also need to 
 	   Gtk::TreeModelColumn<Handle<TreeRow> > row;
 	   // our first printing column
 	   Gtk::TreeModelColumn<guint> deep;
 	   // childrens_deep=0 -> Leaf
 	   Gtk::TreeModelColumn<guint> childrens_deep;
 	   // the node's value (at deep)
-	   Gtk::TreeModelColumn<cH_EntryValue> value;
+	   // Gtk::TreeModelColumn<cH_EntryValue> value;
 	   // if we're a node this is not 'our' data
 	   Gtk::TreeModelColumn<cH_RowDataBase> leafdata;
 	   
 	   Gtk::TreeModelColumn<Gdk::Color> background;
+	   
+	   std::vector<Gtk::TreeModelColumn<Glib::ustring> > cols;
 	   
 	   ModelColumns(int cols);
 	};
@@ -159,11 +233,12 @@ public:
 	{  node_creation=n; }
 	
 	const_iterator begin() const
-	{  return m_refTreeStore->children().begin();
+	{  return root.children.begin();
 	}
 	const_iterator end() const
-	{  return m_refTreeStore->children().end();
+	{  return root.children.end();
 	}
+	Gtk::TreeModel::const_iterator getIter(const_iterator it) const;
 
 	void setSequence(const sequence_t &seq);
 	
@@ -178,6 +253,9 @@ public:
 	static const unsigned invisible_column=unsigned(-1);
 	
 	void redisplay_old(cH_RowDataBase row, unsigned index);
+	
+	// all lines have changed - redisplay is needed!
+	SigC::Signal0<void> &signal_redisplay() {  return needs_redisplay; }
 };
 
 #endif

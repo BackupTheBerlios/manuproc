@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.19 2003/10/14 07:41:40 christof Exp $
+// $Id: SimpleTree.cc,v 1.20 2003/10/20 07:39:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,7 +25,11 @@ void SimpleTree_Basic::detach()
 }
 
 void SimpleTree_Basic::attach()
-{  set_model(sts.m_refTreeStore);
+{  set_model(sts);
+}
+
+void SimpleTree_Basic::on_redisplay()
+{  detach(); attach();
 }
 
 SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
@@ -38,18 +42,20 @@ SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
       Gtk::TreeViewColumn* pColumn = get_column(i);
       if (pColumn)
       {  pColumn->signal_clicked().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_title_clicked),i));
-         pColumn->add_attribute(crt->property_text(),sts.m_columns.cols[i]);
-         pColumn->add_attribute(crt->property_background_gdk(),sts.m_columns.background);
+         pColumn->add_attribute(crt->property_text(),sts->m_columns.cols[i]);
+         // TODO: Farbe abschaltbar
+         pColumn->add_attribute(crt->property_background_gdk(),sts->m_columns.background);
       }
    }
    set_headers_clickable();
    
-   getStore().signal_title_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_title_changed));
+   getStore()->signal_title_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_title_changed));
    get_selection()->signal_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_selection_changed));
+   getStore()->signal_redisplay().connect(SigC::slot(*this,&SimpleTree_Basic::on_redisplay));
 }
 
 void SimpleTree_Basic::on_title_clicked(unsigned nr)
-{  unsigned idx=getStore().currseq[nr];
+{  unsigned idx=getStore()->currseq[nr];
    sequence_t::iterator i=std::find(clicked_seq.begin(),clicked_seq.end(),idx);
    if (i==clicked_seq.end())
    {  clicked_seq.push_back(idx);
@@ -59,9 +65,9 @@ void SimpleTree_Basic::on_title_clicked(unsigned nr)
    }
    else if (i==--clicked_seq.end())
    {  // umsortieren
-      getStore().fillSequence(clicked_seq);
+      getStore()->fillSequence(clicked_seq);
      resort:
-      getStore().setSequence(clicked_seq);
+      getStore()->setSequence(clicked_seq);
       clicked_seq.clear();
    }
    else
@@ -83,10 +89,10 @@ void SimpleTree_Basic::on_selection_changed()
      _leaf_unselected();
    else
    {  Gtk::TreeRow row=*sel;
-      if (!row[getStore().m_columns.childrens_deep])
-         _leaf_selected(row[getStore().m_columns.leafdata]);
+      if (!row[getStore()->m_columns.childrens_deep])
+         _leaf_selected(row[getStore()->m_columns.leafdata]);
       else
-      {  Handle<TreeRow> htr=row[getStore().m_columns.row];
+      {  Handle<TreeRow> htr=row[getStore()->m_columns.row];
          if (htr) _node_selected(*htr);
       }
    }
@@ -98,8 +104,8 @@ cH_RowDataBase SimpleTree::getSelectedRowDataBase() const
 		->get_selection()->get_selected();
    if (sel)
    {  const Gtk::TreeRow row=*sel;
-      if (!row[getStore().m_columns.childrens_deep])
-         return row[getStore().m_columns.leafdata];
+      if (!row[getStore()->m_columns.childrens_deep])
+         return row[getStore()->m_columns.leafdata];
       else throw notLeafSelected();
    }
    else throw noRowSelected(); // oder multipleRowsSelected()
