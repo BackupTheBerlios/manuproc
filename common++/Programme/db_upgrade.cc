@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.22 2003/10/31 15:43:01 jacek Exp $
+// $Id: db_upgrade.cc,v 1.23 2003/12/09 13:54:09 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -177,6 +177,9 @@ int main(int argc,char *argv[])
         Query_nt("create index webang_variante_art on webang_variante(artikel)");
      check_column("webangaben","variante_von","integer");
   }
+  
+  // Buchung
+  check_column("buchung","waehrung","integer");
   
   ManuProC::dbdisconnect();
   return 0;
