@@ -89,8 +89,9 @@ void ben_vergleichen(const std::string &postfix,const AufEintragBase &AEB)
    }
 }
 
-static bool Verfuegbarkeit2()
-{   // Lager leeren
+static std::vector<AufEintragBase> Verfuegbarkeit2_init()
+{   std::vector<AufEintragBase> result;
+    // Lager leeren
     RohwarenLager RL;
     std::string os;
     {RohwarenLager::st_rohlager rohlager(
@@ -113,10 +114,12 @@ static bool Verfuegbarkeit2()
     // Einkauf planen
     Auftrag PAE=Auftrag(Auftrag::Anlegen(ppsInstanzID::_Garn__Einkauf),Kunde::default_id);
     AufEintragBase AEBPE=PAE.push_back(15,DATUM-60,ARTIKEL_KUPFER,OPEN,true);
+    result.push_back(AEBPE);
 
     // Weberei planen
     Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
     AufEintragBase AEBP=PA.push_back(400,DATUM-20,ARTIKEL_BANDLAGER,OPEN,true);
+    result.push_back(AEBP);
 //    vergleichen(Check::Menge,"V2_Planung","Planung Weberei","");
 
     // Kunde bestellt
@@ -127,8 +130,21 @@ static bool Verfuegbarkeit2()
     AufEintrag(AEB3).MengeAendern(100);
     AufEintrag(AEB4).MengeAendern(100);
     AufEintrag(AEB3).MengeAendern(100);
+    result.push_back(AEB3);
+    result.push_back(AEB4);
 //    vergleichen(Check::Menge,"V2_Ausgangspunkt","Ausgangspunkt","");
+    return result;
+}
 
+static void Verfuegbarkeit2_check(const std::string &was, const std::vector<AufEintragBase> &aebs)
+{   verf_vergleichen(was,aebs[2]);
+    verf_vergleichen(was,aebs[3]);
+    ben_vergleichen(was,aebs[0]);
+    ben_vergleichen(was,AufEintragBase(ppsInstanzID::_Garn__Einkauf,0,1));
+}
+
+static bool Verfuegbarkeit2()
+{   std::vector<AufEintragBase> aebs=Verfuegbarkeit2_init();
     // Weberei liefern    
     // erzeugt Inkonsistenz !!!
 #if 0 // kann keinen Lieferschein schreiben ...
@@ -136,7 +152,7 @@ static bool Verfuegbarkeit2()
     LieferscheinEntryBase lsb(liefs,liefs.push_back(ARTIKEL_BANDLAGER,1,100));
     LieferscheinEntry(lsb).changeStatus(OPEN,false);
 #else
-    AufEintrag(AEBP).ProduziertNG(100,ProductionContext2());
+    AufEintrag(make_value(aebs[1])).ProduziertNG(100,ProductionContext2());
 #endif    
 
     if (Check::reparieren || Check::analyse)
@@ -144,15 +160,60 @@ static bool Verfuegbarkeit2()
        return false;
     }
     vergleichen(Check::Menge,"V2_Auslieferung","Auslieferung","L");
-    
-    verf_vergleichen("V2_Auslieferung",AEB3);
-    verf_vergleichen("V2_Auslieferung",AEB4);
-    ben_vergleichen("V2_Auslieferung",AEBPE);
-    ben_vergleichen("V2_Auslieferung",AufEintragBase(ppsInstanzID::_Garn__Einkauf,0,1));
-
+    Verfuegbarkeit2_check("V2_Auslieferung",aebs);
     return true;
 }
 
 static TestReihe Verfuegbarkeit2_(&Verfuegbarkeit2,"Verfügbarkeit Grafik","V2");
+
+static bool Verfuegbarkeit3()
+{   std::vector<AufEintragBase> aebs=Verfuegbarkeit2_init();
+
+    // Einkauf liefert
+    {Lieferschein liefs(make_value(cH_ppsInstanz(ppsInstanzID::_Garn__Einkauf)),cH_Kunde(Kunde::default_id));
+     LieferscheinEntryBase lsb(liefs,liefs.push_back(ARTIKEL_KUPFER,1,13));
+     LieferscheinEntry(lsb).changeStatus(OPEN,false);
+    }
+    vergleichen(Check::Menge,"V3_Einkauf","Einkauf","E");
+    Verfuegbarkeit2_check("V3_Einkauf",aebs);
+
+    // einlagern     
+    {RohwarenLager RL;
+     std::string os;
+     RohwarenLager::st_rohlager rohlager(
+                LagerPlatz(ppsInstanzID::Rohwarenlager,KUPFER_LAGERPLATZ),
+                0,0,1,13,ARTIKEL_KUPFER,ManuProC::Datum().today());
+     RL.RL_Einlagern(LagerPlatz(ppsInstanzID::Rohwarenlager,KUPFER_LAGERPLATZ),
+     		rohlager,os,true,true);
+    }
+    vergleichen(Check::Menge,"V3_Einlagern","Einlagern","R");
+    Verfuegbarkeit2_check("V3_Einlagern",aebs);
+    
+    // gefertigt
+    {LagerPlatz LP(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ+1);
+     KettplanKette KK=KettplanKette(Kette(MASCHINE,SCHAERDATUM));
+     std::vector<JumboRolle> JR=JumboRolle::create(KK);
+     Query("update rohjumbo set barcoist=?,barcofert_datum=now() where code=?")
+    	<< 140
+    	<< JR.front().Id()/10;
+     class JumboLager JL;
+     // aus DB neuladen
+     JumboRolle J2(JR.front().Id());
+     JL.Jumbo_Einlagern(LP,J2,JumboLager::Einlagern,"TEST",0,true);
+    }
+    vergleichen(Check::Menge,"V3_gewebt","gewebt","W");
+    Verfuegbarkeit2_check("V3_gewebt",aebs);
+
+    // ausliefern (etwas zuviel)
+    {Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE2));
+     LieferscheinEntryBase lsb(liefs,liefs.push_back(ARTIKEL_BANDLAGER,1,170));
+     LieferscheinEntry(lsb).changeStatus(OPEN,false);
+    }
+    vergleichen(Check::Menge,"V3_Lieferung","Lieferung","L");
+    Verfuegbarkeit2_check("V3_Lieferung",aebs);
+    return true;
+}
+
+static TestReihe Verfuegbarkeit3_(&Verfuegbarkeit3,"Verfügbarkeit Grafik 3","V3");
 
 #endif
