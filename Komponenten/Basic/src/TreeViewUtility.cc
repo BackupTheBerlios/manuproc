@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.cc,v 1.15 2004/02/02 13:13:55 christof Exp $
+// $Id: TreeViewUtility.cc,v 1.16 2004/02/05 15:53:00 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -82,9 +82,18 @@ void TreeViewUtility::CListEmulator::set_title(const Glib::ustring &_title)
    set_titles(_titles);
 }
 
+static void mark_line(const Gtk::TreeModel::Path &p,int *i) 
+{  assert(p.size()==1);
+   *i=*(p.begin());
+}
+
 int TreeViewUtility::CListEmulator::get_selected_row_num() const
 {  Gtk::TreeModel::iterator it=view->get_selection()->get_selected();
-   assert(!!it);
+   if (!it)
+   {  int row=-1;
+      view->get_selection()->selected_foreach(SigC::bind(SigC::slot(&mark_line),&row));
+      return row;
+   }
    Gtk::TreeModel::Path p=view->get_model()->get_path(it);
    assert(p.size()==1);
    return *(p.begin());
