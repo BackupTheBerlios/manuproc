@@ -919,7 +919,7 @@ void auftrag_bearbeiten::fillCList()
   auftrag_clist->freeze();
   auftrag_clist->clear();
   Gtk::OStream os(auftrag_clist);
-  Preis psum;
+  Preis::geldbetrag_out psum;
   int znr=1;
   for(AuftragFull::const_iterator i = auftrag->begin();i!=auftrag->end();++i)
    {
@@ -934,11 +934,12 @@ void auftrag_bearbeiten::fillCList()
         << i->getLieferdatum()<<'\t'
         << i->getEntryStatusStr()<<"\t"
         << i->LastEditDate()<<"\n";
-     psum += i->GPreis();
+     if(i->getEntryStatus()!=STORNO)
+       psum += i->GPreis().Wert();
 //cout << i->GPreis() << ":" << psum << "\n";     
    } 
 
-  auftragswert->set_text(Formatiere(psum.Wert()));
+  auftragswert->set_text(Formatiere(psum));
 
   for(guint i=0; i<auftrag_clist->columns().size();++i)
     auftrag_clist->set_column_auto_resize(i,true);
