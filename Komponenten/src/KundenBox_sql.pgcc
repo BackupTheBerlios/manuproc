@@ -1,4 +1,4 @@
-// $Id: KundenBox_sql.pgcc,v 1.1 2002/04/11 11:58:56 christof Exp $
+// $Id: KundenBox_sql.pgcc,v 1.2 2003/10/06 12:04:23 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,7 +18,11 @@
  */
 
 #include "KundenBox.hh"
+#include <gtk/gtksignal.h>
+
+
 exec sql include sqlca;
+
 
 
 void KundenBox::setLabel(std::string nr,std::string name)
@@ -41,7 +45,7 @@ void KundenBox::Kundennr_search(gboolean *_continue, GtkSCContext newsearch)
    
    try
    {  switch(newsearch)
-      {  case GTK_SEARCH_OPEN:
+      {  case Gtk::SEARCH_OPEN:
             snprintf(nummer,sizeof nummer,"%s%%",kundennr->get_text().c_str());
       	    exec sql declare kubo_kdnr cursor for
       	    	select kundennr from kunden where text(kundennr) like :nummer 
@@ -50,14 +54,14 @@ void KundenBox::Kundennr_search(gboolean *_continue, GtkSCContext newsearch)
       	    exec sql open kubo_kdnr;
       	    SQLerror::test(__FILELINE__);
       	    // fall through
-      	 case GTK_SEARCH_FETCH:
+      	 case Gtk::SEARCH_FETCH:
       	    exec sql fetch kubo_kdnr into :nummer;
       	    SQLerror::test(__FILELINE__,100);
       	    if (sqlca.sqlcode) return;
       	    kundennr->add_item(nummer);
       	    *_continue=true;
       	    break;
-      	 case GTK_SEARCH_CLOSE:
+      	 case Gtk::SEARCH_CLOSE:
       	    exec sql close kubo_kdnr;
       	    SQLerror::test(__FILELINE__);
       	    tr.commit();
@@ -72,7 +76,7 @@ void KundenBox::Kundennr_search(gboolean *_continue, GtkSCContext newsearch)
 void KundenBox::Name_activate()
 {  id=kundenname->Content();
    char buf[30];
-   snprintf(buf,sizeof buf,"%d",id);
+   snprintf(buf,sizeof buf,"%ld",id);
    kundennr->set_text(buf);
    activate();
 }
@@ -88,13 +92,13 @@ void KundenBox::Name_search(gboolean *_continue, GtkSCContext newsearch)
    {  
      std::string squery;
      switch(newsearch)
-      {  case GTK_SEARCH_OPEN:
+      {  case Gtk::SEARCH_OPEN:
             tr2.open();
 
              if(einschraenkung_b)
-               squery = "select DISTINCT coalesce(sortname,k.firma), k.kundennr from 
-                  extbezschema e join kunden k on (e.extartbezid=k.kundennr)
-                  where coalesce(sortname,k.firma) ilike '"+kundenname->get_text()+"%'";
+               squery = "select DISTINCT coalesce(sortname,k.firma), k.kundennr from  "
+		"extbezschema e join kunden k on (e.extartbezid=k.kundennr) "
+		"where coalesce(sortname,k.firma) ilike '"+kundenname->get_text()+"%'";
              else
                squery = "select coalesce(sortname,firma),kundennr from kunden "
                	  "where coalesce(sortname,firma) ilike '"+
@@ -106,14 +110,14 @@ void KundenBox::Name_search(gboolean *_continue, GtkSCContext newsearch)
       	    exec sql open kubo_name;
       	    SQLerror::test(__FILELINE__);
       	    // fall through
-      	 case GTK_SEARCH_FETCH:
+      	 case Gtk::SEARCH_FETCH:
       	    exec sql fetch kubo_name into :name, :nummer;
       	    SQLerror::test(__FILELINE__,100);
       	    if (sqlca.sqlcode) return;
       	    kundenname->add_item(name,nummer);
       	    *_continue=true;
       	    break;
-      	 case GTK_SEARCH_CLOSE:
+      	 case Gtk::SEARCH_CLOSE:
       	    exec sql close kubo_name;
       	    SQLerror::test(__FILELINE__);
       	    tr2.commit();
@@ -127,7 +131,7 @@ void KundenBox::Name_search(gboolean *_continue, GtkSCContext newsearch)
 
 gint KundenBox::try_grab_focus(GtkWidget *w,gpointer gp)
 {  KundenBox *this2((KundenBox*)gp);
-   assert(Gtk::Table::isA(this2)); // very weak check
+   assert(Gtk::Table::isA(GTK_OBJECT(this2))); // very weak check
    this2->kundennr->grab_focus();
    return true;
 }
@@ -136,7 +140,7 @@ KundenBox::KundenBox() : id(Kunde::none_id), tr("",false), tr2("",false),
    einschraenkung_b(false)
 {
  // redirect our grab_focus
- gtk_signal_connect(GTK_OBJECT(gtkobj()), "grab_focus",
+ gtk_signal_connect_after(GTK_OBJECT(gobj()), "grab_focus",
                  GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
 }
 
