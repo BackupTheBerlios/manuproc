@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.50 2004/01/08 16:04:12 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.51 2004/01/09 15:44:28 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,6 +34,7 @@
 //#include <GType_cH_EntryValue.h>
 #include <gtkmm/treepath.h>
 #include <Misc/EntryValueSort.h>
+#include <Misc/EntryValueInvert.h>
 
 #ifdef __MINGW32__
 #define getuid() 0
@@ -276,6 +277,7 @@ void SimpleTreeStore::resort(Node &parent, unsigned stop_at)
       if (i->second.row)
          x=cH_EntryValueSort(i->second.row->Value(sortierspalte,ValueData()),x);
       else x=cH_EntryValueSort(i->second.leafdata->Value(sortierspalte,ValueData()),x);
+      if (invert_sortierspalte) x=cH_EntryValueInvert(x);
       Node &nd=parent.children.insert(parent.children.upper_bound(x),std::make_pair(x,Node()))->second;
       std::swap(i->second,nd);
       nd.parent=&parent;
@@ -883,9 +885,10 @@ unsigned SimpleTreeStore::Node2nth_child(const Node &nd) const
    abort();
 }
 
-void SimpleTreeStore::setSortierspalte(unsigned s)
-{  if (sortierspalte!=s)
+void SimpleTreeStore::setSortierspalte(unsigned s,bool i)
+{  if (sortierspalte!=s && i!=invert_sortierspalte)
    {  sortierspalte=s;
+      invert_sortierspalte=i;
       redisplay();
    }
 }

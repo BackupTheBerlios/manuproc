@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.38 2003/12/23 00:09:48 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.39 2004/01/09 15:44:28 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -128,6 +128,7 @@ private:
 	std::vector<Gdk::Color> colors;
 	static const unsigned num_colors=8;
 	unsigned sortierspalte;
+	bool invert_sortierspalte;
 
 	void save_remembered() const;
 	void load_remembered();
@@ -266,7 +267,7 @@ public:
 	{ return Model_ref<bvector_item>(vec_hide_cols.begin()+idx,signal_visibly_changed); }
 	
 	unsigned visible_size() { return currseq.size(); }
-	void setSortierspalte(unsigned idx=invisible_column);
+	void setSortierspalte(unsigned idx=invisible_column, bool invert=false);
 };
 
 #endif
