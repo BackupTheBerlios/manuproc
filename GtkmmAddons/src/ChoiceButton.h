@@ -40,7 +40,9 @@ class ChoiceButton : public DoubleButton
 	std::vector<Glib::RefPtr<Gdk::Pixbuf> > images;
 	std::vector<Glib::ustring> texts;
 	std::vector<SigC::Slot0<void> > callbacks;
+	SigC::Signal0<void> changed;
 //	std::vector<Gtk::MenuItem *> menuitems;
+	bool activate_on_change;
 
 	void on_button_pressed();
 	void on_sbutton_pressed(int mbutton);
@@ -55,6 +57,9 @@ public:
 	void set_style(bool image=true, bool text=false);
 	void set_tearoff_title(const Glib::ustring &title);
 	void set_tooltips(Gtk::Tooltips *_tips);
+	void set_activate_on_change(bool x) { activate_on_change=x; }
+	SigC::Signal0<void> &signal_changed()
+	{  return changed; }
 };
 
 }
