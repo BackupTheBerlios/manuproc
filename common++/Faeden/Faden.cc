@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.23 2004/06/23 09:24:29 christof Exp $
+// $Id: Faden.cc,v 1.24 2004/06/23 09:25:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -447,7 +447,7 @@ void Fadenliste::Load(const Webangaben &wa)
 
       Query q3("select kettscheibe, "
       	"max_kettlaenge,max_fadenzahl,verlaengern,"
-      	"ausn_gaenge,ausn_faeden,ausn_maxfd,ausn_gaenge2,ausn_maxfd2 "
+      	"ausn_gaenge1,ausn_maxfd1,ausn_gaenge2,ausn_maxfd2 "
 		"from webang_ketten where artikel=? "
 		// request last one first so that we resize efficiently
 		"order by kettscheibe desc");
