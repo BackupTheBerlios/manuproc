@@ -1,4 +1,4 @@
-// $Id: Optionmenu_Einheit.cc,v 1.2 2002/07/05 12:36:56 christof Exp $
+// $Id: Optionmenu_Einheit.cc,v 1.3 2004/11/08 14:34:33 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -24,7 +24,7 @@
 
 Optionmenu_Einheit::Optionmenu_Einheit()
 { fuelle_menu();
-  get_menu()->deactivate.connect(activate.slot());
+  get_menu()->signal_deactivate().connect(activate.slot());
 }
 
 Einheit Optionmenu_Einheit::get_value() const
