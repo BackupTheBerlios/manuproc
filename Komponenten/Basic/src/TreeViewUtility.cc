@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.cc,v 1.8 2004/01/30 11:55:45 christof Exp $
+// $Id: TreeViewUtility.cc,v 1.9 2004/01/30 13:24:38 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -85,4 +85,12 @@ int TreeViewUtility::CListEmulator::get_selected_row_num() const
    Gtk::TreeModel::Path p=view->get_model()->get_path(it);
    assert(p.size()==1);
    return *(p.begin());
+}
+
+static void increment(const Gtk::TreeModel::iterator&,int &i) { ++i; }
+
+bool TreeViewUtility::CListEmulator::selection_empty() const
+{  int num=0;
+   view->get_selection()->selected_foreach(SigC::bind(SigC::slot(&increment),num));
+   return !num;
 }

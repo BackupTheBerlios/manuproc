@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.h,v 1.8 2004/01/30 11:55:45 christof Exp $
+// $Id: TreeViewUtility.h,v 1.9 2004/01/30 13:24:38 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -49,6 +49,7 @@ public:
 	void set_title(const Glib::ustring &title);
 	
 	int get_selected_row_num() const;
+	bool selection_empty() const;
 };
 
 class CList : public Gtk::TreeView
