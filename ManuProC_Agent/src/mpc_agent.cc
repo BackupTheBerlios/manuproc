@@ -7,11 +7,11 @@
 
 #include <config.h>
 #include <gtkmm/main.h>
-#include <dbconnect.h>
-#include <FetchIStream.h>
+#include <Misc/dbconnect.h>
+#include <Misc/FetchIStream.h>
 #include "mpc_agent.hh"
 #include <MyMessage.h>
-#include <itos.h>
+#include <Misc/itos.h>
 #include "kunden_selector.hh"
 #include <SearchComboContent.h>
 
