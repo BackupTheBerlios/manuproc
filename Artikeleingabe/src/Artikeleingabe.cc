@@ -1,10 +1,10 @@
 #include "config.h"
 #include "Artikeleingabe.hh"
 #include "Artikeleingabe_classes.hh"
-#include <gtk--/main.h>
-#include <gtk--/eventbox.h>
+#include <gtkmm/main.h>
+#include <gtkmm/eventbox.h>
 #include <libgnomeui/gnome-stock.h>
-#include <gtk--/toolbar.h>
+#include <gtkmm/toolbar.h>
 #include <Artikel/ArtikelBaum.h>
 #include <Artikel/ArtikelStamm.h>
 #include <Gtk2TeX.h>
@@ -30,7 +30,7 @@ Artikeleingabe::Artikeleingabe(int argc, char **argv)
  artikelbox->show_label(true);
  progressbar->hide();
  toolbar_loeschen->hide();
- table_verschmelzen->hide(); // Nur für Administratoren!!!!
+ table_verschmelzen->hide(); // Nur fÃ¼r Administratoren!!!!
 // frame_artikel->set_sensitive(false);
 // frame_editieren->hide();
 
@@ -237,7 +237,7 @@ try{
 }catch(std::exception &e) {std::cerr<<e.what();}
 }
 
-// Ja der Vektor wird kopiert und dann verändert (Rekursion)
+// Ja der Vektor wird kopiert und dann verÃ¤ndert (Rekursion)
 void Artikeleingabe::ArtikelBaum_Pfad(ArtikelBase AB,menge_t menge,
 		datavec_t& datavec, vec_zeile_t vec_zeile)
 {
@@ -270,7 +270,7 @@ void Artikeleingabe::on_leaf_selected(cH_RowDataBase d)
  Loeschen_von(dt->Artikel2());
 }
 
-void Artikeleingabe::on_node_selected(const TCListNode &node)
+void Artikeleingabe::on_node_selected(const TreeRow &node)
 {
 //cout << "Node\n";
   const Data_Node &dn=dynamic_cast<const Data_Node&>(node);
@@ -319,22 +319,22 @@ void Artikeleingabe::set_Prozess()
 void Artikeleingabe::Loeschen_von(const ArtikelBase& art)
 {
   if(!art) return;
-//  std::string button_text  = "Lösche\n"+cH_ArtikelBezeichnung(art)->Bezeichnung();
+//  std::string button_text  = "LÃ¶sche\n"+cH_ArtikelBezeichnung(art)->Bezeichnung();
 //  std::string button_text2 = "Artikel\n"+cH_ArtikelBezeichnung(art)->Bezeichnung();
-  std::string button_text  = "Lösche\n"+cH_ArtikelBezeichnung(art,artikelbox->getBezSchema()->Id())->Bezeichnung();
+  std::string button_text  = "LÃ¶sche\n"+cH_ArtikelBezeichnung(art,artikelbox->getBezSchema()->Id())->Bezeichnung();
   std::string button_text2 = "Artikel\n"+cH_ArtikelBezeichnung(art,artikelbox->getBezSchema()->Id())->Bezeichnung();
   toolbar_loeschen->tools().clear();
   button_artikel_delete = Gtk::wrap((GtkButton*)gtk_toolbar_append_element
-   (GTK_TOOLBAR(toolbar_loeschen->gtkobj()), GTK_TOOLBAR_CHILD_BUTTON, 0, 
-    button_text.c_str(),0, 0, GTK_WIDGET(gnome_stock_pixmap_widget
-      (GTK_WIDGET(toolbar_loeschen->gtkobj()), GNOME_STOCK_PIXMAP_NOT)), 0, 0));
+   (Gtk::TOOLBAR(toolbar_loeschen->gobj()), Gtk::TOOLBAR_CHILD_BUTTON, 0, 
+    button_text.c_str(),0, 0, Gtk::WIDGET(gnome_stock_pixmap_widget
+      (Gtk::WIDGET(toolbar_loeschen->gobj()), GNOME_STOCK_PIXMAP_NOT)), 0, 0));
   toolbar_loeschen->tools().push_back(Gtk::Toolbar_Helpers::Space());
   button_artikel_wechsel= Gtk::wrap((GtkButton*)gtk_toolbar_append_element
-   (GTK_TOOLBAR(toolbar_loeschen->gtkobj()), GTK_TOOLBAR_CHILD_BUTTON, 0, 
-    button_text2.c_str(),0, 0, GTK_WIDGET(gnome_stock_pixmap_widget
-      (GTK_WIDGET(toolbar_loeschen->gtkobj()), GNOME_STOCK_PIXMAP_FORWARD)), 0, 0));
-  button_artikel_delete ->clicked.connect(SigC::slot(static_cast<class  Artikeleingabe*>(this), &Artikeleingabe::on_button_artikel_delete_clicked));
-  button_artikel_wechsel->clicked.connect(SigC::slot(static_cast<class  Artikeleingabe*>(this), &Artikeleingabe::on_button_artikel_wechsel_clicked));
+   (Gtk::TOOLBAR(toolbar_loeschen->gobj()), Gtk::TOOLBAR_CHILD_BUTTON, 0, 
+    button_text2.c_str(),0, 0, Gtk::WIDGET(gnome_stock_pixmap_widget
+      (Gtk::WIDGET(toolbar_loeschen->gobj()), GNOME_STOCK_PIXMAP_FORWARD)), 0, 0));
+  button_artikel_delete ->signal_clicked().connect(SigC::slot(*static_cast<class  Artikeleingabe*>(this), &Artikeleingabe::on_button_artikel_delete_clicked));
+  button_artikel_wechsel->signal_clicked().connect(SigC::slot(*static_cast<class  Artikeleingabe*>(this), &Artikeleingabe::on_button_artikel_wechsel_clicked));
   toolbar_loeschen->show();
 }
 
@@ -360,7 +360,7 @@ void Artikeleingabe::on_Artikel_Bestellen_activate()
   if(artikelboxb->get_Artikel().Id()==ArtikelBase::none_id )
 //     artikelboxb->get_Menge()==0 )
    {
-    mess->Show("Artikel muß eingegeben werden");
+    mess->Show("Artikel muÃŸ eingegeben werden");
     return;
    }
   label_warnung->set_text("");
@@ -399,7 +399,7 @@ void Artikeleingabe::optionmenu_bestellen_bei_activate()
 void Artikeleingabe::warnung(std::string s)
 {
   label_warnung->set_text(s);
-  des = Gtk::Main::timeout.connect(slot(this,&Artikeleingabe::timeout_warnung),4000);
+  des = Gtk::Main::signal_timeout().connect(slot(this,&Artikeleingabe::timeout_warnung),4000);
 }
 
 gint Artikeleingabe::timeout_warnung()
@@ -455,7 +455,7 @@ void Artikeleingabe::eingabe_activate()
   artikelbox->set_value(artikelbox->get_value());
   pixmap_edit->set(stock_button_apply_xpm);
   while(Gtk::Main::events_pending()) Gtk::Main::iteration() ;
-  des = Gtk::Main::timeout.connect(slot(this,&Artikeleingabe::timeout_save_edited_artikel),4000);
+  des = Gtk::Main::signal_timeout().connect(slot(this,&Artikeleingabe::timeout_save_edited_artikel),4000);
  }catch(SQLerror &e) {mess->Show(e);}
 }
 
@@ -479,7 +479,7 @@ void Artikeleingabe::on_kunde_activate()
   fill_eingabebox(2);
   alias_eingabe->grab_focus();
   // diese Heuristik ist etwas fraglich CP
-// ich würde es ganz rausnehmen JJ
+// ich wÃ¼rde es ganz rausnehmen JJ
 //  if(alias_schema->get_value()==1) 
 //    alias_warengruppe->show();
 //  else 
@@ -498,7 +498,7 @@ void Artikeleingabe::on_alias_eingabe_activate()
 				    artikelbox->get_value().Id());  
   alias_pixmap->set(stock_button_apply_xpm);
   while(Gtk::Main::events_pending()) Gtk::Main::iteration() ;
-  des2 = Gtk::Main::timeout.connect(slot(this,&Artikeleingabe::timeout_save_edited_artikel2),4000);
+  des2 = Gtk::Main::signal_timeout().connect(slot(this,&Artikeleingabe::timeout_save_edited_artikel2),4000);
   }
   catch(SQLerror &e)
     {std::cerr<<e<<'\n';

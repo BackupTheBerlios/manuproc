@@ -38,7 +38,7 @@ class Data_Node : public TreeRow
     ArtikelBase Artikel() const {return artbase;}
     ArtikelBase Artikel2() const {return artbase2;}
 
-    Data_Node::Data_Node(guint deep,const cH_EntryValue &v, guint child_s_deep,  const Handle<const TreeRow> const TreeRow &suminitsuminit)
+    Data_Node::Data_Node(guint deep,const cH_EntryValue &v, guint child_s_deep,  const Handle<const TreeRow> const Handle<const TreeRow> const TreeRow &suminitsuminitsuminit)
         :TreeRow(deep,v,child_s_deep,child_s_data,expand) 
     {  if (suminit.Leaf()) cumulate(child_s_data);
        else 
@@ -47,7 +47,7 @@ class Data_Node : public TreeRow
        }
     }
 
-    static TreeRow *create(  const Handle<const TreeRow> const TreeRow &suminitsuminit)
+    static TreeRow *create(  const Handle<const TreeRow> const Handle<const TreeRow> const TreeRow &suminitsuminitsuminit)
        {  return new Data_Node(col,v,child_s_deep,child_s_data,expand,suminit);
        }
 };

@@ -56,7 +56,7 @@ class Artikeleingabe : public Artikeleingabe_glade
         void set_Data_from_artikelliste();
         void on_leaf_selected(cH_RowDataBase d);
         void on_node_selected(const TreeRow &n);
-        void on_unselect_row(gint row, gint column, GdkEvent *event);
+        void on_unselect_row();
         void Eingabe_fuer(const ArtikelBase& art);
         void Loeschen_von(const ArtikelBase& art);
         void set_Prozess();

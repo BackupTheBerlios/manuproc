@@ -949,7 +949,7 @@ wechsel</property>
 		      <property name="last_modification_time">Mon, 24 Sep 2001 15:50:37 GMT</property>
 		      <signal name="leaf_selected" handler="on_leaf_selected"/>
 		      <signal name="node_selected" handler="on_node_selected"/>
-		      <signal name="unselect_row" handler="on_unselect_row"/>
+		      <signal name="leaf_unselected" handler="on_unselect_row"/>
 		    </widget>
 		  </child>
 		</widget>
