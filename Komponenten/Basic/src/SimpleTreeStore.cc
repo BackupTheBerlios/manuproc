@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.43 2003/12/22 13:59:44 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.44 2003/12/23 00:09:48 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,6 +33,7 @@
 #include <Misc/Trace.h>
 //#include <GType_cH_EntryValue.h>
 #include <gtkmm/treepath.h>
+#include <Misc/EntryValueSort.h>
 
 #ifdef __MINGW32__
 #define getuid() 0
@@ -176,7 +177,8 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
 	  node_creation(), columns(max_col), max_column(max_col),
 	  showdeep(), gp(), 
 	  auffuellen_bool(), expandieren_bool(), block_save(),
-	  color_bool(), m_columns(max_col)
+	  color_bool(),
+	  sortierspalte(invisible_column), m_columns(max_col)
 {  
 //m_refTreeStore=Gtk::TreeStore::create(m_columns);
   vec_hide_cols.resize(Cols());
@@ -250,6 +252,21 @@ void SimpleTreeStore::fillSequence(sequence_t &seq,bool standard) const
    }
 }
 
+void SimpleTreeStore::resort(Node &parent, unsigned stop_at)
+{  ManuProC::Trace(trace_channel,__FUNCTION__,&parent,stop_at);
+   SimpleTreeStoreNode::map_t swapmap;
+   std::swap(swapmap,parent.children);
+   for (SimpleTreeStoreNode::map_t::iterator i=swapmap.begin();i!=swapmap.end();++i)
+   {  cH_EntryValue x=i->first;
+      Handle<TreeRow> htr=i->second.row;
+      if (htr) x=cH_EntryValueSort(htr->Value(sortierspalte,ValueData()),x);
+      Node &nd=parent.children.insert(parent.children.upper_bound(x),std::make_pair(x,Node()))->second;
+      std::swap(i->second,nd);
+      nd.parent=&parent;
+      if (nd.childrens_deep<stop_at) resort(nd,stop_at);
+   }
+}
+
 void SimpleTreeStore::redisplay()
 {
  
@@ -262,20 +279,18 @@ void SimpleTreeStore::redisplay()
 // neu einordnen, Summen berechnen
  for(; i!=j; ++i)
     insertLine(root,*i,currseq.begin(),0,false);
-    
+ if (sortierspalte!=invisible_column)
+ {  sequence_t::const_iterator si=std::find(currseq.begin(),currseq.end(),sortierspalte); 
+    resort(root,si-currseq.begin());
+    test();
+ }
  needs_redisplay();
-
-#if 0
- show_or_hide_Spalten();
- expand();
- // callback breitstellen:
- reorder();
-#endif
 }
 
 void SimpleTreeStore::on_line_appended(cH_RowDataBase row)
 {  ManuProC::Trace(trace_channel,__FUNCTION__,row->Value(0,ValueData())->getStrVal(),
 		row->Value(1,ValueData())->getStrVal());
+   assert(sortierspalte==invisible_column);
    insertLine(root,row,currseq.begin(),0,true);
 }
 
@@ -441,6 +456,7 @@ static ManuProC::Tracer::Environment trace_channele("TRACE",SimpleTreeStore::tra
 
 void SimpleTreeStore::on_line_removed(cH_RowDataBase r)
 {  std::list<iterator> l=find_row(r,true);
+   assert(sortierspalte==invisible_column);
    if (l.begin()!=l.end())
    {  ManuProC::Trace(trace_channel,__FUNCTION__,"depth=",l.size());
       for (std::list<iterator>::const_reverse_iterator i=l.rbegin();
@@ -469,7 +485,7 @@ void SimpleTreeStore::on_line_removed(cH_RowDataBase r)
 // this is impossible, if a value has already changed ...
 
 bool SimpleTreeStore::find_row(Node &parent, const cH_RowDataBase &r,bool optimize,std::list<iterator> &result)
-{  if (parent.childrens_deep && optimize)
+{  if (optimize && parent.childrens_deep && sortierspalte!=invisible_column)
    {  cH_EntryValue val=r->Value(currseq[parent.childrens_deep],ValueData());
       std::pair<iterator,iterator> p=parent.children.equal_range(val);
       if (p.first==p.second) return false;
@@ -618,29 +634,39 @@ void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter, int colum
 
 bool SimpleTreeStore::iter_next_vfunc(GtkTreeIter* iter)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,iter->user_data);
-#if 0
-   if (!iter->stamp) 
+   if (!iter->stamp && !iter->user_data) 
    {  std::cerr << "iter_next_vfunc with empty iter\n";
       return false; // how ever this happens
    }
-#endif   
    iterator old=iterconv(iter),newit=old;
-   newit++;
    if (!old->second.parent) return false;
+   newit++;
    if (newit==old->second.parent->children.end()) return false;
-   iterconv(iter)=newit;
+   iterinit(iter,newit);
+//   iterconv(iter)=newit;
    ManuProC::Trace(trace_channel,"new iter",iter->user_data);
    return true;
 }
 bool SimpleTreeStore::iter_children_vfunc(GtkTreeIter* iter, const GtkTreeIter* parent)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,parent->user_data);
+   if (!parent->stamp && !parent->user_data) 
+   {  std::cerr << "iter_children_vfunc with empty parent\n";
+      return false;
+//      if (root.children.empty()) return false;
+//      iterinit(iter,root.children.begin());
+//      return true; // how ever this happens
+   }
    iterator p=iterconv(parent);
    if (p->second.children.empty()) return false;
    iterinit(iter,p->second.children.begin());
    return true;
 }
 bool SimpleTreeStore::iter_has_child_vfunc(const GtkTreeIter* iter)
-{  return !(iterconv(iter)->second.children.empty());
+{  if (!iter->stamp && !iter->user_data) 
+   {  std::cerr << "iter_has_child_vfunc with empty iter\n";
+      return false; // !root.children.empty();
+   }
+   return !(iterconv(iter)->second.children.empty());
 }
 int SimpleTreeStore::iter_n_children_vfunc(const GtkTreeIter* iter)
 {  return iterconv(iter)->second.children.size();
@@ -746,6 +772,7 @@ SimpleTreeStore::iterator SimpleTreeStore::iterbyNode(Node &nd) const
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,&nd);
    cH_EntryValue val=nd.leafdata->Value(currseq[nd.deep],ValueData());
 //   ManuProC::Trace(trace_channel,"val",val->getStrVal());
+   assert(sortierspalte==invisible_column);
    std::pair<iterator,iterator> p=nd.parent->children.equal_range(val);
 //   ManuProC::Trace(trace_channel,"eq_r",p.first,p.second,nd.parent->children.end());
    for (iterator i=p.first;i!=p.second;++i) 

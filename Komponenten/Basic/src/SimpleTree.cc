@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.39 2003/12/17 18:28:47 christof Exp $
+// $Id: SimpleTree.cc,v 1.40 2003/12/23 00:09:48 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,8 @@
 #include <bvector_item_CheckMenuItem.hh>
 #include <bool_CheckMenuItem.hh>
 
+#include <iostream>
+
 void SimpleTree_Basic::detach()
 {  set_model(Glib::RefPtr<Gtk::TreeModel>());
 }
@@ -32,7 +34,8 @@ static void aufklappen(SimpleTree_Basic *tv,Gtk::TreeModel::Path path,
 {  path.down();
    for (Gtk::TreeModel::iterator i=ch.begin();i!=ch.end();++i,path.next())
    {  if (!i->children().empty() && (*i)[tv->getStore()->m_columns.childrens_deep]<=depth)
-      {  assert(tv->expand_row(path,false));
+      {  if (!tv->expand_row(path,false)) 
+            std::cerr << "aufklappen von " << path.to_string() << " schlug fehl\n";
          if ((*i)[tv->getStore()->m_columns.childrens_deep]<depth) aufklappen(tv,path,i->children(),depth);
       }
    }
@@ -77,6 +80,8 @@ void SimpleTree_Basic::on_spaltenzahl_geaendert()
          pColumn->add_attribute(crt->property_text(),sts->m_columns.cols[i]);
          if (getStore()->OptionColor().Value())
             pColumn->add_attribute(crt->property_background_gdk(),sts->m_columns.background);
+         if (!alignment.empty())
+            pColumn->set_alignment(alignment[IndexFromColumn(i)]);
       }
    }
    on_redisplay();
@@ -275,4 +280,11 @@ void SimpleTree::ScrollToSelection()
       scroll_to_cell(
       	get_model()->get_path(sel->get_selected()),
       	*get_column(0),0.5,0.0);
+}
+
+void SimpleTree_Basic::setAlignment(const std::vector<gfloat> &A)
+{  assert(A.size()==sts->MaxCol());
+   alignment=A;
+   for (unsigned i=0;i<Cols();++i)
+      get_column(i)->set_alignment(alignment[IndexFromColumn(i)]);
 }

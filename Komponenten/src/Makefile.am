@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.32 2003/10/22 12:04:50 christof Exp $
+# $Id: Makefile.am,v 1.33 2003/12/23 00:09:48 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -23,7 +23,7 @@ LINKS= EingabeBox.cc EingabeBox.hh datewin.cc datewin.h \
 	int_SpinButton.hh string_Entry.hh GType_cH_EntryValue.h \
 	SimpleTree.hh ModelWidgetConnection.h string_Label.cc \
 	string_Label.hh Event.cc Association.h Association.cc \
-	bvector_item_CheckMenuItem.hh
+	bvector_item_CheckMenuItem.hh SimpleTreeStore_test.cc
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .

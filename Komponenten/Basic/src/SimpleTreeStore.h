@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.37 2003/12/19 14:44:39 jacek Exp $
+// $Id: SimpleTreeStore.h,v 1.38 2003/12/23 00:09:48 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -100,6 +100,7 @@ class SimpleTreeStore : public Glib::Object, public Gtk::TreeModel, public Simpl
 	// first value is ":order", second is ":visible"
 
 	static const UniqueValue::value_t trace_channel;
+	static const unsigned invisible_column=unsigned(-1);
 protected:
         static std::pair<std::string,std::string> default_load(const std::string&program, const std::string&instance);
         static void default_save(const std::string&program, const std::string&instance, const std::pair<std::string,std::string>&value);
@@ -126,6 +127,7 @@ private:
 	
 	std::vector<Gdk::Color> colors;
 	static const unsigned num_colors=8;
+	unsigned sortierspalte;
 
 	void save_remembered() const;
 	void load_remembered();
@@ -176,7 +178,11 @@ private:
    virtual bool iter_parent_vfunc(GtkTreeIter* iter, const GtkTreeIter* child);
    virtual Gtk::TreeModel::Path get_path_vfunc(const Gtk::TreeModel::iterator& iter);
    virtual bool get_iter_vfunc(GtkTreeIter* iter, const Gtk::TreeModel::Path& path);
-
+   
+   void resort(SimpleTreeStoreNode&, unsigned);
+   void test();
+   void test_sub(unsigned indent,const GtkTreeIter *i,const GtkTreeIter *parent);
+   
 	enum e_spalten
 	{  s_row, s_deep, s_childrens_deep, s_leafdata, s_background,
 	   s_text_start
@@ -241,13 +247,9 @@ public:
 	unsigned IndexFromColumn(unsigned c) const
 	{  return currseq[c]; }
 	
-	
-	
 	bool ColumnVisible(unsigned idx) const
 	{  return vec_hide_cols.at(idx); }
 	void set_tree_column_visibility(unsigned index,bool visible);
-
-	static const unsigned invisible_column=unsigned(-1);
 	
 	void redisplay_old(cH_RowDataBase row, unsigned index);
 	
@@ -264,6 +266,7 @@ public:
 	{ return Model_ref<bvector_item>(vec_hide_cols.begin()+idx,signal_visibly_changed); }
 	
 	unsigned visible_size() { return currseq.size(); }
+	void setSortierspalte(unsigned idx=invisible_column);
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.31 2003/12/19 14:44:39 jacek Exp $
+// $Id: SimpleTree.hh,v 1.32 2003/12/23 00:09:48 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -73,14 +73,16 @@ class SimpleTree_Basic : public Gtk::TreeView, public SimpleTreeStore_Proxy
 	sequence_t clicked_seq;
 	Gtk::Menu *menu;
 
-	void on_title_changed(guint nr);
-	void on_selection_changed();
-	void on_redisplay();
 	SigC::Signal0<void> _leaf_unselected;
 	SigC::Signal1<void,cH_RowDataBase> _leaf_selected;
 	SigC::Signal1<void,const TreeRow &> _node_selected;
 	SigC::Signal0<void> _reorder;
 	
+	std::vector<gfloat> alignment;
+	
+	void on_title_changed(guint nr);
+	void on_selection_changed();
+	void on_redisplay();
 	void on_title_clicked(unsigned no);
 	void fillMenu();
 	void on_neuordnen_clicked();
@@ -111,6 +113,7 @@ public:
  void Expand_recursively();
  void Collapse();
 	void setTitles(const std::vector<std::string> &T);
+	void setAlignment(const std::vector<gfloat> &A);
 };
 
 // I put the more esoteric features here, so they may not confuse the
