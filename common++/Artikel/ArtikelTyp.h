@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.h,v 1.14 2003/11/12 13:04:05 jacek Exp $
+// $Id: ArtikelTyp.h,v 1.15 2004/03/26 16:13:38 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,6 +24,7 @@
 #include <Artikel/ArtikelBase.h>
 #include <DynamicEnums/DynamicEnums.h>
 #include <DynamicEnums/DefaultValues.h>
+#include <excpetion>
 
 namespace ArtikelTypID = ManuProC::DynamicEnums::ArtikelTyp;
 
@@ -31,10 +32,13 @@ class ArtikelTyp
 {
 public:
 	typedef ManuProC::DynamicEnums::ArtikelTyp::enum_t ID;
+	typedef ManuProC::DynamicEnums::ArtikelTyp_Attributes::enum_t AttrID;
    static const ID default_ID=ManuProC::DefaultValues::ArtikelTyp;
    static const ID none_id=ManuProC::DynamicEnums::ArtikelTyp::None;
 private:
 	ID t;
+	
+	static std::map<ID, int > attributes;
 	
 public:
 	ArtikelTyp(ID a) : t(a) {}
@@ -53,5 +57,7 @@ public:
 	static ArtikelTyp vonArtikel(const ArtikelBase &ab) throw(SQLerror)
 	{  return ArtikelTyp(ab); }
         static std::string get_string(ID t);
+        
+        static bool hasAttribute(ID typ, AttrID attrid) throw(std::runtime_error);
 };
 #endif

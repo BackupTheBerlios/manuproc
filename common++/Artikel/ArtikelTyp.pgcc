@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.pgcc,v 1.10 2003/01/08 09:46:56 christof Exp $
+// $Id: ArtikelTyp.pgcc,v 1.11 2004/03/26 16:13:38 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,50 @@
 #include <ExtBezSchema/ExtBezSchema.h>
 #include <Misc/SQLerror.h>
 exec sql include sqlca;
+
+std::map<ID,std::vector<bool> > ArtikelTyp::attributes;
+
+bool ArtikelTyp::hasAttribute(ID typ, AttrID attrid)
+{
+ typedef ManuProC::DynamicDescriptions::ArtikelTyp::string* AttrArr;
+ 
+ if(!attributes.empty())
+   {
+    std::string cols;
+    int attr_num=sizeof ManuProC::DynamicDescriptions::ArtikelTyp::attrcolumns;
+    std::string query("select id ");
+    
+    for(int i=0; i<attr_num; i++)
+      cols+=std::string(",")+
+		ManuProC::DynamicDescriptions::ArtikelTyp::attrcolumns[i];
+
+    query+=cols;
+    
+    query+=" from artbez_warengruppe ";
+    Query q(query);
+
+    FetchIStream is
+    std::vector<bool> attr_val;
+    while((q>>is).good()) 
+      {
+       std::vector<bool> attr_val;       
+       ID in_typ;
+       
+       is >> in_typ;
+       for(int i=0;i<attr_num;i++)
+         {
+          bool in;
+          is >> in;
+          attr_val.push_back(in); 
+         }
+       attributes[in_typ]=attr_val;       
+      }
+   }
+   
+ return attributes[typ][attrid];  
+
+}
+
 
 ArtikelTyp::ArtikelTyp(const ArtikelBase &ab) throw (SQLerror)
 {  ArtikelStamm AS(ab);
