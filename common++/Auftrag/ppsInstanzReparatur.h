@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReparatur.h,v 1.15 2003/06/23 15:34:32 christof Exp $
+// $Id: ppsInstanzReparatur.h,v 1.16 2003/06/24 08:16:19 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -75,6 +75,8 @@ class ppsInstanzReparatur : public cH_ppsInstanz
       bool Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, bool analyse_only, bool raise_prodselbst) const;
       bool Lokal(AufEintrag &ae, bool analyse_only) const;
       bool Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bool analyse_only) const;
+      
+      static bool really_delete;
 };
 
 #endif

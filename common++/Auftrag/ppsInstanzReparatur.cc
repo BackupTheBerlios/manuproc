@@ -617,7 +617,12 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    {  alles_ok=false;
       analyse("Artikel auf falscher Instanz",ae,cH_ArtikelBezeichnung(ae.Artikel())->Bezeichnung(),itos(ae.Artikel().Id()));
       // den lösche ich aber nicht automatisch!
-      std::cout << "$ delete from auftragentry where (instanz,auftragid,zeilennr)=("
+      if (really_delete) 
+      {  Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
+      		<< ae;
+         return false;
+      }
+      else std::cout << "$ delete from auftragentry where (instanz,auftragid,zeilennr)=("
       	<< ae.Instanz()->Id() << ',' << ae.Id() << ',' << ae.ZNr() << ");\n";
    }
    
@@ -626,7 +631,12 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
       {  alles_ok=false;   
          analyse("Es darf keine 1er bei den Kundenaufträgen geben",ae);
          // Bitte von Hand reparieren!
-         std::cout << "$ delete from aufeintragbase where (instanz,auftragid,zeile)=("
+         if (really_delete) 
+         {  Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
+         		<< ae;
+            return false;
+         }
+         else std::cout << "$ delete from auftragentry where (instanz,auftragid,zeile)=("
  	     	<< ae.Instanz()->Id() << ',' << ae.Id() << ',' << ae.ZNr() << ");\n";
       }
       else if (!!ae.getRestStk() && !ae.Instanz()->LagerInstanz())
@@ -672,3 +682,5 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    }
    return alles_ok;
 }
+
+bool ppsInstanzReparatur::really_delete;
