@@ -261,10 +261,18 @@ catch(SQLerror &e) { cout << e; return; }
   {
 #ifdef MABELLA_EXTENSIONS  
    if(u.l->Pakete() || u.l->Paeckchen())
-   {os << "\\vspace{.5cm}Lieferung besteht aus "<<u.l->Paeckchen()<<"  Einzelpäckchen";
+   {os << "\\vspace{.5cm}";
+    char buf[500];
+    snprintf(buf,sizeof buf,mld->MLT(MulitL_Dict::PRINF_LIEFBESTEHT1),
+    			u.l->Paeckchen());
+    os << buf;
     if(u.l->Pakete())
-     os << " zusammengefaßt zu "<<u.l->Pakete()<<
-	((u.l->Pakete()==1)?" Paket\n" : " Paketen\n");
+      {
+       snprintf(buf,sizeof buf,mld->MLT(MulitL_Dict::PRINF_LIEFBESTEHT2),
+    			u.l->Pakete(),(ul->Pakete()==1 ? ".\n":"n.\n"));
+      }
+    else os << ".\n";	
+	
    }
 #endif	
   }
