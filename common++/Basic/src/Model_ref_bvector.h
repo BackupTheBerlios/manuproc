@@ -1,4 +1,4 @@
-/* $Id: Model_ref_bvector.h,v 1.2 2003/10/22 14:14:25 christof Exp $ */
+/* $Id: Model_ref_bvector.h,v 1.3 2003/10/23 12:38:49 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -41,7 +41,7 @@ public:
 #endif
 	Model_ref() : value(), changed() {}
 
-	bool valid() const { return (*value) && changed; }
+	bool valid() const { return value!=bvector_iterator() && changed; }
 	bool operator!() const { return !valid(); }
 	SigC::Signal1<void,bvector_iterator> &signal_changed() const
 	{  return *changed; }
@@ -57,7 +57,7 @@ public:
 	bvector_iterator Id() const
 	{  return value; }
 	bool matches(const bvector_iterator &i) const
-	{  return !(*i) || value==i;
+	{  return value==bvector_iterator() || value==i;
 	}
 	
 	const bvector_reference operator=(bool v)
