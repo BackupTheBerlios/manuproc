@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.29 2003/06/04 11:07:50 christof Exp $
+# $Id: configure.in,v 1.30 2003/07/07 15:53:22 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(Artikel/ArtikelBase.h)
@@ -45,7 +45,7 @@ PETIG_CHECK_POSTGRES
 
 #LIBS=@ECPG_LIBS@
 
-DEFAULT_DB=$USER
+DEFAULT_DB=anleitungdb
 DEFAULT_DBHOST="localhost"
 
 AC_MSG_CHECKING(Petig Extensions)
