@@ -37,7 +37,6 @@ class mpc_agent : public mpc_agent_glade
         void on_menge_editing_done();
         void on_artikel_ok_clicked();
         void on_artikel_cancel_clicked();
-        void on_orderid_entry_editing_done();
         void on_orderid_activate();
         void on_orderid_search(gboolean *cont,GtkSCContext context);
 

@@ -239,11 +239,23 @@ void mpc_agent::on_artikel_ok_clicked()
    msg.run();
    return;
   }    	
+
+ load_order(orderid->Content());   
  
 }
 
 void mpc_agent::on_artikel_cancel_clicked()
 {  
+ menge->set_value(0);
+ article_entry->reset();
+ width_entry->reset(); 
+ color_entry->reset();
+ makeup_entry->reset(); 
+ article_entry->set_sensitive(true);
+ width_entry->set_sensitive(true); 
+ color_entry->set_sensitive(true);
+ makeup_entry->set_sensitive(true); 
+ article_entry->grab_focus();
 }
 
 
@@ -274,10 +286,6 @@ void mpc_agent::on_neu_clicked()
 
 }
 
-
-void mpc_agent::on_orderid_entry_editing_done()
-{  
-}
 
 
 void mpc_agent::on_orderid_activate()

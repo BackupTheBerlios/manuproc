@@ -4,6 +4,7 @@
 #include <Datum.h>
 #include <Transaction.h>
 #include <MyMessage.h>
+#include <treebase_data.h>
 
 void mpc_agent::on_orderid_search(gboolean *cont,GtkSCContext context)
 {
@@ -90,9 +91,47 @@ void mpc_agent::load_order(int oid)
  std::string kdnr;
  ManuProC::Datum datum;
 
+ try{
  Query("select kdnr,datum from auftrag where aufid=? and vknr=?")
 	<< oid << VERKNR >> kdnr >> datum;
-  
+ }
+ catch(SQLerror &e)
+ {
+  MyMessage msg(e);
+  msg.set_transient_for(*this);
+  msg.run();
+  return;
+ } 
+
+
+ Query qe("select e.artnr||'/'||e.breite||'/'||e.farbe||'/'||e.aufmachung,"
+ 	"b.bezeichnung, e.stueck from auftragentry e left join artikel b"
+ 	" on (e.artnr=b.artnr and e.breite=b.breite and e.farbe=b.farbe)"
+ 	" where aufid=? and vknr=?");
+ try{
+   qe << oid << VERKNR;
+ }
+ catch(SQLerror &e)
+ {
+  MyMessage msg(e);
+  msg.set_transient_for(*this);
+  msg.run();
+  return;
+ }  
+
+ FetchIStream fs=qe.Fetch();
+ std::vector <cH_RowDataBase> dv;
+ int count=0;
+ while(fs.good())
+  {
+   std::string artikel,bez;
+   int stk;
+   fs >> artikel >> bez >> stk;
+   dv.push_back(cH_RowDataStrings(itos(++count),artikel+"   "+bez,itos(stk)));
+   fs=qe.Fetch();
+  }
+ order->setDataVec(dv);  
+
  label_orderdate->set_text(std::string("dated ")+datum.c_str());
 
  if(kunde->get_value(KDBOX_NR)!=kdnr)
@@ -101,6 +140,8 @@ void mpc_agent::load_order(int oid)
    }
  orderid->set_value(itos(oid),oid);
  orderid->set_sensitive(false);
+ 
+ 
 }
 
 

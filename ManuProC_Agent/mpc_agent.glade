@@ -623,6 +623,7 @@
 		      <child>
 			<widget class="GtkFrame" id="frame10">
 			  <property name="visible">True</property>
+			  <property name="sensitive">False</property>
 			  <property name="label_xalign">0</property>
 			  <property name="label_yalign">0.5</property>
 			  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
@@ -746,12 +747,12 @@
 		  <property name="can_focus">True</property>
 		  <property name="climb_rate">1</property>
 		  <property name="digits">0</property>
-		  <property name="numeric">False</property>
+		  <property name="numeric">True</property>
 		  <property name="update_policy">GTK_UPDATE_ALWAYS</property>
-		  <property name="snap_to_ticks">False</property>
+		  <property name="snap_to_ticks">True</property>
 		  <property name="wrap">False</property>
 		  <property name="adjustment">0 0 1000 1 10 10</property>
-		  <signal name="editing_done" handler="on_menge_editing_done" last_modification_time="Tue, 11 May 2004 10:59:34 GMT"/>
+		  <signal name="activate" handler="on_menge_editing_done" last_modification_time="Mon, 17 May 2004 11:55:01 GMT"/>
 		</widget>
 	      </child>
 
