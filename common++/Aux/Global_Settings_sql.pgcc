@@ -39,7 +39,7 @@ void Global_Settings::set_Wert(const std::string& wert)
 	<< wert << userid << program << name;
   if (sqlca.sqlcode==100)
   {  Query("insert into global_settings "
-	"(userid,program,name,wert)=(?,?,?,?)")
+	"(userid,program,name,wert) values (?,?,?,?)")
 	<< userid << program << name << wert;
   }
   SQLerror::test(__FILELINE__);
@@ -54,7 +54,7 @@ void Global_Settings::create(int userid,const std::string& program,
 	<< wert << userid << program << name;
   if (sqlca.sqlcode==100)
   {  Query("insert into global_settings "
-	"(userid,program,name,wert)=(?,?,?,?)")
+	"(userid,program,name,wert) values (?,?,?,?)")
 	<< userid << program << name << wert;
   }
   SQLerror::test(__FILELINE__);
