@@ -23,11 +23,7 @@
 #include <Lager/JumboLager.h>
 #include <Lager/RohwarenLager.h>
 #include <Lager/FertigWarenLager.h>
-//#include <Misc/SQLerror.h>
 #include <Misc/TraceNV.h>
-//#include <sqlca.h>
-//#include <Auftrag/AufEintragZuMengenAenderung.h>
-//#include <Misc/Transaction.h>
 #include <Misc/relops.h>
 #include <unistd.h>
 #include <Misc/inbetween.h>
@@ -334,6 +330,32 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
             alles_ok=false;
          }
       }
+      
+      if (!i->Menge)
+      {  if (i->AEB.Id()==AuftragBase::dispo_auftrag_id 
+      		|| ae.Id()==AuftragBase::ungeplante_id
+      	        || i->AEB.Id()==AuftragBase::ungeplante_id)
+      	 {  analyse("Zuordnung unnötig",ae,i->AEB,i->Menge);
+      	   nur_der_weg:
+            if (!analyse_only) AufEintragZu::remove(i->AEB,ae,i->Pri);
+            i=eltern.erase(i);
+            alles_ok=false;
+            continue;      	    
+      	 }
+      	 if (ae.Id()==AuftragBase::plan_auftrag_id && !ae.getGeliefert())
+      	 {  analyse("Zuordnungen zu unausgelieferten 1ern können weg",ae,i->AEB,i->Menge);
+      	    if (really_delete) goto nur_der_weg;
+      	 }
+      	 unsigned count=0;
+      	 for (AufEintragZu::list_t::iterator j=eltern.begin();j!=eltern.end();++j)
+      	 {  if (i->AEB==j->AEB) count++;
+      	 }
+      	 if (count>1)
+      	 {  analyse("Es existiert mehr als eine Zuordnung, diese kann weg",ae,i->AEB,i->Menge);
+      	    goto nur_der_weg;
+      	 }
+      }
+      
       ++i;
    }
    
@@ -414,6 +436,33 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
               		ae.Artikel(),OPEN,ae);
        }
       }
+   }
+
+   // höchstens so viel geliefert wie ausgeliefert   
+   if (ae.Id()==AuftragBase::plan_auftrag_id && !!ae.getGeliefert()
+    	&& !ae.Instanz()->ProduziertSelbst())
+   {  AuftragBase::mengen_t geliefert_eltern;
+      for (AufEintragZu::list_t::iterator i=eltern.begin();i!=eltern.end();)
+      {  AufEintrag el(i->AEB);
+         geliefert_eltern+=ArtikelBaum(el.Artikel()).Faktor(ae.Artikel())
+         	* ae.getGeliefert();
+      }
+      if (geliefert_eltern<ae.getGeliefert())
+      {  analyse("Mehr geliefert als von den Eltern ausgeliefert wurde\n",
+      		ae,ae.getGeliefert(),geliefert_eltern);
+      }
+   }
+
+   if (eltern.empty() && ae.Id()==AuftragBase::ungeplante_id && !ae.getStueck())
+   {  analyse("0er ohne Eltern können ganz weg",ae);
+      if (really_delete) 
+      {  Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
+      		<< ae;
+      	 alles_ok=false;
+      }
+      else 
+         std::cout << "$ delete from auftragentry where (instanz,auftragid,zeilennr)=("
+		<< ae.Instanz()->Id() << ',' << ae.Id() << ',' << ae.ZNr() << ");\n";
    }
    return alles_ok;
 }
@@ -586,6 +635,17 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
          }
       }
    }
+   if (kinder.empty() && ae.Id()==AuftragBase::dispo_auftrag_id && !ae.getStueck())
+   {  analyse("2er ohne Kinder können ganz weg",ae);
+      if (really_delete) 
+      {  Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
+      		<< ae;
+      	 alles_ok=false;
+      }
+      else 
+         std::cout << "$ delete from auftragentry where (instanz,auftragid,zeilennr)=("
+		<< ae.Instanz()->Id() << ',' << ae.Id() << ',' << ae.ZNr() << ");\n";
+   }
 exit:
    return alles_ok;
 }
@@ -653,10 +713,11 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    	&& !ppsInstanz::getBestellInstanz(as)->PlanungsInstanz())
    {  analyse("Artikel auf falscher Instanz",ae,cH_ArtikelBezeichnung(ae.Artikel())->Bezeichnung(),itos(ae.Artikel().Id()));
      loeschen: 
-      alles_ok=false;
       if (really_delete) 
-         Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
+      {  Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
       		<< ae;
+      	 alles_ok=false;
+      }
       else 
          std::cout << "$ delete from auftragentry where (instanz,auftragid,zeilennr)=("
 		<< ae.Instanz()->Id() << ',' << ae.Id() << ',' << ae.ZNr() << ");\n";

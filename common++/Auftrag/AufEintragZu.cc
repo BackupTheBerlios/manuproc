@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.26 2003/09/02 16:17:41 christof Exp $
+// $Id: AufEintragZu.cc,v 1.27 2003/09/11 12:18:46 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -281,12 +281,7 @@ AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,
         {  if (Id()==dispo_auftrag_id || neuAEB.Id()==ungeplante_id
         	|| Id()==ungeplante_id 
            	|| V.size()>1)
-           {  Query("delete from auftragsentryzuordnung "
-     		"where (altinstanz,altauftragid,altzeilennr, "
-     	        "neuinstanz,neuauftragid,neuzeilennr, "
-     	        "prioritaet)= (?,?,?, ?,?,?, ?) and menge=0")
-   	    	   << static_cast<const AufEintragBase&>(*this) << neuAEB
-     		   << i->pri;
+           {  remove(*this,neuAEB,i->pri);
               i=V.erase(i);
               goto loop_test;
            }
@@ -338,15 +333,24 @@ AuftragBase::mengen_t AufEintragZu::getMenge(const AufEintragBase& aeb) const
     << static_cast<const AufEintragBase&>(*this) << aeb).FetchOne<int>();
 }
 
-bool AufEintragZu::remove(const AufEintragBase& alt,const AufEintragBase& neu)
+bool AufEintragZu::remove(const AufEintragBase& alt,const AufEintragBase& neu,
+	const ManuProC::TimeStamp &ts)
 {
-  ManuProC::Trace _t(trace_channel, __FUNCTION__,alt,neu);
+  ManuProC::Trace _t(trace_channel, __FUNCTION__,alt,neu,ts);
 
-  Query("delete from auftragsentryzuordnung where "
+  if (!ts.valid())
+     Query("delete from auftragsentryzuordnung where "
                  "(altinstanz,altauftragid,altzeilennr,"
                  "neuinstanz,neuauftragid,neuzeilennr)"
                  "=(?,?,?, ?,?,?)").lvalue()
       << alt << neu;
+  else
+     Query("delete from auftragsentryzuordnung where "
+                 "(altinstanz,altauftragid,altzeilennr,"
+                 "neuinstanz,neuauftragid,neuzeilennr, "
+                 "prioritaet)"
+                 "=(?,?,?, ?,?,?, ?)")
+      << alt << neu << ts;
  SQLerror::test(__FILELINE__,100);
  return !SQLerror::SQLCode();
 }

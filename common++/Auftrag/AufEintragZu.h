@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.23 2003/08/14 08:35:01 christof Exp $
+// $Id: AufEintragZu.h,v 1.24 2003/09/11 12:18:46 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -111,7 +111,8 @@ public:
     // äquivalent zu Neu?
     mengen_t setMengeDiff__(const AufEintragBase& neuAEB,mengen_t menge);
 
-    static bool remove(const AufEintragBase& alt_AEB,const AufEintragBase& neu_AEB);
+    static bool remove(const AufEintragBase& alt_AEB,const AufEintragBase& neu_AEB,
+    	const ManuProC::TimeStamp &Pri=ManuProC::TimeStamp());
     static void moveInstanz(const VonNachDel vdl,const AufEintragBase &oldAEB, const AufEintragBase &newAEB) throw(SQLerror);
 };
 
