@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.21 2003/06/16 16:35:07 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.22 2003/07/03 08:25:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,12 +17,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include"LieferscheinEntry.h"
-#include<Misc/FetchIStream.h>
-#include<Misc/Transaction.h>
-#include<Auftrag/AufEintrag.h>
+#include "LieferscheinEntry.h"
+#include <Misc/FetchIStream.h>
+#include <Misc/Transaction.h>
+#include <Auftrag/AufEintrag.h>
 #include <unistd.h>
 #include <Lieferschein/Lieferschein.h>
+#include <Misc/FetchIStream.h>
 
 bool LieferscheinEntry::Valid() const
 {
@@ -163,6 +164,114 @@ void LieferscheinEntry::deleteZusatzEntry(const st_zusatz &Z) throw(SQLerror)
          +itos(Z.aeb.Id())+","+itos(Z.aeb.ZNr())+")";
 
   Query::Execute(Q);
+  SQLerror::test(__FILELINE__);
+}
+
+FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry::st_zusatz& z)
+{
+  return is >> z.aeb /*>> z.stueck*/ >> z.menge 
+  	>> FetchIStream::MapNull(z.yourauftrag,std::string());
+}
+
+ArgumentList &operator<<(ArgumentList &q, const LieferscheinEntryBase &leb)
+{  return q << leb.Instanz()->Id() << leb.Id() << leb.Zeile();
+}
+
+FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry& z)
+{
+ is >> z.lieferid >> z.zeilennr >> z.artikel >>  z.stueck>> z.menge >> z.palette >> z.yourauftrag 
+     >> z.zusatzinfo >> z.refauftrag ;
+ z.instanz=z.refauftrag.Instanz();
+ 
+ if(!z.zusatzinfo) return is;
+ // ohne youraufnr könnte ich auf den join verzichten ...
+ (Query("select lyz.instanz,coalesce(lyz.auftragid,?),coalesce(lyz.auftragznr,?),"
+   "lyz.menge,youraufnr "
+   "from lieferscheinentryzusatz lyz "
+   "left join auftrag a on (lyz.instanz,lyz.auftragid) =(a.instanz,a.auftragid) " 
+   "where (lyz.instanz,lyz.lfrsid,lyz.lfsznr) = (?,?,?) "
+   "order by lyz.auftragid,lyz.auftragznr").lvalue()
+	<< AuftragBase::none_id << AufEintragBase::none_znr
+ 	<< z)
+ 	.FetchArray(z.VZusatz);
+ return is;  
+}
+
+LieferscheinEntry::LieferscheinEntry(const LieferscheinEntryBase &lsbase)
+ throw(SQLerror) : LieferscheinEntryBase(lsbase) 
+{
+ std::string qstr =
+  "select ly.lfrsid, ly.zeile,ly.artikelid,  coalesce(ly.stueck,0), "
+  " coalesce(ly.menge,0), coalesce(ly.palette,0), coalesce(youraufnr,''),"
+  " coalesce(ly.zusatzinfo,'f'), ly.instanz, "
+  " coalesce(ly.refauftragid,"+itos(ManuProcEntity<>::none_id)+"),"
+  " coalesce(ly.refzeilennr,"+itos(ManuProcEintrag::none_znr)+")"
+  " from lieferscheinentry ly "
+  " left join auftrag a on (ly.refauftragid,ly.instanz) = (a.auftragid,a.instanz)"
+  " where (ly.instanz,ly.lfrsid,ly.zeile) = (?,?,?)";
+ (Query(qstr).lvalue() << *this).FetchOne(*this);
+}
+
+LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
+	const AufEintragBase &auf, const ArtikelBase &art, int anzahl,
+	mengen_t _menge,int _palette, bool _zusatzinfo) throw(SQLerror) 
+{
+ LieferscheinEntry LE;
+ LE.instanz=lsb.Instanz();
+ LE.lieferid=lsb.Id();
+ LE.artikel=art;
+ LE.refauftrag=auf;
+ LE.stueck=anzahl;
+ LE.menge=_menge;
+ LE.palette=_palette;
+ LE.zusatzinfo=_zusatzinfo;
+
+ Transaction tr;
+ Query("lock table lieferscheinentry in exclusive mode");
+ SQLerror::test(__FILELINE__":LieferscheinEntry: lock table");
+ 
+ Query("select coalesce(max(zeile)+1,1) from lieferscheinentry "
+	"where (instanz,lfrsid)=(?,?)")
+	<< lsb.Instanz()->Id() << lsb.Id()
+	>> LE.zeilennr;
+ SQLerror::test(__FILELINE__":LieferscheinEntry: select max(zeilennr)");
+
+ Query("insert into lieferscheinentry"
+ 		"(instanz,lfrsid,zeile, artikelid, refauftragid,refzeilennr, stueck,"
+		"menge,palette,zusatzinfo)"
+ 	"values (?,?,?, ?, ?,?, ?,?,?,?)").lvalue()
+ 	<< LE << art.Id() << Query::NullIf(LE.RefAuftrag().Id(),0)
+ 	<< Query::NullIf(LE.AufZeile(),0)
+ 	<< LE.Stueck() 
+ 	<< Query::NullIf(LE.Menge(),0)
+ 	<< LE.Palette() << LE.ZusatzInfo();
+ SQLerror::test(__FILELINE__":LieferscheinEntry: insert into lieferscheinentry");
+ 
+ tr.commit();
+ return LE;
+}
+
+LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
+			const ArtikelBase &art, int anzahl,
+			mengen_t _menge,int _palette, bool zusatz) throw(SQLerror) 
+{  
+ return create(lsb,AufEintragBase(lsb.Instanz(),0,0),art,anzahl,_menge,_palette,zusatz);
+}
+
+void LieferscheinEntry::deleteEntry(LieferscheinEntry &lse) throw(SQLerror)
+{
+ lse.changeMenge(0,0);
+}
+
+
+void LieferscheinEntry::setZusatzInfo(const AufEintragBase &AEB,const mengen_t &menge) throw(SQLerror)
+{
+  Query("insert into lieferscheinentryzusatz (instanz,lfrsid,lfsznr,"
+      "auftragid,auftragznr,menge) values (?,?,?, ?,?, ?)").lvalue() 
+	<< *this 
+  	<< Query::NullIf(AEB.Id(),ManuProcEntity<>::none_id)
+  	<< Query::NullIf(AEB.ZNr(),ManuProcEintrag::none_znr)
+  	<< menge;
   SQLerror::test(__FILELINE__);
 }
 
