@@ -1,4 +1,4 @@
-// $Id: doublebutton.c,v 1.1 2003/04/07 16:16:15 christof Exp $
+// $Id: doublebutton.c,v 1.2 2003/04/07 16:58:43 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -94,6 +94,31 @@ void doublebutton_paint         (DoubleButton    *button,
 {
 }
 
+// we need a gc!
+
+#define arrow_size 10
+// y[x]=arrow_size/2*sqrt(1-(x/(arrow_size/2))^2);
+// select cast (5*sqrt(1- (3/5.0)*(3/5.0)) as numeric(10,0));
+unsigned ycircle[arrow_size/2]= { 5, 5, 5, 4, 3 };
+
+//GdkColor black;
+//gdk_colormap_alloc_color(colormap, color, false, true);
+
+static void draw_circle_arrow(GdkWindow *window, GdkGC *gc, int x,int y)
+{  unsigned int i;
+   
+   gdk_gc_set_foreground(gc, black);
+   for (i=0; i<arrow_size/2; ++i)
+   {  gdk_draw_line(window, gc, x+arrow_size/2-i, y+arrow_size/2-ycircle[i],
+   		x+arrow_size/2-i, y+arrow_size/2+ycircle[i]);
+   }
+   gdk_gc_set_foreground(gc, white);
+   for (i=0; i<arrow_size/2; ++i)
+   {  gdk_draw_line(window, gc, x+arrow_size/4+i, y+arrow_size/4+i/2,
+   		x+arrow_size/4+i, y+3*arrow_size/4-i/2);
+   }
+}
+
 static gboolean
 doublebutton_expose (GtkWidget      *widget, GdkEventExpose *event)
 {
@@ -108,6 +133,7 @@ doublebutton_expose (GtkWidget      *widget, GdkEventExpose *event)
 			 "button", "buttondefault");
 #endif      
       (* GTK_WIDGET_CLASS (parent_class)->expose_event) (widget, event);
+//      draw_circle_arrow(x,y);
     }
   
   return FALSE;
@@ -120,7 +146,7 @@ doublebutton_button_press (GtkWidget      *widget, GdkEventButton *event)
 
   if (event->type == GDK_BUTTON_PRESS)
     { printf("doublebutton_button_press(%d,%d)\n",(int)event->x,(int)event->y);
-      (* GTK_WIDGET_CLASS (parent_class)->expose_event) (widget, event);
+      (* GTK_WIDGET_CLASS (parent_class)->button_press_event) (widget, event);
     }
 
   return TRUE;
