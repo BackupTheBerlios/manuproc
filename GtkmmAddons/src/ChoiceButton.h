@@ -30,7 +30,7 @@
 namespace ManuProC {
 
 class ChoiceButton : public DoubleButton
-{	int actual_index;
+{	unsigned actual_index;
 	Gtk::Image *image;
 	Gtk::Label *label;
 	Gtk::Menu *menu;
@@ -39,12 +39,18 @@ class ChoiceButton : public DoubleButton
 	std::vector<Glib::ustring> texts;
 	std::vector<SigC::Slot0<void> > callbacks;
 //	std::vector<Gtk::MenuItem *> menuitems;
+
+	void on_button_pressed();
+	void on_sbutton_pressed(int mbutton);
+	void on_menuitem_selected(unsigned idx);
  
 public:
 	ChoiceButton();
-	add(const Glib::RefPtr<Gdk::Pixbuf> &image, const Glib::ustring &text, const SigC::Slot0<void> &callback);
+	~ChoiceButton();
+	void add(const Glib::RefPtr<Gdk::Pixbuf> &image, const Glib::ustring &text, const SigC::Slot0<void> &callback);
 	unsigned get_index() const { return actual_index; }
-	void set_index();
+	void set_index(unsigned idx);
+	void set_style(bool image=true, bool text=false);
 };
 
 }

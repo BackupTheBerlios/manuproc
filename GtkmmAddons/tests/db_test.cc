@@ -1,4 +1,4 @@
-/* $Id: db_test.cc,v 1.1 2003/04/08 08:56:54 christof Exp $ */
+/* $Id: db_test.cc,v 1.2 2003/04/10 06:31:11 christof Exp $ */
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 1998  Adolf Petig GmbH. & Co. KG
     Developed by Christof Petig <christof.petig@wtal.de>
@@ -24,12 +24,18 @@
 #include <gtkmm/window.h>
 #include <gtkmm/label.h>
 #include <DoubleButton.h>
+#include <ChoiceButton.h>
 #include <iostream>
+#include <gdkmm/pixbufloader.h>
+
+extern const unsigned char rot_png_data[],gelb_png_data[],blau_png_data[],gruen_png_data[];
+extern const unsigned rot_png_size,gelb_png_size,blau_png_size,gruen_png_size;
 
 class testwindow : public Gtk::Window
 {
         Gtk::VBox vbox;
         ManuProC::DoubleButton dbutton;
+        ManuProC::ChoiceButton cbutton;
         Gtk::Label label1;
 
     public:
@@ -39,19 +45,30 @@ class testwindow : public Gtk::Window
     	void on_sclicked(int mousebutton)
     	{  std::cout << "on_sclicked ("<<mousebutton<<")\n";
     	}
+    	void on_cclicked(unsigned index)
+    	{  std::cout << "on_cclicked ("<<index<<")\n";
+    	}
 
         testwindow() 
            : vbox(false,0), label1("Test")
         {
             vbox.add(dbutton);
+            vbox.add(cbutton);
             dbutton.add(label1);
             add(vbox);
             vbox.show();
             label1.show();
             dbutton.show();
+            cbutton.show();
 
             dbutton.signal_clicked().connect(SigC::slot(*this,&testwindow::on_clicked));
             dbutton.signal_secondpressed().connect(SigC::slot(*this,&testwindow::on_sclicked));
+            
+            {  Glib::RefPtr<Gdk::PixbufLoader> loader=Gdk::PixbufLoader::create();
+	       loader->write(rot_png_data, rot_png_size);
+	       loader->close();
+	       cbutton.add(loader->get_pixbuf(),"rot",SigC::bind(SigC::slot(*this,&testwindow::on_cclicked),1));
+	    }
         }
         bool delete_event_impl(GdkEventAny *)
         {
