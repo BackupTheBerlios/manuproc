@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.11 2003/08/11 14:22:57 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.12 2003/08/11 15:58:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -369,28 +369,3 @@ void AufEintrag::MengeNeubestellen(const int uid,mengen_t menge) throw(SQLerror)
   distribute_parents(*this,menge,NeuBestellen(*this,uid));
 }
 
-#if 0
-  for(AufEintragZu::list_t::iterator j=L.begin();j!=L.end();++j)
-    {
-      AuftragBase::mengen_t m=AuftragBase::min(j->Menge,menge);
-      if (!m) continue;
-      AufEintragZu(j->AEB).setMengeDiff__(child_aeb,-m);
-      // passenden 0er erhöhen
-      AuftragBase(child_aeb.Instanz(),AuftragBase::ungeplante_id)
-              .BestellmengeAendern(m,child_aeb.getLieferdatum(),child_aeb.Artikel(),OPEN,uid,j->AEB);
-
-#if 0
-      AufEintragZu::list_t L2=AufEintragZu(j->AEB).get_Referenz_list_ungeplant(AufEintragZu::list_kinder,AufEintragZu::list_Artikel);
-      for(AufEintragZu::list_t::iterator k=L2.begin();k!=L2.end();++k)
-       {
-         if(k->Art!=AufEintrag(child_aeb).Artikel()) continue;
-//         AufEintragZu(j->AEB).setMengeDiff__(k->AEB,m);
-         AufEintrag(k->AEB).MengeAendern(uid,m,true,j->AEB,ManuProC::Auftrag::r_Planen);
-         break;
-       }   
-#endif       
-      menge-=m;
-      if(!menge) break;
-    }         
-}
-#endif
