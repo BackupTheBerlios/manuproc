@@ -17,12 +17,12 @@
  */
 
 #include "FlashingPixmap.hh"
-
+#include <glibmm/main.h> 
 
 FlashingPixmap::FlashingPixmap(gchar * const *d,
                      gchar * const *f,
                      unsigned int msec)
-:Gtk::Pixmap(d), defaultPix(d),flashPix(f),stop(true)
+:Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(d)), defaultPix(d),flashPix(f),stop(true)
 {
   show();
   setTime(msec);
@@ -30,23 +30,23 @@ FlashingPixmap::FlashingPixmap(gchar * const *d,
 
 void FlashingPixmap::setTime(unsigned int msec)
 {
-  des.signal_di().connect();
+  des.disconnect();
   if(msec==0) 
    {
      stop=true;
-     Gtk::Pixmap::set(defaultPix);
+     Gtk::Image::set(Gdk::Pixbuf::create_from_xpm_data(defaultPix));
    }
   else 
    {
      stop=false;
-     Gtk::Pixmap::set(flashPix);
-     des = Gtk::Main::signal_timeout().connect(slot(this,&FlashingPixmap::timeout),msec);
+     Gtk::Image::set(Gdk::Pixbuf::create_from_xpm_data(flashPix));
+     des = Glib::signal_timeout().connect(slot(*this,&FlashingPixmap::timeout),msec);
    }
 }
 
 
 
-gint FlashingPixmap::timeout() 
+bool FlashingPixmap::timeout() 
 { 
   switchPix();
   return !stop;
@@ -55,6 +55,6 @@ gint FlashingPixmap::timeout()
 void FlashingPixmap::switchPix()
 {
   static bool def=true;
-  if(def) {Gtk::Pixmap::set(defaultPix); def=false; }
-  else    {Gtk::Pixmap::set(flashPix);   def=true;  }
+  if(def) {Gtk::Image::set(Gdk::Pixbuf::create_from_xpm_data(defaultPix)); def=false; }
+  else    {Gtk::Image::set(Gdk::Pixbuf::create_from_xpm_data(flashPix));   def=true;  }
 }

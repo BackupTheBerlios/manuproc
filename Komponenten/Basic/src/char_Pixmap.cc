@@ -1,4 +1,4 @@
-// $Id: char_Pixmap.cc,v 1.2 2002/12/11 16:50:47 christof Exp $
+// $Id: char_Pixmap.cc,v 1.3 2002/12/11 18:01:56 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -23,13 +23,12 @@
 void char_Pixmap::refresh(gpointer x)
 {
   if (x==&model.Value())
-   {  
-     set(model.get_value());
+   { set(Gdk::Pixbuf::create_from_xpm_data(model.get_value()));
    }
 }
 
 char_Pixmap::char_Pixmap(const Model_ref<T> &m)
-	:  Gtk::Pixmap(m.get_value()),model(m)
+	:  Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(m.get_value())),model(m)
 {  
  init();
 };

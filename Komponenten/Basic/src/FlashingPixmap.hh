@@ -19,11 +19,11 @@
 #ifndef FLASHINGPIXMAP
 #define FLASHINGPIXMAP
 
-#include <gtkmm/pixmap.h>
+#include <gtkmm/image.h>
 #include <gtkmm/main.h> 
 
 
-class FlashingPixmap : public Gtk::Pixmap
+class FlashingPixmap : public Gtk::Image
 {
       gchar * const *defaultPix;
       gchar * const *flashPix;
@@ -31,7 +31,7 @@ class FlashingPixmap : public Gtk::Pixmap
       bool stop;
 
       void switchPix();
-      gint timeout();
+      bool timeout();
 
       void setDefault(gchar * const *p) {defaultPix=p;}
       void setFlash(gchar * const *p) {flashPix=p;}

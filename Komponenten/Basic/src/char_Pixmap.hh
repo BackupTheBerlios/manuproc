@@ -1,4 +1,4 @@
-// $Id: char_Pixmap.hh,v 1.2 2002/12/11 16:50:47 christof Exp $
+// $Id: char_Pixmap.hh,v 1.3 2002/12/11 18:01:56 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,10 +21,10 @@
 #ifndef MANUPROC_WIDGETS_MVC_CHAR_PIX_H
 #define MANUPROC_WIDGETS_MVC_CHAR_PIX_H
 
-#include <gtkmm/pixmap.h>
+#include <gtkmm/image.h>
 #include <BaseObjects/Model.h>
 
-class char_Pixmap : public Gtk::Pixmap
+class char_Pixmap : public Gtk::Image
 {	typedef const char * const * T;
 	SigC::Connection ch_con;//, my_ch_con;
 	Model_ref<T> model;
