@@ -1,21 +1,11 @@
-# $Id: Makefile.am,v 1.1 2003/01/06 15:07:32 christof Exp $
+# $Id: Makefile.am,v 1.2 2003/04/07 16:16:15 christof Exp $
 
 CLEANFILES = *~
 
 INCLUDES = @GTK_CFLAGS@ 
 
-if INSTALL_WIDGET
-  lib_lib=libGtkmmAddonsWidgets.a
-  inc_hea=gtksearchcombo.h
-else
-  lib_lib=
-  inc_hea=
-endif
+lib_LIBRARIES = libGtkmmAddonsWidgets.a
 
-lib_LIBRARIES = $(lib_lib)
-noinst_LIBRARIES = libGtkmmAddonsWidgets.a
+include_HEADERS = gtksearchcombo.h doublebutton.h
 
-include_HEADERS = $(inc_hea)
-noinst_HEADERS = gtksearchcombo.h
-
-libGtkmmAddonsWidgets_a_SOURCES = gtksearchcombo.c
+libGtkmmAddonsWidgets_a_SOURCES = gtksearchcombo.c doublebutton.c
