@@ -145,7 +145,7 @@ window1::window1() : st(SP_ANZ)
 //   v[SP_SUM2]="summe 3";
    st.setTitles(v);
    std::vector <cH_RowDataBase> datavec;
-#if 0
+#if 1
    datavec.push_back(new MyRowData(1,"X",2,3,"A"));
    datavec.push_back(new MyRowData(2,"Y",2,3,"A"));
    datavec.push_back(new MyRowData(10,"Z",2,3,"A"));
@@ -155,7 +155,7 @@ window1::window1() : st(SP_ANZ)
    datavec.push_back(new MyRowData(1,"X",2,4,"A"));
    datavec.push_back(new MyRowData(1,"Y",2,3,"A"));
 #endif
-#if 1
+#if 0
    for (int i=0;i<100;++i)
       datavec.push_back(new MyRowData(i%4+1,/*"same" */
       std::string(1,char('A'+(i%3))),(i%5),(i%7),itos(i)));
