@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.34 2004/06/03 16:07:06 christof Exp $
+# $Id: configure.in,v 1.35 2004/07/06 12:15:05 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(ManuProC_Base,0.6.4, [manuproc-developer-de@berlios.de])
@@ -32,7 +32,7 @@ then
 		AC_SUBST(SIGC_CFLAGS)
 		AC_SUBST(SIGC_LIBS)
 		mpc_sigc_version=0x200
-		SIGC_MAJOR=2],[])
+		SIGC_MAJOR=2],[false])
 fi
 if test -z "$mpc_sigc_version"
 then 
@@ -41,7 +41,7 @@ then
 		AC_SUBST(SIGC_LIBS)
 		mpc_sigc_version=0x120
 		AC_DEFINE(SIGC1_2,1,[deprecated: we use SigC++ 1.2])
-		SIGC_MAJOR=1],[])
+		SIGC_MAJOR=1],[false])
 fi
 if test -z "$mpc_sigc_version" -o "$mpc_sigc_version" = "0x100"
 then 
