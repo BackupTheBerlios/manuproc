@@ -5,3 +5,5 @@ SQLerror_postgres.cc
 dbconnect.cc
 Transaction.cc
 FetchIStream.cc
+.libs
+*.lo
