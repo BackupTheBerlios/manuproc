@@ -1,4 +1,4 @@
-/* $Id: DynEnums_default.h,v 1.6 2002/10/24 14:06:49 thoma Exp $ */
+/* $Id: DynEnums_default.h,v 1.7 2003/04/14 09:06:39 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: DynEnums_default.h,v 1.6 2002/10/24 14:06:49 thoma Exp $
+// $Id: DynEnums_default.h,v 1.7 2003/04/14 09:06:39 jacek Exp $
 
 #ifndef MANUPROC_DYNAMICENUMS_H
 #define MANUPROC_DYNAMICENUMS_H
@@ -44,7 +44,7 @@ namespace ManuProC {
 
   namespace Waehrung {
    enum enum_t {
-    EUR=1
+    None=-1, EUR=1
    };
   }
 
