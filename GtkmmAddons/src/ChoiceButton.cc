@@ -16,36 +16,5 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include "ChoiceButton.h"
 
-#ifndef CHOICEBUTTON_H
-#define CHOICEBUTTON_H
-
-#include "DoubleButton.h"
-#include <vector>
-#include <string>
-#include <gtkmm/image.h>
-#include <gtkmm/label.h>
-#include <gtkmm/menu.h>
-
-namespace ManuProC {
-
-class ChoiceButton : public DoubleButton
-{	int actual_index;
-	Gtk::Image *image;
-	Gtk::Label *label;
-	Gtk::Menu *menu;
-	
-	std::vector<Glib::RefPtr<Gdk::Pixbuf> > images;
-	std::vector<Glib::ustring> texts;
-	std::vector<SigC::Slot0<void> > callbacks;
-//	std::vector<Gtk::MenuItem *> menuitems;
- 
-public:
-	ChoiceButton();
-	add(const Glib::RefPtr<Gdk::Pixbuf> &image, const Glib::ustring &text, const SigC::Slot0<void> &callback);
-	unsigned get_index() const { return actual_index; }
-	void set_index();
-};
-
-}
-#endif
