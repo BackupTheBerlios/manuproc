@@ -23,8 +23,9 @@ public:
 			{case Lieferschein : 
 				return mld->MLT(MultiL_Dict::TXT_LIEFERSCHEIN) ;break;
 			case Rechnung : 
-				if(gut) return std::string("Gutschrift");
-				else return mld->MLT(MultiL_Dict::TXT_RECHNUNG); break;
+				if(gut) return mld->MLT(MultiL_Dict::TXT_GUTSCHRIFT);
+				else return mld->MLT(MultiL_Dict::TXT_RECHNUNG); 
+				break;
 			case Auftrag : 
 			     if(rueckstand)
 			       {ManuProC::Datum heute=ManuProC::Datum().today();

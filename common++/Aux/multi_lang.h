@@ -72,6 +72,7 @@ public:
 		TXT_GEWBRUTTO=57,
 		TXT_GEWNETTO=58,
 		TXT_LIEFERSCHEIN=59,
+		TXT_GUTSCHRIFT=60,
 	     } LangTXT;
 
  MultiL_Dict(int sprache, int default_spr=1);
