@@ -788,8 +788,12 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 #ifndef MABELLA_EXTENSIONS
 	    os << linecolor << kws;
 #endif
-	    if(!min_liefdatum.valid()) min_liefdatum=ManuProC::Datum::today();
-	    if(min_liefdatum>lieferdatum) 
+	    if(!min_liefdatum.valid()) 
+		{min_liefdatum=lieferdatum;
+		 min_KWStr=kws;
+		}
+	    else
+	      if(min_liefdatum>lieferdatum) 
 		{min_liefdatum=lieferdatum;
 		 min_KWStr=kws;	
 		}
