@@ -984,7 +984,9 @@ void auftrag_lieferschein::on_lager_buchen_clicked()
 	 Handle<const Data_Lieferdaten> ld=
 			(*i).cast_dynamic<const Data_Lieferdaten>();
          LieferscheinEntry LE = ld->get_LieferscheinEntry();
-	 if(ld->get_LieferscheinEntry().Status()==(AufStatVal)UNCOMMITED)
+	 if((ld->get_LieferscheinEntry().Status()==(AufStatVal)UNCOMMITED)
+		||
+	    (LE.lagerid==FertigWarenLager::none_lagerid))
 	   {
 	    LE.lagerid=int(lagerwahl->get_menu()->
 				get_active()->get_user_data());
