@@ -1,6 +1,6 @@
 
 #include<gtkmm/messagedialog.h>
-#include<SQLerror.h>
+#include<Misc/SQLerror.h>
 
 
 class MyMessage : public Gtk::MessageDialog
