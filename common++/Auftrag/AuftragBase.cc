@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.10 2002/11/22 15:31:05 christof Exp $
+// $Id: AuftragBase.cc,v 1.11 2002/11/25 12:27:55 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,14 +18,17 @@
  */
 
 #include <Auftrag/AuftragBase.h>
+#include <Auftrag/Auftrag.h>
 #include<stdio.h>
 #include <Aux/Transaction.h>
 #include<Aux/Changejournal.h>
 #include <Auftrag/auftrag_status.h>
 #include "AufEintrag.h"
 #include <Artikel/ArtikelStamm.h>
+#include <Artikel/ArtikelImLager.h>
 #include <Auftrag/AufEintragZu.h>
 #include <Aux/Trace.h>
+#include <Lager/Lager.h>
 
 std::string AuftragBase::str() const
 {
@@ -127,8 +130,60 @@ AuftragBase::mengen_t AuftragBase::max(const mengen_t &x,const mengen_t &y)
 bool AuftragBase::editierbar() const
 {
   if     (Id() == dispo_auftrag_id) return false;
-  else if(ID() == plan_auftrag_id)  return false;
-  else if(ID() == ungeplante_id)    return false;
+  else if(Id() == plan_auftrag_id)  return false;
+  else if(Id() == ungeplante_id)    return false;
   else if(Id() == none_id)          return false;
   return true;
+}
+
+bool AuftragBase::dispo_auftrag_aendern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,const mengen_t &menge)
+{
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+     "Artikel=",artikel,"Menge=",menge);
+   AuftragBase da(instanz,AuftragBase::dispo_auftrag_id);
+   int znr=-1,newznr=-1;
+   AuftragBase::mengen_t oldmenge;
+   bool alt=da.existEntry(artikel,LagerBase::Lagerdatum(),znr,newznr,oldmenge,OPEN);
+   if(alt)
+     {
+      AuftragBase::mengen_t mt=AufEintragBase(da,znr).updateStkDiffBase__(uid,menge);
+      assert(mt==menge);
+     }
+   else
+     {
+      Auftrag A(da);
+      A.push_back(menge,LagerBase::Lagerdatum(),artikel,OPEN,uid,false);
+     }
+  return alt;
+}
+
+
+void AuftragBase::menge_neu_verplanen(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
+         const mengen_t &menge,const ManuProC::Auftrag::Action reason) throw(SQLerror)
+{
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Instanz=",instanz,
+   "Artikel=",artikel,"Menge=",menge,
+     "Reason=",reason);
+
+  assert(instanz->LagerInstanz());
+  assert(menge>=0);
+  if(menge==0) return;
+
+  SQLFullAuftragSelector sel(SQLFullAuftragSelector::
+      sel_Artikel_Planung_id(instanz->Id(),
+      Kunde::eigene_id,artikel,AuftragBase::ungeplante_id));
+  SelectedFullAufList auftraglist=SelectedFullAufList(sel);
+  
+  mengen_t m=menge;
+  for (SelectedFullAufList::iterator i=auftraglist.begin();i!=auftraglist.end();++i)
+   {
+     AuftragBase::mengen_t M=AuftragBase::min(i->getRestStk(),m);
+     ArtikelImLager AIL(instanz,i->Artikel(),i->getLieferdatum());
+     i->artikel_vormerken_oder_schnappen(false,M,i->Artikel(),uid,reason,AIL.getDispoAuftraege());
+     if(reason==ManuProC::Auftrag::r_Anlegen || reason==ManuProC::Auftrag::r_Planen||
+        reason==ManuProC::Auftrag::r_Closed)
+            i->updateStkDiffInstanz__(uid,-M,reason);
+     m-=M;
+     if(menge==AuftragBase::mengen_t(0)) return;
+   }
 }

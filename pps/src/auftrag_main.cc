@@ -465,6 +465,7 @@ void auftrag_main::on_node_selected(const TreeRow &node)
   std::map<st_index,st_mengen> map_allart;
   getAufEintrag_fromNode(node.begin(),node.end(),map_allart);
   instanz_menge(map_allart);
+  erfassen_button->set_sensitive(false);
 }
 
 void auftrag_main::getAufEintrag_fromNode(TCListRow_API::const_iterator b,
@@ -509,6 +510,7 @@ void auftrag_main::on_leaf_selected(cH_RowDataBase d)
  const Data_auftrag *dt=dynamic_cast<const Data_auftrag*>(&*d);
  selected_AufEintrag = &dt->get_AufEintrag();
 //cout << "SE="<< selected_AufEintrag<<'\t'<<selected_AufEintrag->Instanz()->Name()<<' '<<selected_AufEintrag->Id()<<' '<<selected_AufEintrag->ZNr()<<'\n';;
+//cout << dt->get_AufEintrag()<<'\t'<<dt->get_AufEintrag().editierbar()<<'\n';
  if(dt->get_AufEintrag().editierbar())
       erfassen_button->set_sensitive(true);
  else erfassen_button->set_sensitive(false);
