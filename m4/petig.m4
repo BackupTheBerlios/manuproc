@@ -1,11 +1,11 @@
-dnl $Id: petig.m4,v 1.49 2001/06/21 14:52:53 cvs_christof Exp $
+dnl $Id: petig.m4,v 1.50 2001/08/29 07:08:56 cvs_christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
 
 dnl why not /usr/local/lib/mico-setup.sh
 
-AC_DEFUN(KDE_CHECK_LIBDL,
+AC_DEFUN(EXKDE_CHECK_LIBDL,
 [
 AC_CHECK_LIB(dl, dlopen, [
 LIBDL="-ldl"
@@ -20,9 +20,9 @@ ac_cv_have_shload=yes
 AC_SUBST(LIBDL)
 ])
 
-AC_DEFUN(KDE_CHECK_MICO,
+AC_DEFUN(EXKDE_CHECK_MICO,
 [
-AC_REQUIRE([KDE_CHECK_LIBDL])
+AC_REQUIRE([EXKDE_CHECK_LIBDL])
 AC_MSG_CHECKING(for MICO)
 AC_ARG_WITH(micodir,
   [  --with-micodir=micodir  where mico is installed ],
@@ -100,9 +100,9 @@ IDL=$kde_micodir/bin/idl
 AC_SUBST(IDL)
 ])
 
-AC_DEFUN(KDE_CHECK_MINI_STL,
+AC_DEFUN(EXKDE_CHECK_MINI_STL,
 [
-AC_REQUIRE([KDE_CHECK_MICO])
+AC_REQUIRE([EXKDE_CHECK_MICO])
 
 AC_MSG_CHECKING(if we use mico's mini-STL)
 AC_CACHE_VAL(kde_cv_have_mini_stl,
@@ -132,8 +132,8 @@ fi
 
 AC_DEFUN(PETIG_CHECK_MICO,
 [
-KDE_CHECK_MICO([2.3.3])
-AC_REQUIRE([KDE_CHECK_MINI_STL])
+EXKDE_CHECK_MICO([2.3.3])
+AC_REQUIRE([EXKDE_CHECK_MINI_STL])
 MICO_IDLFLAGS="-I$kde_micodir/include/mico -I$kde_micodir/include"
 AC_SUBST(MICO_IDLFLAGS)
 MICO_LIBS="-lmicocoss$kde_cv_mico_version $LIBMICO"
