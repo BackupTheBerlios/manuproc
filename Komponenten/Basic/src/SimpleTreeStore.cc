@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.32 2003/10/21 11:49:20 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.33 2003/10/23 10:36:59 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -78,6 +78,7 @@ void SimpleTreeStore::default_save(const std::string&program, const std::string&
 void SimpleTreeStore::save_remembered() const
 {  std::pair<std::string,std::string> value;
 
+   if (block_save) return;
    unsigned int sichtbar=0,bit=1;
    for (std::vector<bool>::const_iterator i=vec_hide_cols.begin();
    		bit && i!=vec_hide_cols.end();++i,bit<<=1)
@@ -128,15 +129,12 @@ void SimpleTreeStore::load_remembered()
       s.push_back(strtoul(value.first.substr(b,e-b).c_str(),0,10));
       b=e+1;
    }
-#if 0
-   clicked_seq=s;
-   reihenfolge_anzeigen();
-   
    auffuellen_bool=value.second.find('a')!=std::string::npos;
-   delete menu;
-   menu=0;
-   fillMenu();
-#endif   
+   // Men� und Anzeige anpassen
+   block_save=true;
+   on_visibly_changed(bvector_iterator());
+   signal_save(0);
+   block_save=false;
 }
 
 void SimpleTreeStore::set_remember(const std::string &program, const std::string &instance)
@@ -159,12 +157,26 @@ class MyTreeModel_Class : public Glib::Class
 
 static MyTreeModel_Class myclass;
 
+void SimpleTreeStore::on_visibly_changed(bvector_iterator it)
+{  if (!*it) // Spalte versteckt
+   {  for (sequence_t::iterator i=currseq.begin();i!=currseq.end();++i)
+      {  if (!ColumnVisible(*i))
+         {  i=currseq.erase(i);
+         }
+      }
+   }
+   else // Spalte hinzugekommen
+   {  fillSequence();
+   }
+   setSequence(currseq);
+}
+
 SimpleTreeStore::SimpleTreeStore(int max_col)
 	: Glib::ObjectBase("SimpleTree_MyTreeModel"),
 	  Glib::Object(Glib::ConstructParams(myclass.init(), (char*) 0)),
 	  node_creation(), columns(max_col), max_column(max_col),
 	  showdeep(), gp(), 
-	  auffuellen_bool(), expandieren_bool(),
+	  auffuellen_bool(), expandieren_bool(), block_save(),
 	  color_bool(), m_columns(max_col)
 {  
 //m_refTreeStore=Gtk::TreeStore::create(m_columns);
@@ -174,6 +186,7 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
    getModel().signal_line_appended().connect(SigC::slot(*this,&SimpleTreeStore::on_line_appended));
    getModel().signal_line_to_remove().connect(SigC::slot(*this,&SimpleTreeStore::on_line_removed));
    signal_save.connect(SigC::slot(*this,&SimpleTreeStore::save_remembered1));
+   signal_visibly_changed.connect(SigC::slot(*this,&SimpleTreeStore::on_visibly_changed));
   vec_hide_cols.resize(Cols());
   for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
     (*i) = true;
@@ -221,14 +234,21 @@ const std::string SimpleTreeStore::getColTitle(guint idx) const
 
 void SimpleTreeStore::defaultSequence()
 {  currseq.clear();
-   for(guint i=0; i<MaxCol(); ++i) currseq.push_back(i);
+   for(guint i=0; i<MaxCol(); ++i) 
+      if (ColumnVisible(i)) currseq.push_back(i);
 }
 
-#warning: auffüllen Standard, aktuelle
-void SimpleTreeStore::fillSequence(sequence_t &seq) const
-{  for(guint i=0; i<MaxCol(); ++i) 
+void SimpleTreeStore::fillSequence(sequence_t &seq,bool standard) const
+{  if (auffuellen_bool || standard)
+   {for(guint i=0; i<MaxCol(); ++i) 
       if (ColumnVisible(i) && std::find(seq.begin(),seq.end(),i)==seq.end())
          seq.push_back(i);
+   }
+   else
+   {  for (sequence_t::const_iterator i=currseq.begin();i!=currseq.end();++i)
+         if (ColumnVisible(*i) && std::find(seq.begin(),seq.end(),*i)==seq.end())
+            seq.push_back(*i);
+   }
 }
 
 void SimpleTreeStore::redisplay()
@@ -397,9 +417,15 @@ SimpleTreeStore::iterator SimpleTreeStore::MoveTree(iterator current_iter,
 
 void SimpleTreeStore::setSequence(const sequence_t &neu)
 {  currseq=neu; // Spaltenzahl anpassen?
-#warning Spaltenzahl geändert?
-   for (unsigned i=0;i<Cols();++i) title_changed(i);
-   redisplay();
+   if (currseq.size()!=columns)
+   {  columns=currseq.size();
+      save_remembered();
+      spaltenzahl_geaendert();
+   }
+   else
+   {  for (unsigned i=0;i<Cols();++i) title_changed(i);
+      redisplay();
+   }
 }
 
 unsigned SimpleTreeStore::ColumnFromIndex(unsigned idx) const
@@ -498,7 +524,7 @@ void SimpleTreeStore::redisplay_old(cH_RowDataBase data, unsigned index)
 
 void SimpleTreeStore::set_tree_column_visibility(unsigned index,bool visible)
 {  vec_hide_cols.at(index)=visible;
-#warning 2do: neu darstellen ?
+   on_visibly_changed(vec_hide_cols.begin()+index);
 }
 
 Gtk::TreeModelFlags SimpleTreeStore::get_flags_vfunc()

@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.34 2003/10/22 12:04:50 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.35 2003/10/23 10:36:59 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -121,8 +121,9 @@ private:
 	std::vector<bool> vec_hide_cols; // index is index
 	gpointer gp;
 
-	bool auffuellen_bool:1; 
-	bool expandieren_bool:1;
+	bool auffuellen_bool; 
+	bool expandieren_bool;
+	bool block_save;
 	bool color_bool; // or in Widget?, kann in SimpleTree, muss dann aber mitgespeichert werden
 
 	std::string mem_prog,mem_inst;
@@ -139,6 +140,7 @@ private:
 	SigC::Signal1<void,bvector_iterator> signal_visibly_changed;
 	void save_remembered1(gpointer) { save_remembered(); }
 	void on_title_changed(guint idx);
+	void on_visibly_changed(bvector_iterator it);
 	
 	SigC::Signal0<void> needs_redisplay;
 	void redisplay();
@@ -216,7 +218,8 @@ public:
 
 	const sequence_t &get_seq() const {return currseq;}
 	void defaultSequence();
-	void fillSequence(sequence_t &seq) const;
+	void fillSequence(sequence_t &seq,bool standard=false) const;
+	void fillSequence() { fillSequence(currseq,true); }
 
 	void set_remember(const std::string &program, const std::string &instance);
 	SigC::Signal1<void,guint> &signal_title_changed()
@@ -257,7 +260,10 @@ public:
 	
 	// these are accessors for SimpleTreeStates
 	Model_ref<guint> ShowDeep() { return Model_ref<guint>(showdeep,signal_save); }
-	Model_ref<bool> ShowColor() { return Model_ref<bool>(color_bool,signal_save); }
+//	__deprecated__ Model_ref<bool> ShowColor() { return Model_ref<bool>(color_bool,signal_save); }
+	Model_ref<bool> OptionColor() { return Model_ref<bool>(color_bool,signal_save); }
+	Model_ref<bool> OptionAuffullen() { return Model_ref<bool>(auffuellen_bool,signal_save); }
+	Model_ref<bool> OptionExpandieren() { return Model_ref<bool>(expandieren_bool,signal_save); }
 	Model_ref<bvector_item> ShowColumn(unsigned idx) 
 	{ return Model_ref<bvector_item>(vec_hide_cols.begin()+idx,signal_visibly_changed); }
 	

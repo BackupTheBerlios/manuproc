@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.25 2003/10/22 12:04:50 christof Exp $
+// $Id: SimpleTree.hh,v 1.26 2003/10/23 10:36:59 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -86,6 +86,7 @@ class SimpleTree_Basic : public Gtk::TreeView, public SimpleTreeStore_Proxy
 	void on_neuordnen_clicked();
 	void on_zuruecksetzen_clicked();
 	void on_abbrechen_clicked();
+	void on_spaltenzahl_geaendert();
 	bool MouseButton(GdkEventButton *event);
 	
 public:

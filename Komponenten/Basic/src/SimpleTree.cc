@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.29 2003/10/22 12:04:50 christof Exp $
+// $Id: SimpleTree.cc,v 1.30 2003/10/23 10:36:59 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -37,19 +37,7 @@ void SimpleTree_Basic::on_redisplay()
 
 SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
 	: SimpleTreeStore_Proxy(maxcol), menu()
-{  attach();
-
-   for (unsigned int i=0;i<Cols();++i)
-   {  Gtk::CellRendererText *crt = Gtk::manage(new Gtk::CellRendererText());
-      append_column("", *crt);
-      Gtk::TreeViewColumn* pColumn = get_column(i);
-      if (pColumn)
-      {  pColumn->signal_clicked().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_title_clicked),i));
-         pColumn->add_attribute(crt->property_text(),sts->m_columns.cols[i]);
-         if (getStore()->ShowColor().Value())
-            pColumn->add_attribute(crt->property_background_gdk(),sts->m_columns.background);
-      }
-   }
+{  on_spaltenzahl_geaendert();
    set_headers_clickable();
    
    getStore()->signal_title_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_title_changed));
@@ -57,10 +45,27 @@ SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
    getStore()->signal_redisplay().connect(SigC::slot(*this,&SimpleTree_Basic::on_redisplay));
    fillMenu();
    signal_button_press_event().connect(SigC::slot(*this,&SimpleTree_Basic::MouseButton),false);
+   getStore()->signal_spaltenzahl_geaendert().connect(SigC::slot(*this,&SimpleTree_Basic::on_spaltenzahl_geaendert));
 }
 
 SimpleTree_Basic::~SimpleTree_Basic()
 {  if (menu) delete menu;
+}
+
+void SimpleTree_Basic::on_spaltenzahl_geaendert()
+{  remove_all_columns();
+   for (unsigned int i=0;i<Cols();++i)
+   {  Gtk::CellRendererText *crt = Gtk::manage(new Gtk::CellRendererText());
+      append_column("", *crt);
+      Gtk::TreeViewColumn* pColumn = get_column(i);
+      if (pColumn)
+      {  pColumn->signal_clicked().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_title_clicked),i));
+         pColumn->add_attribute(crt->property_text(),sts->m_columns.cols[i]);
+         if (getStore()->OptionColor().Value())
+            pColumn->add_attribute(crt->property_background_gdk(),sts->m_columns.background);
+      }
+   }
+   on_redisplay();
 }
 
 void SimpleTree_Basic::on_title_clicked(unsigned nr)
@@ -178,52 +183,30 @@ void SimpleTree_Basic::fillMenu()
   add_mitem(menu,"Zurücksetzen",SigC::slot(*this,&SimpleTree_Basic::on_zuruecksetzen_clicked));
   add_mitem(menu,"Abbrechen",SigC::slot(*this,&SimpleTree_Basic::on_abbrechen_clicked));
   add_mitem(menu,"Neuordnen",SigC::slot(*this,&SimpleTree_Basic::on_neuordnen_clicked));
+
   Gtk::MenuItem *spalten=add_mitem(menu,"Sichtbare Spalten");
   Gtk::Menu *spalten_menu=manage(new Gtk::Menu);
   spalten->set_submenu(*spalten_menu);
-  Gtk::MenuItem *optionen=add_mitem(menu,"Optionen");
-  Gtk::Menu *optionen_menu=manage(new Gtk::Menu);
-  optionen->set_submenu(*optionen_menu);
-  add_mitem(menu,"Alles aufklappen",SigC::slot(*this,&SimpleTree_Basic::Expand_recursively));
-  add_mitem(menu,"Alles zuklappen",SigC::slot(*this,&SimpleTree_Basic::Collapse));
    for (guint i=0;i<Cols();++i)
     { bvector_item_CheckMenuItem *sp = manage(new bvector_item_CheckMenuItem
     			(getStore()->ShowColumn(i),getColTitle(i)));
       spalten_menu->append(*sp);
       sp->show();
     }
-#if 0
-   menu->append(*optionen);
-   optionen->set_submenu(*optionen_menu);
-   Gtk::CheckMenuItem *titles = manage(new class Gtk::CheckMenuItem("Spaltenüberschriften anzeigen"));
-   Gtk::CheckMenuItem *auffuellen = manage(new class Gtk::CheckMenuItem("Auffüllen mit Standardreihenfolge\n(statt der aktuellen)"));
-   Gtk::CheckMenuItem *expandieren = manage(new class Gtk::CheckMenuItem("Gewählte Knoten expandieren"));
-   Gtk::CheckMenuItem *colorize = manage(new class Gtk::CheckMenuItem("farblich markieren"));
-   Gtk::MenuItem *exp_all = manage(new class Gtk::MenuItem("Alle Knoten expandieren"));
-   Gtk::MenuItem *col_all = manage(new class Gtk::MenuItem("Alle Knoten kollabieren"));
-   optionen_menu->append(*titles);
-   optionen_menu->append(*auffuellen);
-   optionen_menu->append(*expandieren);
-   optionen_menu->append(*colorize);
-   optionen_menu->append(*exp_all);
-   optionen_menu->append(*col_all);
-   
-   titles_menu=titles;
-   titles->set_active(titles_bool);
-   titles->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::Titles),titles));
 
-   auffuellen->set_active(auffuellen_bool);
-   auffuellen->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::Auffuellen),auffuellen));
+  Gtk::MenuItem *optionen=add_mitem(menu,"Optionen");
+  Gtk::Menu *optionen_menu=manage(new Gtk::Menu);
+  add_mitem(optionen_menu,"Spaltenüberschriften anzeigen")->set_sensitive(false); // Model
+  add_mitem(optionen_menu,"Auffüllen mit Standardreihenfolge\n(statt der aktuellen)")->set_sensitive(false); // Model
+  	// OptionAuffullen()
+  add_mitem(optionen_menu,"Gewählte Knoten expandieren")->set_sensitive(false); // Model
+        // OptionExpandieren()
+  add_mitem(optionen_menu,"farblich markieren")->set_sensitive(false); // Model
+        // OptionColor()
 
-   expandieren->set_active(expandieren_bool);
-   expandieren->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::Expandieren),expandieren));
-
-   colorize->set_active(color_bool);
-   colorize->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::on_Color),colorize));
-
-   exp_all->activate.connect(SigC::slot(this,&TreeBase::Expand_recursively));
-   col_all->activate.connect(SigC::slot(this,&TreeBase::Collapse_recursively));
-#endif
+  optionen->set_submenu(*optionen_menu);
+  add_mitem(menu,"Alles aufklappen",SigC::slot(*this,&SimpleTree_Basic::Expand_recursively));
+  add_mitem(menu,"Alles zuklappen",SigC::slot(*this,&SimpleTree_Basic::Collapse));
 }
 
 bool SimpleTree_Basic::MouseButton(GdkEventButton *event)
