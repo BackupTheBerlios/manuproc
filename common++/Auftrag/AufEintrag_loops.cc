@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.15 2004/02/17 10:39:11 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.16 2004/02/17 10:45:28 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -280,7 +280,7 @@ AuftragBase::mengen_t auf_positionen_verteilen(const SQLFullAuftragSelector &sel
 
 AuftragBase::mengen_t auf_positionen_verteilen_rev(const SQLFullAuftragSelector &selector,
  		AuftragBase::mengen_t menge, const auf_positionen_verteilen_cb &callee)
-{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,menge,typeid(callee).name());
+{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,menge,Nametrans(typeid(callee).name()));
    SelectedFullAufList auftraglist=SelectedFullAufList(selector);
 
   AuftragBase::mengen_t m=menge;
