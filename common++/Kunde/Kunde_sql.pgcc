@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.57 2004/03/24 20:38:47 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.58 2004/03/24 20:58:37 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -84,7 +84,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
          coalesce(text(b.blz),''), coalesce(b.name,''), coalesce(b.bankindex,0),
          coalesce(rechnung_an,kundennr), 
 	 coalesce(lieferung_an,kundennr),
-	 coalesce(branr,0),
+	 coalesce(branr,-1),
 	 gebdatum,
          coalesce(idnr,''),
 /*         coalesce(lieferadresse,false), coalesce(rechnungsadresse,false), */
@@ -103,7 +103,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
 	 coalesce(entsorgung,false),
     coalesce(verknr,-1),coalesce(lieferantenkonto,0),
     coalesce(gegenkonto,0),coalesce(unsere_kundennr,''),
-	coalesce(betreuer,0),coalesce(anz_firmenpapier,1),
+	coalesce(betreuer,-1),coalesce(anz_firmenpapier,1),
 	coalesce(anz_weissespapier,1),coalesce(lieferung_frei_haus,'t'),
 	coalesce(aktiv,true), coalesce(preisauto,true),
 	coalesce(showean,false),
@@ -187,7 +187,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    waehrung = cP_Waehrung(Waehrung::ID(WAEHRUNGID));
 
    verkaeufer.verknr=VERKNR;
-   betreuer=BETREUER==0 ? Person::none_id : BETREUER;
+   betreuer=BETREUER;
    prlist_valid=false;
    isaktiv=AKTIV;
    preisautomatik=PREISAUTO;
