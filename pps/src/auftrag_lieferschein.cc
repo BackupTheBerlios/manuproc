@@ -921,8 +921,9 @@ void auftrag_lieferschein::on_liefnotiz_save_clicked()
 
 void auftrag_lieferschein::on_lagerwahl_changed()
 {
- try{display2(liefer_kunde->get_value());
- liefernr->reset();
+ try{
+  datavec_liefoff.clear();
+  set_tree_offen_content();
  } catch(SQLerror &e) {meldung->Show(e);}  
 }
 
@@ -957,7 +958,10 @@ void auftrag_lieferschein::on_lager_buchen_clicked()
 			(*i).cast_dynamic<const Data_Lieferdaten>();
          LieferscheinEntry LE = ld->get_LieferscheinEntry();
 	 if(ld->get_LieferscheinEntry().Status()==(AufStatVal)UNCOMMITED)
-	   {LE.changeStatus((AufStatVal)OPEN,true);
+	   {
+	    LE.lagerid=int(lagerwahl->get_menu()->
+				get_active()->get_user_data());
+	    LE.changeStatus((AufStatVal)OPEN,true);
 	    LE.setLagerid(int(lagerwahl->get_menu()->
 			      get_active()->get_user_data()) );
 	   }
@@ -968,7 +972,7 @@ void auftrag_lieferschein::on_lager_buchen_clicked()
       tr.commit();
       datavec_liefoff.clear();
       on_liefnr_activate();     
-      lager_buchen->set_sensitive(false);
+//      lager_buchen->set_sensitive(false);
      }
    else
    if(ret==1)
