@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.2 2002/10/21 06:39:07 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.3 2002/11/15 11:55:47 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,7 +26,7 @@
 #include <TreeRow.h>
 #include<deque>
 
-class SimpleTreeStore : Gtk::TreeStore
+class SimpleTreeStore
 {public:
 	// einen neuen Ast erzeugen, deep ist die Spalte, v der Wert dieser Spalte
 	typedef TreeRow *(*NewNode_fp)
@@ -38,12 +38,18 @@ private:
 	SimpleTreeModel *model;
 	NewNode_fp node_creation;
 	
+	Glib::RefPtr<Gtk::TreeStore> m_refTreeStore;
+friend class window1;
+	
+	guint columns;
 	guint showdeep;
 	guint attrcount;
 	std::deque<guint> currseq; 
 	std::vector<bool> vec_hide_cols;
 	gpointer gp;
 
+	bool auffuellen_bool:1; 
+	bool expandieren_bool:1; 
 	bool color_bool:1; // or in Widget?
 	bool model_is_ours:1; // whether we need to destroy the model
 
@@ -52,12 +58,28 @@ private:
 	void save_remembered() const;
 	void load_remembered();
 protected:
+	// Struktur zum Ansprechen der einzelnen Teile einer Zeile
+	// wahrscheinlich wäre ein int passender ...
+	struct ModelColumns : public Gtk::TreeModelColumnRecord
+	{  std::vector<Gtk::TreeModelColumn<Glib::ustring> > cols; // ??
+	   // TreeRow tr;
+	   
+	   ModelColumns(int cols);
+	};
+	
+	ModelColumns m_columns;
 
 public:
-	SimpleTreeStore();
+	SimpleTreeStore(int cols,int attrs=-1);
+	~SimpleTreeStore();
+	
 	void set_showdeep(int i) {showdeep=i;}
 	guint Attrs() const { return attrcount; }
-	guint Cols() const; //  { return columns().size();}
+	guint Cols() const  { return columns;}
+
+	SimpleTreeModel &getModel() { return *model; }
+	void setModel(SimpleTreeModel &model);
+	
 
 	void set_value_data(gpointer _p) {gp = _p;}
 	gpointer ValueData() const { return gp; }

@@ -1,4 +1,4 @@
-// $Id: MVC_bool_Widget.cc,v 1.4 2002/10/17 07:17:24 christof Exp $
+// $Id: MVC_bool_Widget.cc,v 1.5 2002/11/15 11:55:47 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -22,9 +22,9 @@
 
 void MVC_bool_Widget::refresh(gpointer x)
 {  if (x==&model.Value())
-   {  my_ch_con.disconnect();
+   {  my_ch_con.block();
       Gtk::CheckButton::set_active(model.get_value());
-      my_ch_con=signal_toggled().connect(SigC::slot(*this,&MVC_bool_Widget::on_toggled));
+      my_ch_con.unblock();
    }
 }
 
@@ -36,7 +36,7 @@ MVC_bool_Widget::MVC_bool_Widget(const Model_ref<T> &m, const std::string &text)
 };
 
 void MVC_bool_Widget::on_toggled()
-{  ch_con.disconnect();
+{  ch_con.block();
    model=Gtk::CheckButton::get_active();
-   ch_con=model.changed.connect(SigC::slot(*this,&MVC_bool_Widget::refresh));
+   ch_con.unblock();
 }

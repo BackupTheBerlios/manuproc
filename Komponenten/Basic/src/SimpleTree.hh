@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.1 2002/10/18 10:39:42 christof Exp $
+// $Id: SimpleTree.hh,v 1.2 2002/11/15 11:55:47 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,8 +33,6 @@ class SimpleTree : public Gtk::TreeView
  Gtk::Menu *menu;  
  Gtk::CheckMenuItem *titles_menu;
  bool titles_bool:1; 
- bool auffuellen_bool:1; 
- bool expandieren_bool:1; 
  
 
  std::vector<Gdk_Color> colors;

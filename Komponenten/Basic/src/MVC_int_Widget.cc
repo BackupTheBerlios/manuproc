@@ -1,4 +1,4 @@
-// $Id: MVC_int_Widget.cc,v 1.3 2002/09/27 09:48:44 christof Exp $
+// $Id: MVC_int_Widget.cc,v 1.4 2002/11/15 11:55:47 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -23,19 +23,19 @@
 
 void MVC_int_Widget::refresh(gpointer x)
 {  if (x==&model.Value())
-   {  my_ch_con.disconnect();
+   {  my_ch_con.block();
       Gtk::SpinButton::set_value(model.get_value());
       any_change=false;
-      my_ch_con=signal_changed().connect(SigC::slot(*this,&MVC_int_Widget::keypress));
+      my_ch_con.unblock();
    }
 }
 
 bool MVC_int_Widget::on_focus_out(GdkEventFocus *ev)
 {  if (any_change)
-   {  ch_con.disconnect();
+   {  ch_con.block();
       update();
       model=Gtk::SpinButton::get_value_as_int();
-      ch_con=model.changed.connect(SigC::slot(*this,&MVC_int_Widget::refresh));
+      ch_con.unblock();
       any_change=false;
    }
 //   select_region(0,0); // needed ?

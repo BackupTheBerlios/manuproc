@@ -1,4 +1,4 @@
-// $Id: treebase.cc,v 1.32 2002/07/05 12:36:56 christof Exp $
+// $Id: treebase.cc,v 1.33 2002/11/15 11:55:47 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -625,79 +625,3 @@ TCListNode &TreeBase::getSelectedNode() const
    return *dynamic_cast<TCListNode*>(selectedrow);
 }
 
-#ifdef MANUPROC_WITH_DATABASE
-#include <Misc/Global_Settings.h>
-#include <unistd.h> // getuid
-#endif
-
-void TreeBase::set_remember(const std::string &program, const std::string &instance)
-{  if (mem_prog!=program || mem_inst!=instance)
-   {  mem_prog=program;
-      mem_inst=instance;
-      load_remembered();
-   }
-}
-
-void TreeBase::save_remembered() const
-{  if (mem_prog.empty()) return;
-#ifdef MANUPROC_WITH_DATABASE
-   unsigned int sichtbar=0,bit=1;
-   for (std::vector<bool>::const_iterator i=vec_hide_cols.begin();
-   		bit && i!=vec_hide_cols.end();++i,bit<<=1)
-      if (!*i) sichtbar|=bit;
-   std::string flags;
-   if (!titles_bool) flags+='T';
-   if (auffuellen_bool) flags+='a';
-   if (!expandieren_bool) flags+='E';
-   if (!color_bool) flags+='C';
-   Global_Settings::create(getuid(),mem_prog,mem_inst+":visible",
-   	itos(sichtbar)+','+itos(showdeep)+','+flags);
-   std::string cseq;
-   guint last=999999; // big enough
-   std::deque<guint>::const_reverse_iterator i=currseq.rbegin();
-   for (;i!=currseq.rend();++i)
-   {  if (*i>last) break;
-      last=*i;
-   }
-   for (;i!=currseq.rend();++i) cseq=itos(*i)+','+cseq;
-   Global_Settings::create(getuid(),mem_prog,mem_inst+":order",cseq);
-#endif
-}
-
-void TreeBase::load_remembered()
-{  if (mem_prog.empty()) return;
-#ifdef MANUPROC_WITH_DATABASE
-   std::string visible=Global_Settings(getuid(),mem_prog,mem_inst+":visible").get_Wert();
-   titles_bool=visible.find('T')==std::string::npos;
-   expandieren_bool=visible.find('E')==std::string::npos;
-   color_bool=visible.find('C')==std::string::npos;
-   
-   std::string::size_type k0=visible.find(','),k1=std::string::npos;
-   if (k0!=std::string::npos) 
-   {  guint sichtbar=strtoul(visible.substr(0,k0).c_str(),0,10),bit=1;
-      for (guint j=0;j<attrcount;++j,bit<<=1)
-         vec_hide_cols[j]=!bit ? true : !(sichtbar&bit);
-      k1=visible.find(',',k0+1);
-   }
-   if (k1!=std::string::npos)
-   {  showdeep=strtoul(visible.substr(k0+1,k1-(k0+1)).c_str(),0,10);
-   }
-
-   std::deque<guint> s;
-   auffuellen_bool=false;
-   std::string order=Global_Settings(getuid(),mem_prog,mem_inst+":order").get_Wert();
-   for (std::string::size_type b=0;;)
-   {  std::string::size_type e=order.find(',',b);
-      if (e==std::string::npos) break;
-      s.push_back(strtoul(order.substr(b,e-b).c_str(),0,10));
-      b=e+1;
-   }
-   clicked_seq=s;
-   reihenfolge_anzeigen();
-   
-   auffuellen_bool=visible.find('a')!=std::string::npos;
-   delete menu;
-   menu=0;
-   fillMenu();
-#endif
-}

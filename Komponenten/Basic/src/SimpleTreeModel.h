@@ -1,4 +1,4 @@
-// $Id: SimpleTreeModel.h,v 1.2 2002/10/21 06:39:07 christof Exp $
+// $Id: SimpleTreeModel.h,v 1.3 2002/11/15 11:55:47 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,6 +34,7 @@ class SimpleTreeModel : SigC::Object
 	std::vector<bool> column_editable;
 
 	SigC::Signal1<void,cH_RowDataBase> line_appended;
+	SigC::Signal1<void,cH_RowDataBase> line_to_delete;
 	SigC::Signal0<void> redraw_needed;
 	SigC::Signal2<void,cH_RowDataBase,guint> value_changed;
 	SigC::Signal1<void,guint> title_changed;
