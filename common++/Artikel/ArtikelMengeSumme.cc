@@ -1,4 +1,4 @@
-// $Id: ArtikelMengeSumme.cc,v 1.5 2003/01/08 09:46:56 christof Exp $
+// $Id: ArtikelMengeSumme.cc,v 1.6 2003/06/23 15:55:57 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,13 +20,19 @@
 #include <Artikel/ArtikelMengeSumme.h>
 #include <Misc/Ausgabe_neu.h>
 
+bool operator==(const ArtikelMenge::pair_t &a, const Einheit &b)
+{  return a.first==b; }
+
+bool operator==(const ArtikelMenge::pair_l_t &a, const Einheit &b)
+{  return a.first==b; }
+
 void ArtikelMenge::summiere(const ArtikelBaum &baum, mengen_t menge, const Einheit &e, bool add)
 {  bool same=false;
    lvalue(e); // damit dieser Eintrag vorher auftaucht, vorab einfügen.
    for (ArtikelBaum::const_iterator i=baum.begin();i!=baum.end();++i)
    {  Einheit e2=ArtikelBase(i->rohartikel);
       if (e2==e) same=true;
-      else if (find(emenge.begin(),emenge.end(),e2)!=emenge.end())
+      else if (std::find(emenge.begin(),emenge.end(),e2)!=emenge.end())
       {  // ignore this unit because it is implied in something else
       }
       else summiere(ArtikelBase(i->rohartikel),menge.as_float()*i->menge.as_float(),e2,!same);
@@ -58,12 +64,6 @@ std::string ArtikelMenge::Menge() const
 {  if (emenge.empty()) return "";
    return ArtikelMenge::Formatiere(emenge[0]);
 }
-
-bool operator==(const ArtikelMenge::pair_t &a, const Einheit &b)
-{  return a.first==b; }
-
-bool operator==(const ArtikelMenge::pair_l_t &a, const Einheit &b)
-{  return a.first==b; }
 
 ArtikelMenge::mengen_t ArtikelMenge::getMenge(const Einheit &e) const
 {  vector_t::const_iterator i= find(emenge.begin(),emenge.end(),e);
