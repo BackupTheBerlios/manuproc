@@ -431,7 +431,7 @@ void Artikelpreis::remove(const cH_PreisListe liste,const ArtikelBase &a,
    }
  else
    {
-   std::string q="select id,mindestmenge,kundennr,preis from artikelpreise where "
+   std::string q="select artikelid,mindestmenge,kundennr,preis from artikelpreise where "
 	"artikelid=? ";
    if(!from_all_lists)
 	q+=" and kundennr="+itos(PRLSNR);
