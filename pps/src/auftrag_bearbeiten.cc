@@ -1262,3 +1262,12 @@ void auftrag_bearbeiten::on_bestellplan_clicked()
 }
 
 
+void auftrag_bearbeiten::on_ean_etiketten_activate()
+{  
+ if(!auftrag) return;   
+ 
+ std::string command = "ean_set -n"+itos(auftrag->Id());
+
+ system(command.c_str()); 
+}
+
