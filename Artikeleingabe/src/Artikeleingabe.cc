@@ -376,7 +376,8 @@ void Artikeleingabe::optionmenu_bestellen_bei_activate()
    {
      if(i->Instanz()->Id()==ppsInstanzID::Kundenauftraege) continue;
      AuftragBase A(newInstanz,0);
-     i->moveInstanz(getuid(),A);
+#warning compiliert nicht
+//     i->moveInstanz(getuid(),A);
    }
  }catch(SQLerror &e) {warnung("Fehlgeschlagen") ;}
  tr.commit();
