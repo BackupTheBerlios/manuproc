@@ -955,7 +955,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 	   cH_ArtikelBezeichnung own_bez(artikelbase,schema_own->Id());
 	   os << "&&&&";
            if(schema_own->Id()==own_bez->getExtBezSchema()->Id())	     
-	     os << "\\multicolumn{4}{l}{" <<own_bez->Bezeichnung()<<"}";
+	     os << "\\multicolumn{4}{l}{"<<string2TeX(own_bez->Bezeichnung())<<"}";
            else
 	     os << "\\multicolumn{4}{l}{ }";
 	   os << "\\\\\n";
@@ -1013,7 +1013,7 @@ void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
 	    if(ArtikelTyp::hasAttribute(s->Typ(),
 				ArtikelTypAttr::mit_bezeichnung))
 	      { neue_spalte( erste_spalte, os);
-		  os << bez->Bezeichnung(BEZEICHNUNG_SIGNIFIKANZ);
+		  os << string2TeX(bez->Bezeichnung(BEZEICHNUNG_SIGNIFIKANZ));
 	      }
 	   }
 #endif 
@@ -1399,8 +1399,9 @@ void LR_Abstraktion::page_header(std::ostream &os)
         	<< "E-Mail: "<<kunde_von->get_first_telefon(TEL_E_MAIL)<<"\\\\\n";
         }
 
-	if(kunde_an->VerkNr()!=Person::none_id && Typ()!=Extern)
-	  {kunde_an->getVerkaeufer();
+	if(kunde_an->VerkNr()!=Kunde::none_id && Typ()!=Extern)
+	  {
+//kunde_an->getVerkaeufer();
            os << "\\vspace*{2mm}\\bf "<<mld->MLT(MultiL_Dict::TXT_BESUCHTSIE)<<":\\rm \\\\\n"
            	<< kunde_an->VerkName() <<"~\\\\\n";
           }
