@@ -387,6 +387,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
 #endif
 
  betrag=0;
+ zwischensumme_betrag=0;
 
  Kunde::ID kunden_id = KdNr();
  
@@ -547,8 +548,12 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
      else if (preise_addieren && i!=begin()) // da ist noch was offen ...
         {		// bug (?) in tabularx (zu großer Abstand) beheben
          if(zwischensumme_drucken)
-          {drucken_betrag(os,mld->MLT(MultiL_Dict::TXT_ZWISCHENSUMME),betrag); 
+          {
+	   fixedpoint<2> zwb=betrag - zwischensumme_betrag;
+	   drucken_betrag(os,mld->MLT(MultiL_Dict::TXT_ZWISCHENSUMME),
+					zwb,preisspalte-1); 
                       // Zwischensumme zum Lieferschein
+	   zwischensumme_betrag=betrag;
            zwischensumme_drucken=false;
           }
          os << "\\end{tabularx}~\\\\[-1ex]\n";
@@ -661,6 +666,12 @@ std::cout << "table ends\n";
    {
     
 #warning Schätzwert: Zeilen fuer Summe benötigt   
+
+   if(Typ() == Rechnung)
+     {fixedpoint<2> zwb=betrag - zwischensumme_betrag;
+      drucken_betrag(os,mld->MLT(MultiL_Dict::TXT_ZWISCHENSUMME),
+					zwb,preisspalte-1);  
+     }
 
 #ifdef MABELLA_EXTENSIONS
      if (zeilen_passen_noch<4)
@@ -1283,11 +1294,13 @@ void LR_Abstraktion::neue_spalte(bool& erste_spalte, std::ostream &os)
   else erste_spalte = false;
 }
 
-void LR_Abstraktion::drucken_betrag(std::ostream &os,const std::string &text, fixedpoint<2> betrag)
+void LR_Abstraktion::drucken_betrag(std::ostream &os,const std::string &text, 
+			fixedpoint<2> betrag, int preiscolumn)
 {
+int prcl = preiscolumn == 0 ? preisspalte : preiscolumn;
 
-  os << "\\cline{"<<preisspalte<<"-"<<preisspalte<<"}"<<"\n";
-  os << "\\multicolumn{" << preisspalte-1 << 
+  os << "\\cline{"<<prcl<<"-"<< (prcl<preisspalte ? preisspalte : prcl) <<"}"<<"\n";
+  os << "\\multicolumn{" << prcl-1 << 
    	"}{r}{"<<text<<" }";  
 //  os << zur_preisspalte << text << " " ;
 #ifndef MABELLA_EXTENSIONS // also ich brauch das nicht ...  

@@ -245,6 +245,7 @@ class LR_Abstraktion: public LR_Base
 
 
  fixedpoint<2> betrag;		//
+ fixedpoint<2> zwischensumme_betrag;		//
  fixedpoint<2> tabellenbetrag;	// 
 
  fixedpoint<2> nettobetrag;	// netto
@@ -400,7 +401,8 @@ private:
    void drucken_table_header(std::ostream &os, const cH_ExtBezSchema& schema,
       		fixedpoint<2> preismenge, const std::string &preiseinheit);
 
-   void drucken_betrag(std::ostream &os, const std::string &text, fixedpoint<2> betrag);
+   void drucken_betrag(std::ostream &os, const std::string &text, 
+			fixedpoint<2> betrag, int preiscolumn=0);
 
    void calc_all(cH_Kunde k,bool mwst);
 public:
