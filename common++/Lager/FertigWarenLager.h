@@ -1,4 +1,4 @@
-// $Id: FertigWarenLager.h,v 1.16 2004/01/14 20:10:06 jacek Exp $
+// $Id: FertigWarenLager.h,v 1.17 2004/01/20 10:33:46 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -46,9 +46,11 @@ private:
    
 
 public:
-
-#if defined MABELLA_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
     static const unsigned int default_lagerid=1;
+    int Id() const { return lagerid; }
+    
+#if defined MABELLA_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
+
    
       FertigWarenLager(const FertigWaren _fw, int lagid) :
       		LagerBase(ppsInstanzID::Fertigwarenlager),
@@ -63,8 +65,7 @@ public:
       {
        initLager();
       }
-      
-  int Id() const { return lagerid; }
+
   const std::string Bezeichnung() const { return bezeichnung; }
   const std::string Tabelle() const { return tabelle; } 
   const std::string ViewTabelle() const { return view_tabelle; }   
@@ -76,7 +77,18 @@ public:
       {}
       FertigWarenLager() : LagerBase(ppsInstanzID::None),
       		fw(FertigWaren()) {}
+
+      FertigWarenLager(int lagid) : 
+      		LagerBase(ppsInstanzID::None),
+      		fw(FertigWaren()), lagerid(lagid)
+      { }      		
 #endif
+
+   FertigWarenLager(FertigWarenLager &l) :
+   		LagerBase((LagerBase)l),
+   		fw(l.fw), lagerid(l.lagerid)
+   	{}
+   		
 
    ArtikelBase Artikel() const {return fw.Artikel();}
    std::pair<Zeitpunkt_new,int> letzteInventur();
