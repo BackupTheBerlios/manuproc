@@ -30,6 +30,10 @@ void windowTop::on_notebook1_switch_page(Gtk::Notebook_Helpers::Page* page,guint
                                 else show_kontaktpersonen(); 
                                 break; 
      case PAGE_PERSON         : show_privatpersonen(); break; 
+     case PAGE_NOTIZEN		: 
+     	try { load_notizen(); }
+        catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
+     	break;
    }
 }
 
@@ -163,6 +167,14 @@ void windowTop::clear_entrys()
    riba_save->set_sensitive(false);
    riba_abbruch->set_sensitive(false);     
    zahlverfahren_book->set_page(PAGE_DTAUS); 
+   
+   aufnotiz->delete_text(0,-1);
+   rngnotiz->delete_text(0,-1);
+   liefnotiz->delete_text(0,-1);
+   aufnotiz_save->set_sensitive(false);
+   rngnotiz_save->set_sensitive(false);   
+   liefnotiz_save->set_sensitive(false);   
+   
 }
 
 
@@ -335,3 +347,72 @@ void windowTop::on_button_neue_spl_anlegen_clicked()
  PreisListe::createPreisliste(spinbutton_new_spreislist->get_value_as_int(),e);
 }
 */
+
+
+
+void windowTop::on_aufnotiz_save_clicked()
+{  
+ if(kundendaten->getNummer()==Kunde::none_id) return; 
+ 
+ kundendaten->setFixeNotiz(Kunde::AUF_NOTIZ,
+ 	aufnotiz->get_chars(0,aufnotiz->get_length()));
+ aufnotiz_save->set_sensitive(false); 
+}
+
+void windowTop::on_aufnotiz_changed()
+{  
+ aufnotiz_save->set_sensitive(true);
+}
+
+void windowTop::on_liefnotiz_save_clicked()
+{  
+ if(kundendaten->getNummer()==Kunde::none_id) return; 
+ 
+ kundendaten->setFixeNotiz(Kunde::LIEF_NOTIZ,
+ 	liefnotiz->get_chars(0,liefnotiz->get_length()));
+ liefnotiz_save->set_sensitive(false); 
+}
+
+void windowTop::on_liefnotiz_changed()
+{  
+ liefnotiz_save->set_sensitive(true); 
+}
+
+void windowTop::on_rngnotiz_save_clicked()
+{  
+ if(kundendaten->getNummer()==Kunde::none_id) return; 
+ 
+ kundendaten->setFixeNotiz(Kunde::RNG_NOTIZ,
+ 	rngnotiz->get_chars(0,rngnotiz->get_length()));
+ rngnotiz_save->set_sensitive(false); 
+}
+
+void windowTop::on_rngnotiz_changed()
+{  
+ rngnotiz_save->set_sensitive(true);
+}
+
+void windowTop::load_notizen()
+{
+ if(kundendaten->getNummer()==Kunde::none_id) return; 
+
+ gint pos=0; 
+ std::string n;
+ 
+ n=kundendaten->fixeNotiz(Kunde::AUF_NOTIZ);
+ aufnotiz->insert_text(n.c_str(),n.size(),&pos);
+ aufnotiz_save->set_sensitive(false);
+
+ n=kundendaten->fixeNotiz(Kunde::RNG_NOTIZ); 
+ rngnotiz->insert_text(n.c_str(),n.size(),&pos);
+ rngnotiz_save->set_sensitive(false);
+ 
+ n=kundendaten->fixeNotiz(Kunde::LIEF_NOTIZ); 
+ liefnotiz->insert_text(n.c_str(),n.size(),&pos);
+ liefnotiz_save->set_sensitive(false); 
+ 
+}
+
+
+
+

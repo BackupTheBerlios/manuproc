@@ -3209,6 +3209,7 @@ Auftrag</label>
 	<cxx_visibility>protected</cxx_visibility>
 	<handle_size>15</handle_size>
 	<gutter_size>6</gutter_size>
+	<position>0</position>
 	<child>
 	  <padding>0</padding>
 	  <expand>True</expand>
@@ -4184,17 +4185,23 @@ Fertig</label>
       </child>
 
       <widget>
-	<class>GtkScrolledWindow</class>
-	<name>scrolledwindow4</name>
-	<hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
-	<vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
-	<hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
-	<vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
+	<class>GtkVPaned</class>
+	<name>vpaned2</name>
+	<handle_size>10</handle_size>
+	<gutter_size>10</gutter_size>
+	<position>180</position>
 
 	<widget>
-	  <class>GtkViewport</class>
-	  <name>viewport1</name>
-	  <shadow_type>GTK_SHADOW_NONE</shadow_type>
+	  <class>GtkScrolledWindow</class>
+	  <name>scrolledwindow4</name>
+	  <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
+	  <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
+	  <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
+	  <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
+	  <child>
+	    <shrink>True</shrink>
+	    <resize>False</resize>
+	  </child>
 
 	  <widget>
 	    <class>Custom</class>
@@ -4214,6 +4221,85 @@ Fertig</label>
 	    <int1>5</int1>
 	    <int2>4</int2>
 	    <last_modification_time>Thu, 04 Oct 2001 12:19:17 GMT</last_modification_time>
+	  </widget>
+	</widget>
+
+	<widget>
+	  <class>GtkFrame</class>
+	  <name>frame33</name>
+	  <label>Notiz</label>
+	  <label_xalign>0.0899999</label_xalign>
+	  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	  <child>
+	    <shrink>True</shrink>
+	    <resize>True</resize>
+	  </child>
+
+	  <widget>
+	    <class>GtkHBox</class>
+	    <name>hbox22</name>
+	    <homogeneous>False</homogeneous>
+	    <spacing>0</spacing>
+
+	    <widget>
+	      <class>GtkScrolledWindow</class>
+	      <name>scrolledwindow16</name>
+	      <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
+	      <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
+	      <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
+	      <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
+	      <child>
+		<padding>0</padding>
+		<expand>True</expand>
+		<fill>True</fill>
+		<pack>GTK_PACK_END</pack>
+	      </child>
+
+	      <widget>
+		<class>GtkText</class>
+		<name>lief_notiz</name>
+		<cxx_visibility>protected</cxx_visibility>
+		<can_focus>True</can_focus>
+		<signal>
+		  <name>changed</name>
+		  <handler>on_liefnotiz_changed</handler>
+		  <last_modification_time>Tue, 25 Mar 2003 15:32:14 GMT</last_modification_time>
+		</signal>
+		<editable>True</editable>
+		<text></text>
+	      </widget>
+	    </widget>
+
+	    <widget>
+	      <class>GtkToolbar</class>
+	      <name>toolbar16</name>
+	      <orientation>GTK_ORIENTATION_HORIZONTAL</orientation>
+	      <type>GTK_TOOLBAR_BOTH</type>
+	      <space_size>5</space_size>
+	      <space_style>GTK_TOOLBAR_SPACE_EMPTY</space_style>
+	      <relief>GTK_RELIEF_NORMAL</relief>
+	      <tooltips>True</tooltips>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+
+	      <widget>
+		<class>GtkButton</class>
+		<child_name>Toolbar:button</child_name>
+		<name>liefnotiz_save</name>
+		<cxx_visibility>protected</cxx_visibility>
+		<sensitive>False</sensitive>
+		<signal>
+		  <name>clicked</name>
+		  <handler>on_liefnotiz_save_clicked</handler>
+		  <last_modification_time>Tue, 25 Mar 2003 15:32:34 GMT</last_modification_time>
+		</signal>
+		<label>speichern</label>
+		<stock_pixmap>GNOME_STOCK_PIXMAP_SAVE</stock_pixmap>
+	      </widget>
+	    </widget>
 	  </widget>
 	</widget>
       </widget>

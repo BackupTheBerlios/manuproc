@@ -304,7 +304,7 @@ catch(SQLerror &e) { std::cout << e; return; }
 #endif	
   }
    
-    if(Typ()==Auftrag || Typ()==Rechnung)
+    if(Typ()==Auftrag || Typ()==Rechnung || Typ()==Lieferschein)
       if(!Notiz().empty())
         {
 	 Gtk2TeX::StringFlags sf;
@@ -982,14 +982,15 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
   else
 #ifdef MABELLA_EXTENSIONS
 #warning Provisorium !!
-     {MultiL_Dict::LangTXT mld_idx=MultiL_Dict::TXT_ARTIKEL;
+     {
+//     MultiL_Dict::LangTXT mld_idx=MultiL_Dict::TXT_ARTIKEL;
      for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz);j!=schema->sigend(signifikanz);++j)
          { tabcolumn += j->TeXtabformat ; ++spaltenzahl ; 
 //           ueberschriften += "&\\mbox{"+ug + j->bezkomptext+"}";
-           ueberschriften += "&\\mbox{"+ug +mld->MLT(mld_idx)+"}";
-	  int t=(int)mld_idx; 
-	  t++; 
-	  mld_idx=(MultiL_Dict::LangTXT)t;
+           ueberschriften += "&\\mbox{"+ug +mld->MLT(j->textid)+"}";
+//	  int t=(int)mld_idx; 
+//	  t++; 
+//	  mld_idx=(MultiL_Dict::LangTXT)t;
          }
      }
 #else

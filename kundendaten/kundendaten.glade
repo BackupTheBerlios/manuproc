@@ -4787,6 +4787,285 @@ anlegen</label>
 	<xpad>0</xpad>
 	<ypad>0</ypad>
       </widget>
+
+      <widget>
+	<class>GtkVBox</class>
+	<name>vbox8</name>
+	<homogeneous>False</homogeneous>
+	<spacing>0</spacing>
+
+	<widget>
+	  <class>GtkVPaned</class>
+	  <name>vpaned1</name>
+	  <handle_size>10</handle_size>
+	  <gutter_size>10</gutter_size>
+	  <position>176</position>
+	  <child>
+	    <padding>0</padding>
+	    <expand>True</expand>
+	    <fill>True</fill>
+	  </child>
+
+	  <widget>
+	    <class>GtkFrame</class>
+	    <name>frame65</name>
+	    <label>Auftragsnotiz</label>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	    <child>
+	      <shrink>True</shrink>
+	      <resize>False</resize>
+	    </child>
+
+	    <widget>
+	      <class>GtkHBox</class>
+	      <name>hbox13</name>
+	      <homogeneous>False</homogeneous>
+	      <spacing>0</spacing>
+
+	      <widget>
+		<class>GtkToolbar</class>
+		<name>toolbar2</name>
+		<orientation>GTK_ORIENTATION_HORIZONTAL</orientation>
+		<type>GTK_TOOLBAR_BOTH</type>
+		<space_size>5</space_size>
+		<space_style>GTK_TOOLBAR_SPACE_EMPTY</space_style>
+		<relief>GTK_RELIEF_NORMAL</relief>
+		<tooltips>True</tooltips>
+		<child>
+		  <padding>0</padding>
+		  <expand>False</expand>
+		  <fill>False</fill>
+		</child>
+
+		<widget>
+		  <class>GtkButton</class>
+		  <child_name>Toolbar:button</child_name>
+		  <name>aufnotiz_save</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <sensitive>False</sensitive>
+		  <signal>
+		    <name>clicked</name>
+		    <handler>on_aufnotiz_save_clicked</handler>
+		    <last_modification_time>Tue, 25 Mar 2003 10:27:24 GMT</last_modification_time>
+		  </signal>
+		  <label>speichern</label>
+		  <stock_pixmap>GNOME_STOCK_PIXMAP_SAVE</stock_pixmap>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkScrolledWindow</class>
+		<name>scrolledwindow6</name>
+		<hscrollbar_policy>GTK_POLICY_ALWAYS</hscrollbar_policy>
+		<vscrollbar_policy>GTK_POLICY_ALWAYS</vscrollbar_policy>
+		<hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
+		<vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
+		<child>
+		  <padding>0</padding>
+		  <expand>True</expand>
+		  <fill>True</fill>
+		</child>
+
+		<widget>
+		  <class>GtkText</class>
+		  <name>aufnotiz</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <signal>
+		    <name>changed</name>
+		    <handler>on_aufnotiz_changed</handler>
+		    <last_modification_time>Tue, 25 Mar 2003 10:26:48 GMT</last_modification_time>
+		  </signal>
+		  <editable>True</editable>
+		  <text></text>
+		</widget>
+	      </widget>
+	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>GtkVPaned</class>
+	    <name>vpaned2</name>
+	    <handle_size>10</handle_size>
+	    <gutter_size>10</gutter_size>
+	    <position>220</position>
+	    <child>
+	      <shrink>True</shrink>
+	      <resize>True</resize>
+	    </child>
+
+	    <widget>
+	      <class>GtkFrame</class>
+	      <name>frame66</name>
+	      <label>Lieferscheinnotiz</label>
+	      <label_xalign>0</label_xalign>
+	      <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	      <child>
+		<shrink>True</shrink>
+		<resize>False</resize>
+	      </child>
+
+	      <widget>
+		<class>GtkHBox</class>
+		<name>hbox14</name>
+		<homogeneous>False</homogeneous>
+		<spacing>0</spacing>
+
+		<widget>
+		  <class>GtkToolbar</class>
+		  <name>toolbar3</name>
+		  <orientation>GTK_ORIENTATION_HORIZONTAL</orientation>
+		  <type>GTK_TOOLBAR_BOTH</type>
+		  <space_size>5</space_size>
+		  <space_style>GTK_TOOLBAR_SPACE_EMPTY</space_style>
+		  <relief>GTK_RELIEF_NORMAL</relief>
+		  <tooltips>True</tooltips>
+		  <child>
+		    <padding>0</padding>
+		    <expand>False</expand>
+		    <fill>False</fill>
+		  </child>
+
+		  <widget>
+		    <class>GtkButton</class>
+		    <child_name>Toolbar:button</child_name>
+		    <name>liefnotiz_save</name>
+		    <cxx_visibility>protected</cxx_visibility>
+		    <sensitive>False</sensitive>
+		    <signal>
+		      <name>clicked</name>
+		      <handler>on_liefnotiz_save_clicked</handler>
+		      <last_modification_time>Tue, 25 Mar 2003 14:48:57 GMT</last_modification_time>
+		    </signal>
+		    <label>speichern</label>
+		    <stock_pixmap>GNOME_STOCK_PIXMAP_SAVE</stock_pixmap>
+		  </widget>
+		</widget>
+
+		<widget>
+		  <class>GtkScrolledWindow</class>
+		  <name>scrolledwindow7</name>
+		  <hscrollbar_policy>GTK_POLICY_ALWAYS</hscrollbar_policy>
+		  <vscrollbar_policy>GTK_POLICY_ALWAYS</vscrollbar_policy>
+		  <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
+		  <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
+		  <child>
+		    <padding>0</padding>
+		    <expand>True</expand>
+		    <fill>True</fill>
+		  </child>
+
+		  <widget>
+		    <class>GtkText</class>
+		    <name>liefnotiz</name>
+		    <cxx_visibility>protected</cxx_visibility>
+		    <can_focus>True</can_focus>
+		    <signal>
+		      <name>changed</name>
+		      <handler>on_liefnotiz_changed</handler>
+		      <last_modification_time>Tue, 25 Mar 2003 11:55:57 GMT</last_modification_time>
+		    </signal>
+		    <editable>True</editable>
+		    <text></text>
+		  </widget>
+		</widget>
+	      </widget>
+	    </widget>
+
+	    <widget>
+	      <class>GtkFrame</class>
+	      <name>frame67</name>
+	      <label>Rechnungsnotiz</label>
+	      <label_xalign>0</label_xalign>
+	      <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	      <child>
+		<shrink>True</shrink>
+		<resize>True</resize>
+	      </child>
+
+	      <widget>
+		<class>GtkHBox</class>
+		<name>hbox15</name>
+		<homogeneous>False</homogeneous>
+		<spacing>0</spacing>
+
+		<widget>
+		  <class>GtkToolbar</class>
+		  <name>toolbar4</name>
+		  <orientation>GTK_ORIENTATION_HORIZONTAL</orientation>
+		  <type>GTK_TOOLBAR_BOTH</type>
+		  <space_size>5</space_size>
+		  <space_style>GTK_TOOLBAR_SPACE_EMPTY</space_style>
+		  <relief>GTK_RELIEF_NORMAL</relief>
+		  <tooltips>True</tooltips>
+		  <child>
+		    <padding>0</padding>
+		    <expand>False</expand>
+		    <fill>False</fill>
+		  </child>
+
+		  <widget>
+		    <class>GtkButton</class>
+		    <child_name>Toolbar:button</child_name>
+		    <name>rngnotiz_save</name>
+		    <cxx_visibility>protected</cxx_visibility>
+		    <sensitive>False</sensitive>
+		    <signal>
+		      <name>clicked</name>
+		      <handler>on_rngnotiz_save_clicked</handler>
+		      <last_modification_time>Tue, 25 Mar 2003 11:56:48 GMT</last_modification_time>
+		    </signal>
+		    <label>speichern</label>
+		    <stock_pixmap>GNOME_STOCK_PIXMAP_SAVE</stock_pixmap>
+		  </widget>
+		</widget>
+
+		<widget>
+		  <class>GtkScrolledWindow</class>
+		  <name>scrolledwindow8</name>
+		  <hscrollbar_policy>GTK_POLICY_ALWAYS</hscrollbar_policy>
+		  <vscrollbar_policy>GTK_POLICY_ALWAYS</vscrollbar_policy>
+		  <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
+		  <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
+		  <child>
+		    <padding>0</padding>
+		    <expand>True</expand>
+		    <fill>True</fill>
+		  </child>
+
+		  <widget>
+		    <class>GtkText</class>
+		    <name>rngnotiz</name>
+		    <cxx_visibility>protected</cxx_visibility>
+		    <can_focus>True</can_focus>
+		    <signal>
+		      <name>changed</name>
+		      <handler>on_rngnotiz_changed</handler>
+		      <last_modification_time>Tue, 25 Mar 2003 11:57:02 GMT</last_modification_time>
+		    </signal>
+		    <editable>True</editable>
+		    <text></text>
+		  </widget>
+		</widget>
+	      </widget>
+	    </widget>
+	  </widget>
+	</widget>
+      </widget>
+
+      <widget>
+	<class>GtkLabel</class>
+	<child_name>Notebook:tab</child_name>
+	<name>label37</name>
+	<label>Notizen</label>
+	<justify>GTK_JUSTIFY_CENTER</justify>
+	<wrap>False</wrap>
+	<xalign>0.5</xalign>
+	<yalign>0.5</yalign>
+	<xpad>0</xpad>
+	<ypad>0</ypad>
+      </widget>
     </widget>
 
     <widget>

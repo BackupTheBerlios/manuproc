@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.40 2003/03/25 16:29:37 jacek Exp $
+// $Id: Kunde.h,v 1.41 2003/03/26 14:40:36 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -384,6 +384,7 @@ public:
  int Sprache() const throw(SQLerror);
  typedef enum {RNG_NOTIZ=1,LIEF_NOTIZ=2,AUF_NOTIZ=3} NotizZiel;
  std::string fixeNotiz(const NotizZiel nz) throw(SQLerror);
+ void setFixeNotiz(const NotizZiel nz, const std::string n) throw(SQLerror); 
 
 };
 

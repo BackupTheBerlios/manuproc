@@ -305,6 +305,7 @@ public:
    std::string Notiz() const { 
       if (Typ()==Auftrag) return u.a->Notiz();
       if (Typ()==Rechnung) return u.r->Notiz();
+      if (Typ()==Lieferschein) return u.l->Notiz();
       abort();}
 private:
    void drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,

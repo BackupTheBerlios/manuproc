@@ -19,7 +19,8 @@ class windowTop : public windowTop_glade
 
         Transaction transaction; // Für die SearchCombos
         friend class windowTop_glade;
-        enum enum_notebook{PAGE_KUNDE,PAGE_DETAILS,PAGE_KONTAKTPERSON,PAGE_PERSON};
+        enum enum_notebook{PAGE_KUNDE,PAGE_DETAILS,PAGE_KONTAKTPERSON,
+			PAGE_PERSON, PAGE_NOTIZEN};
         enum enum_zahl_verfahren{PAGE_DTAUS,PAGE_RIBA,PAGE_LCR};
         void on_notebook1_switch_page(Gtk::Notebook_Helpers::Page* page,guint pagenr);
         void on_gruppenwahl_activate();
@@ -122,6 +123,13 @@ class windowTop : public windowTop_glade
         void on_PersonenPrivatTelefon_remove(cH_Telefon t) {}
         void clear_update_bits();
 
+        void on_aufnotiz_save_clicked();
+        void on_aufnotiz_changed();
+        void on_liefnotiz_save_clicked();
+        void on_liefnotiz_changed();
+        void on_rngnotiz_save_clicked();
+        void on_rngnotiz_changed();
+
 // war public:
 
         // Kontaktpersonen
@@ -150,6 +158,8 @@ class windowTop : public windowTop_glade
         void on_entryPersonenDatenVorname_activate();
         void geburtstag_activate();
         void on_comboentryPersonenDatenAnrede_activate();
+
+	void load_notizen();
 
 public:
 
