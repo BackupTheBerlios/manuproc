@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.7 2003/07/25 12:53:17 jacek Exp $
+// $Id: AufEintrag_Lager.cc,v 1.8 2003/07/31 11:23:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -141,6 +141,23 @@ AuftragBase::mengen_t AufEintrag::Auslagern
      //   abschreibmenge=-min(-abmenge,i->getGeliefert());
 }
 
+AufEintragBase AufEintrag::default_opfer(cH_ppsInstanz i,mengen_t menge,const ArtikelBase &aeb)
+{  return AufEintragBase();
+#if 0
+      if (!opfer)
+      {  brauch_noch=Auslagern(AuftragBase(Instanz(),plan_auftrag_id),Artikel(),brauch_noch,
+      		uid,false,ctx.leb);
+         if (!!brauch_noch)
+         {  brauch_noch=Auslagern(AuftragBase(Instanz(),plan_auftrag_id),Artikel(),brauch_noch,
+      		uid,false,ctx.leb);
+         }
+      }
+#endif
+}
+
+AufEintragBase (*AufEintrag::opfer_auswaehlen)(cH_ppsInstanz,mengen_t,const ArtikelBase &)
+	= &AufEintrag::default_opfer;
+
 void AufEintrag::Auslagern
 	(mengen_t menge, unsigned uid, const ProductionContext &ctx)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
@@ -156,19 +173,20 @@ void AufEintrag::Auslagern
    {  // abbestellen
       MengeAendern(uid,-menge,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
       // LagerMenge reduzieren (wir sollen ja das Lager führen)
-      mengen_t brauch_noch;
+      mengen_t brauch_noch=menge;
 // müsste Produzierte Menge unten löschen wenn nicht prod_selbst!
-      brauch_noch=Auslagern(AuftragBase(Instanz(),plan_auftrag_id),Artikel(),menge,
-      		uid,false,ctx.leb);
-      if (!!brauch_noch)
-      {  brauch_noch=Auslagern(AuftragBase(Instanz(),plan_auftrag_id),Artikel(),brauch_noch,
-      		uid,false,ctx.leb);
+     while (!!brauch_noch)
+     {AufEintragBase opfer=(*opfer_auswaehlen)(Instanz(),brauch_noch,Artikel());
+      if (!opfer)
+      {  std::cerr << "LOG: ausgeliefert ohne Lagerinhalt\n";
+         brauch_noch=0;
       }
-      if (!!brauch_noch)
-         std::cerr << "LOG: ausgeliefert ohne Lagerinhalt\n";
+      else
+         brauch_noch=AufEintrag(opfer).Auslagern(brauch_noch,uid,ctx); // ,false);
+     }
       // produzieren
       unbestellteMengeProduzieren(Instanz(),Artikel(),menge,uid,true,
-      		ctx.aeb,ctx.leb);
+      		ctx.aeb/*oder *this?*/,ctx.leb);
    }
 }
 

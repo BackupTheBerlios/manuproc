@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.62 2003/07/25 08:00:09 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.63 2003/07/31 11:23:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -244,6 +244,9 @@ public:
  ArtikelBase::ID ArtId() const {return artikel.Id();}
  ArtikelBase Artikel() const {return artikel;}
 
+ static AufEintragBase default_opfer(cH_ppsInstanz i,mengen_t menge,const ArtikelBase &aeb);
+ static AufEintragBase (*opfer_auswaehlen)(cH_ppsInstanz,mengen_t,const ArtikelBase &);
+
 // einen Teil des Auftrages=0 verplanen (in anderen Auftrag<>0 setzen)
 // gibt neue Zeile zurück; rekursiv = alle Instanzen darunter auch planen,
 // rekursiv wird asuschließlich vom Erfassungs/Reperaturprogramm verwendet
@@ -252,6 +255,7 @@ public:
          AufEintragBase *verplanter_aeb=0,bool rekursiv=false) throw(std::exception);
  __deprecated void ProduktionsPlanung(int uid,mengen_t menge,const AuftragBase &zielauftrag,
       const ManuProC::Datum &datum,cH_ppsInstanz instanz) throw(std::exception);
+      
  // 2er anlegen, Material bestellen
  // *this ist der ZielAufEintrag
  void Ueberplanen(int uid,const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum);
