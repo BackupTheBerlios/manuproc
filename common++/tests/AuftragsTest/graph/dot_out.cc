@@ -1,4 +1,4 @@
-// $Id: dot_out.cc,v 1.5 2002/10/09 14:47:22 thoma Exp $
+// $Id: dot_out.cc,v 1.6 2002/10/24 14:06:51 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -19,7 +19,8 @@
 
 #include <fstream>
 #include "dot_out.h"
-
+#include <Artikel/ArtikelBezeichnung.h>
+#include <Auftrag/AufEintrag.h>
 
 void dot_out::write()
 {
@@ -39,8 +40,9 @@ void dot_out::write()
      case LieferscheinZusatz : label="Lieferschein Zusatz Test"; break;
      case LieferscheinZweiAuftraege : label="Lieferschein Zwei Aufträge"; break;
      case ZweiKunden : label="ZweiKunden"; break;
+     case ManuProCTest : label="ManuProC"; break;
      case Legende : label="Legende"; break;
-     default: cerr << "Fehler\n"; exit(1);
+     default: label= "Fehler, kein Laberl gestze \n"; 
    }
   if(mode!=Legende)  write_node(fout);
   else write_legend(fout);
@@ -117,19 +119,24 @@ void Node::write(ofstream &fout,AufEintragBase auftrag,std::string menge,std::st
 {
   std::string shape="Mrecord";
   if(Auftrag().Id()>=20000 || Auftrag().Id()==1) shape="record";
+  std::string artikel="?";
+  try{
+    artikel=cH_ArtikelBezeichnung(AufEintrag(auftrag).Artikel())->Bezeichnung();
+  }catch(AufEintrag::NoAEB_Error) {}
+  
   fout << "\n\tsubgraph p_"<<ClusterCount()<<" {\n"
           "\t\tnode [shape="<<shape<<"];\n"
-          "\t\t"<<bezeichner<<" [label=\"{"<<aeb_to_string(auftrag)<<" | "<<zusatz<<" | "<<menge<<"}\"];\n"
-          "\t\tfontsize=8;}\n";
+          "\t\t"<<bezeichner<<" [label=\"{"<<aeb_to_string(auftrag)<<" | "<<artikel<<" | "<<zusatz<<" | "<<menge<<"}\"];\n"
+          "\t\tfontsize=12;}\n";
 }
 
 void dot_out::Edge(ofstream &fout,Node n1,Node n2, std::string s,erank rank)
 {
   fout << "\n\t"<<n1.Name()<<" -> "<<n2.Name()
-       << " [fontsize=10,";
+       << " [fontsize=12,";
   if(rank==same) fout << "labeldistance=3.5,labelangle=90,";
   else fout << "labeldistance=2,labelangle=0,";
-  fout << " labelfontsize=12";
+  fout << " labelfontsize=14";
   switch (colour) {
     case Black : fout << ",labelfontcolor=black"; break;
     case Colour: fout << ",labelfontcolor=coral"; break;

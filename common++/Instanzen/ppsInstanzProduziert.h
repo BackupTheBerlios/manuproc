@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.h,v 1.1 2002/10/09 14:48:07 thoma Exp $
+// $Id: ppsInstanzProduziert.h,v 1.2 2002/10/24 14:06:28 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -34,7 +34,8 @@ namespace ManuProC{
               	           int _uid,
                           Kunde::ID _k=ManuProC::DefaultValues::EigeneKundenId,
                           LieferscheinBase::ID _lfrsid=LieferscheinBase::none_id)
-                     : artikel(a),kunde(_k),menge(m),uid(_uid),lfrsid(_lfrsid) {}
+                     : artikel(a),kunde(_k),menge(m),uid(_uid),lfrsid(_lfrsid)
+                           {}
          private:
             friend class AufEintrag;
             st_produziert(const Kunde::ID kunde,AufEintrag ae,AuftragBase::mengen_t m,int _uid,
@@ -46,6 +47,7 @@ namespace ManuProC{
       friend void ppsInstanz::Lager_abschreiben(ManuProC::st_produziert &P) const;
       AuftragBase::mengen_t abschreiben_oder_reduzieren(ppsInstanz::ID instanz,int id,AuftragBase::mengen_t abmenge);
       void Reduce_Zuordnung_Add_Parent(const AufEintragBase &aeb,AuftragBase::mengen_t menge);
+      void Reduce_DispoEltern(const AufEintragBase &aeb,AuftragBase::mengen_t menge);
       void check_dispo_auftraege(ppsInstanz::ID instanz);
       AuftragBase::mengen_t get_Menge_for(ppsInstanz::ID instanz,int id_);
       void fehler(ppsInstanz::ID instanz,Probleme typ,int id,AuftragBase::mengen_t m1,

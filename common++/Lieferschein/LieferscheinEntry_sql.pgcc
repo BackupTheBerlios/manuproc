@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry_sql.pgcc,v 1.21 2002/10/09 14:48:07 thoma Exp $ */
+/* $Id: LieferscheinEntry_sql.pgcc,v 1.22 2002/10/24 14:06:50 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,52 +25,48 @@
 #include <unistd.h>
 //#include <Instanzen/Produziert.h>
 #include <Instanzen/ppsInstanzProduziert.h>
-
+#include<Aux/FetchIStream.h>
+#include <Aux/FetchIStream_fixedpoint.h>
 exec sql include sqlca;
+
+
+FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry& z)
+{
+ is >> z.artikel >> z.zeilennr >> z.stueck>> z.menge >> z.palette >> z.yourauftrag 
+     >> z.zusatzinfo >> z.refauftrag ;
+
+ if(!z.zusatzinfo) return is;
+ std::string zquery="select instanz,coalesce(auftragid,"+itos(AuftragBase::none_id)+")"
+   ",coalesce(auftragznr,"+itos(AufEintragBase::none_znr)+"),menge "
+   " from lieferscheinentryzusatz where (instanz,lfrsid,lfsznr) = ("
+   +itos(z.Instanz()->Id())+","+itos(z.Id())+","+itos(z.Zeile())+")";
+ Query(zquery).FetchArray(z.VZusatz);
+ return is;  
+}
+
+FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry::st_zusatz& z)
+{
+  return is >> z.aeb >> z.menge;
+}
+
+
 
 LieferscheinEntry::LieferscheinEntry(const LieferscheinEntryBase &lsbase)
  throw(SQLerror) : LieferscheinEntryBase(lsbase) 
 {
- exec sql begin declare section;
- int INSTANZ=Instanz()->Id();
- int LFRSID=Id();
- int ZEILE=Zeile();
- int REFAUFTRAGID;
- int REFZEILENNR;
- int STUECK;
- float MENGE;
- long ARTIKELID;
- bool ZUSATZINFO;
- int PALETTE;
- int INVALID_REFAUFTRAGID,INVALID_ZEILENNUMMER;
- exec sql end declare section;
- INVALID_REFAUFTRAGID=AuftragBase::none_id;
- INVALID_ZEILENNUMMER=AufEintragBase::none_znr;
- exec sql select artikelid, coalesce(refauftragid,:INVALID_REFAUFTRAGID), 
-	 	coalesce(refzeilennr,:INVALID_ZEILENNUMMER), stueck, coalesce(menge,0),
-	 	coalesce(palette,0), coalesce(zusatzinfo,'f')
-	into :ARTIKELID, :REFAUFTRAGID, :REFZEILENNR, :STUECK, :MENGE,
-		:PALETTE, :ZUSATZINFO
-	from lieferscheinentry 
-   where (instanz,lfrsid,zeile) = (:INSTANZ,:LFRSID,:ZEILE);
- SQLerror::test(__FILELINE__,100);
- if(sqlca.sqlcode)
-  {
-    artikel=ArtikelBase();
-    refauftrag=AufEintragBase();
-    stueck=0;
-    menge=0;  
-    palette=0;
-    zusatzinfo=false;
-    return;
-  }
- artikel=ArtikelBase(ARTIKELID);
- refauftrag=AufEintragBase(Instanz(),REFAUFTRAGID,REFZEILENNR);
+ std::string qstr =
+  "select ly.artikelid, ly.zeile, coalesce(ly.stueck,0), "
+  " coalesce(ly.menge,0), coalesce(ly.palette,0), coalesce(youraufnr,''),"
+  " coalesce(ly.zusatzinfo,'f'), ly.instanz, "
+  " coalesce(ly.refauftragid,"+itos(ManuProcEntity<>::none_id)+"),"
+  " coalesce(ly.refzeilennr,"+itos(ManuProcEintrag::none_znr)+")"
+  " from lieferscheinentry ly "
+  " left join auftrag a on (ly.refauftragid,ly.instanz) = (a.auftragid,a.instanz)"
+  " where (ly.instanz,ly.lfrsid,ly.zeile) = ("
+   +itos(Instanz()->Id())+","+itos(Id())+","+itos(Zeile())+")"; 
 
- stueck=STUECK;
- menge=MENGE;
- palette=PALETTE;
- zusatzinfo=ZUSATZINFO;
+ Query(qstr).FetchOne(*this);
+
 }
 
 LieferscheinEntry::LieferscheinEntry(const LieferscheinBase &lsb,
@@ -145,14 +141,7 @@ void LieferscheinEntry::deleteEntry(const LieferscheinEntry &lse) throw(SQLerror
     if (lse.Menge()) geliefert *= lse.Menge();
     AufEintrag AE(lse.getAufEintragBase());
 
-//    cH_Kunde K=Lieferschein(lse).getKunde();
-//    ManuProC::st_produziert sp(K->Id(),AE,-geliefert,getuid(),LFRSID);
-//    cH_ppsInstanz(AE.Instanz())->Produziert(sp);
-
     AE.Produziert(-geliefert,LFRSID);
-
-//    Produziert(K->Id(),AE,-geliefert,getuid(),LFRSID).NichtSelbst();    
-//    AufEintrag(lse.getAufEintragBase()).abschreiben(-geliefert,LFRSID);
  }
 
  tr.commit();

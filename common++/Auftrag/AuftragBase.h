@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.31 2002/10/04 08:23:20 thoma Exp $ */
+/* $Id: AuftragBase.h,v 1.32 2002/10/24 14:06:49 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,6 +30,8 @@ class AufEintrag;
 // hier sollten noch viel mehr Funktionen aus Auftrag rein !!!
 class AufEintragBase;
 #include <BaseObjects/ManuProcEntity.h>
+class FetchIStream;
+
 
 class AuftragBase
 {
@@ -40,9 +42,9 @@ class AuftragBase
    static const int handplan_auftrag_id =  20000; // gemeint sind alle Aufträge, die NICHT 0,1,2 sind
    static const int dispo_auftrag_id =  2;
    static const int plan_auftrag_id  =  1;
-   static const int invalid_id       = ManuProcEntity::none_id ;
+   static const int invalid_id       = ManuProcEntity<>::none_id ;
    // warum umbenennen?
-   static const int none_id       = ManuProcEntity::none_id ;
+   static const int none_id       = ManuProcEntity<>::none_id ;
    static const int ungeplante_id    =  0;
 
    static const int PlanId_for(const cH_ppsInstanz &instanz);
@@ -57,7 +59,8 @@ class AuftragBase
 	        :instanz(_instanz), auftragid(aufid) 
 	        {}
 	AuftragBase(cH_ppsInstanz _instanz, int aufid,int kid) throw(SQLerror) ;
-        
+
+   std::string str() const;        
 	int Id() const {return auftragid;}
    void set_Id(int i) {auftragid = i;}
    ppsInstanz::ID InstanzID() const {return instanz->Id(); }
@@ -67,19 +70,23 @@ class AuftragBase
    void setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror);
 
    void create_if_not_exists(AufStatVal status,Kunde::ID kunde=Kunde::default_id) const;
-   void InstanzAuftraegeAnlegen(const ArtikelBase& art,const int altZnr,
-               const ManuProC::Datum& lieferdatum, const AufStatVal status, int uid,
-                const mengen_t menge) const; 
+   void BaumAnlegen(const AufEintrag& AE,int uid,bool setInstanzAuftraege=true) const;
+   void InstanzAuftraegeAnlegen(const AufEintrag& AE,mengen_t menge,int uid,bool automatisch_geplant=false) const;
    bool existEntry(const ArtikelBase& artid,
                         const ManuProC::Datum& lieferdatum,
                         int& znr,int &newznr, mengen_t& menge, const AufStatVal status
                         ) const throw(SQLerror);
    // gibt Zeilennummer zurück
+   struct st_tryUpdateEntry{bool automatisch_geplant;bool force_new;bool dispoplanung;
+          explicit st_tryUpdateEntry() : automatisch_geplant(false),force_new(false),dispoplanung(false){}
+          explicit st_tryUpdateEntry(bool a) : automatisch_geplant(a),force_new(false),dispoplanung(false){}
+          explicit st_tryUpdateEntry(bool a,bool b,bool c) 
+            : automatisch_geplant(a),force_new(b),dispoplanung(c){}
+         };
    int tryUpdateEntry(mengen_t bestellt, 
                const ManuProC::Datum lieferdatum, const ArtikelBase& artikel,
                AufStatVal status,int uid,const AufEintragBase& altAEB,
-               bool force_new=false,bool dispoplanung=false) 
-               const throw(SQLerror);
+               st_tryUpdateEntry st_bool=st_tryUpdateEntry()) const throw(SQLerror);
 
 	// wandelt enum in std::string um
 	static const std::string getStatusStr(AufStatVal a);
@@ -87,5 +94,8 @@ class AuftragBase
    bool operator==(const AuftragBase &b) const 
       {return instanz==b.instanz && auftragid==b.auftragid;}
 };
+
+//FetchIStream& operator>>(FetchIStream& is,AuftragBase::mengen_t &menge);
+
 
 #endif

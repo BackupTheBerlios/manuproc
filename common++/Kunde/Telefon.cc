@@ -1,4 +1,4 @@
-// $Id: Telefon.cc,v 1.7 2002/10/09 14:48:07 thoma Exp $
+// $Id: Telefon.cc,v 1.8 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -42,20 +42,20 @@ std::string Telefon::ArtString() const
 
 std::string Telefon::NummerStr() const
 {
-  return string("(+")+itos(nummer.land)+" "+itos(nummer.vorwahl)+") "+itos(nummer.nummer)+
+  return std::string("(+")+itos(nummer.land)+" "+itos(nummer.vorwahl)+") "+itos(nummer.nummer)+
   	((nummer.durchwahl ==-1) ? "" : ("-"+itos(nummer.durchwahl)));
 }
 
 
 
-std::vector<pair<std::string,TelArt> > Telefon::getTelArtVec()
+std::vector<std::pair<std::string,TelArt> > Telefon::getTelArtVec()
 {
-  vector<pair<std::string,TelArt> > V;
-  V.push_back(pair<std::string,TelArt>("Telefon",TEL_TEL));
-  V.push_back(pair<std::string,TelArt>("Fax",TEL_FAX));
-  V.push_back(pair<std::string,TelArt>("Mobil",TEL_MOB));
-  V.push_back(pair<std::string,TelArt>("e-mail",TEL_E_MAIL));
-  V.push_back(pair<std::string,TelArt>("Homepage",TEL_HOMEPAGE));
+  std::vector<std::pair<std::string,TelArt> > V;
+  V.push_back(std::pair<std::string,TelArt>("Telefon",TEL_TEL));
+  V.push_back(std::pair<std::string,TelArt>("Fax",TEL_FAX));
+  V.push_back(std::pair<std::string,TelArt>("Mobil",TEL_MOB));
+  V.push_back(std::pair<std::string,TelArt>("e-mail",TEL_E_MAIL));
+  V.push_back(std::pair<std::string,TelArt>("Homepage",TEL_HOMEPAGE));
   return V;
 }
 

@@ -1,4 +1,4 @@
-// $Id: AdminProblems.h,v 1.5 2002/10/11 08:37:51 christof Exp $
+// $Id: AdminProblems.h,v 1.6 2002/10/24 14:06:49 thoma Exp $
 /*  libc++: 
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Malte Thoma

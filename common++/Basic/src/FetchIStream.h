@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.10 2002/06/21 13:15:41 christof Exp $
+// $Id: FetchIStream.h,v 1.11 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,7 @@
 #define MPB_FETCHISTREAM_H
 #include <string>
 #include <vector>
+#include <Misc/SQLerror.h>
 extern "C" {
 #include <libpq-fe.h>
 }
@@ -41,6 +42,7 @@ public:
 	
 	FetchIStream &operator>>(std::string &str);
 	FetchIStream &operator>>(int &i);
+	FetchIStream &operator>>(long &i);
 	FetchIStream &operator>>(float &f);
 	FetchIStream &operator>>(double &f);
 	FetchIStream &operator>>(bool &b);
@@ -98,7 +100,10 @@ public:
 	{ return !eof; }
 	~Query();
 	static void Execute(const std::string &command);
+	template <class T> void FetchArray(std::vector<T> &);
+	template <class T> void FetchOne(T &);
 	template <class T> std::vector<T> FetchArray();
+	template <class T> T FetchOne();
 };
 
 static inline Query &operator>>(Query &q, FetchIStream &s)
@@ -106,15 +111,38 @@ static inline Query &operator>>(Query &q, FetchIStream &s)
    return q;
 }
 
-template <class T>
-std::vector<T> Query::FetchArray()
-{  std::vector<T> res;
+template <class T> 
+void Query::FetchArray(std::vector<T> &res)
+{  if (!good()) 
+   { SQLerror::test(__FUNCTION__); throw SQLerror(__FUNCTION__,-1,"bad result"); }
    FetchIStream is;
    while (((*this)>>is).good()) 
    { T x;
      is >> x;
      res.push_back(x);
    }
+}
+
+template <class T>
+void Query::FetchOne(T &res)
+{  if (!good()) 
+   { SQLerror::test(__FUNCTION__); throw SQLerror(__FUNCTION__,-1,"bad result"); }
+   FetchIStream is=Fetch();
+   is >> res;
+   if (Fetch().good()) throw SQLerror(__FUNCTION__,-2,"more than one result");
+}
+
+template <class T>
+std::vector<T> Query::FetchArray()
+{  std::vector<T> res;
+   FetchArray(res);
+   return res;
+}
+
+template <class T>
+T Query::FetchOne()
+{  T res;
+   FetchOne(res);
    return res;
 }
 

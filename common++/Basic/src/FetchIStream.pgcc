@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.20 2002/07/15 15:37:53 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.21 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -39,7 +39,9 @@ FetchIStream::FetchIStream(const std::string &descr, int line)
 }
 
 FetchIStream &FetchIStream::operator>>(std::string &str)
-{  if (naechstesFeld>=PQnfields(result)) 
+{  if (!result)
+	throw SQLerror("FetchIStream::operator>>",ECPG_UNKNOWN_DESCRIPTOR,"no result to fetch from (left?)");
+   if (naechstesFeld>=PQnfields(result)) 
 	throw SQLerror("FetchIStream::operator>>",ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end");
    const char *pval = PQgetvalue(result, zeile, naechstesFeld);
    if (pval) str=pval;
@@ -56,6 +58,13 @@ int FetchIStream::getIndicator() const
 }
 
 FetchIStream &FetchIStream::operator>>(int &i)
+{  std::string s;
+   *this >> s;
+   i=strtol(s.c_str(),0,10);
+   return *this;
+}
+
+FetchIStream &FetchIStream::operator>>(long &i)
 {  std::string s;
    *this >> s;
    i=strtol(s.c_str(),0,10);

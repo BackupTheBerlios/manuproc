@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.5 2002/10/09 14:48:07 thoma Exp $
+// $Id: adjust_store.cc,v 1.6 2002/10/24 14:06:50 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -51,7 +51,7 @@ int main(int argc,char *argv[])
        case 'i' : instanz = ppsInstanz::ID(atoi(optarg));break;
        case 'd' : database=optarg;break;
        case 'h' : dbhost=optarg;break;  
-       case '?' : cout << "USAGE: "<<argv[0]<<" -i <instanz> [-d <Datenbank>] [-h <dbhost>]\n";
+       case '?' : std::cout << "USAGE: "<<argv[0]<<" -i <instanz> [-d <Datenbank>] [-h <dbhost>]\n";
                   exit(1);              
      }
    }
@@ -75,7 +75,7 @@ adjust_store::adjust_store(cH_ppsInstanz _instanz)
 {
   if(!instanz->LagerInstanz())
    {
-     cout << "Fehler: "<<instanz->Name() <<" ist keine Lagerinstanz\n";
+     std::cout << "Fehler: "<<instanz->Name() <<" ist keine Lagerinstanz\n";
      exit(1);
    }
   getLagerInhalt();  
@@ -95,12 +95,12 @@ void adjust_store::FreieMengenAuftraege_anlegen()
 
    if(alt)   
      {
-      cout <<"Update von "<<cH_ArtikelBezeichnung(i->artikel)->Bezeichnung()
+      std::cout <<"Update von "<<cH_ArtikelBezeichnung(i->artikel)->Bezeichnung()
            <<"\tum "<<i->menge<<'\n';
      }
    else
      {
-      cout <<"Neuanlegen von "<<cH_ArtikelBezeichnung(i->artikel)->Bezeichnung()
+      std::cout <<"Neuanlegen von "<<cH_ArtikelBezeichnung(i->artikel)->Bezeichnung()
            <<"\tmit "<<i->menge<<'\n';
      }
   }
@@ -109,7 +109,7 @@ void adjust_store::FreieMengenAuftraege_anlegen()
 
 void adjust_store::vormerkungen_subrahieren()
 {
-cout << "Anzahl der Artikel im Lager = "<<LI.size()<<'\n';
+std::cout << "Anzahl der Artikel im Lager = "<<LI.size()<<'\n';
   for(std::vector<LagerInhalt>::const_iterator i=LI.begin();i!=LI.end();++i)
    {
      AuftragBase::mengen_t menge=i->GesamtMenge();

@@ -1,7 +1,7 @@
 SUBDIRS= BaseObjects DynamicEnums Aux ostream Artikel Auftrag Bank \
 		ExtBezSchema Ketten \
 		Kunde Lieferschein Material Lager Faeden Instanzen \
-		. Programme tests 
+		Vertrieb . Programme tests 
 	
 lib_LIBRARIES=libcommon++.a
 
@@ -43,6 +43,7 @@ libcommon___a_LIBADD= \
 		Aux/EntryValueBase.o \
 		Aux/EntryValueDatum.o \
 		Aux/EntryValueIntString.o \
+		Aux/EntryValueQuartal.o \
 		Aux/FetchIStream.o \
 		Aux/Global_Settings.o \
 		Aux/Handles.o \
@@ -50,6 +51,7 @@ libcommon___a_LIBADD= \
 		Aux/EAN_sql.o \
 		Aux/IOerror.o \
 		Aux/SQLerror_postgres.o \
+      Aux/Trace.o \
 		Aux/Transaction.o \
 		Aux/Waehrung_sql.o \
 		Aux/Zeitpunkt_new.o \
@@ -78,6 +80,7 @@ libcommon___a_LIBADD= \
 		Instanzen/Produktionsdauer.o \
 		Instanzen/ppsInstanzProduziert.o \
 		Instanzen/ppsInstanz_sql.o \
+		Instanzen/ppsInstanz.o \
       Ketten/ArtikelGang.o \
       Ketten/ArtikelGang_sql.o \
 		Ketten/Kette.o \
@@ -101,6 +104,7 @@ libcommon___a_LIBADD= \
 		Kunde/Telefon.o \
 		Kunde/Zahlungsart.o \
 		Kunde/Zahlungsart_sql.o \
+		Kunde/Kundengruppe.o \
 		Lager/FertigWaren_sql.o \
 		Lager/FertigWarenLager_sql.o \
 		Lager/JumboLager.o \
@@ -126,6 +130,8 @@ libcommon___a_LIBADD= \
 		Lieferschein/RechnungVoll_sql.o \
 		Lieferschein/Zahlungsart_sql.o \
 		ostream/time_t_ostr.o
+	Vertrieb/ProvAbrechnung_sql.o \
+		ProvAbrechnungEntry_sql.o
 
 BUILT_SOURCES=Misc
 

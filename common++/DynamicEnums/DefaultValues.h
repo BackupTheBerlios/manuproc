@@ -1,4 +1,4 @@
-/* $Id: DefaultValues.h,v 1.7 2002/10/09 14:48:07 thoma Exp $ */
+/* $Id: DefaultValues.h,v 1.8 2002/10/24 14:06:49 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -39,6 +39,7 @@ namespace ManuProC {
   const static int DefaultKundenId=1;
   const static ManuProC::DynamicEnums::Instanzen::enum_t Instanz= ManuProC::DynamicEnums::Instanzen::Kundenauftraege;
   const static ManuProC::DynamicEnums::Instanzen::enum_t KundenInstanz= ManuProC::DynamicEnums::Instanzen::Kundenauftraege;
+  const static ManuProC::DynamicEnums::Kundengruppen::enum_t Kunden= ManuProC::DynamicEnums::Kundengruppen::Kunden;
 
 
 #ifdef MABELLA_EXTENSIONS
@@ -60,6 +61,7 @@ namespace ManuProC {
 
   const static ManuProC::DynamicEnums::ArtikelTyp::enum_t  ArtikelTyp=ManuProC::DynamicEnums::ArtikelTyp::enum_t(1);
   const static ManuProC::DynamicEnums::Prozesse::enum_t  Prozess=ManuProC::DynamicEnums::Prozesse::enum_t(1);
+  const static ManuProC::DynamicEnums::Kundengruppen::enum_t Kunden= ManuProC::DynamicEnums::Kundengruppen::None;
 #endif
 
  }
@@ -68,14 +70,10 @@ namespace ManuProC {
 
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef PETIG_EXTENSIONS
+#ifdef MABELLA_EXTENSIONS
    #define DPD_LIEFERSCHEINE
    #define EAN_AUSDRUCKEN_IN_PPS
 #endif
 
-#ifndef MABELLA_EXTENSIONS
-   #define INSTANZEN_VERWALTUNG
-#endif
-
-
+#define INSTANZEN_VERWALTUNG
 #endif

@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.h,v 1.7 2002/10/09 14:48:07 thoma Exp $
+// $Id: Zahlungsart.h,v 1.8 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,7 +33,7 @@ class cH_Kunde;
 
 #include<vector>
 
-class Zahlungsart : public ManuProcEntity
+class Zahlungsart : public ManuProcEntity<>
 {
 public:
     struct st_skonto{int skontofrist; fixedpoint<2> skontosatz;
@@ -45,7 +45,7 @@ public:
 private:
     bool bankeinzug;
     fixedpoint<2> einzugrabatt;
-    vector<st_skonto> vec_skonto;
+    std::vector<st_skonto> vec_skonto;
     std::string kurzbezeichung,bezeichnung;
     int zahlungsfrist;
 
@@ -53,7 +53,7 @@ public:
     Zahlungsart(ID _id) throw (SQLerror) ;
     
     ID Id() const {  return entityid; }
-    const vector<st_skonto> getSkonto() const { return vec_skonto; }
+    const std::vector<st_skonto> getSkonto() const { return vec_skonto; }
     const st_skonto getSkonto(unsigned int i) const;
     const bool getBankeinzug() const { return bankeinzug; }
     const fixedpoint<2> getEinzugrabatt() const {return einzugrabatt;} 
@@ -74,7 +74,8 @@ public:
 		
     void TeX_out(std::ostream &os,
 		const ManuProC::Datum &zahlziel,
-		const cH_Kunde k) const;
+		const cH_Kunde k,
+		const fixedpoint<2> skontobetrag) const;
 
     bool operator==(const Zahlungsart& b) const
               {return Id()==b.Id();} 
@@ -87,7 +88,11 @@ class cH_Zahlungsart : public Handle<const Zahlungsart>
         typedef CacheStatic<Zahlungsart::ID,cH_Zahlungsart> cache_t;
         static cache_t cache;
         cH_Zahlungsart(const Zahlungsart *p) : Handle<const Zahlungsart>(p) {}	
+#if __GNUC__ > 2
+        friend class cache_t::stl_type;
+#else
         friend cache_t::stl_type;
+#endif
 //	friend class std::map<int, cH_Zahlungsart>;
         cH_Zahlungsart() {}
 public:

@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.5 2002/10/09 14:48:07 thoma Exp $
+// $Id: AuftragBase.cc,v 1.6 2002/10/24 14:06:49 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,20 +26,70 @@
 #include <Artikel/ArtikelStamm.h>
 #include <Auftrag/AufEintragZu.h>
 #include <Lager/Lager_Vormerkungen.h>
+#include <Aux/Trace.h>
 
-void AuftragBase::InstanzAuftraegeAnlegen(const ArtikelBase& artikel,
-      const int altZnr,const Petig::Datum& lieferdatum,
-      const AufStatVal status, int uid,const mengen_t menge) const
+std::string AuftragBase::str() const
 {
-   ArtikelBaum AB(artikel);
+  return instanz->Name()+"|"+itos(Id());
+}
+
+/*
+FetchIStream& operator>>(FetchIStream& is,AuftragBase::mengen_t &menge)
+{
+  is >> menge;
+  return is;
+}
+*/
+
+
+void AuftragBase::BaumAnlegen(const AufEintrag& AE,int uid,bool setInstanzAuftraege) const
+{
+   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),
+      "Artikel="+cH_ArtikelBezeichnung(AE.Artikel())->Bezeichnung(),
+      "Status="+itos(AE.getEntryStatus()),"LieferDatum="+AE.getLieferdatum().to_iso(),
+      "Menge="+dtos(AE.getStueck()),"setInstanzAuftrag="+itos(setInstanzAuftraege));
+  if(Instanz()==ppsInstanzID::Kundenauftraege)
+   {
+      cH_ppsInstanz i=ppsInstanz::getBestellInstanz(AE.Artikel());
+      if (i!=ppsInstanzID::None && i!=ppsInstanzID::Kundenauftraege)
+        {
+           AuftragBase AB(ppsInstanz::getBestellInstanz(AE.Artikel()),AuftragBase::ungeplante_id);
+           AB.tryUpdateEntry(AE.getStueck(),AE.getLieferdatum(),AE.Artikel(),AE.getEntryStatus(),uid,AE);
+        }
+   }
+  else if(setInstanzAuftraege)
+     InstanzAuftraegeAnlegen(AE,AE.getStueck(),uid);
+}
+
+
+/* 'AE.getStueck()' ist die GESAMTMenge 
+   'menge' ist die AKTUELLE geänderte Menge
+*/
+void AuftragBase::InstanzAuftraegeAnlegen(const AufEintrag& AE,mengen_t menge,int uid,bool automatisch_geplant) const
+{
+   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),
+      "Artikel="+cH_ArtikelBezeichnung(AE.Artikel())->Bezeichnung(),
+      "Status="+itos(AE.getEntryStatus()),"LieferDatum="+AE.getLieferdatum().to_iso(),
+      "Menge="+dtos(menge));
+   ArtikelBaum AB(AE.Artikel());
 //cout << cH_ArtikelBezeichnung(artikel)->Bezeichnung()<<'\n';
    for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
     {
 //cout << '\t'<<cH_ArtikelBezeichnung(i->rohartikel)->Bezeichnung()<<'\n';
-      AuftragBase neuAuftrag(ArtikelStamm(i->rohartikel).BestellenBei(),0);
-      Petig::Datum newdate=lieferdatum-Instanz()->ProduktionsDauer();
+      AuftragBase neuAuftrag(ppsInstanz::getBestellInstanz(i->rohartikel),ungeplante_id);
+      // Instanzen, die selber Produzieren dürfen bei einer automatischen
+      // Auftragsplanung (AuftragID=plan_auftrag_id=1)
+      // NICHT erhöt werden.
+      if(neuAuftrag.Instanz()->ProduziertSelbst() && automatisch_geplant)
+         continue;
+
+//cout << neuAuftrag.Instanz()->Name()<<'\t'
+//<<neuAuftrag.Instanz()->ProduziertSelbst()<<'\t'<<automatisch_geplant<<'\n';
+
+      Petig::Datum newdate=AE.getLieferdatum()-Instanz()->ProduktionsDauer();
+      st_tryUpdateEntry st(automatisch_geplant);
       neuAuftrag.tryUpdateEntry(double(i->menge)*menge,newdate,
-                 i->rohartikel,status,uid,AufEintragBase(*this,altZnr));
+                 i->rohartikel,AE.getEntryStatus(),uid,AE,st);
     }
 }
 

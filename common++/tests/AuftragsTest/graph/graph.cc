@@ -1,4 +1,4 @@
-// $Id: graph.cc,v 1.5 2002/10/09 14:47:22 thoma Exp $
+// $Id: graph.cc,v 1.6 2002/10/24 14:06:51 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -26,7 +26,7 @@
 #include <Aux/dbconnect.h>
 #include <Aux/exception.h>
 #include "getopt.h"
-
+#include "../steuerprogramm.hh"
 
 const static struct option options[]=
 {{ "black",  no_argument, NULL, 'b' },
@@ -48,6 +48,7 @@ void usage(std::string s)
        << "\t\t[LZ] Lieferschein mit Zustazeinträgen\n"
        << "\t\t[LA] Lieferschein mit Zwei Aufträgen\n"
        << "\t\t[ZK] Zwei Kunden Zwei Aufträgen\n"
+       << "\t\t[MP] ManuProC\n"
        << "\t\t[X]  LEGENDE \n";
   cout << "\t b => black [default] "
        << "\t c => colour \n\n";
@@ -79,13 +80,19 @@ int main(int argc, char *argv[])
   else if(string(argv[optind])=="LZ")mode=LieferscheinZusatz;
   else if(string(argv[optind])=="LA")mode=LieferscheinZweiAuftraege;
   else if(string(argv[optind])=="ZK")mode=ZweiKunden;
+  else if(string(argv[optind])=="MP")mode=ManuProCTest;
   else if(string(argv[optind])=="X") mode=Legende;
   Petig::PrintUncaughtExceptions();
-  try{
+  try{try{
+#ifdef  MANU_PROC_TEST
+   putenv("PGDATABASE=anleitungdb");
+#else
    putenv("PGDATABASE=testdb");
+#endif
    Petig::dbconnect();
    dot_out D(mode,colour);
    D.write();
   }catch(SQLerror &e){std::cout << e<<'\n';}
+  }catch(std::exception  &e){std::cout << e.what()<<'\n';}
  return 0;
 }

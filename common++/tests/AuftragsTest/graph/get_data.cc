@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.5 2002/10/09 14:47:22 thoma Exp $
+// $Id: get_data.cc,v 1.6 2002/10/24 14:06:51 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -19,6 +19,13 @@
 
 #include "get_data.h"
 #include <fstream>
+#include "../steuerprogramm.hh"
+
+#ifdef  MANU_PROC_TEST
+static std::string referenzdir="../database_tables_test_ManuProC";
+#else
+static std::string referenzdir="../database_tables_test";
+#endif
 
 
 graph_data_node::graph_data_node(emode mode)
@@ -235,13 +242,14 @@ void graph_data_node::get_files(emode mode)
       case LieferscheinZusatz : filenames=LZfiles(); break;
       case LieferscheinZweiAuftraege : filenames=LAfiles(); break;
       case ZweiKunden : filenames=ZKfiles(); break;
+      case ManuProCTest : filenames=ManuProCfiles(); break;
       case Legende: break;
       default: assert(!"never get here");
     }
   for(std::vector<st_files>::const_iterator i=filenames.begin();i!=filenames.end();++i)
    {
-     vec_files_auftragentry.push_back(st_files("../database_tables_test/auftragentry_"+i->filename,i->prefix));
-     vec_files_auftragsentryzuordnung.push_back("../database_tables_test/auftragsentryzuordnung_"+i->filename);
+     vec_files_auftragentry.push_back(st_files(referenzdir+"/auftragentry_"+i->filename,i->prefix));
+     vec_files_auftragsentryzuordnung.push_back(referenzdir+"/auftragsentryzuordnung_"+i->filename);
    }
 }
 
@@ -358,7 +366,24 @@ std::vector<graph_data_node::st_files> graph_data_node::ZKfiles()
   vec_files.push_back(st_files("ZK_anlegen"));  
   vec_files.push_back(st_files("ZK_abschreiben1T"));  
   vec_files.push_back(st_files("ZK_abschreiben2T"));  
-//  vec_files.push_back(st_files("ZK_abschreiben1U"));  
+  vec_files.push_back(st_files("ZK_abschreiben1U"));  
+  return vec_files;
+}
+
+std::vector<graph_data_node::st_files> graph_data_node::ManuProCfiles()
+{
+  std::vector<st_files>  vec_files;
+  vec_files.push_back(st_files("mit_lager_open"));  
+  vec_files.push_back(st_files("planen_kupfer","P"));  
+  vec_files.push_back(st_files("LS_teillieferung","L"));  
+  vec_files.push_back(st_files("planen_weberei_fuer_lager","P2"));  
+  vec_files.push_back(st_files("LS_volllieferung","L2"));  
+  vec_files.push_back(st_files("planen_faerberei_teil","PG"));  
+  vec_files.push_back(st_files("LSZ","LG"));  
+  vec_files.push_back(st_files("LSZP","LW"));  
+  vec_files.push_back(st_files("LSZM","LR"));  
+  vec_files.push_back(st_files("LSZMK","LK"));  
+  vec_files.push_back(st_files("LSZA","LKÜ"));  
   return vec_files;
 }
 

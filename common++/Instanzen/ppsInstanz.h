@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.6 2002/10/09 14:48:07 thoma Exp $
+// $Id: ppsInstanz.h,v 1.7 2002/10/24 14:06:28 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,6 +30,7 @@
 
 class AufEintrag;
 class ArtikelBase;
+class cH_ppsInstanz;
 
 namespace ppsInstanzID=ManuProC::DynamicEnums::Instanzen;
 namespace ManuProC{ struct st_produziert; }
@@ -41,25 +42,28 @@ public:
 	typedef ppsInstanzID::enum_t ID;
  
 private: 
- ID instid,lager_fuer,bestellung_fuer;
+ ID instid,lager_fuer,einlagern_in;
  std::string name;
  int sortierung;
  bool lieferschein;
  std::string lagername;
  bool produziert_selbst; 
- void get_name();
+ bool automatisch_einlagern;
  int produktionsdauer_tage;
- 
+ char typ;
+
+ void get_name();
+ void check() const; 
 public:
-// static const ID default_id=ppsInstanzID::Kundenauftraege;
  static const ID default_id=ManuProC::DefaultValues::Instanz;
  
  ppsInstanz(ID iid) : instid(iid),
-                             lager_fuer(ppsInstanzID::None),bestellung_fuer(ppsInstanzID::None),
+                             lager_fuer(ppsInstanzID::None),
                              sortierung(0),
-                             lieferschein(false),produziert_selbst(false)
-                             {get_name(); }
- ppsInstanz() : instid(ppsInstanzID::None),bestellung_fuer(ppsInstanzID::None),
+                             lieferschein(false),produziert_selbst(false),
+                             typ('0')
+                             {get_name(); check(); }
+ ppsInstanz() : instid(ppsInstanzID::None),
                              sortierung(0),lieferschein(false),produziert_selbst(false) {}
 
  ID Id() const { return instid; }
@@ -69,12 +73,18 @@ public:
  std::string get_Name() const {return name;}
  std::string Name() const {return name;}
  std::string shortName() const;
+private:
  ID LagerFuer() const { return lager_fuer; }
- bool LagerInstanz() const ;
-private: // wenn das keiner mehr braucht, dann auch aus der Datenbank löschen MAT
-// std::string LagerName() const {return lagername;}
 public:
- ID BestellungFuer() const { return bestellung_fuer; }
+ bool LagerInstanz() const ;
+ bool ProduktionsInstanz() const ;
+ bool PlanungsInstanz() const ;
+public:
+// ID BestellungFuer() const { return bestellung_fuer; }
+ ID EinlagernIn() const { return einlagern_in;}
+ bool AutomatischEinlagern() const {return automatisch_einlagern;}
+ 
+
  cH_Prozess get_Prozess() const;
   // Gegenteil von 'Lieferant' ist 'Kunde'
  bool Lieferant() const { return instid!=ppsInstanzID::Kundenauftraege; }
@@ -95,6 +105,10 @@ public:
  {  return instid==b; }
  bool operator!=(ID b) const
  {  return instid!=b; }
+
+
+ static cH_ppsInstanz getBestellInstanz(const ArtikelBase &artikel);
+ static cH_ppsInstanz getProduktionsInstanz(const ArtikelBase &artikel);
 
  //////////////////////////////////////////////////////////////////////////
  // Für die Produktion
