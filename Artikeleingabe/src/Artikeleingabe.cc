@@ -234,7 +234,7 @@ void Artikeleingabe::on_leaf_selected(cH_RowDataBase d)
  // hmm. What is this for? CP
  Eingabe_fuer(dt->Artikel());
  von_artikel = dt->Artikel2();
- Loeschen_von(dt->Artikel2());
+ Loeschen_von(von_artikel);
 }
 
 void Artikeleingabe::on_node_selected(const TCListNode &node)
@@ -244,7 +244,7 @@ void Artikeleingabe::on_node_selected(const TCListNode &node)
   fuer_artikel=dn.Artikel();
   von_artikel = dn.Artikel2();
   Eingabe_fuer(dn.Artikel());
-  Loeschen_von(dn.Artikel2());
+  Loeschen_von(von_artikel);
 }
 
 void Artikeleingabe::Eingabe_fuer(const ArtikelBase& art)
@@ -336,6 +336,9 @@ void Artikeleingabe::on_Artikel_Bestellen_activate()
   
   artikelbox->set_value(von_artikel);
   on_neuladen_clicked();
+
+  von_artikel = dt->Artikel2();
+  Loeschen_von(von_artikel);
 }
 
 void Artikeleingabe::optionmenu_bestellen_bei_activate()

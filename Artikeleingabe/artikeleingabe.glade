@@ -1114,54 +1114,18 @@ Aufträgen anzeigen</label>
       <widget>
 	<class>GtkTable</class>
 	<name>table5</name>
-	<rows>3</rows>
-	<columns>3</columns>
+	<rows>2</rows>
+	<columns>1</columns>
 	<homogeneous>False</homogeneous>
 	<row_spacing>0</row_spacing>
 	<column_spacing>0</column_spacing>
 
 	<widget>
-	  <class>Custom</class>
-	  <name>standard_instanz</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>activate</name>
-	    <handler>on_optionmenu_standardinstanz_activate</handler>
-	    <last_modification_time>Thu, 26 Sep 2002 11:35:32 GMT</last_modification_time>
-	  </signal>
-	  <creation_function>Optionmenu_Instanz(Optionmenu_Instanz::ohneLagerZulieferer,true)</creation_function>
-	  <int1>1</int1>
-	  <int2>0</int2>
-	  <last_modification_time>Thu, 26 Sep 2002 13:18:14 GMT</last_modification_time>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
-	    <top_attach>0</top_attach>
-	    <bottom_attach>1</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>True</xexpand>
-	    <yexpand>True</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>True</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>Custom</class>
-	  <name>standard_einheit</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>activate</name>
-	    <handler>on_standard_einheit_activate</handler>
-	    <last_modification_time>Thu, 26 Sep 2002 11:36:48 GMT</last_modification_time>
-	  </signal>
-	  <creation_function>Optionmenu_Einheit</creation_function>
-	  <int1>0</int1>
-	  <int2>0</int2>
-	  <last_modification_time>Fri, 08 Feb 2002 12:54:50 GMT</last_modification_time>
+	  <class>GtkFrame</class>
+	  <name>frame2</name>
+	  <label>Einheit</label>
+	  <label_xalign>0</label_xalign>
+	  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 	  <child>
 	    <left_attach>0</left_attach>
 	    <right_attach>1</right_attach>
@@ -1170,12 +1134,64 @@ Aufträgen anzeigen</label>
 	    <xpad>0</xpad>
 	    <ypad>0</ypad>
 	    <xexpand>False</xexpand>
-	    <yexpand>True</yexpand>
+	    <yexpand>False</yexpand>
 	    <xshrink>False</xshrink>
 	    <yshrink>False</yshrink>
 	    <xfill>True</xfill>
 	    <yfill>True</yfill>
 	  </child>
+
+	  <widget>
+	    <class>Custom</class>
+	    <name>standard_einheit</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <signal>
+	      <name>activate</name>
+	      <handler>on_standard_einheit_activate</handler>
+	      <last_modification_time>Thu, 26 Sep 2002 11:36:48 GMT</last_modification_time>
+	    </signal>
+	    <creation_function>Optionmenu_Einheit</creation_function>
+	    <int1>0</int1>
+	    <int2>0</int2>
+	    <last_modification_time>Fri, 08 Feb 2002 12:54:50 GMT</last_modification_time>
+	  </widget>
+	</widget>
+
+	<widget>
+	  <class>GtkFrame</class>
+	  <name>frame1</name>
+	  <label>Wird bestellt bei</label>
+	  <label_xalign>0</label_xalign>
+	  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	  <child>
+	    <left_attach>0</left_attach>
+	    <right_attach>1</right_attach>
+	    <top_attach>0</top_attach>
+	    <bottom_attach>1</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>True</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>True</yfill>
+	  </child>
+
+	  <widget>
+	    <class>Custom</class>
+	    <name>standard_instanz</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <signal>
+	      <name>activate</name>
+	      <handler>on_optionmenu_standardinstanz_activate</handler>
+	      <last_modification_time>Thu, 26 Sep 2002 11:35:32 GMT</last_modification_time>
+	    </signal>
+	    <creation_function>Optionmenu_Instanz(Optionmenu_Instanz::ohneLagerZulieferer,true)</creation_function>
+	    <int1>1</int1>
+	    <int2>0</int2>
+	    <last_modification_time>Thu, 26 Sep 2002 13:18:14 GMT</last_modification_time>
+	  </widget>
 	</widget>
       </widget>
     </widget>
