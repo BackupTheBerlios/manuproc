@@ -1,4 +1,4 @@
-// $Id: Tag.cc,v 1.3 2002/12/13 19:14:39 christof Exp $
+// $Id: Tag.cc,v 1.4 2003/01/24 08:37:48 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -75,33 +75,33 @@ bool Tag::hasTag(const std::string &typ) const throw()
 {  return find(begin(),typ)!=end();
 }
 
-bool Tag::parse_bool_value(const std::string &value, bool def)
-{  if (value.empty()) return def;
+template <>
+int Tag::parse_value<int>(const std::string &value) throw(std::out_of_range)
+{  if (value.empty()) throw std::out_of_range(value);
+   // 2do: check
+   return atoi(value.c_str());
+}
+
+template <>
+bool Tag::parse_value<bool>(const std::string &value) throw(std::out_of_range)
+{  if (value.empty()) throw std::out_of_range(value);
    if (!strcasecmp(value.c_str(),"true")) return true;
    if (!strcasecmp(value.c_str(),"false")) return false;
    if (!strcasecmp(value.c_str(),"yes")) return true;
    if (!strcasecmp(value.c_str(),"no")) return false;
    std::cerr << "strange bool value: \"" << value << "\"\n";
-   return parse_int_value(value, def);
+   return parse_value<int>(value);
 }
 
-int Tag::parse_int_value(const std::string &value, int def)
-{  if (value.empty()) return def;
-   // 2do: check
-   return atoi(value.c_str());
-}
-
-long Tag::parse_long_value(const std::string &value, long def)
-{  if (value.empty()) return def;
+template <>
+long Tag::parse_value<long>(const std::string &value) throw(std::out_of_range)
+{  if (value.empty()) throw std::out_of_range(value);
    return atol(value.c_str());
 } 
 
-float Tag::parse_float_value(const std::string &value, float def)
-{  return parse_double_value(value,def);
-}
-
-double Tag::parse_double_value(const std::string &value, double def)
-{  if (value.empty()) return def;
+template <>
+double Tag::parse_value<double>(const std::string &value) throw(std::out_of_range)
+{  if (value.empty()) throw std::out_of_range(value);
    /* Make sure we do NOT honor the locale for numeric input */
    /* since the database gives the standard decimal point */
    std::string oldlocale= setlocale(LC_NUMERIC, NULL);
@@ -111,6 +111,17 @@ double Tag::parse_double_value(const std::string &value, double def)
    return f;
 }
 
+template <>
+float Tag::parse_value<float>(const std::string &value) throw(std::out_of_range)
+{  return parse_value<double>(value);
+}
+
+template <>
+std::string Tag::parse_value<std::string>(const std::string &value) throw(std::out_of_range)
+{  return value;
+}
+
+#if 0
 const std::string Tag::getString(const std::string &typ,const std::string &def) const throw()
 {  const_iterator t=find(begin(),typ);
    if (t!=end()) return t->Value();
@@ -134,8 +145,9 @@ float Tag::getFloat(const std::string &typ,float def) const throw()
    if (t==end()) return def;
    return parse_float_value(t->Value());
 }
+#endif
 
-void Tag::mark(const std::string &tg,const std::string &value) throw()
+void Tag::setValue(const std::string &tg,const std::string &value) throw()
 {  iterator t=find(begin(),tg);
    if (t==end()) push_back(Tag(tg,value));
    else (*t).Value(value);
@@ -159,18 +171,21 @@ bool Tag::hasAttr(const std::string &name) const throw()
 {  return attfind(name)!=attend();
 }
 
+#if 0
 const std::string &Tag::getAttr(const std::string &name, const std::string &def) const throw()
 {  attvec_t::const_iterator i=attfind(name);
    if (i!=attend()) return i->second;
    return def;
 }
+#endif
 
 void Tag::setAttr(const std::string &name, const std::string &value)
 {  attvec_t::iterator i=attfind(name);
    if (i!=attend()) i->second=value;
-   attributes.push_back(std::pair<std::string,std::string>(name,value));
+   else attributes.push_back(std::pair<std::string,std::string>(name,value));
 }
 
+#if 0
 bool Tag::getBoolAttr(const std::string &typ,bool def) const throw()
 {  attvec_t::const_iterator i=attfind(typ);
    if (i!=attend()) return parse_bool_value(i->second,def);
@@ -188,16 +203,19 @@ float Tag::getFloatAttr(const std::string &typ,float def) const throw()
    if (i!=attend()) return parse_float_value(i->second,def);
    return def;
 }
+#endif
 
 #include <cstdio>
 
-void Tag::setIntAttr(const std::string &name, int val)
+template<>
+ std::string Tag::create_value<int>(const int &val)
 {  char buf[30];
    snprintf(buf,sizeof buf,"%d",val);
-   setAttr(name,buf);
+   return buf; // itos?
 }
 
-void Tag::setFloatAttr(const std::string &name, double val)
+template<>
+ std::string Tag::create_value<double>(const double &val)
 {  char buf[30];
    /* Make sure we do NOT honor the locale for numeric input */
    /* since the database gives the standard decimal point */
@@ -205,5 +223,10 @@ void Tag::setFloatAttr(const std::string &name, double val)
    setlocale(LC_NUMERIC, "C");
    snprintf(buf,sizeof buf,"%f",val);
    setlocale(LC_NUMERIC, oldlocale.c_str());
-   setAttr(name,buf);
+   return buf; // dtos
+}
+
+template<>
+ std::string Tag::create_value<bool>(const bool &val)
+{  return val?"true":"false"; 
 }

@@ -1,4 +1,4 @@
-// $Id: Tag.h,v 1.2 2003/01/23 18:02:36 christof Exp $
+// $Id: Tag.h,v 1.3 2003/01/24 08:37:48 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 #include <algorithm> // for find
+#include <stdexcept>
 
 class Tag {
     	std::string type;
@@ -34,13 +35,15 @@ class Tag {
 public: // nice to have for custom parsing
     	typedef std::vector<Tag>::difference_type difference_type;
     	template <class T>
-    	 static T parse_value(const std::string &val, const T &def);
+    	 static T parse_value(const std::string &val) throw(std::out_of_range);
+    	template <class T>
+    	 static T parse_value_def(const std::string &val, const T &def)
+    	{  try { return parse_value(val); } 
+    	   catch (std::out_of_range &e) { return def; }
+    	}
+    	template <class T>
+    	 static std::string create_value(const T &val);
     	 
-	static bool parse_bool_value(const std::string &val, bool def=false);
-	static int parse_int_value(const std::string &val, int def=0);
-	static long parse_long_value(const std::string &val, long def=0);
-	static float parse_float_value(const std::string &val, float def=0);
-	static double parse_double_value(const std::string &val, double def=0);
 public:
     	Tag(const std::string &t,const std::string &v="") throw()
 		: type(t), value(v)
@@ -96,29 +99,34 @@ public:
 	attvec_t::iterator attfind(const std::string &name);
 	const_attiterator attfind(const std::string &name) const;
 	
-	const std::string &getAttr(const std::string &name, const std::string &def="") const throw();
-	void setAttr(const std::string &name, const std::string &value);
+	template <class T>
+	 T getAttr(const std::string &name) const throw(std::out_of_range)
+	{  const_attiterator t=attfind(name);
+	   if (t==attend()) throw std::out_of_range(name);
+	   return parse_value<T>(t->second);
+	}
+	template <class T>
+	 T getAttr_def(const std::string &name, const T &def) const throw()
+    	{  try { return getAttr<T>(name); } 
+    	   catch (std::out_of_range &e) { return def; }
+    	}
 	bool hasAttr(const std::string &name) const throw();
-	bool getBoolAttr(const std::string &typ,bool def=false) const throw();
-	int getIntAttr(const std::string &typ,int def=0) const throw();
-	float getFloatAttr(const std::string &typ,float def=0) const throw();
-	void setIntAttr(const std::string &name, int val);
-	void setFloatAttr(const std::string &name, double val);
-	void setBoolAttr(const std::string &name, bool val)
-	{  setAttr(name,val?"true":"false"); }
-	// Spezialfall: nur setzen wenn !=""
-	void setAttr_ne(const std::string &name, const std::string &value)
-	{  if (!value.empty()) setAttr(name,value); }
-	void setIntAttr_nn(const std::string &name, int val)
-	{  if (val) setIntAttr(name,val); }
+	void setAttr(const std::string &name, const std::string &value);
 	
 	// values of substructures
 	bool hasTag(const std::string &typ) const throw();
-	const std::string getString(const std::string &typ,const std::string &def="") const throw();
-	bool getBool(const std::string &typ,bool def=false) const throw();
-	int getInt(const std::string &typ,int def=0) const throw();
-	float getFloat(const std::string &typ,float def=0) const throw();
-	void mark(const std::string &tg,const std::string &value) throw();
+	void setValue(const std::string &tg,const std::string &value) throw();
+	template <class T>
+	 T getValue(const std::string &tg) const
+	{  const_iterator t=find(begin(),tg);
+	   if (t==end()) throw std::out_of_range(tg);
+	   return parse_value<T>(t->Value());
+	}
+	template <class T>
+	 T getValue_def(const std::string &tg, const T &def) const throw()
+    	{  try { return getValue<T>(tg); } 
+    	   catch (std::out_of_range &e) { return def; }
+    	}
 	
 	bool operator==(const std::string &tp) const
 	{  return type==tp; }
@@ -126,6 +134,39 @@ public:
 	{  return type!=tp; }
 	
 	void debug(int recursion_depth=2,int indent=0) const;
+
+	// template specialization declarations
+	
+#ifndef TAG_OMIT_DEPRECATED
+	const std::string getAttr(const std::string &name, const std::string &def="") const throw()
+	{  return getAttr_def<std::string>(name,def); }
+	bool getBoolAttr(const std::string &typ,bool def=false) const throw()
+	{  return getAttr_def<bool>(typ,def); }
+	int getIntAttr(const std::string &typ,int def=0) const throw()
+	{  return getAttr_def<int>(typ,def); }
+	float getFloatAttr(const std::string &typ,float def=0) const throw()
+	{  return getAttr_def<float>(typ,def); }
+	void setIntAttr(const std::string &name, int val);
+	void setFloatAttr(const std::string &name, double val);
+	void setBoolAttr(const std::string &name, bool val);
+	// Spezialfall: nur setzen wenn !=""
+	void setAttr_ne(const std::string &name, const std::string &value)
+	{  if (!value.empty()) setAttr(name,value); }
+	void setIntAttr_nn(const std::string &name, int val)
+	{  if (val) setIntAttr(name,val); }
+
+	const std::string getString(const std::string &typ,const std::string &def="") const throw()
+	{  return getValue_def<std::string>(typ,def); }
+	bool getBool(const std::string &typ,bool def=false) const throw()
+	{  return getValue_def<bool>(typ,def); }
+	int getInt(const std::string &typ,int def=0) const throw()
+	{  return getValue_def<int>(typ,def); }
+	float getFloat(const std::string &typ,float def=0) const throw()
+	{  return getValue_def<float>(typ,def); }
+	void mark(const std::string &tg,const std::string &value) throw()
+	{  setValue(tg,value); }
+	
+#endif
 };
 
 // some nice macros
@@ -161,5 +202,18 @@ public:
 			(parent).find((begin),(type)); \
 		(variable)!=(end); \
 		variable=(parent).find((variable)+1,(type)))
+
+// you can skip these declarations
+template <> std::string Tag::create_value<int>(const int &val);
+template <> std::string Tag::create_value<double>(const double &val);
+template <> std::string Tag::create_value<bool>(const bool &val);
+
+inline void Tag::setIntAttr(const std::string &name, int val)
+{  setAttr(name,create_value<int>(val)); }
+inline void Tag::setFloatAttr(const std::string &name, double val)
+{  setAttr(name,create_value<double>(val)); }
+inline void Tag::setBoolAttr(const std::string &name, bool val)
+{  setAttr(name,create_value<bool>(val)); }
+
 
 #endif
