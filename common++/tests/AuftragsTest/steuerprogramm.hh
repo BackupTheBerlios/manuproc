@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.37 2003/07/15 09:01:35 christof Exp $
+// $Id: steuerprogramm.hh,v 1.38 2003/07/15 13:18:25 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -93,13 +93,12 @@
 
 #elif defined MABELLA_TEST
 
-#define ARTIKEL_TRIO ArtikelBase(44803)
-#define ARTIKEL_ZWEI ArtikelBase(44800)
+#define ARTIKEL_TRIO ArtikelBase(38389)
+#define ARTIKEL_ZWEI ArtikelBase(38391)
 
-#define FERTIGWARENLAGER (ppsInstanz::ID(2))
-#define EINKAUF (ppsInstanz::ID(4))
-#define PRODPLANUNG (ppsInstanz::ID(3))
-#define WEBEREI (ppsInstanz::ID(5))
+#define KUNDENINSTANZ (ppsInstanz::ID(1))
+#define FERTIGWLAGER (ppsInstanz::ID(2))
+#define EINKAUF (ppsInstanz::ID(3))
 
 #endif
 
@@ -114,8 +113,8 @@
 #define DATUM9 ManuProC::Datum(31,12,2009)
 #define NEWDATUM ManuProC::Datum(31,12,2020)
 
-#define KUNDE 1000
-#define KUNDE2 1111
+#define KUNDE 11302
+#define KUNDE2 20104
 
 #define UID 1001
 

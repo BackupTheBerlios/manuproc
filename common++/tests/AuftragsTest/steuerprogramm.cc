@@ -696,34 +696,12 @@ std::cout << "D13: "<<dummystring<<'\n';
        le1.changeMenge(stueck,0,liefs,true);
        vergleichen(C,Check::Lieferschein|Check::Menge,"LS_mengenaenderung_minus","Lieferscheinentry: Minus","M");
 
-       {// Produktionsplaner
-        int znr=1;
-        AufEintragBase OldAEB((AuftragBase(PRODPLANUNG,AuftragBase::ungeplante_id)),znr);
-        {AufEintrag OldAE(OldAEB);
-         Auftrag PA=Auftrag(Auftrag::Anlegen(PRODPLANUNG),ManuProC::DefaultValues::EigeneKundenId);
-         OldAE.ProduktionsPlanung(UID,2,PA,PLANDATUM6,WEBEREI);
-         vergleichen(C,Check::Menge,"PP","ProduktionsPlanungWeberei","PP");
-        }
-
-        {AufEintrag OldAE(OldAEB);
-         Auftrag PA=Auftrag(Auftrag::Anlegen(PRODPLANUNG),ManuProC::DefaultValues::EigeneKundenId);
-         OldAE.ProduktionsPlanung(UID,20,PA,PLANDATUM6,EINKAUF);
-         vergleichen(C,Check::Menge,"PPE","ProduktionsPlanungEinkauf","PPE");
-        }
-       }
-
       {// Überplanen des Einkaufs
       Auftrag PA=Auftrag(Auftrag::Anlegen(EINKAUF),KUNDE2);
       int znr=1;
       AufEintrag AEP((AufEintragBase(EINKAUF,AuftragBase::ungeplante_id,znr)));
       AEP.Planen(UID,27,PA,PLANDATUM5);
       vergleichen(C,Check::Menge,"planen_kupfer","Über-Planen des Einkaufs (Mabella)","E");
-      }
-
-      {// Weberei liefert mehr als geplant
-       Lieferschein liefs(WEBEREI,cH_Kunde(Kunde::eigene_id));
-       liefs.push_back(ARTIKEL_TRIO,5);
-       vergleichen(C,Check::Menge|Check::Lieferschein,"LSZ","Lieferschein in Weberei mit Überlieferung (Mabella)","");
       }
 
       {// Einkauf liefert Teilmenge
@@ -739,13 +717,14 @@ std::cout << "D13: "<<dummystring<<'\n';
       }
 
 
-      { // Bestellen eines Artikels ohne Kunden-Auftrag
+/*      { // Bestellen eines Artikels ohne Kunden-Auftrag
         Auftrag PA=Auftrag(Auftrag::Anlegen(EINKAUF),KUNDE2);
         ManuProC::st_produziert sp(ARTIKEL_ZWEI,2222,getuid(),Kunde::eigene_id,LieferscheinBase::none_id,PA,SPLITDATUM);
         cH_ppsInstanz I(EINKAUF);
         I->Planen(sp);
         vergleichen(C,Check::Menge,"zwei_auftraege_anlegen","Einkauf eines nicht-bestelleten Artikel (Mabella)","");
       }
+*/
 
       if(mode!=Rep_Mabella) break;
 
@@ -971,7 +950,7 @@ int main(int argc,char *argv[])
 #ifdef MANU_PROC_TEST
    putenv("PGDATABASE=anleitungdb");
 #elif defined MABELLA_TEST
-   putenv("PGDATABASE=mabella_test_db");
+   putenv("PGDATABASE=mabella_testdb");
 #elif defined PETIG_TEST
    putenv("PGDATABASE=testdb");
 #endif

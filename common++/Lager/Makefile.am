@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.12 2003/05/09 10:25:22 christof Exp $
+# $Id: Makefile.am,v 1.13 2003/07/15 13:18:25 jacek Exp $
 
 ENDUSER=-DPETIG
 
@@ -10,15 +10,19 @@ noinst_LIBRARIES=libProdLager.a
 
 includedir=@includedir@/Lager
 
-libProdLager_a_SOURCES= $(PGCC_Sources) Lager.cc RohwarenLager.cc \
-   LagerPlatz.cc JumboRolle.cc JumboLager.cc FertigWaren.cc
+libProdLager_a_SOURCES= $(PGCC_Sources) \
+	FertigWarenLager.cc \
+	FertigWaren.cc \
+	Lager.cc RohwarenLager.cc \
+   	LagerPlatz.cc JumboRolle.cc JumboLager.cc 
+
 
 libProdLager.a: $(libProdLager_a_OBJECTS) $(libProdLager_a_DEPENDENCIES) Makefile
 	(for i in $(libProdLager_a_OBJECTS) ; do echo Lager/$$i ; done ) >$@
 
 PGCC_Sources= Lager_Dispo_sql.cc \
    maschinen_geschwindigkeit_sql.cc JumboRolle_sql.cc \
-   FertigWarenLager_sql.cc FertigWaren_sql.cc JumboLager_sql.cc \
+   JumboLager_sql.cc \
 	RohwarenLager_sql.cc
 
 BUILT_SOURCES= $(PGCC_Sources)

@@ -14,6 +14,7 @@ createdb -E SQL_ASCII $PGDATABASE
    fw_lager_buchung \
    prozesse \
    prod_instanz \
+   ku_briefanr \
    ku_land \
    kunden \
    ku_verkaeufer \
@@ -41,7 +42,9 @@ createdb -E SQL_ASCII $PGDATABASE
    prod_changejournal \
    prod_changejournal_chid_seq \
    ueberweisungen \
-   prov_abrechnung 
+   prov_abrechnung \
+   prov_verkaeufer \
+   prov_config
 do
   cat $P/$i
 done ) | psql $PGDATABSE -q

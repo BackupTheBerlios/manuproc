@@ -1,4 +1,4 @@
-// $Id: FertigWarenLager.h,v 1.6 2003/01/08 09:46:57 christof Exp $
+// $Id: FertigWarenLager.h,v 1.7 2003/07/15 13:18:25 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -20,29 +20,27 @@
 #ifndef _FERTIGWARENLAGER_HH
 #  define _FERTIGWARENLAGER_HH
 
-
-//#include<Misc/SQLerror.h>
-//#include<Misc/Datum.h>
-//#include<Artikel/ArtikelBezeichnung.h>
-//#include <iostream>
-//#include <vector>
-//#include <Misc/Zeitpunkt_new.h>
-//#include <Lager/LagerPlatz.hh>
 #include "FertigWaren.h"
 
 class FertigWarenLager 
 {
 private:
-//   vector<FertigWaren> VWare;
-   ArtikelBase artikel;
- 
-public:
-   FertigWarenLager(const ArtikelBase a) : artikel(a) {}
+   FertigWaren fw;
 
-   ArtikelBase Artikel() const {return artikel;}
+   void Buchen(FertigWaren::e_buchen e);     
+   
+public:
+   FertigWarenLager(const FertigWaren _fw) : fw(_fw) {}
+
+   ArtikelBase Artikel() const {return fw.Artikel();}
    std::pair<Zeitpunkt_new,int> letzteInventur();
    int Bestand(ManuProC::Datum date);
    int Bestand() { return Bestand(ManuProC::Datum::today()) ;}
+   
+  void Einlagern() {Buchen(FertigWaren::Rein);}
+  void Auslagern() {Buchen(FertigWaren::Raus);}
+  void Inventur();
+  
 };
 
 #endif

@@ -23,7 +23,7 @@ CREATE TABLE lieferschein (
     paeckchen numeric(3,0),
     dpdliefnr integer,
     geliefertam date,
-    instanz integer,
+    instanz integer not null,
     netto_kg numeric(4,1),
     brutto_kg numeric(4,1),
     notiz text,
@@ -43,7 +43,7 @@ REVOKE ALL ON TABLE lieferschein FROM PUBLIC;
 --
 
 ALTER TABLE ONLY lieferschein
-    ADD CONSTRAINT lieferschein_pkey PRIMARY KEY (lfrsid);
+    ADD CONSTRAINT lieferschein_pkey PRIMARY KEY (instanz,lfrsid);
 
 
 --

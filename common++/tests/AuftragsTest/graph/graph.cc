@@ -1,4 +1,4 @@
-// $Id: graph.cc,v 1.23 2003/02/12 13:54:33 christof Exp $
+// $Id: graph.cc,v 1.24 2003/07/15 13:18:25 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -75,18 +75,19 @@ int main(int argc, char *argv[])
   if (optind!=argc-1) {usage(argv[0]); exit(1);}
   std::string mode=argv[optind];
   Petig::PrintUncaughtExceptions();
-  try{try{
+  try{
 #ifdef  MANU_PROC_TEST
    putenv("PGDATABASE=anleitungdb");
 #elif defined  MABELLA_TEST
-   putenv("PGDATABASE=mabella_test_db");
+   putenv("PGDATABASE=mabella_testdb");
 #else
    putenv("PGDATABASE=testdb");
 #endif
    Petig::dbconnect();
    dot_out D(mode,colour);
    D.write();
-  }catch(SQLerror &e){std::cout << e<<'\n';}
-  }catch(std::exception  &e){std::cout << e.what()<<'\n';}
+  }
+  catch(SQLerror &e){std::cout << e<<'\n';}
+  catch(std::exception  &e){std::cout << e.what()<<'\n';}
  return 0;
 }

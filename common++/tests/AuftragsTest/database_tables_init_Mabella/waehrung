@@ -39,3 +39,12 @@ ALTER TABLE ONLY waehrung
     ADD CONSTRAINT waehrung_pkey PRIMARY KEY (wid);
 
 
+
+COPY waehrung (wid, kurz, lang, dmfkt, eufkt, tex, fkt) FROM stdin;
+3	USD	US Dollar	2.28000	0.85782	US$	0.85782
+2	DM	Deutsche Mark	1.00000	1.95583	\N	1.95583
+1	EUR	Euro	1.95583	1.00000	\\euro{}	1.00000
+4	PND	Englischer Pfund	3.12000	0.60000	\\pounds{}	0.70000
+\.
+
+

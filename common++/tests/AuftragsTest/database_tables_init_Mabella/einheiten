@@ -38,3 +38,12 @@ ALTER TABLE ONLY einheiten
     ADD CONSTRAINT einheiten_pkey PRIMARY KEY (id);
 
 
+COPY einheiten (id, bez_menge, tex_menge, bez_anzahl, tex_anzahl, waehrung) FROM stdin;
+0	\N	\N	St.	\N	\N
+1	m	\N	\N	\N	\N
+2	kg	\N	\N	\N	\N
+3	km	\N	Fd	\N	\N
+4	DM	\N	\N	\N	\N
+5	Euro	\\euro{}	\N	\N	\N
+6	Pfund	pounds	\N	\N	\N
+\.

@@ -1,4 +1,4 @@
-// $Id: FertigWaren.cc,v 1.3 2003/01/08 09:46:57 christof Exp $
+// $Id: FertigWaren.cc,v 1.4 2003/07/15 13:18:25 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,6 +19,7 @@
 
 #include "FertigWaren.h"
 #include <Misc/Zeitpunkt_new.h>
+#include <Misc/Transaction.h>
 
 FetchIStream &operator>>(FetchIStream &is, FertigWaren &fw)
  { std::string zeit;
@@ -37,6 +38,3 @@ FetchIStream &operator>>(FetchIStream &is, FertigWaren &fw)
 }
   
   
-
-
-

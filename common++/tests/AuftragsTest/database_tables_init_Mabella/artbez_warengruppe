@@ -24,3 +24,21 @@ CREATE TABLE artbez_warengruppe (
 REVOKE ALL ON TABLE artbez_warengruppe FROM PUBLIC;
 
 
+
+COPY artbez_warengruppe (id, text) FROM stdin;
+10	Etiketten
+11	Garn per km
+4	Garn per kg
+7	Sonstiges
+8	Lohn
+5	Spulen
+6	Kartonagen
+3	aufgemachtes Band
+2	bedrucktes Band
+1	gefärbtes Band
+0	gewebtes Band
+9	Farben & Pigmente
+12	Musterkarten
+\.
+
+

@@ -35,3 +35,47 @@ GRANT SELECT ON TABLE prozesse TO PUBLIC;
 CREATE UNIQUE INDEX prozesse_prozessid_key ON prozesse USING btree (prozessid);
 
 
+
+COPY prozesse (prozessid, label, meterprostk, text) FROM stdin;
+1	Drucken	\N	\N
+2	Färben	\N	410
+3	Färben	\N	775
+4	Färben	\N	795
+5	Färben	\N	458
+6	Färben	\N	760
+7	Färben	\N	340
+8	Färben	\N	247
+9	Färben	\N	342
+10	Färben	\N	786
+11	Färben	\N	430
+12	Rollen	25.0	25m
+13	Rollen	20.0	20m
+14	Rollen	2.0	2m
+15	Rollen	5.0	5mDun
+16	Rollen	\N	Jumbo
+17	Rollen	5.0	5m
+18	Rollen	50.0	50m
+19	Rollen	7.0	7m
+20	Rollen	15.0	15m
+21	Rollen	25.0	25mDu
+22	Rollen	3.0	3m
+23	Rollen	7.0	7mDun
+24	Rollen	5.0	5mJoy
+25	Rollen	7.0	7mJoy
+26	Rollen	10.0	10m
+27	Rollen	9.0	10y
+28	Rollen	91.0	100y
+29	Rollen	100.0	100m
+30	Färben	\N	\N
+31	Verarbeitung	\N	\N
+32	Rollen	2.0	2,5m
+33	Rollen	15.0	15mDu
+34	Rollen	6.0	6m
+35	Rollen	2.0	2m(I)
+36	Rollen	2.0	2m(II)
+37	Rollen	2.0	2m(III)
+38	Rollen	2.0	2m(IV)
+39	Rollen	3.0	3m(IV)
+\.
+
+

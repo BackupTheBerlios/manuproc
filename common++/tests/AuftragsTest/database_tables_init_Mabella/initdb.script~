@@ -5,7 +5,7 @@ export PGDATABASE=mabella_testdb
 P="database_tables_init_Mabella"
 
 dropdb $PGDATABASE
-createdb $PGDATABASE
+createdb -E SQL_ASCII $PGDATABASE
 
 (for i in \
    waehrung \
@@ -14,6 +14,7 @@ createdb $PGDATABASE
    fw_lager_buchung \
    prozesse \
    prod_instanz \
+   ku_briefanrede \
    ku_land \
    kunden \
    ku_verkaeufer \
@@ -41,7 +42,9 @@ createdb $PGDATABASE
    prod_changejournal \
    prod_changejournal_chid_seq \
    ueberweisungen \
-   prov_abrechnung 
+   prov_abrechnung \
+   prov_verkaeufer \
+   prov_config
 do
   cat $P/$i
 done ) | psql $PGDATABSE -q

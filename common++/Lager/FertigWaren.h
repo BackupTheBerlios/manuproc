@@ -1,4 +1,4 @@
-// $Id: FertigWaren.h,v 1.8 2003/01/08 09:46:57 christof Exp $
+// $Id: FertigWaren.h,v 1.9 2003/07/15 13:18:25 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -40,32 +40,34 @@ private:
   ManuProcEntity<>::ID lieferschein;
   int uid;
   std::string uname;
-  
-  enum e_buchen{Rein,Raus};
-  void Buchen(int pid,e_buchen e); 
+
+
 public:
+ enum e_buchen{Rein,Raus,AsIs};
+
  FertigWaren(ArtikelBase a,enum_Aktion a2,int s,
  		ManuProcEntity<>::ID lfrsid=ManuProcEntity<>::none_id)
-   : artikel(a)/*,zeit()*/,aktion(a2),stk(s),lieferschein(lfrsid),uid(0)  {};
+   : artikel(a)/*,zeit()*/,aktion(a2),stk(s),lieferschein(lfrsid)
+   	{ uid=getuid(); };
  
- FertigWaren() : aktion(eLieferschein),stk(0),lieferschein(ManuProcEntity<>::none_id),
- 	uid(0)  {};
+ FertigWaren() : aktion(eLieferschein),stk(0),lieferschein(ManuProcEntity<>::none_id)
+	{ uid=getuid(); };
  		
  std::string artBezeichnung() const { return cH_ArtikelBezeichnung(artikel)->Bezeichnung();}
- int Stk() const {return stk;};
+ int Stk(e_buchen e=AsIs) const {if (e==Raus) return -abs(stk);
+ 			    if (e==Rein) return abs(stk);
+ 			    return stk;
+ 			   }
+ void setStk(int s) { stk=s; }
  ManuProcEntity<>::ID Lfrsid() const { return lieferschein;}
  Zeitpunkt_new Zeit() const { return zeit;}
+ void setZeit(const Zeitpunkt_new z) { zeit=z;}
  enum_Aktion Aktion() const {return aktion;}
  const ArtikelBase &Artikel() const { return artikel; }
  const std::string User() const { return uname;}
  void setUser(const std::string user) { uname=user;}
-
- 
- // Die unterschiedlichen Funktionen garantieren ein korrektes Vorzeichen.
- void Einlagern(int pid) {Buchen(pid,Rein);}
- void Auslagern(int pid) {Buchen(pid,Raus);}
- void Inventur(int pid);
-
+ int getUserID() const { return uid; }
+  
  friend FetchIStream &operator>>(FetchIStream &is, FertigWaren &fw);
 };
 

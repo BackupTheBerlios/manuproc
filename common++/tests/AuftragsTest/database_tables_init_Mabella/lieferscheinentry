@@ -24,7 +24,7 @@ CREATE TABLE lieferscheinentry (
     palette numeric(3,0),
     menge numeric(8,2),
     zusatzinfo boolean,
-    instanz integer
+    instanz integer not null
 );
 
 
@@ -47,7 +47,7 @@ CREATE INDEX lieferscheinentry_artid ON lieferscheinentry USING btree (artikelid
 --
 
 ALTER TABLE ONLY lieferscheinentry
-    ADD CONSTRAINT lieferscheinentry_pkey PRIMARY KEY (lfrsid, zeile);
+    ADD CONSTRAINT lieferscheinentry_pkey PRIMARY KEY (instanz,lfrsid, zeile);
 
 
 --

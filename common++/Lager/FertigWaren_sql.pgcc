@@ -1,4 +1,4 @@
-// $Id: FertigWaren_sql.pgcc,v 1.8 2003/01/08 09:46:57 christof Exp $
+// $Id: FertigWaren_sql.pgcc,v 1.9 2003/07/15 13:18:25 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -56,6 +56,7 @@ void FertigWaren::Buchen(int pid,e_buchen buchen)
 void FertigWaren::Inventur(int pid)
 {
   Transaction tr;
+
 //  exec sql lock table auftragentry in exclusive mode;
 //  SQLerror::test(__FILELINE__);
   int alte_menge = FertigWarenLager(Artikel()).Bestand();
