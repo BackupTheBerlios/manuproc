@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.15 2004/01/26 12:39:47 christof Exp $
+// $Id: Faden.cc,v 1.16 2004/02/23 11:02:45 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -378,7 +378,7 @@ void Faden::create_wiederholung(const ArtikelBase &artikel, const Wiederholung &
 
 static FetchIStream &operator>>(FetchIStream &is, Bindung &b)
 {  int bnr;
-   is >> bnr;
+   is >> FetchIStream::MapNull(bnr,Bindung::standard_id);
    b=Bindung::getById(bnr);
    return is;
 }

@@ -1,4 +1,4 @@
-// $Id: Bindung.cc,v 1.11 2003/10/23 09:27:27 christof Exp $
+// $Id: Bindung.cc,v 1.12 2004/02/23 11:02:45 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -19,6 +19,7 @@
  */
 
 #include "Bindung.hh"
+#include <Misc/compiler_ports.h>
 
 std::ostream& operator<< (std::ostream& os, const Bindung& b)
 {
@@ -84,3 +85,5 @@ void Bindungsliste::print_out() const
    ostream_iterator<Bindung> oit (std::cout, "\n");
    copy (liste.begin(), liste.end(), oit);
 }
+
+NOTGCC295(const Bindung::ID Bindung::standard_id);
