@@ -21,7 +21,7 @@
 #include <gtkmm/menuitem.h>
 
 ManuProC::ChoiceButton::ChoiceButton(bool tearoff)
-	: actual_index(0), image(0), label(0), menu(0)
+	: actual_index(0), image(0), label(0), menu(0), tips(0)
 {  Gtk::VBox *vbox=manage(new Gtk::VBox());
    DoubleButton::add(*vbox);
    image=manage(new Gtk::Image());
@@ -99,10 +99,25 @@ void ManuProC::ChoiceButton::set_index(unsigned idx)
 {  // index wechsel, Bild darstellen
    image->set(images[idx]);
    label->set_text(texts[idx]);
+   if (!label->is_visible() && tips) 
+      tips->set_tip(*this, texts[idx]);
    actual_index=idx;
 }
 
 void ManuProC::ChoiceButton::set_style(bool _image, bool _text)
 {  if (_image) image->show(); else image->hide();
-   if (_text) label->show(); else label->hide();
+   if (_text) 
+   {  label->show();
+      if (tips) tips->unset_tip(*this);
+   }
+   else 
+   {  label->hide();
+      if (tips) tips->set_tip(*this, texts[actual_index]);
+   }
+}
+
+void ChoiceButton::set_tooltips(Gtk::Tooltips *_tips);
+{  tips=_tips; 
+   if (!label->is_visible() && tips) 
+         tips->set_tip(*this, texts[actual_index]);
 }

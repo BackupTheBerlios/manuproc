@@ -34,6 +34,7 @@ class ChoiceButton : public DoubleButton
 	Gtk::Image *image;
 	Gtk::Label *label;
 	Gtk::Menu *menu;
+	Gtk::Tooltips *tips;
 	
 	std::vector<Glib::RefPtr<Gdk::Pixbuf> > images;
 	std::vector<Glib::ustring> texts;
@@ -52,6 +53,7 @@ public:
 	void set_index(unsigned idx);
 	void set_style(bool image=true, bool text=false);
 	void set_tearoff_title(const Glib::ustring &title);
+	void set_tooltips(Gtk::Tooltips *_tips);
 };
 
 }
