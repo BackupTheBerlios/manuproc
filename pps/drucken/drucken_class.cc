@@ -467,7 +467,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
         if (schema!=schema_mem && !Configuration.combine) break; // Schema hat gewechselt
 #endif        
         
-        if (Einheit(artikelbase) != einheit_mem ) break;  // Einheit wechselt
+        if (Einheit(artikelbase) != einheit_mem && !Configuration.combine) break;  // Einheit wechselt
         
 
         if(Typ()==Rechnung || Typ()==Lieferschein || Typ()==Wareneingang)
@@ -487,7 +487,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
 
         if (preise_addieren)
         {
-           if ((*j).getPreis().PreisMenge() != preismenge_mem) 
+           if ((*j).getPreis().PreisMenge() != preismenge_mem && !Configuration.combine)
               break; // Preismenge wechselt
 	   
 #ifdef MABELLA_EXTENSIONS
@@ -857,7 +857,12 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
              // diese Hartcodierung von 3 sieht nicht gut aus CP
 //             os <<linecolor<< FormatiereTeX_short(fixedpoint<3>(stueck * menge))<<einheitsize <<Einheit(artikelbase).TeX();
              os <<linecolor<< FormatiereTeX_short(stueck * menge)<<
-			einheitsize << Einheit(artikelbase).MengenEinheit_TeX();
+                  einheitsize << 
+#ifdef MABELLA_EXTENSIONS // ich glaube da an einen Bug ... CP             
+			Einheit(artikelbase).MengenEinheit_TeX();
+#else
+                        Einheit(artikelbase).TeX(*mld);
+#endif
            }
 
 // NEW COLUMNS; ab hier irgendwo einfügen um Tabellenspalten auszugeben
@@ -924,9 +929,15 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
                neue_spalte(erste_spalte,os); os << linecolor<<
 			FormatiereTeX_Preis((NettoPreis.Wert())); 
 	      }
-	    else
+	    else if (!!NettoPreis) // nur wenn != 0
 	     {
 	      os <<linecolor<<FormatiereTeX_Preis(NettoPreis.Wert());
+	      if (Configuration.combine)
+	      { os << einheitsize << getWaehrung()->TeXsymbol() << "/";
+                if (NettoPreis.PreisMenge()!=1) os << Formatiere_short(NettoPreis.PreisMenge()) << "\\,";
+                std::string einheit=Einheit(artikelbase).TeX(*mld);
+                if (!einheit.empty()) os << einheit;
+	      }
 	     }
 
 	    Preis::geldbetrag_out preis;
@@ -942,7 +953,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
             betrag+=preis;
             tabellenbetrag+=preis;
             neue_spalte(erste_spalte,os);
-            os <<linecolor<< FormatiereTeX(preis);
+            if (!!preis) os <<linecolor<< FormatiereTeX(preis);
           }
           
 
@@ -982,7 +993,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
               if (palette!=0) os << linecolor<<palette;
             }
             neue_spalte(erste_spalte,os);
-            os << linecolor << your_auftrag<<"\n";
+            os << linecolor << your_auftrag;
             if (notice_column_bool)
             { neue_spalte(erste_spalte,os);
               os << linecolor<< notice;
@@ -1185,12 +1196,15 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
   if (preise_addieren)  // Einzelpreis, Gesamtpreis
   { 
     tabcolumn+="rr"; spaltenzahl+=2; preisspalte=spaltenzahl;
-    ueberschriften += "&\\multicolumn{1}{c}{"+sg+getWaehrung()->TeXsymbol();
-    if(rabatt_bool) ueberschriften +=" "+mld->MLT(MultiL_Dict::TXT_BRUTTO);
-     if (preismenge!=1 || !preiseinheit.empty()) ueberschriften += "\\,/";
-     if (preismenge!=1) ueberschriften += "\\,"+ Formatiere(preismenge);
-     if (!preiseinheit.empty())  ueberschriften += "\\," + preiseinheit;
-     ueberschriften +="} ";   	// Einzelpreis brutto
+    if (!Configuration.combine)
+    { ueberschriften += "&\\multicolumn{1}{c}{"+sg+getWaehrung()->TeXsymbol();
+      if(rabatt_bool) ueberschriften +=" "+mld->MLT(MultiL_Dict::TXT_BRUTTO);
+      if (preismenge!=1 || !preiseinheit.empty()) ueberschriften += "\\,/";
+      if (preismenge!=1) ueberschriften += "\\,"+ Formatiere_short(preismenge);
+      if (!preiseinheit.empty())  ueberschriften += "\\," + preiseinheit;
+      ueberschriften +="} ";   	// Einzelpreis brutto
+    }
+    else ueberschriften += "&"+sg+"Preis";
      
     if (rabatt_bool)  
       {  tabcolumn+="r"; ++spaltenzahl; // Rabatt
@@ -1203,7 +1217,7 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
       }     
      
 #ifndef MABELLA_EXTENSIONS
-     ueberschriften += "&\\multicolumn{1}{c}{"+sg+"{Gesamtpreis}}";
+     ueberschriften += "&\\multicolumn{1}{c}{"+ug+"{Gesamtpreis}}";
 #else     
      ueberschriften += "&\\multicolumn{1}{c}{"+sg+"{"+ 
 		getWaehrung()->TeXsymbol()+" "+mld->MLT(MultiL_Dict::TXT_WERT)+"}}";
