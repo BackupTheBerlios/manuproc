@@ -2,13 +2,12 @@
 		zum Sortieren)
 	Praktisch für Tree/List überschneidungen (Dispo)
 
-replace 	"\*=",\*,	NV("\0",\1),
-		,"\*=",\*)	,NV("\0",\1))
+- neue funktionale defines für die Programme (statt MABELLA_EXTENSIONS):
+	RIBA etc (BANKEINZUG)
+	VERKAEUFER (Provision etc)
 
 - Problem Lager:
 	1er wird erniedrigt (Menge wird frei)
 	anderer 1er wird erniedrigt (Menge wird reserviert)
 	Menge des 1. wird nicht nachbestellt
 	???
-	
-	

@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.49 2003/06/23 10:55:49 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.50 2003/07/17 07:26:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -833,7 +833,7 @@ void Kunde::setIBAN(const std::string _iban) const throw(SQLerror)
  tr.commit(); 
 
 }
-
+#endif
 
 std::string Kunde::fixeNotiz(const NotizZiel nz) throw(SQLerror)
 {
@@ -871,6 +871,7 @@ void Kunde::setFixeNotiz(const NotizZiel nz, const std::string n) throw(SQLerror
  SQLerror::test(__FILELINE__);
 }
 
+#ifdef MABELLA_EXTENSIONS
 int Kunde::getAbrZyklus() const throw(SQLerror)
 {int ret;
  try{

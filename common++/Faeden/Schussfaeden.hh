@@ -1,6 +1,6 @@
-// $Id: Schussfaeden.hh,v 1.7 2002/10/24 14:06:50 thoma Exp $
+// $Id: Schussfaeden.hh,v 1.8 2003/07/17 07:26:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
+ *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -21,30 +21,21 @@
 #ifndef SFADEN_HH
 #define SFADEN_HH
 
-// $Id: Schussfaeden.hh,v 1.7 2002/10/24 14:06:50 thoma Exp $
-
 #include <Faeden/Faden.hh>
 #include <Artikel/ArtikelBase.h>
 #include <Aux/fixedpoint.h>
 
 class Schussfaeden 
 {
-//public:
-//	typedef fixedpoint<1> schussdichte_t;
 private:
 	std::vector<Faden> schussfaeden;
-//	schussdichte_t schussdichte;
-//	ArtikelBase::ID fangfaden;
 public:
 	typedef std::vector<Faden>::const_iterator const_iterator;
 	
 	Schussfaeden() {}
 	void Load(const ArtikelBase &ab);
 
-//	use: Webangaben::Schussdichte()
-// schussdichte_t Schussdichte_cm() const { return schussdichte; }
-// use: Webangaben::Fangfaden()
-//	ArtikelBase::ID Fangfaden() const { return fangfaden; }
+//	Schussdichte() and Fangfaden() are in Webangaben
 
 	const_iterator begin() const { return schussfaeden.begin(); }
 	const_iterator end() const { return schussfaeden.end(); }
@@ -53,17 +44,8 @@ public:
 	void reset() { clear(); }
 	const Faden &operator[](size_t index) const { return schussfaeden[index]; }
 
-#if 0
-	// ***** these do not yet alter the database ********
-	void Schussdichte(schussdichte_t s) { schussdichte=s; }
-	// ***** do not use these in new code! **************
-#endif
 	std::vector<Faden> &get_vector() { return schussfaeden; }
 	typedef std::vector<Faden>::iterator iterator;
 	iterator begin() { return schussfaeden.begin(); }
-#if 0
-	iterator end() { return schussfaeden.end(); }
-	schussdichte_t Schussdichte() const { return Schussdichte_cm(); }
-#endif
 };
 #endif

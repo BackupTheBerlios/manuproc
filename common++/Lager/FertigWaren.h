@@ -1,4 +1,4 @@
-// $Id: FertigWaren.h,v 1.10 2003/07/15 15:01:15 jacek Exp $
+// $Id: FertigWaren.h,v 1.11 2003/07/17 07:26:09 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -26,6 +26,7 @@
 #include <Misc/Zeitpunkt_new.h>
 #include <BaseObjects/ManuProcEntity.h>
 #include <Misc/FetchIStream.h>
+#include <unistd.h>
 
 class FertigWaren
 {
