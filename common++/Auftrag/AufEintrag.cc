@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.65 2003/06/27 06:51:40 christof Exp $
+// $Id: AufEintrag.cc,v 1.66 2003/07/02 11:04:46 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -1085,7 +1085,9 @@ void AufEintrag::AnElternMengeAnpassen()
    }
    if (menge>getStueck())
    // mehr v.o. benötigt als jemals bestellt (z.B. durch ProdRückgängig)
-   {  assert(Id()==ungeplante_id); // sonst Problem !
+   {  assert(in(Id(),ungeplante_id,plan_auftrag_id));
+      assert(Id()!=plan_auftrag_id || Instanz()->LagerInstanz());
+      //assert(Id()==ungeplante_id); // sonst Problem !
       MengeAendern(uid,menge-getStueck(),true,AufEintragBase(),
                       ManuProC::Auftrag::r_Reparatur);
    }
