@@ -1,6 +1,6 @@
 #!/bin/sh
 
-GLOBAL_VER=20041025-5
+GLOBAL_VER=20050317-1
 USER="Christof Petig <christof@petig-baender.de>"
 
 calculate_deps() {
