@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.24 2002/12/03 22:15:32 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.25 2002/12/04 09:09:25 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -640,6 +640,7 @@ void Kunde::showEAN(bool ea) throw(SQLerror)
  tr.commit();
 }
 
+#ifdef MABELLA_EXTENSIONS
 std::pair<std::string,std::string> Kunde::getRiBa_Code() const throw(SQLerror)
 {
  if(cab.size() && abi.size())
@@ -661,5 +662,7 @@ std::pair<std::string,std::string> Kunde::getRiBa_Code() const throw(SQLerror)
  ECPGfree_auto_mem(); 
  return std::pair<std::string,std::string>(cab,abi);
 }
+#endif
+
 
 
