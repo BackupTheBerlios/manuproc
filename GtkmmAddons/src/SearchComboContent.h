@@ -23,7 +23,7 @@
 #include"SearchCombo.h"
 #include<vector>
 #include<string>
-#include <cassert>
+#include<cassert>
 
 template<class T>
 class SearchComboContent : public Gtk::SearchCombo
