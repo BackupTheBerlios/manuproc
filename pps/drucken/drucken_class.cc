@@ -1222,7 +1222,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
      os <<mld->MLT(MultiL_Dict::TXT_DANKE_AUFTR)<<" \\\\\n";
    else os << "~\\\\\n";
 
-   if(!Rueckstand())
+//   if(!Rueckstand())
    if(Typ()==Auftrag) {auftrag_von(os,class Auftrag(AuftragBase(
    				ppsInstanzID::Kundenauftraege,u.a->Id())),true);
    		      }
