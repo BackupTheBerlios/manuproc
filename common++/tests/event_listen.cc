@@ -1,4 +1,4 @@
-// $Id: event_listen.cc,v 1.2 2003/05/09 12:06:40 christof Exp $
+// $Id: event_listen.cc,v 1.3 2003/05/12 08:09:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,9 @@
 #include <Misc/dbconnect.h>
 #include <iostream>
 #include <sys/select.h>
+#ifndef SIGC1_2
+#include <sigc++/func_slot.h>
+#endif
 
 static void Event(const std::string &c,const std::string &k,const std::string &d)
 {  std::cout << "Event[" << c << "," << k << "] " << d << '\n';
@@ -34,8 +37,9 @@ int main(int argc, char **argv)
 {  ManuProC::dbconnect();
    ManuProC::Event::connect();
    
-   if (argc>1) ManuProC::Event::signal_event(argv[1]).connect(&Event2);
-   else ManuProC::Event::signal_event().connect(&Event);
+   if (argc>1) ManuProC::Event::connect(argv[1],SigC::slot(&Event2));
+//   signal_event(argv[1]).connect(&Event2);
+   else ManuProC::Event::signal_event().connect(SigC::slot(&Event));
    
    while (ManuProC::Event::filedesc()>0)
    {  fd_set rfds;

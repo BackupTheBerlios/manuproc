@@ -1,4 +1,4 @@
-// $Id: Event.cc,v 1.4 2003/05/12 07:25:22 christof Exp $
+// $Id: Event.cc,v 1.5 2003/05/12 08:09:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -110,15 +110,12 @@ int ManuProC::Event::filedesc()
    return PQsocket((PGconn *)PGconnection);
 }
 
-// connect_gtk() :
-//   register a read callback which registers an idle method which reads
-//   events [PQsocket()]
-
-ManuProC::Event::filteredsignal_t &ManuProC::Event::signal_event(const std::string &channel)
-#ifdef SIGC1_2
-{  return channels[channel]; }
+SigC::Connection ManuProC::Event::connect(const std::string &channel,
+   		const SigC::Slot2<void,const std::string &,const std::string &> &slot)
+#ifdef SIGC1_2 // es kann so einfach sein ...
+{  return signal_event(channel).connect(slot); }
 #else
 {  if (!channels[channel]) channels[channel]=new filteredsignal_t();
-   return *channels[channel]; 
+   return (*channels[channel]).connect(slot);
 }
 #endif

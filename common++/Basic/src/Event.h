@@ -1,4 +1,4 @@
-// $Id: Event.h,v 1.4 2003/05/12 07:25:22 christof Exp $
+// $Id: Event.h,v 1.5 2003/05/12 08:09:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -46,7 +46,10 @@ public:
 	Event(const std::string &channel,const std::string &key="",const std::string &data="");
    	static fullsignal_t &signal_event()
    	{  return event_sig; }
-   	static filteredsignal_t &signal_event(const std::string &channel);
+#ifdef SIGC1_2   	
+   	static filteredsignal_t &signal_event(const std::string &channel)
+   	{  return channels[channel]; }
+#endif   	
    	
    	// connect to database
    	static void connect(bool ignore_old=true);
@@ -58,6 +61,10 @@ public:
 
 	// file descriptor to select for notifications
    	static int filedesc();
+
+	// needed for 1.0 compatibility - @$§!   	
+   	static SigC::Connection connect(const std::string &channel,
+   		const SigC::Slot2<void,const std::string &,const std::string &> &slot);
 };
 }
 
