@@ -50,7 +50,9 @@ public:
                                   u.l->getZusatzInfos().begin();
            for(;i!=u.l->getZusatzInfos().end(); ++i)
              {
-              if((*i).aeb.valid())
+              if(((*i).aeb.valid()) &&
+                 ((*i).aeb.Id() >= AuftragBase::handplan_auftrag_id)
+                )
                 {AufEintrag AB((*i).aeb);
                  we_preis[(*i).aeb]=AB.EPreis();
                 }
