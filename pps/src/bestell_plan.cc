@@ -95,25 +95,24 @@ void bestell_plan::load_data(const ArtikelBase a) throw(SQLerror)
  
  Query("SELECT coalesce(sum(bestellt-geliefert),0) from auftrag a join auftragentry e"
     " on (a.instanz=e.instanz and a.auftragid=e.auftragid and "
-    "a.instanz=? and a.stat=e.status and a.stat=? and "
+    "a.instanz=? and a.stat=e.status and a.stat in (?,?) and "
     " bestellt>geliefert and e.artikelid=? and a.auftragid>=?)")
-    << ppsInstanzID::Kundenauftraege << OPEN << a.Id() 
+    << ppsInstanzID::Kundenauftraege << OPEN << UNCOMMITED << a.Id() 
     << AuftragBase::handplan_auftrag_id >> offauf;
 
  Query("SELECT coalesce(sum(bestellt-geliefert),0) from auftrag a join auftragentry e"
     " on (a.instanz=e.instanz and a.auftragid=e.auftragid and "
-    "a.instanz=? and a.stat=e.status and a.stat=? and "
+    "a.instanz=? and a.stat=e.status and a.stat in (?,?) and "
     " bestellt>geliefert and e.artikelid=? and a.auftragid>=?)")
-    << ppsInstanzID::Einkauf << OPEN << a.Id() 
+    << ppsInstanzID::Einkauf << OPEN << UNCOMMITED << a.Id() 
     << AuftragBase::handplan_auftrag_id >> bestellt;     
 
-/* int abverkauf=0;
+ int abverkauf=0;
 
  Query q1("select coalesce(menge,0) from abverkauf_12m where artikelid=?");
    q1 << a.Id();
  FetchIStream fi=q1.Fetch();
  if(fi.good()) fi >> abverkauf; 
-*/
      
 // set entreis
  if(bestand.size()>0)
@@ -130,7 +129,7 @@ void bestell_plan::load_data(const ArtikelBase a) throw(SQLerror)
 
  bp_offauftraege->set_text(itos(offauf));
  bp_bestellt->set_text(itos(bestellt));
-// bp_abv12m->set_text(itos(abverkauf)); 
+ abverk_12m->set_text(itos(abverkauf)); 
  
  KumVal kv=KumVal(reinterpret_cast<int>(abverkauf_kumul->
                    get_menu()->get_active()->get_user_data()));
@@ -141,8 +140,6 @@ void bestell_plan::load_data(const ArtikelBase a) throw(SQLerror)
 
 void bestell_plan::load_abverkauf(const ArtikelBase a,KumVal kv)
 {
- abverkauf_tree->detach_from_clist();
- abverkauf_tree->clear();
  std::vector<cH_RowDataBase> datavec;
  
  Query q("SELECT coalesce(geliefertam,l.datum),stueck*coalesce(menge,1)"
@@ -159,22 +156,34 @@ void bestell_plan::load_abverkauf(const ArtikelBase a,KumVal kv)
  while(fi.good())
    {
     fi >> ld >> m;
-    datavec.push_back(new Data_Abverkauf(ld,m,kv));
+    datavec.push_back(new Data_Abverkauf(ld,m,kv,1));
     fi=q.Fetch();
    }
-  
- abverkauf_tree->setDataVec(datavec);  
+
+ abverkauf_tree->clear();  
+ abverkauf_tree->setDataVec(datavec);
+
 }
 
 
 bestell_plan::bestell_plan(const ArtikelBase ab)
 {
- std::vector<std::string> ct;
- ct.push_back("Lieferzeit");
- ct.push_back("Menge");
+ std::vector<std::string> ct(abverkauf_tree->Cols());
+ 
+ ct[SP_COMP_ZEIT]="Vergleichszeit";
+ ct[SP_LIEF_ZEIT]="Lieferzeit";
+ ct[SP_MENGE]="Menge";
  abverkauf_tree->setTitles(ct);
+ abverkauf_tree->set_column_justification(SP_COMP_ZEIT, GTK_JUSTIFY_RIGHT);
+ abverkauf_tree->set_column_justification(SP_LIEF_ZEIT, GTK_JUSTIFY_RIGHT); 
+ abverkauf_tree->set_column_justification(SP_MENGE, GTK_JUSTIFY_RIGHT); 
+ 
  abverkauf_tree->set_NewNode(&Data_AbverkaufNode::create);
-
+ 
+ abverkauf_kumul->get_menu()->deactivate.connect(
+   SigC::slot(static_cast<class bestell_plan*>(this),
+   &bestell_plan::on_abverkauf_reload_clicked));
+ 
  if(ab.valid())
    load_artikel_list();
 }
@@ -238,11 +247,7 @@ void bestell_plan::clear_all()
   bp_mindbestand->set_text("");
   lager_name1->set_text("Lager 1");
   lager_name2->set_text("Lager 2");  
-/*  bp_abv12m->set_text("");
-  bp_abv12m1->set_text("");
-  bp_abv12m2->set_text("");
-  bp_abv12m3->set_text("");
-*/  
+  abverk_12m->set_text("");
 }
 
 
@@ -251,33 +256,5 @@ void bestell_plan::on_abverkauf_reload_clicked()
  KumVal kv=KumVal(reinterpret_cast<int>(abverkauf_kumul->
                    get_menu()->get_active()->get_user_data()));
  load_abverkauf(akt_artikel,kv);
-}
-
-
-const cH_EntryValue Data_Abverkauf::Value(guint seqnr,gpointer gp) const
-{
-
- switch(seqnr) 
-   {
-    case LIEF_ZEIT : 
-        {switch(timecumulate) {
-         case KUM_DATUM :
-           return cH_EntryValueDatum( datum );
-         case KUM_WOCHE :
-           return cH_EntryValueKalenderwoche(
-                datum.valid() ? datum.KW() : Kalenderwoche());
-         case KUM_MONAT :
-           return cH_EntryValueMonat(datum);
-         case KUM_QUARTAL :
-           return cH_EntryValueQuartal(datum);
-         case KUM_JAHR :
-           return cH_EntryValueIntString(
-                datum.valid() ? datum.Jahr() : 0);
-         default : return cH_EntryValueDatum(datum);
-         }
-        }
-    case MENGE :  return cH_EntryValueIntString(menge);    
-  } 
- return cH_EntryValue();
 }
 

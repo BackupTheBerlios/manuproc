@@ -9518,9 +9518,11 @@ Jahr
   <type>GTK_WINDOW_TOPLEVEL</type>
   <position>GTK_WIN_POS_NONE</position>
   <modal>False</modal>
-  <allow_shrink>False</allow_shrink>
+  <default_width>640</default_width>
+  <default_height>600</default_height>
+  <allow_shrink>True</allow_shrink>
   <allow_grow>True</allow_grow>
-  <auto_shrink>False</auto_shrink>
+  <auto_shrink>True</auto_shrink>
 
   <widget>
     <class>GtkVBox</class>
@@ -9988,12 +9990,62 @@ Jahr
 	  <yfill>False</yfill>
 	</child>
       </widget>
+
+      <widget>
+	<class>GtkLabel</class>
+	<name>label132</name>
+	<label>Abverkauf 12 Mon.</label>
+	<justify>GTK_JUSTIFY_CENTER</justify>
+	<wrap>False</wrap>
+	<xalign>0</xalign>
+	<yalign>0.5</yalign>
+	<xpad>0</xpad>
+	<ypad>0</ypad>
+	<child>
+	  <left_attach>2</left_attach>
+	  <right_attach>3</right_attach>
+	  <top_attach>5</top_attach>
+	  <bottom_attach>6</bottom_attach>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
+	  <xexpand>False</xexpand>
+	  <yexpand>False</yexpand>
+	  <xshrink>False</xshrink>
+	  <yshrink>False</yshrink>
+	  <xfill>True</xfill>
+	  <yfill>False</yfill>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkEntry</class>
+	<name>abverk_12m</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<can_focus>True</can_focus>
+	<editable>False</editable>
+	<text_visible>True</text_visible>
+	<text_max_length>0</text_max_length>
+	<text></text>
+	<child>
+	  <left_attach>3</left_attach>
+	  <right_attach>4</right_attach>
+	  <top_attach>5</top_attach>
+	  <bottom_attach>6</bottom_attach>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
+	  <xexpand>True</xexpand>
+	  <yexpand>False</yexpand>
+	  <xshrink>False</xshrink>
+	  <yshrink>False</yshrink>
+	  <xfill>True</xfill>
+	  <yfill>False</yfill>
+	</child>
+      </widget>
     </widget>
 
     <widget>
       <class>GtkFrame</class>
       <name>frame56</name>
-      <border_width>5</border_width>
       <label>Abverkauf</label>
       <label_xalign>0</label_xalign>
       <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
@@ -10006,14 +10058,14 @@ Jahr
       <widget>
 	<class>GtkVBox</class>
 	<name>vbox26</name>
-	<border_width>5</border_width>
 	<homogeneous>False</homogeneous>
 	<spacing>0</spacing>
 
 	<widget>
 	  <class>GtkTable</class>
 	  <name>table30</name>
-	  <rows>3</rows>
+	  <border_width>2</border_width>
+	  <rows>1</rows>
 	  <columns>3</columns>
 	  <homogeneous>False</homogeneous>
 	  <row_spacing>0</row_spacing>
@@ -10101,20 +10153,6 @@ Jahr
 	      <xfill>True</xfill>
 	      <yfill>False</yfill>
 	    </child>
-
-	    <widget>
-	      <class>GtkButton</class>
-	      <child_name>Toolbar:button</child_name>
-	      <name>abverkauf_reload</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <signal>
-		<name>clicked</name>
-		<handler>on_abverkauf_reload_clicked</handler>
-		<last_modification_time>Tue, 01 Feb 2005 16:09:09 GMT</last_modification_time>
-	      </signal>
-	      <label>Neuladen</label>
-	      <stock_pixmap>GNOME_STOCK_PIXMAP_REFRESH</stock_pixmap>
-	    </widget>
 	  </widget>
 	</widget>
 
@@ -10163,8 +10201,8 @@ Jahr
 	      <name>abverkauf_tree</name>
 	      <cxx_visibility>protected</cxx_visibility>
 	      <creation_function>SimpleTree</creation_function>
-	      <int1>2</int1>
-	      <int2>1</int2>
+	      <int1>4</int1>
+	      <int2>2</int2>
 	      <last_modification_time>Fri, 28 Jan 2005 10:22:44 GMT</last_modification_time>
 	    </widget>
 	  </widget>

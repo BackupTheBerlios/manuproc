@@ -22,67 +22,7 @@
 #include <Misc/Datum.h>
 #include "datum_kumul.h"
 
-class Data_Abverkauf : public RowDataBase
-{
- ManuProC::Datum datum;
- int menge;
- KumVal timecumulate; 
-
-public:
- Data_Abverkauf(const ManuProC::Datum &d,int m,KumVal kv=KUM_DATUM)
-   : datum(d), menge(m), timecumulate(kv) {}
-
- typedef enum {LIEF_ZEIT=0, MENGE} Spalten;
-
- virtual const cH_EntryValue Value(guint seqnr, gpointer gp) const;
- int getMenge() const { return menge; }
-};
-
-class Data_AbverkaufNode : public TreeRow
-{
- int menge_sum;
-public:
- virtual void cumulate(const cH_RowDataBase &rd)
-  {
-   menge_sum+=dynamic_cast<const Data_Abverkauf &>(*rd).getMenge();
-  }
- 
- const cH_EntryValue Value(guint index, gpointer gp) const
-  {
-   switch(index)
-     {
-      case Data_Abverkauf::MENGE :
-        return cH_EntryValueIntString(menge_sum);
-     }
-   return cH_EntryValue();
-  }
-   
- Data_AbverkaufNode::Data_AbverkaufNode(guint depp, const cH_EntryValue &v,
-              guint child_s_deep, cH_RowDataBase child_s_data,bool expand,
-              const TreeRow &suminit)  
-        : TreeRow(deep,v,child_s_deep,child_s_data,expand), menge_sum(0)
-        {
-         if (suminit.Leaf()) cumulate(child_s_data);
-         else menge_sum=dynamic_cast<const Data_AbverkaufNode&>(suminit).menge_sum;
-        }
-
- static TreeRow *create(guint col, const cH_EntryValue &v,guint child_s_deep,
-         cH_RowDataBase child_s_data, bool expand, const TreeRow &suminit)
-  {  return new Data_AbverkaufNode(col,v,child_s_deep,child_s_data,expand,suminit);
-  }
-};
-
-
-class cH_Data_Abverkauf : public Handle<const Data_Abverkauf>
-{
-protected:
- cH_Data_Abverkauf() {}
-public:
- cH_Data_Abverkauf(Data_Abverkauf *d) : Handle<const Data_Abverkauf>(d) {}
-};
-
-
-
+typedef enum {SP_COMP_ZEIT=0, SP_LIEF_ZEIT,SP_MENGE,SP_DUMMY} Spalten;
 
 class bestell_plan : public bestell_plan_glade
 {  
@@ -100,11 +40,100 @@ class bestell_plan : public bestell_plan_glade
  void load_artikel_list();
  void load_data(const ArtikelBase a) throw(SQLerror);
  void set_akt_index();
- void load_abverkauf(const ArtikelBase a, KumVal kv=KUM_DATUM);
+ void load_abverkauf(const ArtikelBase a, KumVal kv);
  
 public:
  bestell_plan(const ArtikelBase ab=ArtikelBase());
         
 };
+
+
+class Data_Abverkauf : public RowDataBase
+{
+ const ManuProC::Datum datum;
+ mutable int menge;
+ KumVal timecumulate;
+ Kunde::ID kid; 
+
+public:
+ Data_Abverkauf(const ManuProC::Datum &d,int m,KumVal kv, const Kunde::ID k)
+   : datum(d), menge(m), timecumulate(kv), kid(k) {}
+
+
+
+ virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
+ {
+ switch((Spalten)seqnr) 
+   {
+    case SP_COMP_ZEIT : 
+        {switch(timecumulate) {
+         case KUM_DATUM :
+           return cH_EntryValueDatum( datum );
+         case KUM_WOCHE :
+           return cH_EntryValueKalenderwoche(
+                datum.valid() ? datum.KW() : Kalenderwoche());
+         case KUM_MONAT :
+           return cH_EntryValueMonat(datum);
+         case KUM_QUARTAL :
+           return cH_EntryValueQuartal(datum);
+         case KUM_JAHR :
+           return cH_EntryValueIntString(
+                datum.valid() ? datum.Jahr() : 0);
+         default : return cH_EntryValueDatum(datum);
+         }
+        }
+    case SP_LIEF_ZEIT : return cH_EntryValueDatum( datum );        
+    case SP_MENGE :  return cH_EntryValueIntString(menge);    
+  }
+ return cH_EntryValue();
+ }
+
+ int getMenge() const { return menge; }
+};
+
+class Data_AbverkaufNode : public TCListNode
+{
+ int menge_sum;
+public:
+ virtual void cumulate(const cH_RowDataBase &rd)
+  {
+   menge_sum+=dynamic_cast<const Data_Abverkauf &>(*rd).getMenge();
+  }
+ 
+ virtual const cH_EntryValue Value(guint index, gpointer gp) const
+  {
+   switch((Spalten)index)
+     {
+      case SP_MENGE :
+        return cH_EntryValueIntString(menge_sum);
+     }
+   return cH_EntryValue();
+  }
+   
+ Data_AbverkaufNode(guint col, const cH_EntryValue &v,
+              guint child_s_deep, cH_RowDataBase child_s_data,bool expand,
+              const TreeRow &suminit)  
+        : TreeRow(col,v,child_s_deep,child_s_data,expand),menge_sum(0)
+        {
+         if (suminit.Leaf()) cumulate(child_s_data);
+         else menge_sum=dynamic_cast<const Data_AbverkaufNode&>(suminit).menge_sum;
+        }
+
+ static TCListNode *create(guint col, const cH_EntryValue &v,guint child_s_deep,
+         cH_RowDataBase child_s_data, bool expand, const TreeRow &suminit)
+  {  return new Data_AbverkaufNode(col,v,child_s_deep,child_s_data,expand,suminit);
+  }
+};
+
+
+class cH_Data_Abverkauf : public Handle<const Data_Abverkauf>
+{
+ cH_Data_Abverkauf(const Data_Abverkauf *d) : Handle<const Data_Abverkauf>(d) {}
+};
+
+
+
+
+
 #endif
 
