@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReparatur.h,v 1.18 2003/12/03 15:00:44 christof Exp $
+// $Id: ppsInstanzReparatur.h,v 1.19 2004/05/03 12:23:38 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -76,7 +76,7 @@ class ppsInstanzReparatur : public cH_ppsInstanz
 
       bool Lagermenge_setzen(bool analyse_only, const ArtikelBase &art,const AuftragBase::mengen_t &gesmenge,bool retry=false) const;
       
-      static bool really_delete;
+      static bool really_delete,silence_warnings;
 };
 
 #endif

@@ -814,3 +814,4 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
 }
 
 bool ppsInstanzReparatur::really_delete;
+bool ppsInstanzReparatur::silence_warnings;

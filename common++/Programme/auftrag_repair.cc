@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.6 2004/02/20 16:43:35 christof Exp $
+// $Id: auftrag_repair.cc,v 1.7 2004/05/03 12:23:38 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -59,6 +59,7 @@ static void usage(const std::string &s)
  std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database>] [-h<dbhost>] [-l|-y] \n"
            "\twobei die aktion=[A|C|X|T|*] ist.\n"
            "\t-y Analysemodus (keine Reparaturen)\n"
+           "\t-s Warnungen unterdrücken\n"
            "\t-l Reparatur wiederholen bis keine Fehler mehr auftreten\n"
            "\t-I führt die Tests für alle Instanzen durch\n\n"
            "most common use:\n"
@@ -119,6 +120,7 @@ const static struct option options[]=
  { "database", required_argument,      NULL, 'd' },
  { "dbhost", required_argument,      NULL, 'h' },
  { "analyse_only", no_argument,      NULL, 'y' },
+ { "silence-warnings", no_argument,      NULL, 's' },
  { "alle_Instanzen", no_argument,      NULL, 'I' },
  { NULL,      0,       NULL, 0 }
 };
@@ -152,6 +154,7 @@ int main(int argc,char *argv[])
        case 'h' : dbhost=optarg;break;
        case 'y' : analyse_only=true;break;
        case 'l' : loop=true; break;
+       case 's' : ppsInstanzReparatur::silence_warnings=true; break;
        case 't' : ManuProC::Tracer::Enable(AuftragBase::trace_channel); break;
        case '?' : usage(argv[0]);
      }
