@@ -1,4 +1,4 @@
-/* $Id: callbackbuf.cc,v 1.3 2003/11/10 08:23:46 christof Exp $ */
+/* $Id: callbackbuf.cc,v 1.4 2004/04/29 14:24:40 christof Exp $ */
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 1998  Adolf Petig GmbH. & Co. KG
     Developed by Christof Petig <christof.petig@wtal.de>

@@ -1,4 +1,4 @@
-// $Id: doublebutton.h,v 1.4 2003/11/10 08:23:45 christof Exp $
+// $Id: doublebutton.h,v 1.5 2004/04/29 14:24:40 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig

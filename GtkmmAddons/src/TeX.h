@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: TeX.h,v 1.3 2003/11/10 08:23:45 christof Exp $
+// $Id: TeX.h,v 1.4 2004/04/29 14:24:40 christof Exp $
 
 #include <iostream>
 #include <string>

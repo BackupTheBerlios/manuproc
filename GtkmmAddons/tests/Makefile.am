@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.7 2003/11/10 08:23:45 christof Exp $
+# $Id: Makefile.am,v 1.8 2004/04/29 14:24:40 christof Exp $
 
 SUBDIRS=close_window
 

@@ -1,4 +1,4 @@
-// $Id: gtkhacks.h,v 1.1 2003/11/11 12:07:36 christof Exp $
+// $Id: gtkhacks.h,v 1.2 2004/04/29 14:24:40 christof Exp $
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 2003  Adolf Petig GmbH. & Co. KG
     Developed by Christof Petig <christof@petig-baender.de>

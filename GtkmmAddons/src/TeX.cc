@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: TeX.cc,v 1.5 2004/02/29 21:33:22 christof Exp $
+// $Id: TeX.cc,v 1.6 2004/04/29 14:24:40 christof Exp $
 
 #include <TeX.h>
 
@@ -34,7 +34,7 @@ std::ostream &TeX::Header(std::ostream &os, HeaderFlags fl)
    }
 
    // now output it
-   os << "% created using $Id: TeX.cc,v 1.5 2004/02/29 21:33:22 christof Exp $\n";
+   os << "% created using $Id: TeX.cc,v 1.6 2004/04/29 14:24:40 christof Exp $\n";
    os << "\\documentclass["<< fl.ptsize << "pt";
    if (fl.a4) os << ",a4paper";
    if (fl.twocolumn) os << ",twocolumn";

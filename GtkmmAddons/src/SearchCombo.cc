@@ -26,6 +26,9 @@
 
 #include <gtksearchcombo.h>
 
+// for SigC 2.0
+#include <sigc++/slot.h>
+
 namespace Gtk
 {
   SearchCombo::SearchCombo(bool alwaysfill,bool autoexpand)
@@ -59,9 +62,14 @@ void SearchCombo_signal_search_callback(GtkSearchCombo* self, gboolean* cont,Gtk
   {
     try
     {
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+      if(sigc::slot_base *const slot = Glib::SignalProxyNormal::data_to_slot(data))
+        (*static_cast<SlotType*>(slot))(cont, context);
+#else
       if(SigC::SlotNode *const slot = Glib::SignalProxyNormal::data_to_slot(data))
         (*(SlotType::Proxy)(slot->proxy_))
             (cont,context, slot);
+#endif            
     }
     catch(...)
     {
@@ -109,10 +117,9 @@ const Glib::Class& SearchCombo_Class::init()
     // Glib::Class has to know the class init function to clone custom types.
     class_init_func_ = &SearchCombo_Class::class_init_function;
 
-    // TODO: This is currently just optimized away, apparently with no harm.
-    // Is it actually necessary?
+    // This is actually just optimized away, apparently with no harm.
     // Make sure that the parent type has been created.
-    CppClassParent::CppObjectType::get_type();
+    //CppClassParent::CppObjectType::get_type();
 
     // Create the wrapper type, with the same class/instance size as the base type.
     register_derived_type(gtk_search_combo_get_type());

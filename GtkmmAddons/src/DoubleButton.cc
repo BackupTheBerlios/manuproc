@@ -3,7 +3,7 @@
 #include <gtkmm/DoubleButton.h>
 #include <gtkmm/private/DoubleButton_p.h>
 
-/* $Id: DoubleButton.cc,v 1.6 2004/04/29 14:24:14 christof Exp $ */
+/* $Id: DoubleButton.cc,v 1.7 2004/04/29 14:24:40 christof Exp $ */
 
 /* searchcombo.h
  * 
