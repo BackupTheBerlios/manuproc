@@ -1,4 +1,4 @@
-// $Id: StringBox_sql.pgcc,v 1.2 2004/11/08 07:55:09 christof Exp $
+// $Id: StringBox_sql.pgcc,v 1.3 2004/11/08 07:56:23 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
  *  2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,7 +21,7 @@
 
 StringBox::StringBox() 
 : tr("",false)
-{  search.connect(SigC::slot(this,&StringBox::string1_search));
+{  signal_search().connect(SigC::slot(*this,&StringBox::string1_search));
 }
 
 void StringBox::reset()
