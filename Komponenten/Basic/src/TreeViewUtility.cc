@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.cc,v 1.22 2004/06/30 13:26:22 christof Exp $
+// $Id: TreeViewUtility.cc,v 1.23 2004/06/30 13:43:13 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -181,7 +181,7 @@ bool TreeViewUtility::CListEmulator::button_press_handler(GdkEventButton *event)
             break;
          }
       signal_select_row()(*path.begin(),idx);
-      return true;
+//      return true;
    }
    return false;
 }
