@@ -308,7 +308,10 @@ void auftrag_lieferschein::fill_with(const AufEintrag& AE,const Einheit& E,
 {
   artikelbox->set_value(AE.Artikel());
   auftragnr->set_text(itos(AE.Id()));
-  anzahl->set_value(stueck);
+
+  int bestand(AE.getAmLager().as_int());
+  anzahl->set_value(stueck<bestand ? stueck : (bestand>0?bestand:0));
+
   menge_einheit->set_text(E.StueckEinheit());
   if (E.hatMenge())
    {
@@ -469,6 +472,13 @@ void auftrag_lieferschein::on_Palette_activate()
  lieferschein->lagerid=int(lagerwahl->get_menu()->get_active()->get_user_data());
 
   anzahl->update();
+
+  if(anzahl->get_value_as_int() == 0)
+   {
+    meldung->Show("Anzahl darf nicht 0 sein");
+    return;
+   }
+
   liefermenge->update();
   Palette->update();
   
@@ -583,7 +593,13 @@ void auftrag_lieferschein::auftragzeile_zeile_uebernehmen(const AufEintrag &AE)
    AufEintrag ae(AE);
    lieferschein->lagerid=
 		int(lagerwahl->get_menu()->get_active()->get_user_data());
-   lieferschein->push_back(ae,AE.Artikel(), AE.getRestStk().as_int(),
+      
+   int stueck=AE.getRestStk().as_int();
+   int bestand=AE.getAmLager().as_int();
+
+   int stk=stueck < bestand ? stueck : (bestand > 0 ? bestand:0);
+   if(stk>0)
+     lieferschein->push_back(ae,AE.Artikel(), AE.getRestStk().as_int(),
      		e.hatMenge()?liefermenge->get_value_as_float():0.0,
      		Palette->get_value_as_int());
 }

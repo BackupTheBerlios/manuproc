@@ -5140,8 +5140,8 @@ Fertig</label>
 		<tooltip>Ausgewählte Zeile in Lieferschein übernehmen</tooltip>
 		<signal>
 		  <name>clicked</name>
-		  <handler>on_newlieferentry_ok</handler>
-		  <last_modification_time>Mon, 19 Mar 2001 07:29:13 GMT</last_modification_time>
+		  <handler>on_Palette_activate</handler>
+		  <last_modification_time>Tue, 03 Feb 2004 14:26:12 GMT</last_modification_time>
 		</signal>
 		<label>Zeile</label>
 		<stock_pixmap>GNOME_STOCK_PIXMAP_ADD</stock_pixmap>

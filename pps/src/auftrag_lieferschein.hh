@@ -76,7 +76,6 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         void on_lieferkunde_activate();
         void on_liefdate_activate();
         void on_liefermenge_activate();
-        void on_newlieferentry_ok() {on_Palette_activate();};
         void on_newlieferentryall_ok();
         void on_Palette_activate();
         void auftragzeile_zeile_uebernehmen(const AufEintrag &AE);
