@@ -32,6 +32,11 @@
     <cxx_separate_class>True</cxx_separate_class>
     <cxx_visibility>protected</cxx_visibility>
     <can_focus>True</can_focus>
+    <signal>
+      <name>switch_page</name>
+      <handler>on_datewin_switch_page</handler>
+      <last_modification_time>Wed, 24 Apr 2002 09:18:30 GMT</last_modification_time>
+    </signal>
     <show_tabs>True</show_tabs>
     <show_border>False</show_border>
     <tab_pos>GTK_POS_LEFT</tab_pos>
@@ -184,7 +189,7 @@
     <widget>
       <class>GtkLabel</class>
       <child_name>Notebook:tab</child_name>
-      <name>label3</name>
+      <name>datum_label</name>
       <cxx_visibility>protected</cxx_visibility>
       <label>Datum</label>
       <justify>GTK_JUSTIFY_CENTER</justify>
@@ -296,6 +301,7 @@
     <widget>
       <class>GtkHandleBox</class>
       <name>handlebox1</name>
+      <visible>False</visible>
       <shadow_type>GTK_SHADOW_NONE</shadow_type>
       <handle_position>GTK_POS_RIGHT</handle_position>
       <snap_edge>GTK_POS_TOP</snap_edge>
@@ -304,6 +310,7 @@
 	<class>GtkCalendar</class>
 	<name>calendar1</name>
 	<cxx_visibility>protected</cxx_visibility>
+	<visible>False</visible>
 	<can_focus>True</can_focus>
 	<signal>
 	  <name>day_selected</name>

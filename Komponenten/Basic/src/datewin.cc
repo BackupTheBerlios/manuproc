@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.3 2002/04/19 15:26:03 christof Exp $
+// $Id: datewin.cc,v 1.4 2002/04/30 08:12:41 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,11 +22,12 @@
 #include <Aux/Global_Settings.h>
 #include <unistd.h>
 
-datewin::datewin()
+datewin::datewin() : block(false)
 {  set_value(Petig::Datum::today());
    jahr->activate.connect(activate.slot());
    gtk_signal_connect(GTK_OBJECT(gtkobj()), "grab_focus",
     		GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
+   set_scrollable(false); // for now ...
 }
 
 Petig::Datum datewin::get_value() const throw()
@@ -67,7 +68,9 @@ void datewin::set_value (const Petig::Datum &d) throw()
       kw_spinbutton->set_value(d.KW().Woche());
       jahr_spinbutton->set_value(d.KW().Jahr());
       calendar1->select_month(d.Monat(),d.Jahr());
+      block=true;
       calendar1->select_day(d.Tag());
+      block=false;
       set_page(load_settings());
    }
    else 
@@ -117,7 +120,8 @@ void datewin::on_activate(int i)
 
 void datewin::setLabel(const std::string &s)
 {  set_show_tabs(!s.empty());
-   if (!s.empty()) label3->set_text(s);
+   set_scrollable(!s.empty());
+   if (!s.empty()) datum_label->set_text(s);
    std::cout << "datewin::setLabel("<<s<<");\n";
 }
 
@@ -132,7 +136,8 @@ void datewin::kw_activate()
    activate();
 }
 void datewin::on_day_selected()
-{  save_settings();
+{  if (block) return;
+   save_settings();
    set_value(get_value());
    activate();
 }
@@ -147,4 +152,10 @@ void datewin::save_settings() const
 
 int datewin::load_settings() const
 {  return atoi(Global_Settings(getuid(),"","datewin:page").get_Wert().c_str());
+}
+
+void datewin::on_datewin_switch_page(Gtk::Notebook_Helpers::Page *p0, guint p1)
+{  if (p1==p_Kalender)
+      calendar1->show();
+   else calendar1->hide();
 }

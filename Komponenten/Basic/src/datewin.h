@@ -1,4 +1,4 @@
-// $Id: datewin.h,v 1.4 2002/04/19 15:26:03 christof Exp $
+// $Id: datewin.h,v 1.5 2002/04/30 08:12:41 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,6 +27,7 @@ class datewin : public datewin_glade
 	static gint try_grab_focus(GtkWidget *w,gpointer gp) throw();
         enum FELD {TAG=1,MONAT};
         enum PAGE { p_Datum, p_Woche, p_Kalender, p_leer };
+        bool block;
 
 	void on_activate(int i);
         void datum_activate();
@@ -35,6 +36,7 @@ class datewin : public datewin_glade
         void datum_setzen();
         void save_settings() const;
         int load_settings() const;
+        void on_datewin_switch_page(Gtk::Notebook_Helpers::Page *p0, guint p1);
 
    public:
 	datewin();
