@@ -67,7 +67,26 @@ void verf_vergleichen(const std::string &postfix,const AufEintragBase &AEB)
    }
 }
 void ben_vergleichen(const std::string &postfix,const AufEintragBase &AEB)
-{
+{  Verfuegbarkeit::map_t mp;
+   Verfuegbarkeit::wozu_benoetigt(AEB,mp);
+   vergleichstream vos=getCheck().vergleich_open("ben_"+postfix+"_"+AEB2filename(AEB));
+   std::ofstream &os=(*vos.stream);
+   os << "Verwendung für " << AEB << '\n';
+   os << "Instanz\tArtikel\tKunde\tMenge\n";
+   for (Verfuegbarkeit::map_t::const_iterator i=mp.begin();i!=mp.end();++i)
+   {  os << i->first.inst << '\t'
+   	<< i->first.art << '\t'
+   	<< i->first.kunde << '\t';
+      if (!!i->second.vorraetig) os << 'v' << i->second.vorraetig << ' ';
+      if (!!i->second.geplant) os << 'p' << i->second.geplant << ' ';
+      if (!!i->second.ungeplant) os << 'u' << i->second.ungeplant << ' ';
+      if (!!i->second.error) os << 'E' << i->second.error;
+      os << '\n';
+   }
+   if (getCheck().vergleich_close(vos))
+   {  std::cout << postfix << " Verfügbarkeit fehlgeschlagen\n";
+      if (!Check::continue_) exit(1);
+   }
 }
 
 static bool Verfuegbarkeit2()
