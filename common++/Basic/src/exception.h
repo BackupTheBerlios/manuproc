@@ -16,8 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: exception.h,v 1.3 2002/05/09 12:46:00 christof Exp $
+// $Id: exception.h,v 1.4 2002/06/27 07:35:58 christof Exp $
+
+namespace ManuProC
+{  void PrintUncaughtExceptions() throw();
+}
 
 namespace Petig
-{  void PrintUncaughtExceptions() throw();
+{  using ManuProC::PrintUncaughtExceptions;
 }

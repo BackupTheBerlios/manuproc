@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: exception.cc,v 1.6 2002/06/24 07:35:40 christof Exp $
+// $Id: exception.cc,v 1.7 2002/06/27 07:35:58 christof Exp $
 // long explantion at the end
 
 #include <iostream>
@@ -79,7 +79,7 @@ static void print_exception_t()
    _exit(1);
 }
 
-void Petig::PrintUncaughtExceptions() throw()
+void ManuProC::PrintUncaughtExceptions() throw()
 {  std::set_unexpected(print_exception_u);
    std::set_terminate(print_exception_t);
 }
