@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.12 2004/09/01 12:30:32 christof Exp $
+// $Id: auftrag_repair.cc,v 1.13 2004/12/22 11:02:12 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -40,32 +40,32 @@ static action_flags actions=f_none;
 
 static void usage(const std::string &s)
 {
- std::cerr <<"\nDieses Programm ermöglicht die folgenden Aktionen:\n"
-           "\tA: Für eine Lagerinstanz wird aus dem physikalischen Lagertabellen\n"
-           "\t   die Lagermenge bestimmt und anschließend die 2er(Dispo-)Aufträge\n"
-           "\t   entsprechend angepaßt. Dabei werden die eventuelle Vormerkungen\n"
-           "\t   (in form von 1er(plan-)Aufträgen berücksichtigt. Sollte mehr\n"
+ std::cerr <<"\nDieses Programm ermÃ¶glicht die folgenden Aktionen:\n"
+           "\tA: FÃ¼r eine Lagerinstanz wird aus dem physikalischen Lagertabellen\n"
+           "\t   die Lagermenge bestimmt und anschlieÃŸend die 2er(Dispo-)AuftrÃ¤ge\n"
+           "\t   entsprechend angepaÃŸt. Dabei werden die eventuelle Vormerkungen\n"
+           "\t   (in form von 1er(plan-)AuftrÃ¤gen berÃ¼cksichtigt. Sollte mehr\n"
            "\t   vorgemerkt sein, als im Lager drin ist, so sird die Vormerkung\n"
            "\t   reduziert. (nicht mit -I!)\n"
-           "\tC: Es wird sichergestellt, daß nur entweder 0er- oder 2er-Aufträge\n"
+           "\tC: Es wird sichergestellt, daÃŸ nur entweder 0er- oder 2er-AuftrÃ¤ge\n"
            "\t   (pro Instanz,Artikel,Lieferdatum) existieren.\n"
-           "\tX: Reparaturen von Zuordnungen+lokalen Einschränkungen\n"
-           "\tR: Erhöhen von Produziert-Selbst-Instanzen auf noch benötigte Menge\n"
-           "\tL: Löschen von ungültigen Zuordnungen (ohne Quelle oder Ziel)\n"
-           "\tD: Löschen von ungültigen Einträgen (Vorsicht)\n"
-           "\tN: Unschöne aber mögliche Zustände akzeptieren (für test)\n"
-           "\tM: Mindestmenge auf Lager sicherstellen (Überbestellungen kappen)\n"
+           "\tX: Reparaturen von Zuordnungen+lokalen EinschrÃ¤nkungen\n"
+           "\tR: ErhÃ¶hen von Produziert-Selbst-Instanzen auf noch benÃ¶tigte Menge\n"
+           "\tL: LÃ¶schen von ungÃ¼ltigen Zuordnungen (ohne Quelle oder Ziel)\n"
+           "\tD: LÃ¶schen von ungÃ¼ltigen EintrÃ¤gen (Vorsicht)\n"
+           "\tN: UnschÃ¶ne aber mÃ¶gliche ZustÃ¤nde akzeptieren (fÃ¼r test)\n"
+           "\tM: Mindestmenge auf Lager sicherstellen (Ãœberbestellungen kappen)\n"
            "\t*: Alle Analysen/Reparaturen auf einmal (meist mit -I)\n";
 
  std::cerr << "USAGE:  ";
  std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database>] [-h<dbhost>] [-l|-y] \n"
            "\twobei die aktion=[A|C|X|T|M|*] [-A<Id>] ist.\n"
            "\t-y Analysemodus (keine Reparaturen)\n"
-           "\t-s Warnungen unterdrücken\n"
+           "\t-s Warnungen unterdrÃ¼cken\n"
            "\t-l Reparatur wiederholen bis keine Fehler mehr auftreten\n"
-           "\t-I führt die Tests für alle Instanzen durch\n\n"
+	   "\t-A nur fÃ¼r den Artikel mit der Id durchfÃ¼hren\n"
+           "\t-I fÃ¼hrt die Tests fÃ¼r alle Instanzen durch\n\n"
            "most common use:\n"
-	   "\t-A nur für den Artikel mit der Id durchführen"
            "\t./auftrag_repair -l -I -a\\*\trepair all (-aD to delete unneeded)\n";
  exit(1);
 }
@@ -86,7 +86,7 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,
           "(select true from auftragentry "
           "where (instanz,auftragid,artikelid)=(?,?,artikelstamm.id)"
           "and bestellt<mindbestand)"
-          // oder genügend freie Menge bei gleichzeitigen Nachbestellungen
+          // oder genÃ¼gend freie Menge bei gleichzeitigen Nachbestellungen
           " or (exists "
           "(select true from auftragentry "
           "where (instanz,auftragid,artikelid)=(?,?,artikelstamm.id)"
@@ -97,7 +97,7 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,
           ")))"
           ") "
           // und wird bei dieser Instanz bestellt (parallelInstanzen fehlen)
-          // Einschränkung notwendig?
+          // EinschrÃ¤nkung notwendig?
           "and (bestellen_bei=? or exists "
           "(select true from prod_instanz where lager_fuer=? and insid=bestellen_bei)"
           ") "
@@ -134,7 +134,7 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,
         {  std::cout << "SQL Fehler " << e << '\n';
            alles_ok=false;
         }
-      else if (!(actions&b_tree)) // Meldung bei * unterdrücken
+      else if (!(actions&b_tree)) // Meldung bei * unterdrÃ¼cken
          std::cout << "\t"<< I << " 'A' nicht sinnvoll\n";
      }
 //   reload:
@@ -144,7 +144,7 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,
        SelectedFullAufList K(psel);
       if (actions&b_exclude)
       {  alles_ok&=RI.Reparatur_0er_und_2er(K,analyse_only);
-         // if (!alles_ok) goto reload; // eigentlich verändert diese F. K
+         // if (!alles_ok) goto reload; // eigentlich verÃ¤ndert diese F. K
       }
       if (actions&b_tree)
       {for(SelectedFullAufList::iterator i = K.begin();i!=K.end(); ++i)
@@ -255,7 +255,7 @@ restart:
     	"(select true from auftragentry where (instanz,auftragid,zeilennr)="
     		"(neuinstanz,neuauftragid,neuzeilennr))");
         if (Query::Lines())
-        {  std::cout << Query::Lines() << " ungültige Zuordnungen gelöscht\n";
+        {  std::cout << Query::Lines() << " ungÃ¼ltige Zuordnungen gelÃ¶scht\n";
         }
        }
     }
