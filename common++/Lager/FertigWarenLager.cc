@@ -100,7 +100,7 @@ void FertigWarenLager::Buchen(FertigWaren::e_buchen buchen,
  Transaction tr;
 
 #warning NO NEGATIV AMOUNT NOW
-// we do not accept negativ mount from now on
+// we do not accept negativ amount from now on
 
 
 // Wenn Bestand <0 sein würde und es war Auslagern, dann Exception 
