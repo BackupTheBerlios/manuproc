@@ -204,6 +204,7 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr) throw(S
  		where auftragid between (:YEAR*10000) and (:YEAR+1)*10000-1
  		and instanz=:INSTANZ;
  SQLerror::test("Auftrag: select neue auftragid");
+ if (AUFTRAGID<handplan_auftrag_id) AUFTRAGID=handplan_auftrag_id;
 
  exec sql insert into auftrag (auftragid, kundennr, 
 				stat, waehrung, instanz)

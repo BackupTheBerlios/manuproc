@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.12 2004/02/12 07:21:00 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.13 2004/02/12 11:53:11 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,7 +28,8 @@
 
 // Kinder !!! d.h. nicht nach Priorität
 bool distribute_children_cb::operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
-{  return a.AEB<b.AEB || (a.AEB==b.AEB && a.Pri<b.Pri);
+{  return AufEintragZu_sort::auftr_0123(a,b);
+//a.AEB<b.AEB || (a.AEB==b.AEB && a.Pri<b.Pri);
 }
 
 bool distribute_children_twice_cb::operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const

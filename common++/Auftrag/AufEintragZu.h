@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.27 2004/02/10 11:36:14 christof Exp $
+// $Id: AufEintragZu.h,v 1.28 2004/02/12 11:53:11 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -113,6 +113,14 @@ public:
     static bool remove(const AufEintragBase& alt_AEB,const AufEintragBase& neu_AEB,
     	const ManuProC::TimeStamp &Pri=ManuProC::TimeStamp());
     static void moveInstanz(const VonNachDel vdl,const AufEintragBase &oldAEB, const AufEintragBase &newAEB) throw(SQLerror);
+};
+
+namespace AufEintragZu_sort
+{	bool auftr_1230(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b);
+	bool priority(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b);
+	bool auftr_0123(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b);
+	bool auftr_43210(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b);
+	bool auftr_34012(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b);
 };
 
 #endif

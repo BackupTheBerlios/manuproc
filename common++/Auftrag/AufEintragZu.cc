@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.30 2004/02/10 11:36:14 christof Exp $
+// $Id: AufEintragZu.cc,v 1.31 2004/02/12 11:53:11 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -355,4 +355,32 @@ AufEintragZu::mengen_t AufEintragZu::Summe(const list_t &l,ID wovon)
       if (wovon==none_id || i->AEB.Id()==wovon)
          result+=i->Menge;
    return result;
+}
+
+bool AufEintragZu_sort::auftr_1230(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b)
+{  int order=0;
+   if (a.AEB.Id()==AuftragBase::ungeplante_id) order+=1;
+   if (b.AEB.Id()==AuftragBase::ungeplante_id) order-=1;
+   if (order) return order<0;
+   return AufEintragZu_sort::auftr_0123(a,b);
+}
+
+bool AufEintragZu_sort::priority(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b)
+{  return a.Pri<b.Pri || (a.Pri==b.Pri && a.AEB<b.AEB);
+}
+
+bool AufEintragZu_sort::auftr_0123(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b)
+{  return a.AEB<b.AEB || (a.AEB==b.AEB && a.Pri<b.Pri);
+}
+
+bool AufEintragZu_sort::auftr_43210(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b)
+{  return AufEintragZu_sort::auftr_0123(b,a);
+}
+
+bool AufEintragZu_sort::auftr_34012(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b)
+{  int order=0;
+   if (a.AEB.Id()<AuftragBase::handplan_auftrag_id) order+=1;
+   if (b.AEB.Id()<AuftragBase::handplan_auftrag_id) order-=1;
+   if (order) return order<0;
+   return AufEintragZu_sort::auftr_0123(a,b);
 }
