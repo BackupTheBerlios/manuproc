@@ -1,0 +1,45 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "artbez_2_1_id";
+DROP INDEX "artbez_2_1_uniq";
+DROP TABLE "artbez_2_1";
+--
+--
+--
+
+CREATE TABLE "artbez_2_1" (
+	"id" integer NOT NULL,
+	"artikel" text,
+	"laenge" text,
+	"breite" text,
+	"farbe" text,
+	"stand" timestamp with time zone DEFAULT now(),
+	Constraint "artbez_2_1_pkey" Primary Key ("id")
+);
+
+--
+--
+--
+
+
+COPY "artbez_2_1" FROM stdin;
+6	Griff	10cm	1.5cm	gelb	2002-09-30 14:12:32.579198+02
+7	Griff	10cm	1.5cm	rot	2002-09-30 14:12:36.496582+02
+8	Griff	10cm	1.5cm	grün	2002-09-30 14:12:43.66302+02
+9	Griff	10cm	2cm	schwarz	2002-09-30 14:12:52.758033+02
+10	Griff	10cm	1cm	schwarz	2002-09-30 14:12:56.847844+02
+11	Griff	10cm	1.5cm	schwarz	2002-09-30 14:13:00.943794+02
+\.
+--
+--
+--
+
+CREATE UNIQUE INDEX artbez_2_1_uniq ON artbez_2_1 USING btree (artikel, laenge, breite, farbe);
+
+--
+--
+--
+
+CREATE UNIQUE INDEX artbez_2_1_id ON artbez_2_1 USING btree (id);
+

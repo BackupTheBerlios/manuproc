@@ -1,0 +1,22 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "ku_verkaeufer";
+--
+--
+--
+
+CREATE TABLE "ku_verkaeufer" (
+	"verknr" numeric(3,0) NOT NULL,
+	"name" character varying(30),
+	"kurz" character varying(5) NOT NULL,
+	Constraint "verkaeufer_pkey" Primary Key ("verknr")
+);
+
+--
+--
+--
+
+
+COPY "ku_verkaeufer" FROM stdin;
+\.

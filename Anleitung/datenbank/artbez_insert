@@ -1,0 +1,28 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "artbez_insert";
+--
+--
+--
+
+CREATE TABLE "artbez_insert" (
+	"tabelle" text NOT NULL,
+	Constraint "artbez_insert_pkey" Primary Key ("tabelle")
+);
+
+--
+--
+--
+
+
+COPY "artbez_insert" FROM stdin;
+artbez_1_1
+artbez_2_1
+artbez_3_1
+artbez_4_1
+artbez_5_1
+artbez_6_1
+artbez_4_1000
+artbez_6_1000
+\.

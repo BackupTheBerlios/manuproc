@@ -1,0 +1,44 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "artbez_3_1_id";
+DROP INDEX "artbez_3_1_uniq";
+DROP TABLE "artbez_3_1";
+--
+--
+--
+
+CREATE TABLE "artbez_3_1" (
+	"id" integer NOT NULL,
+	"artikel" text,
+	"laenge" text,
+	"breite" text,
+	"stand" timestamp with time zone DEFAULT now(),
+	Constraint "artbez_3_1_pkey" Primary Key ("id")
+);
+
+--
+--
+--
+
+
+COPY "artbez_3_1" FROM stdin;
+12	Schaft	10cm	2mm	2002-09-30 14:14:14.322521+02
+13	Schaft	10cm	3mm	2002-09-30 14:14:18.366628+02
+14	Schaft	7cm	3mm	2002-09-30 14:14:26.406065+02
+15	Schaft	7cm	2mm	2002-09-30 14:14:28.256609+02
+16	Schaft	7cm	1mm	2002-09-30 14:14:30.131805+02
+17	Schaft	10cm	1mm	2002-09-30 14:14:33.17846+02
+\.
+--
+--
+--
+
+CREATE UNIQUE INDEX artbez_3_1_uniq ON artbez_3_1 USING btree (artikel, laenge, breite);
+
+--
+--
+--
+
+CREATE UNIQUE INDEX artbez_3_1_id ON artbez_3_1 USING btree (id);
+

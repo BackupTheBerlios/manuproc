@@ -1,0 +1,47 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "rechnung";
+--
+--
+--
+
+CREATE TABLE "rechnung" (
+	"rngid" numeric(6,0) NOT NULL,
+	"kundennr" numeric(5,0) NOT NULL,
+	"datum" timestamp with time zone DEFAULT now() NOT NULL,
+	"bezahlt" boolean DEFAULT 'f'::bool NOT NULL,
+	"zahlart" numeric(1,0) NOT NULL,
+	"zahlziel" date,
+	"rngart" character(1) DEFAULT 'R' NOT NULL,
+	"freitext" text,
+	"waehrung" numeric(2,0) DEFAULT 1,
+	"rabatt" numeric(4,2),
+	Constraint "rechnung_pkey" Primary Key ("rngid")
+);
+
+--
+--
+--
+
+
+COPY "rechnung" FROM stdin;
+\.
+--
+--
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "rechnung"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'rechnung', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
+
+--
+--
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "rechnung"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_setnull_del" ('<unnamed>', 'lieferschein', 'rechnung', 'UNSPECIFIED', 'rngid', 'rngid');
+
+--
+--
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "rechnung"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'lieferschein', 'rechnung', 'UNSPECIFIED', 'rngid', 'rngid');
+

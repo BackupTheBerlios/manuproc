@@ -1,0 +1,65 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "auftragentry_artikelid";
+DROP INDEX "auftragentry_pkey";
+DROP TABLE "auftragentry";
+--
+--
+--
+
+CREATE TABLE "auftragentry" (
+	"auftragid" numeric(6,0) NOT NULL,
+	"zeilennr" numeric(4,0) NOT NULL,
+	"bestellt" numeric(8,0) NOT NULL,
+	"geliefert" numeric(8,0) NOT NULL,
+	"lasteditdate" timestamp with time zone DEFAULT now() NOT NULL,
+	"lasteditor" character varying(10),
+	"delme0" numeric(6,0),
+	"lastedit" character varying(10),
+	"dispoentrynr" numeric(5,0),
+	"artikelid" integer NOT NULL,
+	"rohartikelid" integer,
+	"status" smallint,
+	"preis" numeric(7,3),
+	"rabatt" numeric(4,2),
+	"dummy" integer,
+	"lieferdate" date,
+	"preismenge" integer,
+	"instanz" integer DEFAULT 1,
+	"preisliste" integer,
+	"letzte_lieferung" timestamp with time zone,
+	"lastedit_uid" integer
+);
+
+--
+--
+--
+
+
+COPY "auftragentry" FROM stdin;
+\.
+--
+--
+--
+
+CREATE UNIQUE INDEX auftragentry_pkey ON auftragentry USING btree (instanz, auftragid, zeilennr);
+
+--
+--
+--
+
+CREATE INDEX auftragentry_artikelid ON auftragentry USING btree (artikelid, instanz);
+
+--
+--
+--
+
+CREATE CONSTRAINT TRIGGER "chjour_constr" AFTER DELETE ON "auftragentry"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('chjour_constr', 'prod_changejournal', 'auftragentry', 'UNSPECIFIED', 'auftragid', 'auftragid', 'auftragzeile', 'zeilennr', 'insid', 'instanz');
+
+--
+--
+--
+
+CREATE CONSTRAINT TRIGGER "chjour_constr" AFTER UPDATE ON "auftragentry"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('chjour_constr', 'prod_changejournal', 'auftragentry', 'UNSPECIFIED', 'auftragid', 'auftragid', 'auftragzeile', 'zeilennr', 'insid', 'instanz');
+

@@ -1,0 +1,36 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "prod_instanz";
+--
+--
+--
+
+CREATE TABLE "prod_instanz" (
+	"insid" numeric(2,0) NOT NULL,
+	"name" character varying(20) NOT NULL,
+	"lager_fuer" integer,
+	"sortierung" integer,
+	"lieferschein" boolean,
+	"lagername" text,
+	"produziert_selbst" boolean,
+	"prod_dauer_tage" integer,
+	Constraint "prod_instanz_pkey" Primary Key ("insid")
+);
+
+--
+--
+--
+
+
+COPY "prod_instanz" FROM stdin;
+20	Gieﬂerei	\N	6	\N	\N	\N	5
+21	Schmelze	\N	7	\N	\N	\N	10
+35	Einkauf	\N	60	t	\N	\N	30
+5	Schraubenzieherlager	10	50	\N	\N	\N	\N
+1	Kundenauftr‰ge	\N	1	t	\N	\N	\N
+2	Versand	\N	2	\N	\N	\N	1
+30	Rohwarenlager	35	52	\N	nulll	\N	\N
+10	Werkstatt	\N	4	\N	\N	\N	1
+11	Packerei	\N	5	\N	\N	\N	1
+\.

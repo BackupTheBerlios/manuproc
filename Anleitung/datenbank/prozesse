@@ -1,0 +1,35 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "prozesse_prozessid_key";
+DROP TABLE "prozesse";
+--
+--
+--
+
+CREATE TABLE "prozesse" (
+	"prozessid" integer DEFAULT nextval('prozesse_prozessid_seq'::text) NOT NULL,
+	"label" character varying(15) NOT NULL,
+	"text" character varying(20),
+	"meterprostk" double precision
+);
+
+--
+--
+--
+
+
+COPY "prozesse" FROM stdin;
+10	Schmelzen	\N	\N
+11	Gießen	\N	\N
+12	Verpacken	\N	\N
+13	Zusammenfügen	\N	\N
+31	Verarbeitung	Irgendetwas	\N
+2	Äquivalenz	Gleichheit	\N
+\.
+--
+--
+--
+
+CREATE UNIQUE INDEX prozesse_prozessid_key ON prozesse USING btree (prozessid);
+

@@ -6,6 +6,13 @@ schema=1
 if [ "$1" = "--schema-only" ] ; then data=0; fi
 if [ "$1" = "-s" ] ; then data=0; fi
 
+psql anleitungdb << END 
+delete from auftrag ;
+delete from prod_changejournal;
+delete from auftragentry ;
+delete from auftragsentryzuordnung;
+END
+
 
 for i in `psql -t -q -c "select tablename from pg_tables where \
 tablename not like 'pg_%' and tablename not like 'pga_%';" anleitungdb`

@@ -1,0 +1,40 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "lieferschein";
+--
+--
+--
+
+CREATE TABLE "lieferschein" (
+	"lfrsid" numeric(6,0) NOT NULL,
+	"kundennr" numeric(5,0) NOT NULL,
+	"datum" timestamp with time zone DEFAULT now() NOT NULL,
+	"rngid" numeric(6,0),
+	"pakete" numeric(2,0),
+	"paeckchen" numeric(3,0),
+	"dpdliefnr" integer,
+	"geliefertam" date,
+	"instanz" integer DEFAULT 1 NOT NULL,
+	Constraint "lieferschein_pkey" Primary Key ("instanz", "lfrsid")
+);
+
+--
+--
+--
+
+
+COPY "lieferschein" FROM stdin;
+\.
+--
+--
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "lieferschein"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'lieferscheinentry', 'lieferschein', 'UNSPECIFIED', 'lfrsid', 'lfrsid');
+
+--
+--
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "lieferschein"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'lieferscheinentry', 'lieferschein', 'UNSPECIFIED', 'lfrsid', 'lfrsid');
+

@@ -1,0 +1,45 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "artbez_4_1_id";
+DROP INDEX "artbez_4_1_uniq";
+DROP TABLE "artbez_4_1";
+--
+--
+--
+
+CREATE TABLE "artbez_4_1" (
+	"id" integer NOT NULL,
+	"artikel" text,
+	"laenge" text,
+	"breite" text,
+	"farbe" text,
+	"stand" timestamp with time zone DEFAULT now(),
+	Constraint "artbez_4_1_pkey" Primary Key ("id")
+);
+
+--
+--
+--
+
+
+COPY "artbez_4_1" FROM stdin;
+18	Schraubenzieher	10-1	10-1.5	schwarz	2002-10-10 14:23:38.453875+02
+21	Schraubenzieher	10-2	10-1.5	schwarz	2002-10-10 14:29:34.179459+02
+19	Schraubenzieher	10-3	10-1.5	schwarz	2002-10-10 14:31:49.750274+02
+20	Schraubenzieher	7-1	10-1.5	rot	2002-10-10 14:36:56.047888+02
+23	Schraubenzieher	7-2	10-1.5	gelb	2002-10-10 14:38:22.080141+02
+22	Schraubenzieher	7-3	10-1.5	grün	2002-10-10 14:38:55.448949+02
+\.
+--
+--
+--
+
+CREATE UNIQUE INDEX artbez_4_1_uniq ON artbez_4_1 USING btree (artikel, laenge, breite, farbe);
+
+--
+--
+--
+
+CREATE UNIQUE INDEX artbez_4_1_id ON artbez_4_1 USING btree (id);
+

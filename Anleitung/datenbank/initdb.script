@@ -7,6 +7,8 @@ createdb anleitungdb
 
 P="."
 
+if [ $1 ]; then P=$1; fi
+
 for i in \
    artbez_warengruppe \
    artbez_1_1 \
@@ -44,6 +46,8 @@ for i in \
    ku_warenkorb \
    lieferschein \
    lieferscheinentry \
+   prod_changejournal \
+   prod_changejournal_chid_seq \
    prod_instanz \
    prozesse \
    rechnung \

@@ -1,0 +1,46 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "auftragsentryzuordnung_altauftr";
+DROP INDEX "ae_zo_neu";
+DROP INDEX "ae_zo_alt";
+DROP TABLE "auftragsentryzuordnung";
+--
+--
+--
+
+CREATE TABLE "auftragsentryzuordnung" (
+	"altauftragid" integer NOT NULL,
+	"altinstanz" integer NOT NULL,
+	"altzeilennr" integer NOT NULL,
+	"neuauftragid" integer NOT NULL,
+	"neuinstanz" integer NOT NULL,
+	"neuzeilennr" integer NOT NULL,
+	"menge" integer
+);
+
+--
+--
+--
+
+
+COPY "auftragsentryzuordnung" FROM stdin;
+\.
+--
+--
+--
+
+CREATE INDEX ae_zo_alt ON auftragsentryzuordnung USING btree (altinstanz, altauftragid, altzeilennr);
+
+--
+--
+--
+
+CREATE INDEX ae_zo_neu ON auftragsentryzuordnung USING btree (neuinstanz, neuauftragid, neuzeilennr);
+
+--
+--
+--
+
+CREATE UNIQUE INDEX auftragsentryzuordnung_altauftr ON auftragsentryzuordnung USING btree (altauftragid, altinstanz, altzeilennr, neuauftragid, neuinstanz, neuzeilennr);
+

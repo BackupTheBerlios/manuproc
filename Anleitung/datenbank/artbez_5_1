@@ -1,0 +1,39 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "artbez_5_1_id";
+DROP INDEX "artbez_5_1_uniq";
+DROP TABLE "artbez_5_1";
+--
+--
+--
+
+CREATE TABLE "artbez_5_1" (
+	"id" integer NOT NULL,
+	"material" text,
+	"groesse" text,
+	"stand" timestamp with time zone DEFAULT now(),
+	Constraint "artbez_5_1_pkey" Primary Key ("id")
+);
+
+--
+--
+--
+
+
+COPY "artbez_5_1" FROM stdin;
+26	Schachtel	3x10x7	2002-10-10 15:27:41.776119+02
+25	Schachtel	3x10x10	2002-10-10 15:28:14.46642+02
+\.
+--
+--
+--
+
+CREATE UNIQUE INDEX artbez_5_1_uniq ON artbez_5_1 USING btree (material, groesse);
+
+--
+--
+--
+
+CREATE UNIQUE INDEX artbez_5_1_id ON artbez_5_1 USING btree (id);
+

@@ -1,0 +1,38 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "artbez_6_1000_id";
+DROP INDEX "artbez_6_1000_uniq";
+DROP TABLE "artbez_6_1000";
+--
+--
+--
+
+CREATE TABLE "artbez_6_1000" (
+	"id" integer NOT NULL,
+	"artikel" text,
+	"inhalt" text,
+	"farbe" text,
+	"stand" timestamp with time zone DEFAULT now(),
+	Constraint "artbez_6_1000_pkey" Primary Key ("id")
+);
+
+--
+--
+--
+
+
+COPY "artbez_6_1000" FROM stdin;
+\.
+--
+--
+--
+
+CREATE UNIQUE INDEX artbez_6_1000_uniq ON artbez_6_1000 USING btree (artikel, inhalt, farbe);
+
+--
+--
+--
+
+CREATE UNIQUE INDEX artbez_6_1000_id ON artbez_6_1000 USING btree (id);
+

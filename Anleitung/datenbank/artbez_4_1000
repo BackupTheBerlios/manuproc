@@ -1,0 +1,15 @@
+--
+-- Selected TOC Entries:
+--
+DROP VIEW "artbez_4_1000";
+--
+--
+--
+
+CREATE VIEW "artbez_4_1000" as SELECT artbez_4_1.id, artbez_4_1.artikel, artbez_4_1.laenge, artbez_4_1.breite, artbez_4_1.farbe, artbez_4_1.stand FROM artbez_4_1;
+
+--
+--
+--
+
+CREATE RULE artbez_4_1000_ins AS ON INSERT TO artbez_4_1000 DO INSTEAD INSERT INTO artbez_4_1 (id, artikel, laenge, breite, farbe, stand) VALUES (new.id, new.artikel, new.laenge, new.breite, new.farbe, CASE WHEN (new.stand IS NOT NULL) THEN new.stand WHEN (now() IS NOT NULL) THEN now() ELSE timestamptz(NULL::"timestamp") END);

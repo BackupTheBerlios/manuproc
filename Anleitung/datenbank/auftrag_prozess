@@ -1,0 +1,32 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "auftrag_prozess_pkey";
+DROP TABLE "auftrag_prozess";
+--
+--
+--
+
+CREATE TABLE "auftrag_prozess" (
+	"auftragid" numeric(6,0) NOT NULL,
+	"zeilennr" numeric(3,0) NOT NULL,
+	"prozessid" numeric(2,0) NOT NULL,
+	"datum" timestamp with time zone DEFAULT now() NOT NULL,
+	"instanz" integer DEFAULT 1 NOT NULL,
+	"letzteplaninstanz" integer,
+	"maxplaninstanz" integer
+);
+
+--
+--
+--
+
+
+COPY "auftrag_prozess" FROM stdin;
+\.
+--
+--
+--
+
+CREATE UNIQUE INDEX auftrag_prozess_pkey ON auftrag_prozess USING btree (auftragid, zeilennr, instanz);
+

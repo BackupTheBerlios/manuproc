@@ -1,0 +1,42 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "lieferscheinentry_check_fast";
+DROP TABLE "lieferscheinentry";
+--
+--
+--
+
+CREATE TABLE "lieferscheinentry" (
+	"lfrsid" numeric(6,0) NOT NULL,
+	"zeile" numeric(3,0) NOT NULL,
+	"artikelid" integer NOT NULL,
+	"refauftragid" numeric(6,0),
+	"stueck" numeric(6,0),
+	"refzeilennr" numeric(3,0),
+	"palette" numeric(3,0),
+	"menge" numeric(8,2),
+	"zusatzinfo" boolean DEFAULT 'f'::bool,
+	"instanz" integer DEFAULT 1 NOT NULL,
+	Constraint "lieferscheinentry_pkey" Primary Key ("instanz", "lfrsid", "zeile")
+);
+
+--
+--
+--
+
+
+COPY "lieferscheinentry" FROM stdin;
+\.
+--
+--
+--
+
+CREATE INDEX lieferscheinentry_check_fast ON lieferscheinentry USING btree (refzeilennr, refauftragid, instanz);
+
+--
+--
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "lieferscheinentry"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'lieferscheinentry', 'auftrag', 'UNSPECIFIED', 'refauftragid', 'auftragid');
+

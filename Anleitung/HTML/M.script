@@ -1,12 +1,13 @@
 #!/bin/bash
 
-dot -Tps << END > M.ps
+#dot -Tps << END > M.ps
+dot -Tpng << END > M.png
 digraph G {
 
-      size="10.5,4.9";
-      ratio=fill;
-      rotate=90;
-      center=true;
+#      size="10.5,4.9";
+#      ratio=fill;
+#      rotate=90;
+#      center=true;
 
 
 # Rohware 
@@ -76,14 +77,14 @@ digraph G {
 
 
 #Sortimente
-   Sort_schwarz [shape=ellipse,fontsize=14,label="3er Sortiment\nkleiner Griff\nschwarz\n1-3" ];   
+   Sort_schwarz [shape=ellipse,fontsize=14,label="3er Sortiment\ngroßer Griff\nschwarz\n1-3" ];   
    Z10_15_10_1_s -> Sort_schwarz
    Z10_15_10_2_s -> Sort_schwarz
    Z10_15_10_3_s -> Sort_schwarz
    V10 -> Sort_schwarz
    {rank=same; V10 RMe}
 
-   Sort_bunt [shape=ellipse,fontsize=14,label="3er Sortiment\ngroßer Griff\nbunt\n1-3" ];   
+   Sort_bunt [shape=ellipse,fontsize=14,label="3er Sortiment\nkleiner Griff\nbunt\n1-3" ];   
    Z10_15_7_1_r -> Sort_bunt
    Z10_15_7_2_ge -> Sort_bunt
    Z10_15_7_3_gr -> Sort_bunt
@@ -94,4 +95,6 @@ digraph G {
 END
 
 
-gv M.ps
+#gv M.ps
+feh M.png
+

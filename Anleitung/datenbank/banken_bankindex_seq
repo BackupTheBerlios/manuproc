@@ -1,0 +1,16 @@
+--
+-- Selected TOC Entries:
+--
+DROP SEQUENCE "banken_bankindex_seq";
+--
+--
+--
+
+CREATE SEQUENCE "banken_bankindex_seq" start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
+
+--
+--
+--
+
+SELECT setval ('"banken_bankindex_seq"', 1, false);
+

@@ -1,0 +1,46 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "artbez_1_1_id";
+DROP INDEX "artbez_1_1_uniq";
+DROP TABLE "artbez_1_1";
+--
+--
+--
+
+CREATE TABLE "artbez_1_1" (
+	"id" integer NOT NULL,
+	"artikel" text,
+	"farbe" text,
+	"hersteller" text,
+	"ean" numeric(13,0),
+	"name" text,
+	"stand" timestamp with time zone DEFAULT now(),
+	Constraint "artbez_1_1_pkey" Primary Key ("id")
+);
+
+--
+--
+--
+
+
+COPY "artbez_1_1" FROM stdin;
+1	Metall	silber		\N	\N	2002-09-30 14:09:09.071508+02
+5	Pigment	rot		\N	\N	2002-09-30 14:10:04.863969+02
+2	Granulat	klar		\N	\N	2002-09-30 14:09:31.075149+02
+3	Granulat	gelb		\N	\N	2002-09-30 14:09:39.389915+02
+4	Granulat	grün		\N	\N	2002-09-30 14:09:44.465885+02
+24	Granulat	schwarz		\N	\N	2002-10-10 09:56:36.821685+02
+\.
+--
+--
+--
+
+CREATE UNIQUE INDEX artbez_1_1_uniq ON artbez_1_1 USING btree (artikel, farbe, hersteller);
+
+--
+--
+--
+
+CREATE UNIQUE INDEX artbez_1_1_id ON artbez_1_1 USING btree (id);
+

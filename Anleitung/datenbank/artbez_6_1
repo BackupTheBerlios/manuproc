@@ -1,0 +1,39 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "artbez_6_1_id";
+DROP INDEX "artbez_6_1_uniq";
+DROP TABLE "artbez_6_1";
+--
+--
+--
+
+CREATE TABLE "artbez_6_1" (
+	"id" integer NOT NULL,
+	"sortiment" text,
+	"bezeichnung" text,
+	"stand" timestamp with time zone DEFAULT now(),
+	Constraint "artbez_6_1_pkey" Primary Key ("id")
+);
+
+--
+--
+--
+
+
+COPY "artbez_6_1" FROM stdin;
+28	3kb1-3	3er bunt	2002-10-10 15:48:00.682892+02
+27	3gb1-3	3er bunt	2002-10-10 15:49:23.35562+02
+\.
+--
+--
+--
+
+CREATE UNIQUE INDEX artbez_6_1_uniq ON artbez_6_1 USING btree (sortiment, bezeichnung);
+
+--
+--
+--
+
+CREATE UNIQUE INDEX artbez_6_1_id ON artbez_6_1 USING btree (id);
+

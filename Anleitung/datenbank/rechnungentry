@@ -1,0 +1,41 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "rechnungentry";
+--
+--
+--
+
+CREATE TABLE "rechnungentry" (
+	"rngid" numeric(6,0) NOT NULL,
+	"zeilennr" numeric(3,0) NOT NULL,
+	"artikelid" integer,
+	"lfrsid" numeric(6,0),
+	"lfrszeile" numeric(3,0),
+	"menge" numeric(8,2),
+	"preis" numeric(7,3) NOT NULL,
+	"rabatt" numeric(4,2),
+	"preismenge" integer NOT NULL,
+	"stueck" numeric(6,0) DEFAULT 1 NOT NULL,
+	Constraint "rechnungentry_pkey" Primary Key ("rngid", "zeilennr")
+);
+
+--
+--
+--
+
+
+COPY "rechnungentry" FROM stdin;
+\.
+--
+--
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "rechnungentry"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'rechnungentry', 'rechnung', 'UNSPECIFIED', 'rngid', 'rngid');
+
+--
+--
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "rechnungentry"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'rechnungentry', 'lieferschein', 'UNSPECIFIED', 'lfrsid', 'lfrsid');
+

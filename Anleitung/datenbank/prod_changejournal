@@ -1,0 +1,36 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "prod_changejournal";
+--
+--
+--
+
+CREATE TABLE "prod_changejournal" (
+	"chid" integer NOT NULL,
+	"datum" timestamp with time zone DEFAULT now() NOT NULL,
+	"chtype" character(1) NOT NULL,
+	"insid" numeric(2,0) NOT NULL,
+	"auftragid" numeric(6,0) NOT NULL,
+	"auftragzeile" integer NOT NULL,
+	"artikelid" integer NOT NULL,
+	"status" numeric(1,0) DEFAULT 0 NOT NULL,
+	"new_val" numeric(10,2),
+	"new_dat" date,
+	"delta" numeric(10,2),
+	Constraint "prod_changejournal_pkey" Primary Key ("chid", "insid")
+);
+
+--
+--
+--
+
+
+COPY "prod_changejournal" FROM stdin;
+\.
+--
+--
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "prod_changejournal"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
+
