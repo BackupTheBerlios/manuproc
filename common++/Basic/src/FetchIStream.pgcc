@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.44 2003/09/12 13:27:25 jacek Exp $
+// $Id: FetchIStream.pgcc,v 1.45 2003/09/18 15:48:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -185,8 +185,8 @@ sqlca.sqlcode=0;
    	ECPGt_descriptor, descriptor.c_str(), 0L, 0L, 0L,
    	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
    if (sqlca.sqlcode && sqlca.sqlcode!=100)
-   {  DEBUG_FIS(SQLerror("open")); 
-      eof=true;
+   {  eof=true;
+      mythrow(SQLerror(query)); 
    }
    else if (sqlca.sqlcode==100 && debugging.on)
    {  DEBUG_FIS("no lines returned/changed");
