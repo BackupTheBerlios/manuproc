@@ -1,4 +1,4 @@
-// $Id: logwin.cc,v 1.7 2004/01/30 23:27:46 christof Exp $
+// $Id: logwin.cc,v 1.8 2004/01/31 23:12:14 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -31,6 +31,7 @@ logwin::logwin(guint minimum_size) : color()
    gtklist.show();
    set_size_request(-1,minimum_size);
    set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
+   emu.set_title("");
 }
 
 void logwin::set_color()
