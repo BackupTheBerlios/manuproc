@@ -144,3 +144,7 @@ void ManuProC::ChoiceButton::set_tooltips(Gtk::Tooltips *_tips)
    if (!label->is_visible() && tips) 
          tips->set_tip(*this, texts[actual_index]);
 }
+
+void ManuProC::ChoiceButton::set_index_sensitive(unsigned idx,bool sensitive)
+{ menu->items()[idx].set_sensitive(sensitive);
+}

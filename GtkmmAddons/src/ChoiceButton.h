@@ -63,6 +63,7 @@ public:
 	void set_activate_on_change(bool x) { activate_on_change=x; }
 	SigC::Signal0<void> &signal_changed()
 	{  return changed; }
+	void set_index_sensitive(unsigned idx,bool sensitive);
 };
 
 }
