@@ -539,7 +539,10 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
       if (!analyse_only)
       {if (in(ae.Id(),AuftragBase::ungeplante_id,AuftragBase::plan_auftrag_id))
        {  assert(ae.Id()!=AuftragBase::plan_auftrag_id || ae.Instanz()->LagerInstanz());
-          ae.MengeAendern(menge-ae.getRestStk(),true,AufEintragBase());
+          if (ae.Instanz()->LagerInstanz())
+            ae.Abbestellen(ae.getRestStk()-menge,AufEintragBase());
+          else 
+            ae.MengeAendern(menge-ae.getRestStk(),true,AufEintragBase());
        }
        else 
        { assert(ae.Id()>=AuftragBase::handplan_auftrag_id);
