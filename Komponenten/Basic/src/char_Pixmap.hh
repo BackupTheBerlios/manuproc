@@ -1,4 +1,4 @@
-// $Id: char_Pixmap.hh,v 1.5 2003/04/07 14:16:38 christof Exp $
+// $Id: char_Pixmap.hh,v 1.6 2003/04/07 14:28:21 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -22,14 +22,14 @@
 #define MANUPROC_WIDGETS_MVC_CHAR_PIX_H
 
 #include <gtkmm/image.h>
-#include <BaseObjects/Model.h>
+#include <ModelWidgetConnection.h>
 
 // an Image which's content might be changed via the xpm data model
 
 class char_Pixmap : public Gtk::Image
 {	typedef const char * const * T;
 public:
-	class Connection : public ModelWidgetConnection<T,Gtk::Label>
+	class Connection : public ModelWidgetConnection<T,Gtk::Image>
 	{	void model2widget();
 	public:
 		Connection(widget_t *w=0) { set_widget(w); }

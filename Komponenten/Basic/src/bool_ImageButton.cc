@@ -1,4 +1,4 @@
-// $Id: bool_ImageButton.cc,v 1.4 2003/04/07 14:16:38 christof Exp $
+// $Id: bool_ImageButton.cc,v 1.5 2003/04/07 14:28:21 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -21,7 +21,7 @@
 #include "bool_ImageButton.hh"
 
 bool bool_ImageButton::Connection::toggle(GdkEventButton *ev)
-{  model=!model;
+{  model=!model.Value();
    return false;
 }
 
@@ -52,7 +52,7 @@ bool_ImageButton::bool_ImageButton(const Model_ref<T> &m,
 
 void bool_ImageButton::Connection::set_widget(widget_t *w,Widget *ev)
 {  eventbox=ev;
-   set_widget(w);
+   this_t::set_widget(w);
 }
 
 void bool_ImageButton::Connection::set_images(const Glib::RefPtr<Gdk::Pixbuf> &_off,
