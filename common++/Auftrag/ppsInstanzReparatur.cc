@@ -755,7 +755,11 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    else if (ae.Instanz()!=ppsInstanzID::Kundenauftraege 
    	&& !in(ae.Instanz(),ppsInstanz::getBestellInstanz(as),
    			ppsInstanz::getProduktionsInstanz(as))
-   	&& !ppsInstanz::getBestellInstanz(as)->PlanungsInstanz())
+        && (ae.Instanz()->alt_group_nr==ppsInstanzID::None
+         	 || !in(ae.Instanz()->alt_group_nr,
+         	 	ppsInstanz::getBestellInstanz(as)->alt_group_nr,
+         	 	ppsInstanz::getProduktionsInstanz(as)->alt_group_nr))
+   	)
    {  analyse("Artikel auf falscher Instanz",ae,cH_ArtikelBezeichnung(ae.Artikel())->Bezeichnung(),itos(ae.Artikel().Id()));
      loeschen: 
       if (really_delete) 

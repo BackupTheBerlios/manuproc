@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.27 2004/02/20 10:44:53 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.28 2004/05/13 16:20:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -82,8 +82,7 @@ AufEintragBase AufEintrag::ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
 // + ehemals BaumAnlegen
 void AufEintrag::ArtikelInternNachbestellen(mengen_t menge) const
 {
-  ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,
-   NV("menge",menge));
+  ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,NV("menge",menge));
   assert(menge>0);
    // Rekursion von 2ern verbieten
    assert(Id()!=dispo_auftrag_id);
@@ -96,7 +95,7 @@ void AufEintrag::ArtikelInternNachbestellen(mengen_t menge) const
   {  AufEintrag::ArtikelInternNachbestellen(next,menge,getLieferdatum(),
   			Artikel(),*this);
   }
-  else
+  else if (!Instanz()->ExterneBestellung())
   {  ManuProC::Datum newdate=getLieferdatum()-Instanz()->ProduktionsDauer();
 
      ArtikelBaum AB(Artikel());
