@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.14 2003/07/04 18:14:30 christof Exp $
+// $Id: DataBase_init.cc,v 1.15 2003/07/08 07:14:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -38,13 +38,13 @@ DataBase_init::DataBase_init()
    JumboLager_initalisieren();
 #elif defined MANU_PROC_TEST 
    Lager L(ROHWARENLAGER); 
-   L.rein_ins_lager(1,200,getuid()); // Metall
-   L.rein_ins_lager(2,50,getuid()); // Granulat klar
-   L.rein_ins_lager(3,100,getuid()); // Granulat gelb
+   L.rein_ins_lager(1,200,getuid(),false); // Metall
+   L.rein_ins_lager(2,50,getuid(),false); // Granulat klar
+   L.rein_ins_lager(3,100,getuid(),false); // Granulat gelb
 #elif defined MABELLA_TEST
    Lager L(FERTIGWARENLAGER); 
 //ManuProC::Tracer::Enable(AuftragBase::trace_channel);
-   L.rein_ins_lager(ARTIKEL_TRIO,4,getuid()); 
+   L.rein_ins_lager(ARTIKEL_TRIO,4,getuid(),false); 
 //exit(1);
 #endif
 }
@@ -93,16 +93,14 @@ void DataBase_init::RohwarenLager_initalisieren()
 void DataBase_init::RohwarenLager_initalisieren_execute(const ArtikelBase &artikel,
       const LagerPlatz& LP,int kartons,int kg_pro_karton,int reste,int kg_reste)
 {
-  std::string s1="delete from rl_inhalt where material="+itos(artikel.Id());
-  Query::Execute(s1);
-  SQLerror::test(__FILELINE__,100);
+  Query("delete from rl_inhalt where material=?") << artikel.Id();
   
   RohwarenLager RL;
   std::string os;
   RohwarenLager::st_rohlager rohlager(LP,kartons,kg_pro_karton,reste,kg_reste,
                                       artikel,ManuProC::Datum().today());
 #ifdef MIT_ROHWARENLAGER
-  RL.RL_Einlagern(LP,rohlager,UID,os,true,true);
+  RL.RL_Einlagern(LP,rohlager,UID,os,true,false);
   SQLerror::test(__FILELINE__);
 #endif
 }
@@ -118,7 +116,7 @@ void DataBase_init::createJumbo(const int diffmaschine,const int menge)
   assert(JR.size()==1);
   Zeitpunkt_new zp("2002-1-1 12:00");
   class JumboLager JL;
-  JL.Jumbo_Einlagern(LagerPlatzJumbo,JR.front(),JumboLager::Einlagern,UID,"testuser",&zp,true);
+  JL.Jumbo_Einlagern(LagerPlatzJumbo,JR.front(),JumboLager::Einlagern,UID,"testuser",&zp,false);
   SQLerror::test(__FILELINE__);
 #endif
 }
@@ -126,13 +124,9 @@ void DataBase_init::createJumbo(const int diffmaschine,const int menge)
 
 void DataBase_init::JumboLager_initalisieren()
 {
-  std::string s1="delete from rohjumbo where artikelid="+itos(ARTIKEL_BANDLAGER.Id());
-  Query::Execute(s1);
-  SQLerror::test(__FILELINE__,100);
-  std::string s2="delete from ketten where (maschine,schaerdatum)=("
-                  +itos(MASCHINE)+",'"+SCHAERDATUM.to_iso()+"')";
-  Query::Execute(s2);
-  SQLerror::test(__FILELINE__,100);
+  Query("delete from rohjumbo where artikelid=?") << ARTIKEL_BANDLAGER.Id();
+  Query("delete from ketten where (maschine,schaerdatum)=(?,?)")
+  	<< MASCHINE << SCHAERDATUM;
   createJumbo(0,2000);
 }
 

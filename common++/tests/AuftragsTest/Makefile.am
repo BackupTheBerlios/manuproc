@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.5 2003/01/06 17:05:27 christof Exp $
+# $Id: Makefile.am,v 1.6 2003/07/08 07:09:13 christof Exp $
 
 CXXFLAGS=@CXXFLAGS@ @COMMONXX_INCLUDES@
 LDFLAGS=@LDFLAGS@  @COMMONXX_LDFLAGS@
@@ -18,4 +18,5 @@ steuerprogramm_SOURCES=steuerprogramm.cc DataBase_init.cc \
 CLEANFILES= *~ $(EXTRA_PROGRAMS)
 
 DynamicEnums:
-	ln -sf database_tables_init DynamicEnums
+#	ln -sf database_tables_init DynamicEnums # petig
+	ln -sf ../../../Anleitung/datenbank DynamicEnums # anleitung
