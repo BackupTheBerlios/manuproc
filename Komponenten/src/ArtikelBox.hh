@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.hh,v 1.21 2004/01/29 15:34:07 christof Exp $
+// $Id: ArtikelBox.hh,v 1.22 2004/01/29 16:56:14 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.21 2004/01/29 15:34:07 christof Exp $
+// $Id: ArtikelBox.hh,v 1.22 2004/01/29 16:56:14 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -211,6 +211,10 @@ class ArtikelBox : public Gtk::EventBox
  // false=failed
  bool determineFocus(guint &sigidx_out, guint &entryidx_out) const;
 
+	SigC::Signal0<void> activate;
+	SigC::Signal1<void,ArtikelBase::ID> new_article_inserted;
+	SigC::Signal1<void,gpointer> MenueAusgewaehlt;
+
 public:
 	ArtikelBox(const cH_ExtBezSchema &_schema) throw(SQLerror);
 	ArtikelBox(const std::string& _program,const std::string& _position) throw(SQLerror);
@@ -272,9 +276,9 @@ public:
 	void set_reset_on_focus(bool b) { reset_on_focus=b; }
 
 	// ----- Signale -----
-	SigC::Signal0<void> activate;
-	SigC::Signal1<void,ArtikelBase::ID> new_article_inserted;
-	SigC::Signal1<void,gpointer> MenueAusgewaehlt;
+	SigC::Signal0<void> &signal_activate() { return activate; }
+	SigC::Signal1<void,ArtikelBase::ID> &signal_new_article_inserted() { return new_article_inserted; }
+	SigC::Signal1<void,gpointer> &signal_MenueAusgewaehlt() { return MenueAusgewaehlt; }
 	
 	// nette Dinge für jeden (?)
 	static std::string Tabellenname(cH_ExtBezSchema s);
