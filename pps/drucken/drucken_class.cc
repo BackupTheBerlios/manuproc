@@ -1479,7 +1479,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
           }
        else
 	{   	
-	os << "\\bf Bei Rückfragen:\\rm \\\\\n"
+	os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_ANSPRECHPARTNER)<<":\\rm \\\\\n"
 		<< mld->MLT(MultiL_Dict::TXT_TELEFON)<<": "<<kunde_von->get_first_telefon(TEL_TEL)<<"\\\\\n"
 		<< mld->MLT(MultiL_Dict::TXT_TELEFAX)<<": "<<kunde_von->get_first_telefon(TEL_FAX)<<"\\\\\n"
         	<< "E-Mail: "<<kunde_von->get_first_telefon(TEL_E_MAIL)<<"\\\\\n";
