@@ -1,4 +1,4 @@
-/* $Id: TemporaryValue.h,v 1.1 2003/09/02 12:56:37 christof Exp $ */
+/* $Id: TemporaryValue.h,v 1.2 2003/09/02 15:48:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,7 +28,7 @@ template <class T>
 public:
 	TemporaryValue(T &var,const T &value)
 		: old_value(var), variable(var)
-	{  }
+	{  var=value; }
 	~TemporaryValue()
 	{  variable=old_value; }
 };

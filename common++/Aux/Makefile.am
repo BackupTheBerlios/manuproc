@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.39 2003/08/03 01:44:48 christof Exp $
+# $Id: Makefile.am,v 1.40 2003/09/02 15:48:58 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@
 
@@ -45,7 +45,7 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
    TraceNV.h TimeStamp.h EntryValueTimeStamp.cc EntryValueTimeStamp.h \
    Event.h Event.cc inbetween.h germanstring.h germanstring.cc \
    EntryValueIntGermanString.cc EntryValueIntGermanString.h \
-   recodestream.h bitmask.h
+   recodestream.h bitmask.h TemporaryValue.h
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .

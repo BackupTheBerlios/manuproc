@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.69 2003/09/02 12:10:52 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.70 2003/09/02 15:48:58 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -60,6 +60,7 @@ class AufEintrag : public AufEintragBase
 
      class MichEinlagern;
      class AbbestellenUndVormerken;
+     class Abbestellen_cb;
      class NeuBestellen;
      struct Auslagern_cb;
      class Einlagern_cb;
@@ -68,6 +69,7 @@ class AufEintrag : public AufEintragBase
      class MichProduzieren;
      class ProduziertRueckgaengig2;
      class ProduziertNG_cb2;
+     class ArtikelAbbestellen_bevorzugt;
 
 private: 
  mengen_t bestellt;
@@ -87,6 +89,8 @@ private:
  Preis preis;
  rabatt_t rabatt;
  mutable fixedpoint<2> provsatz;
+ 
+ static bool lager_bevorzugt_freigeben;
  
 private: // weg von hier!
  Kunde::ID kdnr;
@@ -148,7 +152,7 @@ private:
  class ArtikelInternAbbestellen_cb : public distribute_children_cb
  {	ManuProC::Auftrag::Action reason;
 	const AufEintrag &mythis;
-
+	
   public:
 	ArtikelInternAbbestellen_cb(const AufEintrag &_mythis, ManuProC::Auftrag::Action _reason)
 		: reason(_reason), mythis(_mythis)

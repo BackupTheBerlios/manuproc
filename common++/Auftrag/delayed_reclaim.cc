@@ -1,4 +1,4 @@
-// $Id: delayed_reclaim.cc,v 1.2 2003/08/14 09:22:15 christof Exp $
+// $Id: delayed_reclaim.cc,v 1.3 2003/09/02 15:48:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -19,13 +19,35 @@
  */
 
 #include <Auftrag/AufEintrag_delayedreclaim.h>
+#include <Misc/Trace.h>
+#include <Misc/Transaction.h>
+#include <Misc/FetchIStream.h>
+#include <Lager/Lager.h>
 
 bool AufEintrag::delayed_reclaim::active;
 std::list<std::pair<cH_ppsInstanz,ArtikelBase> > 
 	AufEintrag::delayed_reclaim::delayed;
 
 void AufEintrag::delayed_reclaim::reclaim()
-{  // @@@
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__);
+   
+   Transaction tr;
+   Query::Execute("lock table auftragentry in exclusive mode");
+   while (!delayed.empty())
+   {  std::pair<cH_ppsInstanz,ArtikelBase> act=delayed.front();
+      AuftragBase ab(act.first,dispo_auftrag_id);
+      assert(act.first->LagerInstanz()); // wegen Lagerdatum sonst Liste
+      AuftragBase::mengen_t m;
+      AufEintragBase neuerAEB(ab,
+              ab.existEntry(act.second,LagerBase::Lagerdatum(),OPEN,m));
+      // verteilen
+      if (neuerAEB.valid())
+      {  MengeVormerken(act.first,act.second,m,true,ProductionContext());
+         AufEintrag(neuerAEB).MengeAendern(-m,false,AufEintragBase(),ManuProC::Auftrag::r_Closed);
+      }
+      delayed.pop_front();
+   }
+   tr.commit();
 }
 
 AufEintrag::delayed_reclaim::delayed_reclaim()

@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.15 2003/09/02 12:10:52 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.16 2003/09/02 15:48:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -42,13 +42,15 @@
 #include <Artikel/ArtikelBase.h>
 #endif
 
+bool AufEintrag::lager_bevorzugt_freigeben=false;
+
 // etwas bestelltes wird eingelagert -> produziert markieren & vormerken (?)
 class AufEintrag::MichEinlagern : public distribute_parents_cb
 {	AufEintrag &mythis;
 	ProductionContext ctx;
 public:
 	AuftragBase::mengen_t operator()(const AufEintragBase &elter,AuftragBase::mengen_t m) const
-	{  if (elter.Id()==AuftragBase::dispo_auftrag_id) return 0;
+	{  if (elter.Id()==dispo_auftrag_id) return 0;
 	   if (ctx.aeb.valid() && ctx.aeb!=elter) return 0;
 	   mythis.Einlagern2(m,elter,elter,ctx.leb);
 	   return m;
@@ -190,22 +192,21 @@ AuftragBase::mengen_t AufEintrag::Auslagern
 }
 
 class AufEintrag::Einlagern_cb : public auf_positionen_verteilen_cb
-{	bool abbestellen;
-        ProductionContext ctx;
+{	ProductionContext ctx;
         
 public:
-	Einlagern_cb(const ProductionContext &_ctx) 
-		: abbestellen(false), ctx(_ctx) {}
-	Einlagern_cb(bool abbest,const ProductionContext &_ctx) 
-		: abbestellen(abbest), ctx(_ctx)
-	{  assert(!abbest || !ctx.aeb.valid()); }
+	Einlagern_cb(const ProductionContext &_ctx) : ctx(_ctx) 
+	{  //assert(ctx.aeb.valid());
+	}
 	AuftragBase::mengen_t operator()(AufEintrag &ae, AuftragBase::mengen_t m) const
-	{  AuftragBase::mengen_t rest;
-	   if (!abbestellen)
-	      rest=distribute_parents(ae,m,MichEinlagern(ae,ctx));
-	   else
-	      rest=distribute_parents(ae,m,AbbestellenUndVormerken(ae));
-           return m-rest;
+	{  return m-distribute_parents(ae,m,MichEinlagern(ae,ctx));
+	}
+};
+
+struct AufEintrag::Abbestellen_cb : public auf_positionen_verteilen_cb
+{	Abbestellen_cb() {}
+	AuftragBase::mengen_t operator()(AufEintrag &ae, AuftragBase::mengen_t m) const
+	{  return m-distribute_parents(ae,m,AbbestellenUndVormerken(ae));
 	}
 };
 
@@ -222,12 +223,14 @@ void AufEintrag::MengeVormerken(cH_ppsInstanz instanz,const ArtikelBase &artikel
   assert(menge>=0);
   if(menge==0) return;
    Transaction tr;
-   mengen_t m=
-    auf_positionen_verteilen(SQLFullAuftragSelector(SQLFullAuftragSelector::
-      			sel_Artikel_Planung_id(instanz->Id(),
-      				Kunde::eigene_id,artikel,
-      				ungeplante_id)),
-      			menge,Einlagern_cb(abbestellen,ctx));
+   mengen_t m;
+   SQLFullAuftragSelector sel(make_value(SQLFullAuftragSelector::
+      		sel_Artikel_Planung_id(instanz->Id(),Kunde::eigene_id,artikel,
+      				ungeplante_id)));
+   if (abbestellen)
+      m=auf_positionen_verteilen(sel,menge,Abbestellen_cb());
+   else
+      m=auf_positionen_verteilen(sel,menge,Einlagern_cb(ctx));
    if (m!=0)
       AuftragBase(instanz,dispo_auftrag_id).
    		BestellmengeAendern(m,LagerBase::Lagerdatum(),artikel,
@@ -327,7 +330,6 @@ void AufEintrag::Einlagern2(mengen_t M,
    
    if (M<0) 
    {  assert(Id()==plan_auftrag_id);
-//      abschreiben(M); // dat kann nicht richtig sein ...
       // Rekursion bedeutet hier: freigewordene Menge neu verplanen
       MengeAendern(M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
       if (!getRestStk()) setStatus(AufStatVal(CLOSED),true);

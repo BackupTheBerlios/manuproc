@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.91 2003/09/02 12:10:52 christof Exp $
+// $Id: AufEintrag.cc,v 1.92 2003/09/02 15:48:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -36,6 +36,8 @@
 #include <Misc/relops.h>
 #include <Auftrag/sqlAuftragSelector.h>
 #include <Auftrag/selFullAufEntry.h>
+#include <Auftrag/AufEintrag_delayedreclaim.h>
+#include <Misc/TemporaryValue.h>
 
 #ifdef MABELLA_EXTENSIONS
 //#include <Lager/FertigWarenLager.h>
@@ -70,6 +72,7 @@ void AufEintrag::move_to(AufEintrag ziel,mengen_t menge,ManuProC::Auftrag::Actio
   ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,NV("To",ziel),NV("Menge",menge),NV("Reason",reason));
   Transaction tr;
 
+ {delayed_reclaim dlr;
   assert(reason==ManuProC::Auftrag::r_Planen);
   AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*this,
 		AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
@@ -83,6 +86,7 @@ void AufEintrag::move_to(AufEintrag ziel,mengen_t menge,ManuProC::Auftrag::Actio
     menge-=M;
     if(!menge) break;
   }
+ }
   tr.commit();
 }
 
@@ -141,7 +145,12 @@ AufEintragBase AufEintrag::Planen(mengen_t menge,const AuftragBase &zielauftrag,
       menge-=dispomenge;
     }
 
+  {TemporaryValue<bool> tmp(lager_bevorzugt_freigeben,datum<=getLieferdatum());
+ManuProC::Trace(trace_channel,__FILELINE__,NV("lager_bevorzugt_freigeben",lager_bevorzugt_freigeben),
+	NV("datum",datum),NV("Lieferdatum",getLieferdatum()));
+  
    move_to(AE1er,menge,reason);
+  }
 
    if (!!dispomenge)
       AE1er.Ueberplanen(Artikel(),dispomenge,datum);
@@ -286,6 +295,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
  Query("lock auftragentry in exclusive mode"); // unnötig? CP
  SQLerror::test("updateLieferdatum: lock table auftragentry");
 
+ {delayed_reclaim dlr;
  ArtikelInternAbbestellen(getStueck(),ManuProC::Auftrag::r_Anlegen);
 
  Query("update auftragentry "
@@ -297,6 +307,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
  lieferdatum=ld;
 
  ArtikelInternNachbestellen(getStueck(),ManuProC::Auftrag::r_Anlegen);
+ }
 
  if(getCombinedStatus()==OPEN)// status->entrystatus
   {
@@ -337,10 +348,11 @@ int AufEintrag::split(mengen_t newmenge, const Petig::Datum &newld,bool dispopla
  Query("lock auftragentry in exclusive mode");
  SQLerror::test("split: lock table auftragentry");
 
+ int ZEILENNR;
+ {delayed_reclaim dlr;
  mengen_t mt=MengeAendern(-newmenge,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
  assert(mt==-newmenge);
 
- int ZEILENNR;
  if(Instanz()==ppsInstanzID::Kundenauftraege)
    {Auftrag A(*this);
     AufEintragBase newaeb=A.push_back(newmenge,newld,artikel,entrystatus,true,preis,rabatt);
@@ -348,6 +360,7 @@ int AufEintrag::split(mengen_t newmenge, const Petig::Datum &newld,bool dispopla
    }
  else
    ZEILENNR=split_zuordnungen_to(newmenge,newld,artikel,entrystatus,dispoplanung);
+ }
 
  if(STATUS==OPEN)
    {   pps_ChJournalEntry::newChange(

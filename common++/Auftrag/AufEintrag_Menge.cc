@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.10 2003/09/02 12:10:52 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.11 2003/09/02 15:48:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -176,6 +176,28 @@ AuftragBase::mengen_t AufEintrag::ArtikelInternAbbestellen_cb::operator()
    return M;
 }
 
+class AufEintrag::ArtikelAbbestellen_bevorzugt : public distribute_children_twice_cb
+{	ArtikelInternAbbestellen_cb backend;
+
+public:
+	ArtikelAbbestellen_bevorzugt(const AufEintrag &_mythis, ManuProC::Auftrag::Action _reason)
+		: backend(_mythis,_reason)
+	{}
+	// falls LagerInstanz 1er zuerst nehmen
+	mengen_t operator()(const ArtikelBase &art,
+ 		const AufEintragBase &aeb,AuftragBase::mengen_t m,bool first) const
+ 	{  if (aeb.Instanz()->LagerInstanz() && aeb.Id()==handplan_auftrag_id)
+ 	   {  if (first) return backend(art,aeb,m);
+ 	   }
+ 	   else
+ 	   {  if (!first) return backend(art,aeb,m);
+ 	   }
+ 	   return 0;
+ 	}
+ 	void operator()(const ArtikelBase &art,AuftragBase::mengen_t m) const 
+ 	{  backend(art,m); }
+};
+
 void AufEintrag::ArtikelInternAbbestellen(mengen_t menge,ManuProC::Auftrag::Action reason) const
 {ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
    NV("menge",menge),NV("Reason",reason));
@@ -197,7 +219,12 @@ void AufEintrag::ArtikelInternAbbestellen(mengen_t menge,ManuProC::Auftrag::Acti
        AufEintrag::MengeVormerken(Instanz(),Artikel(),menge,true,ProductionContext()); 
 	 // ,*this);
  }
- else try{
+ else 
+ try{
+    if (lager_bevorzugt_freigeben)
+      distribute_children_twice_rev(*this,menge,Artikel(),
+      			ArtikelAbbestellen_bevorzugt(*this,reason));
+    else
       distribute_children(*this,menge,Artikel(),
    			ArtikelInternAbbestellen_cb(*this,reason));
   }catch(NoAEB_Error &e)

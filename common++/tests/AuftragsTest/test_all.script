@@ -1,7 +1,31 @@
 #!/bin/bash
+# 1. Argument: Test mit dem begonnen werden soll
 
-for x in M P S L Z D Ls Lm LZ LA ZK ZKM J ZI ZI2 AL RP Rg RK RZ RKZ ; do
+ALLTESTS="M P S L Z D Ls Lm LZ LA ZK ZKM J ZI ZI2 AL RP Rg RK RZ RKZ"
 
+if [ $# -lt 1 ]
+then TESTS="$ALLTESTS"
+else
+  copy=0
+  for a in $ALLTESTS
+  do
+    if [ $copy -gt 0 ]
+    then TESTS="$TESTS $a"
+    else
+      if [ $a = "$1" ]
+      then 
+        copy=1
+        TESTS=$a
+      fi
+    fi
+  done
+  if [ $copy -gt 0 ] 
+  then shift
+  else TESTS="$ALLTESTS"
+  fi
+fi
+
+for x in $TESTS ; do
   if ./steuerprogramm -C $* $x
   then
     echo ./steuerprogramm $x OK ;
@@ -9,5 +33,4 @@ for x in M P S L Z D Ls Lm LZ LA ZK ZKM J ZI ZI2 AL RP Rg RK RZ RKZ ; do
     echo Abbruch bei $x
     exit;
   fi
-
 done

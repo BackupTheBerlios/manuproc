@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.48 2003/09/02 12:10:52 christof Exp $
+// $Id: AufEintragBase.cc,v 1.49 2003/09/02 15:48:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -79,8 +79,8 @@ void AufEintragBase::calculateProzessInstanz()
   setMaxPlanInstanz(anz);
 }   
 
-#if 1 // wird von AufEintrag::split verwendet und scheint zu funktionieren ...
-//#warning sieht komisch aus ...
+// sieht ein wenig komisch aus, der alte AE wird in split erniedrigt
+
 int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
                         ArtikelBase artikel,AufStatVal status,
                         bool dispoplanung)
@@ -105,7 +105,6 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
    }
  return znr;
 }
-#endif
 
 void AufEintragBase::setVerarbeitung(const cH_Prozess p) const throw(SQLerror)
 {
