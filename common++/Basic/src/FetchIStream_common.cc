@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.15 2004/10/22 15:49:17 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.16 2004/10/22 15:50:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -369,18 +369,18 @@ bool FetchIStream::good() const
 
 void FetchIStream::Fake::init()
 {  result=(const char * const *)malloc(sizeof(*result));
-   *const_cast<char * const *>(result)=0;
+   *const_cast<const char * *>(result)=0;
    nfields=1;
 }
 
 FetchIStream::Fake::Fake(const std::string &val) : value(val)
 {  init();
-   *const_cast<char * const *>(result)=value.c_str();
+   *const_cast<const char * *>(result)=value.c_str();
 }
 
 FetchIStream::Fake::Fake(const Fake &a) : value(a.value)
 {  init();
-   if (*a.result) *const_cast<char * const *>(result)=value.c_str();
+   if (*a.result) *const_cast<const char * *>(result)=value.c_str();
 }
 
 FetchIStream::Fake::~Fake()
