@@ -436,8 +436,8 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
     {  lfrsid_drucken=true;
        cH_Kunde kunde_an(KdNr());
        zwischensumme_drucken=
-		(lfrsid_mem!=LieferscheinBase::none_id && 
-		kunde_an->isInGrp(KundengruppeID::Zwischensumme)); 
+		((lfrsid_mem!=LieferscheinBase::none_id) && 
+		 (kunde_an->isInGrp(KundengruppeID::Zwischensumme))); 
        lfrsid_mem=(*i).Lfrs().Id();
     }
     
@@ -554,7 +554,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
           {
 	   fixedpoint<2> zwb=betrag - zwischensumme_betrag;
 	   drucken_betrag(os,mld->MLT(MultiL_Dict::TXT_ZWISCHENSUMME),
-					zwb,2); 
+					zwb,preisspalte-2); 
                       // Zwischensumme zum Lieferschein
 	   zwischensumme_betrag=betrag;
            zwischensumme_drucken=false;
@@ -670,10 +670,11 @@ std::cout << "table ends\n";
     
 #warning Schätzwert: Zeilen fuer Summe benötigt   
 
-   if(Typ() == Rechnung)
+   if((Typ() == Rechnung) && 
+      (kunde_rng->isInGrp(KundengruppeID::Zwischensumme)))
      {fixedpoint<2> zwb=betrag - zwischensumme_betrag;
       drucken_betrag(os,mld->MLT(MultiL_Dict::TXT_ZWISCHENSUMME),
-					zwb,2);  
+					zwb,preisspalte-2);  
      }
 
 #ifdef MABELLA_EXTENSIONS
