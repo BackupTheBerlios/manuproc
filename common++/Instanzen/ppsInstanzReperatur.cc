@@ -26,7 +26,6 @@
 #include <sqlca.h>
 #include <Auftrag/AufEintragZuMengenAenderung.h>
 #include <Aux/Transaction.h>
-#include <Misc/relops.h>
 
 
 bool ppsInstanzReparatur::ReparaturK_Kundenzuordnung(const int uid,const bool analyse_only) const
@@ -81,7 +80,6 @@ bool ppsInstanzReparatur::ReparaturK_Kundenzuordnung(const int uid,const bool an
 
 void ppsInstanzReparatur::Reparatur_Kundenauftrag_AE(const int uid,const AufEintrag &KundeAE,AufEintrag &KindAE,const AuftragBase::mengen_t &menge) const
 {
-std::cout<< "\n\nREP: "<<KindAE<<'\t'<<menge<<'\n';
   KindAE.updateStkDiff__(uid,-menge,true,ManuProC::Auftrag::r_Anlegen);  
   Reparatur_Kundenauftrag_AEB(uid,KundeAE,KindAE,menge);
 }
@@ -119,7 +117,7 @@ bool ppsInstanzReparatur::ReparaturD_0_ZuSumme_1(const int uid,const bool analys
 bool ppsInstanzReparatur::ReparaturE_2_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
-  if(LagerInstanz()) {/*std::cout << "Sinnlos für LagerInstanz\n"; */return true;}
+  if(LagerInstanz()) {/*cout << "Sinnlos für LagerInstanz\n"; */return true;}
   else
      return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::dispo_auftrag_id,true,Egeplant);
 }
@@ -127,7 +125,7 @@ bool ppsInstanzReparatur::ReparaturE_2_ZuSumme_1(const int uid,const bool analys
 bool ppsInstanzReparatur::ReparaturF_2_ZuSumme_1Rest(const int uid,const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
-  if(LagerInstanz()) {/*std::cout << "Sinnlos für LagerInstanz\n";*/ return true;}
+  if(LagerInstanz()) {/*cout << "Sinnlos für LagerInstanz\n";*/ return true;}
   else
      return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::plan_auftrag_id,false,Fdispo);
 }
@@ -156,12 +154,12 @@ bool ppsInstanzReparatur::Reparatur_Zuordnungen(const int uid,const bool analyse
                            break;}
          case Fdispo:     L=AufEintragZu(*i).get_Referenz_list_dispo(kinder); break;
         }
-//std::cout << *i<<"\tChild-LSize="<<L.size()<<'\n';
+//cout << *i<<"\tChild-LSize="<<L.size()<<'\n';
       for(std::list<AufEintragZu::st_reflist>::const_iterator j=L.begin();j!=L.end();++j)
         {
           if(j->AEB.Id()==AuftragBase::ungeplante_id) M0sum+=j->Menge;
           else Msum+=j->Menge;
-//std::cout << *i<<'\t'<<j->AEB<<'\t'<<j->Menge<<'\t'<<Msum<<'\n';
+//cout << *i<<'\t'<<j->AEB<<'\t'<<j->Menge<<'\t'<<Msum<<'\n';
         }
       switch (zumode) {
          case Dungeplant: alles_ok=check_D_ungeplant(uid,analyse_only,*i,M0sum,Msum+M0sum); break;
@@ -174,25 +172,62 @@ bool ppsInstanzReparatur::Reparatur_Zuordnungen(const int uid,const bool analyse
 
 bool ppsInstanzReparatur::check_D_ungeplant(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &M0sum,const ABmt &Msum) const
 {
-  if(AE.getGeliefert() <= M0sum) return check_E_geplant(uid,analyse_only,AE,Msum);
+  if(AE.getGeliefert() <= M0sum) 
+    { bool k=check_E_geplant(uid,analyse_only,AE,Msum);
+      if(analyse_only) return k;
+      if(!k) check_D_ungeplantReparatur(uid,AE,Msum);
+    }
   else if(Msum>AE.getStueck())
    { 
-std::cout << Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\n';
-     if(analyse_only) analyse("Zuord.-Summen ist größer als Auftragssumme",AE,Msum,AE.getStueck());
-     else assert(!"nicht implementiert\n");
-     return false;
+cout << Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\n';
+     if(analyse_only) { 
+            analyse("Zuord.-Summen ist größer als Auftragssumme",AE,Msum,AE.getStueck());
+            return false; }
+     else assert(!"nicht implementiert\n");  
    }
   return true;
 }
+
+void ppsInstanzReparatur::check_D_ungeplantReparatur(const int uid,const AufEintrag &AE,const AuftragBase::mengen_t &menge) const
+{
+  AuftragBase::mengen_t DiffMenge=AE.getStueck()-menge;
+  assert(DiffMenge!=0);
+cout << "REP1: "<<AE<<'\t'<<DiffMenge<<'\n';
+  std::list<AufEintragZu::st_reflist> L=AufEintragZu(AE).get_Referenz_list_dispo(false);
+  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+   {
+     AuftragBase::mengen_t M=0;
+     if(DiffMenge>0) M =  DiffMenge;
+     else            M = -AuftragBase::min(i->Menge,-DiffMenge);
+cout << "REP2: "<<i->AEB<<'\t'<<M<<'\n';
+     i->AEB.updateStkDiffBase__(uid,M);
+     AufEintragZu(i->AEB).setMengeDiff__(AE,M);
+     DiffMenge -= M;
+     if(!DiffMenge) return;
+   }
+  L=AufEintragZu(AE).get_Referenz_list_ungeplant(false);
+  if(DiffMenge<0) DiffMenge*=-1;
+  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+   {
+     AuftragBase::mengen_t M=AuftragBase::min(i->Menge,DiffMenge);
+cout << "REP3: "<<i->AEB<<'\t'<<M<<'\n';
+     AufEintrag(i->AEB).updateStkDiff__(uid,M,true,ManuProC::Auftrag::r_Reparatur);
+     AufEintragZu(i->AEB).setMengeDiff__(AE,-M);
+     DiffMenge -= M;
+     if(!DiffMenge) return;
+   } 
+}
+
 
 bool ppsInstanzReparatur::check_E_geplant(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const
 {
   if(Msum!=AE.getStueck())
    { 
-std::cout << Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\t'<<Msum-AE.getStueck()<<'\n';
-     if(analyse_only) std::cout << "Analyse: Zuord.-Summen ("<<Msum<<") stimmen nicht ("<<AE.getStueck()<<") für "<<AE<<'\n';
+cout <<"check_E_geplant: "<< AE<<'\t'<<Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\t'<<Msum-AE.getStueck()<<'\n';
+     if(analyse_only || AE.Id()!=AuftragBase::dispo_auftrag_id) {
+        std::cout << "Analyse: Zuord.-Summen ("<<Msum<<") stimmen nicht ("<<AE.getStueck()<<") für "<<AE<<'\n';
+        return false; }
      else AE.updateStkDiffBase__(uid,Msum-AE.getStueck());
-     return false;
    }
  return true;
 }
@@ -218,11 +253,11 @@ void ppsInstanzReparatur::Reparatur_0er_und_2er(const int uid,const bool analyse
    assert(Id() != ppsInstanzID::Kundenauftraege);
    SQLFullAuftragSelector sel0er= SQLFullAuftragSelector::sel_Status(Id(),OPEN,AuftragBase::ungeplante_id);
    SelectedFullAufList AL(sel0er);
-//std::cout << "REPARATUR 2er 0er AL.size()\t"<<AL.size()<<'\n';
+//cout << "REPARATUR 2er 0er AL.size()\t"<<AL.size()<<'\n';
    for(SelectedFullAufList::iterator i=AL.begin();i!=AL.end();++i)
     {
       SQLFullAuftragSelector sel2er;
-      if(PlanungsInstanz()) {std::cerr<<"U N G E T E S T E T für PlanungsInstenz\n"; continue;}
+      if(PlanungsInstanz()) {cerr<<"U N G E T E S T E T für PlanungsInstenz\n"; continue;}
       if(LagerInstanz())
          sel2er=SQLFullAuftragSelector::sel_Artikel_Planung_id(Id(),Kunde::eigene_id,i->Artikel(),AuftragBase::dispo_auftrag_id,OPEN,LagerBase::Lagerdatum());
       else 
@@ -236,9 +271,9 @@ void ppsInstanzReparatur::Reparatur_0er_und_2er(const int uid,const bool analyse
          AuftragBase::mengen_t M=AuftragBase::min(menge0er,j->getStueck());
          if(M==0) continue;
          AuftragBase zielauftrag(Id(),AuftragBase::plan_auftrag_id);
-std::cout << "RepLan: "<<*i<<'\t'<<zielauftrag<<"Menge: "<<M<<'\n';
+cout << "RepLan: "<<*i<<'\t'<<zielauftrag<<"Menge: "<<M<<'\n';
          if(analyse_only)
-           std::cout << "Analyse: Planen von "<<*i<<"  nach  "<<zielauftrag<<"\tMenge: "<<M<<'\n';
+           cout << "Analyse: Planen von "<<*i<<"  nach  "<<zielauftrag<<"\tMenge: "<<M<<'\n';
          else
           {
             int znr=i->Planen(uid,M,zielauftrag,i->getLieferdatum(),ManuProC::Auftrag::r_Reparatur);
@@ -394,7 +429,7 @@ void ppsInstanzReparatur::vormerkungen_subrahieren(int uid,const  std::vector<La
 //std::cout << "\t"<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<menge<<'\n';
 //std::cout << "\t\tReparaturMenge: "<<-menge<<'\n';
             if(analyse_only)
-              std::cout << "Analyse: Mengenupdate von "<<*j<<" Menge:"<<menge<<'\n';
+              cout << "Analyse: Mengenupdate von "<<*j<<" Menge:"<<menge<<'\n';
             else
              {
                j->updateStkDiffBase__(uid,menge);
@@ -415,7 +450,7 @@ void ppsInstanzReparatur::vormerkungen_subrahieren(int uid,const  std::vector<La
          if(set_dispo_to_zero)
           {
             if(analyse_only)
-              std::cout << "Analyse: Mengenupdate von "<<*j<<" Menge:"<<-j->getStueck()<<'\n';
+              cout << "Analyse: Mengenupdate von "<<*j<<" Menge:"<<-j->getStueck()<<'\n';
             else
               j->updateStkDiffBase__(uid,-j->getStueck());
           }
@@ -423,7 +458,7 @@ void ppsInstanzReparatur::vormerkungen_subrahieren(int uid,const  std::vector<La
      if(menge!=0 && !set_dispo_to_zero) 
       {
         if(analyse_only)
-             std::cout << "Analyse: DispoAufträge_anlegen: "<<Name()<<'\t'<<i->Artikel()<<"\tMenge:"<<menge<<'\n';
+             cout << "Analyse: DispoAufträge_anlegen: "<<Name()<<'\t'<<i->Artikel()<<"\tMenge:"<<menge<<'\n';
         else
             DispoAuftraege_anlegen(uid,i->Artikel(),menge);
       }
@@ -463,7 +498,7 @@ std::vector<LagerInhalt> ppsInstanzReparatur::getLagerInhalt() const
 
 void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,const std::string &x,const std::string &y) const
 {
-  std::cout<<"Fehler Analyse: " << AE <<"  => "<<s<<"\t("<<x<<"), ("<<y<<")\n";
+  cout<<"Fehler Analyse: " << AE <<"  => "<<s<<"\t("<<x<<"), ("<<y<<")\n";
 }
 
 void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,const ABmt &x,const ABmt &y) const

@@ -357,6 +357,17 @@ std::cout << dummystring<<'\n';
         if(!erfolgreich) { cout << "Reparatur-Zuordungen () \n";
                return fehler();}
       }
+      {
+        Query::Execute("update auftragentry set bestellt=6555 where "
+            "(instanz,auftragid)=(2,2)");
+        SQLerror::test(__FILELINE__);
+        Query::Execute("update auftragsentryzuordnung set menge=6555 where "
+            "(altinstanz,altauftragid,neuinstanz)=(2,2,2)");
+        SQLerror::test(__FILELINE__);
+        erfolgreich=C.teste(Check::Menge,"_rep_pf",mit_reparatur_programm,true);
+        if(!erfolgreich) { cout << "Reparatur-Zuordungen () \n";
+               return fehler();}
+      }
       cout << "Reparatur-Test (Petig, Zuordnungen) erfolgreich\n";
       break;      
      }

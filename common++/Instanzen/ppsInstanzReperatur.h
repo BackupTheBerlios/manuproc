@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReperatur.h,v 1.1 2002/12/10 09:55:00 thoma Exp $
+// $Id: ppsInstanzReperatur.h,v 1.2 2002/12/10 12:16:56 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,10 +21,10 @@
 #define AUX_PPSINSTANZ_REP_H
 
 #include "ppsInstanz.h"
-class AufEintrag;
-class AufEintragBase;
+#include <Auftrag/AufEintrag.h>
+//class AufEintragBase;
 class LagerInhalt;
-class AuftragBase;
+//class AuftragBase;
 
 class ppsInstanzReparatur : public ppsInstanz
 {
@@ -38,6 +38,7 @@ class ppsInstanzReparatur : public ppsInstanz
       struct st_table{std::string table; std::string column;
               st_table(const std::string &t,const std::string &c) 
                : table(t),column(c) {}};
+
 
       std::vector<LagerInhalt> getLagerInhalt() const;
       void vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const;
@@ -60,6 +61,8 @@ class ppsInstanzReparatur : public ppsInstanz
       bool check_D_ungeplant(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &M0sum,const ABmt &Msum) const;
       bool check_E_geplant(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const;
       bool check_F_dispo(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const;
+
+      void check_D_ungeplantReparatur(const int uid,const AufEintrag &AE,const AuftragBase::mengen_t &menge) const; 
 
       void Reparatur_Kundenauftrag_AE(const int uid,const AufEintrag &KundeAE,AufEintrag &KindAE,const ABmt &menge) const;
       void Reparatur_Kundenauftrag_AEB(const int uid,const AufEintrag &KundeAE,const AufEintragBase &KindAE,const ABmt &menge) const;
