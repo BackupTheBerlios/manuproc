@@ -198,7 +198,8 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 	     os << mld->MLT(MultiL_Dict::TXT_KONTO) << " " << ulltos(kunde_von->getKtnr()) << ", ";
 	     os << "BLZ " << itos(kunde_von->getblz()) << ", ";	  
 	     os << mld->MLT(MultiL_Dict::TXT_BANK) << " " << kunde_von->getbank();
-	     os << "~\\\\S.W.I.F.T.: WELA DE D1 VEL - IBANDE61334500000000240044\\\\\n";
+//	     os << "~\\\\S.W.I.F.T.: WELA DE D1 VEL - IBANDE61334500000000240044\\\\\n";
+	     os << "~\\\\S.W.I.F.T.: WUPS DE 33 - IBANDE91330500000000423111\\\\\n";
 	    }
 	  else
 	    os << "~\\\\~\\\\\n";
