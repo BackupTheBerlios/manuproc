@@ -1,4 +1,4 @@
-// $Id: Waehrung.h,v 1.13 2003/01/08 09:46:56 christof Exp $
+// $Id: Waehrung.h,v 1.14 2003/04/10 08:45:07 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -46,6 +46,7 @@ public:
  Waehrung(ID id, const std::string k, const std::string l, const std::string tx, double f)
  	: wid(id), kurz(k), tex(tx), lang(l), faktor(f) {}
  ID Id() const { return wid; }
+ void setFkt(const double f) { faktor=f; }
  
  // finde ich praktischer als Id() MAT. ich nicht! CP
  ID get_enum() const { return wid; } 
