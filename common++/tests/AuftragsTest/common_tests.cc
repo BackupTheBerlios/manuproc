@@ -22,13 +22,8 @@
 
 #include "AuftragsVerwaltung.hh"
 #include "Check.hh"
-#include <Lager/Lager.h>
 #include <Auftrag/Auftrag.h>
-#include <Misc/Trace.h>
-#include <unistd.h>
-// Lieferschein
 #include <Lieferschein/Lieferschein.h>
-//#include <Misc/inbetween.h>
 #include "TestReihe.h"
 
 static bool ZweiKundenTest(AufEintrag &AE)

@@ -17,12 +17,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ManuProCConfig.h>
 #include "steuerprogramm.hh"
 
 #ifdef PETIG_TEST
 #include "AuftragsVerwaltung.hh"
 #include "Check.hh"
+#include "DataBase_init.hh"
 #include <Lager/Lager.h>
 #include <Auftrag/Auftrag.h>
 #include <Misc/Trace.h>
@@ -39,9 +39,10 @@
 #endif
 
 static bool Zusatzinfo()
-{
-        AufEintragBase AEB2=Auftrag(AEB).push_back(4000,DATUM,ARTIKEL_FAERBEREI,OPEN,UID,true);
-        AufEintragBase AEB3=Auftrag(AEB).push_back(4000,DATUM+10,ARTIKEL_FAERBEREI,OPEN,UID,true);
+{	
+   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
+        AufEintragBase AEB2=auftrag.push_back(4000,DATUM,ARTIKEL_FAERBEREI,OPEN,UID,true);
+        AufEintragBase AEB3=auftrag.push_back(4000,DATUM+10,ARTIKEL_FAERBEREI,OPEN,UID,true);
        vergleichen(Check::Lieferschein|Check::Menge,"ZI_Ausgangspunkt","Ausgangspunkt","");
         
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
@@ -74,9 +75,10 @@ static bool Zusatzinfo2()
        std::vector<JumboRolle> JR2=JumboRolle::create(KK); // 101
        JL.Jumbo_Einlagern(LP,JR2.front(),JumboLager::Einlagern,UID,"TEST",&zp0,true);
 
-       AufEintragBase AEB3=Auftrag(AEB).push_back(170,DATUM,ARTIKEL_BANDLAGER,OPEN,UID,true);
+   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
+       AufEintragBase AEB3=auftrag.push_back(170,DATUM,ARTIKEL_BANDLAGER,OPEN,UID,true);
        
-       AufEintragBase AEB2=Auftrag(AEB).push_back(17500,DATUM,ARTIKEL_BANDLAGER,OPEN,UID,true);
+       AufEintragBase AEB2=auftrag.push_back(17500,DATUM,ARTIKEL_BANDLAGER,OPEN,UID,true);
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
        AufEintrag ae(AEB2);
        int lznr=liefs.push_back(ae,ARTIKEL_BANDLAGER,9,1000);
@@ -95,7 +97,7 @@ static bool Zusatzinfo2()
 static TestReihe Zusatzinfo2_(&Zusatzinfo2,"komplexe Lieferscheinveränderung mit Prod-Selbst-Lager","ZI2");
 
 static bool Mengentest(AufEintrag &AE)
-{
+{  AuftragsVerwaltung auftrag;
       // Menge des Auftrags erhöhen
       auftrag.kunden_bestellmenge_aendern(AE,500);
       vergleichen(Check::Menge,"menge_plus", "Erhöhen der Auftragmenge","");
@@ -173,6 +175,7 @@ std::cout << dummystring<<'\n';
       RL.RL_Entnahme(stRL2,UID,dummystring,false,false,true);
 std::cout << dummystring<<'\n';
       vergleichen(Check::Menge,"split_rohwarenlager_raus","Rohwarenlager auslagern\n","-");
+      return true;
 }
 
 static TestReihe Splittest_(&Splittest,"Split Test","S");
@@ -305,6 +308,7 @@ static TestReihe Rep_KundenProgramm_(&Rep_KundenProgramm,"Reparatur Kundenaufträ
 static bool Rep_Kunden_Zuordnungen(AufEintrag &AE)
 {
           assert(Check::reparieren);
+          AuftragsVerwaltung auftrag;
        AufEintragBase AEB=auftrag.anlegen2();
        vergleichen(Check::Menge,"rep_zwei_auftraege_anlegen","Anlegen eines zweiten (offenen) Auftrags ["+AEB.str()+"]","");
       {
@@ -329,7 +333,7 @@ static bool Rep_Kunden_Zuordnungen(AufEintrag &AE)
 
 static TestReihe Rep_Kunden_Zuordnungen_(&Rep_Kunden_Zuordnungen,"Reparatur Kunden Zuordnungen","RKZ");
 
-static bool Lagertest()
+static bool Lagertest(AufEintrag &AE)
 {
       RohwarenLager RL;
       RohwarenLager::st_rohlager stRL(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
@@ -356,15 +360,11 @@ std::cout << "D2:" <<dummystring<<'\n';
 std::cout << dummystring<<'\n';
       vergleichen(Check::Menge,"bandlager_rein","Bandlager einlagern\n","b");
 
-      {AufEintrag AE(AEB);
         AE.Produziert(300,Lieferschein::none_id);
-      }
       vergleichen(Check::Menge,"kunde_teillieferung","Kunde Teillieferung\n","T");
 
 //std::cout << "\n\n120 ABSCHREIBEN\n\n\n";
-      {AufEintrag AE(AEB);
         AE.Produziert(120,Lieferschein::none_id);
-      }
       vergleichen(Check::Menge,"kunde_ueberlieferung","Kunde Überlieferung\n","Ü");
 
 
@@ -422,7 +422,7 @@ static bool Rep_Petig_0er_2er_gleichzeitig(AufEintrag &AE)
 static TestReihe Rep_Petig_0er_2er_gleichzeitig_(&Rep_Petig_0er_2er_gleichzeitig,"Reparatur 2er und 0er gleichzeitig","Rg");
 
 static bool ZweiAuftraege(AufEintrag &AE)
-{
+{  AuftragsVerwaltung auftrag;
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
        int faerberei_znr=1;
@@ -438,7 +438,7 @@ static bool ZweiAuftraege(AufEintrag &AE)
 static TestReihe ZweiAuftraege_(&ZweiAuftraege,"Zwei Aufträge","Z");
 
 static bool ZweiterAuftrag_frueheresDatum(AufEintrag &AE)
-{
+{  AuftragsVerwaltung auftrag;
        AufEintragBase AEB=auftrag.anlegen3();
 
        vergleichen(Check::Menge,"zwei_auftraege_datum","Anlegen eines zweiten (offenen) Auftrags ["+AEB.str()+"] mit früherem Liefertermin","D");
@@ -514,7 +514,7 @@ static bool LieferscheintestMenge(AufEintrag &AE)
 static TestReihe LieferscheintestMenge_(&LieferscheintestMenge,"Lieferschein Menge","Lm");
 
 static bool Lieferscheintest_ZweiterAuftrag_frueheresDatum(AufEintrag &AE)
-{
+{  AuftragsVerwaltung auftrag;
        AufEintragBase AEB=auftrag.anlegen3();
        vergleichen(Check::Menge,"zwei_auftraege_datum","Anlegen eines zweiten (offenen) Auftrags ["+AEB.str()+"] mit früherem Liefertermin","D");
 
@@ -558,9 +558,9 @@ static bool LieferscheintestZusatz(AufEintrag &AE)
 static TestReihe _LieferscheintestZusatz(&LieferscheintestZusatz,"Lieferschein Zusatz","LZ");
 
 static bool ZweiKundenMengeFreigebenTest(AufEintrag &AE)
-{
+{  AuftragsVerwaltung auftrag;
        AufEintragBase AEB2=auftrag.anlegenK();
-       vergleichen(Check::Menge,"ZK_anlegen","Anlegen eines zweiten (offenen) Auftrags für einen anderen Kunden ["+AEB.str()+"]","");
+       vergleichen(Check::Menge,"ZK_anlegen","Anlegen eines zweiten (offenen) Auftrags für einen anderen Kunden ["+AEB2.str()+"]","");
 
        {
          cH_ppsInstanz I(ppsInstanzID::Bandlager);
@@ -578,7 +578,7 @@ static bool ZweiKundenMengeFreigebenTest(AufEintrag &AE)
 
 static TestReihe ZweiKundenMengeFreigebenTest_(&ZweiKundenMengeFreigebenTest,"Zwei Kunden-Menge-Freigeben","ZKM");
 
-static bool JumboLager(AufEintrag &AE)
+static bool JumboLager()
 {
 #if defined (MANUPROC_DYNAMICENUMS_CREATED)
        LagerPlatz LP(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ);

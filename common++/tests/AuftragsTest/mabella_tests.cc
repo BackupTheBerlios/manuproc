@@ -17,7 +17,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ManuProCConfig.h>
 #include "steuerprogramm.hh"
 
 #ifdef MABELLA_TEST
@@ -29,7 +28,6 @@
 #include <unistd.h>
 // Lieferschein
 #include <Lieferschein/Lieferschein.h>
-//#include <Misc/inbetween.h>
 #include "TestReihe.h"
 
 static bool LieferscheinJacek(AufEintrag &AE)

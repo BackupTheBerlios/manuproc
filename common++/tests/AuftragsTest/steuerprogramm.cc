@@ -41,7 +41,7 @@ static std::string header;
 
 TestReihe *TestReihe::first;
 
-static UniqueValue::value_t log_trace = ManuProC::Tracer::channels.get();
+UniqueValue::value_t log_trace = ManuProC::Tracer::channels.get();
 
 static Check C;
 
