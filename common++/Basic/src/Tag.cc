@@ -1,4 +1,4 @@
-// $Id: Tag.cc,v 1.4 2003/01/24 08:37:48 christof Exp $
+// $Id: Tag.cc,v 1.5 2003/01/24 08:56:29 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -121,32 +121,6 @@ std::string Tag::parse_value<std::string>(const std::string &value) throw(std::o
 {  return value;
 }
 
-#if 0
-const std::string Tag::getString(const std::string &typ,const std::string &def) const throw()
-{  const_iterator t=find(begin(),typ);
-   if (t!=end()) return t->Value();
-   return def;
-}
-
-bool Tag::getBool(const std::string &typ,bool def) const throw()
-{  const_iterator t=find(begin(),typ);
-   if (t==end()) return def;
-   return parse_bool_value(t->Value());
-}
-
-int Tag::getInt(const std::string &typ,int def) const throw()
-{  const_iterator t=find(begin(),typ);
-   if (t==end()) return def;
-   return parse_int_value(t->Value());
-}
-
-float Tag::getFloat(const std::string &typ,float def) const throw()
-{  const_iterator t=find(begin(),typ);
-   if (t==end()) return def;
-   return parse_float_value(t->Value());
-}
-#endif
-
 void Tag::setValue(const std::string &tg,const std::string &value) throw()
 {  iterator t=find(begin(),tg);
    if (t==end()) push_back(Tag(tg,value));
@@ -171,40 +145,17 @@ bool Tag::hasAttr(const std::string &name) const throw()
 {  return attfind(name)!=attend();
 }
 
-#if 0
-const std::string &Tag::getAttr(const std::string &name, const std::string &def) const throw()
-{  attvec_t::const_iterator i=attfind(name);
-   if (i!=attend()) return i->second;
-   return def;
-}
-#endif
-
 void Tag::setAttr(const std::string &name, const std::string &value)
 {  attvec_t::iterator i=attfind(name);
    if (i!=attend()) i->second=value;
    else attributes.push_back(std::pair<std::string,std::string>(name,value));
 }
 
-#if 0
-bool Tag::getBoolAttr(const std::string &typ,bool def) const throw()
-{  attvec_t::const_iterator i=attfind(typ);
-   if (i!=attend()) return parse_bool_value(i->second,def);
-   return def;
-}
-
-int Tag::getIntAttr(const std::string &typ,int def) const throw()
-{  attvec_t::const_iterator i=attfind(typ);
-   if (i!=attend()) return parse_int_value(i->second,def);
-   return def;
-}
-
-float Tag::getFloatAttr(const std::string &typ,float def) const throw()
-{  attvec_t::const_iterator i=attfind(typ);
-   if (i!=attend()) return parse_float_value(i->second,def);
-   return def;
-}
+#ifdef SIGC1_2
+#  define MANUPROC_BASE
 #endif
 
+#ifndef MANUPROC_BASE // within glade--
 #include <cstdio>
 
 template<>
@@ -230,3 +181,21 @@ template<>
  std::string Tag::create_value<bool>(const bool &val)
 {  return val?"true":"false"; 
 }
+#else
+#include <Misc/itos.h>
+
+template<>
+ std::string Tag::create_value<int>(const int &val)
+{  return itos(val);
+}
+
+template<>
+ std::string Tag::create_value<double>(const double &val)
+{  return dtos(val);
+}
+
+template<>
+ std::string Tag::create_value<bool>(const bool &val)
+{  return btos(val);
+}
+#endif
