@@ -75,6 +75,8 @@ class JumboLager : public Lager
   public:
 #if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
       JumboLager() : Lager(ppsInstanzID::Bandlager) {}
+#else
+	JumboLager() : Lager(ppsInstanzID::None) {}      
 #endif
 
       void Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jumbo_LogTyp typ,const string& user,const Zeitpunkt_new *zeit=0);

@@ -1,4 +1,4 @@
-/* $Id: AuftragMitEintrag.h,v 1.2 2002/05/06 13:41:22 christof Exp $ */
+/* $Id: AuftragMitEintrag.h,v 1.3 2002/05/09 12:45:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

@@ -7,7 +7,7 @@ noinst_PROGRAMS=libKunde.o
 includedir=@includedir@/Kunde
 
 libKunde_o_SOURCES=$(BUILT_SOURCES) Kunde.cc Person.cc KontaktListe.cc \
-		Adresse.cc
+		Adresse.cc Telefon.cc
 
 libKunde.o: $(libKunde_o_OBJECTS) $(libKunde_o_DEPENDENCIES)
 	touch $@

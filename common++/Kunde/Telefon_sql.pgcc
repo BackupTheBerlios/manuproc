@@ -1,4 +1,4 @@
-// $Id: Telefon_sql.pgcc,v 1.2 2002/05/06 13:41:23 christof Exp $
+// $Id: Telefon_sql.pgcc,v 1.3 2002/05/09 12:46:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -145,32 +145,6 @@ void Telefon::update() const throw(SQLerror)
 
 
 
-cH_Telefon::cH_Telefon(const Telefon::ID _tnr)
-{
- *this = cH_Telefon(new Telefon(_tnr));
-}
-
-
-std::string Telefon::ArtString() const 
-{
- switch(nummer.art)
-	{
-	case TEL_TEL : return("Telefon"); break;
-	case TEL_FAX : return("Fax"); break;
-	case TEL_MOB : return("Mobil"); break;
-	case TEL_E_MAIL : return("e-mail"); break;
-	case TEL_HOMEPAGE : return("WWW"); break;
-	default : return("-");
-	}
- return("-");
-}
-
-std::string Telefon::NummerStr() const
-{
-  return itos(nummer.land)+" "+itos(nummer.vorwahl)+" "+itos(nummer.nummer);
-}
-
-
 const cH_Telefon Telefon::newTelefon(const ID kid,const ID pid,
  		const st_nummer &nr, const string text) throw(SQLerror)
 {
@@ -242,18 +216,6 @@ void Telefon::delPersonsTelefon(const ID pid) throw(SQLerror)
  SQLerror::test(__FILELINE__,100);
 
  tr.commit();
-}
-
-
-std::vector<pair<std::string,TelArt> > Telefon::getTelArtVec()
-{
-  vector<pair<std::string,TelArt> > V;
-  V.push_back(pair<std::string,TelArt>("Telefon",TEL_TEL));
-  V.push_back(pair<std::string,TelArt>("Fax",TEL_FAX));
-  V.push_back(pair<std::string,TelArt>("Mobil",TEL_MOB));
-  V.push_back(pair<std::string,TelArt>("e-mail",TEL_E_MAIL));
-  V.push_back(pair<std::string,TelArt>("Homepage",TEL_HOMEPAGE));
-  return V;
 }
 
 

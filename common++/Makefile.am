@@ -79,6 +79,7 @@ libcommon___a_LIBADD= \
 		Kunde/PreisListe_sql.o \
 		Kunde/KontaktListe.o \
 		Kunde/Telefon_sql.o \
+		Kunde/Telefon.o \
 		Lager/FertigWaren_sql.o \
 		Lager/FertigWarenLager_sql.o \
 		Lager/JumboLager.o \

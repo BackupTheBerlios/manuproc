@@ -79,6 +79,9 @@ class AuftragBase
 
 	// wandelt enum in std::string um
 	static const std::string getStatusStr(AufStatVal a);
+
+   bool operator==(const AuftragBase &b) const 
+      {return instanz==b.instanz && auftragid==b.auftragid;}
 };
 
 #endif

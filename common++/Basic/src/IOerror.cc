@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: IOerror.cc,v 1.4 2002/05/06 13:41:22 christof Exp $ */
+/* $Id: IOerror.cc,v 1.5 2002/05/09 12:46:00 christof Exp $ */
 #include "Aux/IOerror.h"
 #include <errno.h>
 #include "Aux/Ausgabe_neu.h"

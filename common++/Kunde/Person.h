@@ -1,4 +1,4 @@
-// $Id: Person.h,v 1.10 2002/05/06 13:41:23 christof Exp $
+// $Id: Person.h,v 1.11 2002/05/09 12:46:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,7 +29,7 @@
 #include <BaseObjects/ManuProcEntity.h>
 #include <Kunde/KontaktListe.h>
 #include <Kunde/Anrede.h>
-
+#include <list>
 
 class Person : public ManuProcEntity
 {
@@ -63,6 +63,7 @@ public:
  const std::string Notiz() const { return notiz; }
 
  std::string Kontakt(const TelArt& art, ManuProcEntity::ID kundeid) const;
+ const std::list<cH_Telefon> getTelefon(ManuProcEntity::ID kundenid=ManuProcEntity::none_id) const; 
  
  void setName(const std::string &s) { name=s; }
  void setVorname(const std::string &s) { vorname=s; }

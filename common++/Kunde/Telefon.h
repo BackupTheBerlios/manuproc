@@ -1,4 +1,4 @@
-// $Id: Telefon.h,v 1.11 2002/05/06 13:41:23 christof Exp $
+// $Id: Telefon.h,v 1.12 2002/05/09 12:46:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -71,11 +71,11 @@ public:
  Telefon() : kunde(none_id), person(none_id) {}
  Telefon(ID _tid) throw(SQLerror);
 
- static void getTelIDs(std::vector<ID> &vec, const TelArt &t, 
+ static void getTelIDs(std::vector<ID> &vec, const TelArt &ta, 
  		const ID kid, const ID pid) throw(SQLerror);
 
  static const cH_Telefon newTelefon(const ID kid, const ID pid,
- 		const st_nummer &nr, const std::string t) throw(SQLerror);
+ 		const st_nummer &nr, const std::string t="") throw(SQLerror);
 
  static void delTelefon(const Telefon::ID tid) throw(SQLerror);
  static void delPersonsTelefon(const ID pid) throw(SQLerror);

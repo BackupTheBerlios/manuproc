@@ -1,4 +1,4 @@
-// $Id: Artikelpreis_sql.pgcc,v 1.6 2002/05/06 13:41:22 christof Exp $
+// $Id: Artikelpreis_sql.pgcc,v 1.7 2002/05/09 12:45:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -50,8 +50,8 @@ typedef CacheStatic<index_t,payload_t> cache_t;
 
 static cache_t cache;
 
-Artikelpreis::Artikelpreis(const Kunde::ID liste,const ArtikelBase &a)
-	: errechnet(false)
+Artikelpreis::Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a)
+	: errechnet(false), gefunden(false)
 {  payload_t *cached=cache.lookup(index_t(liste,a.Id()));
    if (cached) { setPreis(cached->preis,cached->errechnet); }
    else
@@ -68,25 +68,36 @@ Artikelpreis::Artikelpreis(const Kunde::ID liste,const ArtikelBase &a)
       	from artikelpreise
       	where artikelid=:artikelid and kundennr=:kundennr;
       SQLerror::test(__FILELINE__,100);
-      if (sqlca.sqlcode)
-      {  // errechnen
-         Preis p;
-         ArtikelBaum AB(a);
-         for (ArtikelBaum::const_iterator i=AB.begin(); i!=AB.end(); ++i)
-         {  p+= Prozesspreis(liste, (*i).erzeugung->Id()) 
-         	+ (*i).menge * Artikelpreis(liste, (*i).rohartikel);
-         }
-         setPreis(p,true);
-      }
-      else
-      {  setPreis(Preis(preis, Waehrung::ID(waehrung), preismenge),false);
-      }
+      if (!sqlca.sqlcode) 
+         setPreis(Preis(preis, Waehrung::ID(waehrung), preismenge),false);
+         
       cache.Register(index_t(liste,a.Id()), payload_t(getPreis(),istErrechnet()));
    }
 }
 
-void Artikelpreis::UnCache(const Kunde::ID liste,const ArtikelBase &ab)
+void Artikelpreis::UnCache(const PreisListe::ID liste,const ArtikelBase &ab)
 {  cache.deregister(index_t(liste,ab.Id()));
 };
+
+Artikelpreis::Artikelpreis(const cH_Kunde &k,const ArtikelBase &a)
+	: errechnet(false), gefunden(false)
+{  Artikelpreis ap=Artikelpreis(k->preisliste(), a);
+   if (ap.Gefunden()) { *this=ap; return; }
+#if 0   
+   for (list<PreisListe::ID>::const_iterator i=k->Sonderpreislisten()->begin();
+   
+#endif
+
+   // oder für alle?   	
+#ifdef PETIG_EXTENSIONS // errechnen
+         Preis p;
+         ArtikelBaum AB(a);
+         for (ArtikelBaum::const_iterator i=AB.begin(); i!=AB.end(); ++i)
+         {  p+= Prozesspreis(liste, (*i).erzeugung->Id()) 
+         	+ (*i).menge * Artikelpreis(k, (*i).rohartikel);
+         }
+         setPreis(p,true);
+#endif         
+}
 
 };

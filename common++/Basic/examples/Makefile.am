@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.7 2002/05/06 13:41:22 christof Exp $
+# $Id: Makefile.am,v 1.8 2002/05/09 12:46:00 christof Exp $
 	
 LDADD=$(top_srcdir)/src/libManuProC_Base.a @ECPG_LIBS@
 

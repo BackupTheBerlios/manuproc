@@ -1,4 +1,4 @@
-// $Id: KettplanKette.cc,v 1.2 2002/05/06 13:41:23 christof Exp $
+// $Id: KettplanKette.cc,v 1.3 2002/05/09 12:46:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

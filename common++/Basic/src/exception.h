@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: exception.h,v 1.2 2002/05/06 13:41:22 christof Exp $
+// $Id: exception.h,v 1.3 2002/05/09 12:46:00 christof Exp $
 
 namespace Petig
 {  void PrintUncaughtExceptions() throw();

@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.18 2002/05/06 13:41:23 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.19 2002/05/09 12:46:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,7 +34,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    // return ersetzen
    if(_id == Kunde::none_id) return;
    exec sql begin declare section;
-   int ID=_id,GRUPPENID,BEZSCHEMA,BANKINDEX,RNG_AN,PREISLISTE;
+   int ID=_id,GRUPPENID,BEZSCHEMA,BANKINDEX,RNG_AN;
    char SORTNAME[31], IDNR[21];
    char NAME[61], STRASSE[36], HSNR[8], POSTFACH[21],ORT[31],BANKNAME[51],
          PLZ[11],POSTFACHPLZ[11],KTONR[11],BLZ[11],POSTANWVOR[41],POSTANWNACH[41];
@@ -55,7 +55,6 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    char UNSERE_KUNDENNR[128];
    exec sql end declare section;
    ILLEGALLANDID=LandesListe::none_id;
-//Sonderpreislisten werden getrennt geholt
   
    Transaction tr;
  
@@ -69,7 +68,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
          coalesce(hsnr,''),coalesce(plz,''),coalesce(postfach,''),
          coalesce(postfplz,''),coalesce(ort,''),coalesce(text(ktonr),''),
          coalesce(text(b.blz),''), coalesce(b.name,''), coalesce(b.bankindex,0),
-         coalesce(rechnung_an,kundennr), coalesce(preisliste,kundennr), 
+         coalesce(rechnung_an,kundennr), 
          coalesce(idnr,''),
          coalesce(lieferadresse,false), coalesce(rechnungsadresse,false), 
          coalesce(rng_an_postfach,false),
@@ -89,7 +88,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    	into :GRUPPENID ,:NAME, :SORTNAME, :BEZSCHEMA, :STRASSE, :POSTANWVOR, :POSTANWNACH,
            :HSNR, :PLZ, :POSTFACH,
            :POSTFACHPLZ, :ORT, :KTONR, :BLZ, :BANKNAME, :BANKINDEX, :RNG_AN,
-           :PREISLISTE, :IDNR,
+           :IDNR,
             :LIEFERADRESSE,:RECHUNGSADRESSE,:RNGANLFRA,
            :FLAECHE,:MITARBEITER,:KUNDENUMSATZ,:PLANUMSATZ,:UMSATZ,
 	   :RABATT,:ZEILENRABATT,:EINZUGRABATT,:SKONTOFRIST, :VEREIN, :BANKEINZUG,
@@ -125,7 +124,6 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    bankverb.lieferantenkonto=LIEFERANTENKONTO;
    bankverb.gegenkonto=GEGENKONTO;
    rngan=RNG_AN;
-   kundendaten.preisliste=PREISLISTE;
    entsorg = ENTSORGUNG;
 
    kundendaten.flaeche = FLAECHE;
@@ -146,6 +144,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
 
    verkaeufer.verknr=VERKNR;
    betreuer=BETREUER==0 ? Person::none_id : BETREUER;
+   prlist_valid=false;
 }
 
 const cH_Kunde Kunde::newKunde(const Kunde::ID kid, const std::string &firma) throw(SQLerror)
@@ -399,7 +398,6 @@ void Kunde::update_e(UpdateBitsSonst e)
      if(!(e&(1<<i))) continue;
      if      (i==B_Rechnungan ) query += "rechnung_an  = "+itos(Rngan())+",";
      else if (i==B_Extartbezid) query += "extartbezid = "+itos(getSchemaId())+",";
-     else if (i==B_Preisliste ) query += "preisliste  = "+itos(preisliste())+","; 
      else if (i==B_Notiz      ) query += "notiz  = '"+notiz()+"',";
      else if (i==B_Entsorgung ) query += "entsorgung  = "+btos(entsorgung())+",";
      else if (i==B_Verknr     ) query += "verknr  = "+itos(verkaeufer.verknr)+",";
@@ -410,46 +408,37 @@ void Kunde::update_e(UpdateBitsSonst e)
  SQLerror::test(__FILELINE__);
 } 
 
-const list<PreisListe::ID> Kunde::Sonderpreislisten() const
+const list<PreisListe::ID> &Kunde::Preislisten() const
 {
+ if(prlist_valid) return preislisten;
+ 
+ preislisten.erase(preislisten.begin(),preislisten.end());
+
   exec sql begin declare section;
    int P;
-   char query[1024];
+   char *QU;
   exec sql end declare section;
   Transaction tr;
-  list<PreisListe::ID> V;
-  int i=1;
-  while (true)
+
+  std::string squery="select prlsnr from ku_warenkorb"
+         " where kundennr="+itos(Id())+" order by suchfolge";        
+  QU=(char*)squery.c_str();
+  exec sql prepare preiscursor_ from :QU;
+  exec sql declare preiscursor cursor for preiscursor_;
+  exec sql open preiscursor;
+  SQLerror::test(__FILELINE__);
+
+  while(!sqlca.sqlcode)
    {
-     std::string squery="select sonder_pliste["+itos(i)+"] from kunden"
-         " where kundennr="+itos(Id());        
-     strncpy(query,squery.c_str(),sizeof(query));
-     exec sql prepare preiscursor_ from :query;
-     exec sql declare preiscursor cursor for preiscursor_;
-     exec sql open preiscursor;
-     SQLerror::test(__FILELINE__);
      exec sql fetch preiscursor into :P;
-     SQLerror::test(__FILELINE__,-209);
+     SQLerror::test(__FILELINE__,100);
      if(sqlca.sqlcode) break;
-     V.push_back(P);
-     ++i;
+     preislisten.push_back(P);
    }
- return V;
+ prlist_valid=true;
+ return preislisten;
 }
 
-void Kunde::setSonderpreisliste(const std::list<PreisListe::ID>& VP) const
-{
-  std::string query="update kunden set sonder_pliste='{";
-  for(std::list<PreisListe::ID>::const_iterator i=VP.begin();i!=VP.end();)
-   {
-     query +=itos(*i);
-     ++i;
-     if(i!=VP.end()) query += ",";
-   }
-  query +="}' where kundennr="+itos(Id());
-  Query::Execute(query);  
-  SQLerror::test(__FILELINE__);
-}
 
 void Kunde::newKontaktperson(const cH_Person &Person) const
 {
@@ -475,6 +464,64 @@ void Kunde::deleteKontaktperson(const H_Kunde&K,const cH_Person &P)
   Query::Execute(query);  
   SQLerror::test(__FILELINE__);
 }
+
+void Kunde::deletePreisListe(const PreisListe::ID p) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int KID=Id();
+ int PRLSID=p; 
+ int SEQ;
+ exec sql end declare section;
+ Transaction tr;
+
+ exec sql lock table ku_warenkorb in exclusive mode; 
+ SQLerror::test(__FILELINE__);   	
+
+ exec sql select suchfolge into :SEQ from ku_warenkorb where
+ 	kundennr= :KID and prlsnr= :PRLSID;
+ SQLerror::test(__FILELINE__);
+ 
+ exec sql delete from ku_warenkorb where kundennr= :KID and prlsnr= :PRLSID;
+ SQLerror::test(__FILELINE__);  
+ 
+ exec sql update ku_warenkorb set suchfolge = suchfolge-1 where
+ 	kundennr= :KID and suchfolge > :SEQ;
+ SQLerror::test(__FILELINE__);   	
+
+ prlist_valid=false;
+ Preislisten(); 
+ tr.commit();
+}
+
+
+
+void Kunde::push_backPreisListe(const PreisListe::ID p) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int KID=Id();
+ int PRLSID=p; 
+ int SEQ;
+ exec sql end declare section;
+ Transaction tr;
+
+ exec sql lock table ku_warenkorb in exclusive mode; 
+ SQLerror::test(__FILELINE__);   	
+
+ exec sql select coalesce(max(suchfolge),0)+1 into :SEQ from ku_warenkorb
+	where kundennr= :KID;
+ SQLerror::test(__FILELINE__);   	
+ 
+ exec sql insert into ku_warenkorb (kundennr,prlsnr,suchfolge) values
+	(:KID, :PRLSID, :SEQ);
+ SQLerror::test(__FILELINE__);   	
+
+ prlist_valid=false;
+ Preislisten(); 
+ tr.commit();
+}
+
+
+
 
 
 

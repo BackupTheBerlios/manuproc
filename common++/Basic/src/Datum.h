@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.8 2002/05/06 13:41:22 christof Exp $ */
+/* $Id: Datum.h,v 1.9 2002/05/09 12:46:00 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -87,7 +87,7 @@ public:
         const std::string Short() const throw(Datumsfehler);
 	/// in Postgres Repräsentation wandeln
 	void write_postgres(char *b,unsigned int sz) const throw(Datumsfehler);
-        std::string to_iso() const throw(Datumsfehler);
+   std::string to_iso() const throw(Datumsfehler);
 	/// in Europäisches Format wandeln
 	void write_euro(char *b,unsigned int sz) const throw(Datumsfehler);
 	/// Gültigkeit testen

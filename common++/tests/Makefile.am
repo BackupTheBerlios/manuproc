@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.20 2002/05/06 13:41:23 christof Exp $
+# $Id: Makefile.am,v 1.21 2002/05/09 12:46:01 christof Exp $
 
 SUBDIRS=auftragstest
 

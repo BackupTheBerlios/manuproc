@@ -1,4 +1,4 @@
-// $Id: Handles.h,v 1.11 2002/05/06 13:41:22 christof Exp $
+// $Id: Handles.h,v 1.12 2002/05/09 12:46:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

@@ -1,4 +1,4 @@
-// $Id: Person.cc,v 1.5 2002/05/06 13:41:23 christof Exp $
+// $Id: Person.cc,v 1.6 2002/05/09 12:46:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,7 @@
 #include "Kunde/Person.h"
 #include "Kunde/Kunde.h"
 #include "Kunde/Telefon.h"
+#include <list>
 
 cH_Person::cache_t cH_Person::cache;  
 
@@ -40,6 +41,27 @@ std::string Person::Kontakt(const TelArt& art, ManuProcEntity::ID kid) const
 {
  if(kontakt.valid())
    return kontakt.get_first_kontakt(art,kid,entityid);
- kontakt.reload(art,kid,entityid);
+ kontakt.reload(kid,entityid);
  return kontakt.get_first_kontakt(art,kid,entityid);   
 }
+
+
+const std::list<cH_Telefon> Person::getTelefon(ManuProcEntity::ID kundenid) const
+{
+ vector<cH_Telefon>::iterator i;
+ std::list<cH_Telefon> tl;
+ 
+ tl.erase(tl.begin(),tl.end());
+
+ for(i=kontakt.begin(); i!=kontakt.end(); ++i)
+  {
+   if((*i)->getKunde() == kundenid ||
+      kundenid==ManuProcEntity::none_id)
+     tl.push_back(*i);
+  }
+ 
+ return tl;
+}
+
+
+

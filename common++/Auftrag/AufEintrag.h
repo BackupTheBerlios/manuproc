@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.6 2002/05/06 13:41:22 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.7 2002/05/09 12:45:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -119,7 +119,6 @@ public:
  void move_to(AufEintragBase AEB,AuftragBase::mengen_t menge) throw(SQLerror);
 // void updateStk(mengen_t stk,bool instanz) throw(SQLerror);
 private:
-// void updateStkInstanz(mengen_t neu_stk,mengen_t alt_stk) throw(SQLerror);
  void updateStkDiffInstanz__(mengen_t menge,void (*callback)(void *,st_problems),void* argument) throw(SQLerror);
 public:
  void updateLieferdatum(const Petig::Datum &ld) throw(SQLerror);	

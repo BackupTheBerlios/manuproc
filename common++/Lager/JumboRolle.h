@@ -1,4 +1,4 @@
-// $Id: JumboRolle.h,v 1.4 2002/05/06 13:41:23 christof Exp $
+// $Id: JumboRolle.h,v 1.5 2002/05/09 12:46:00 christof Exp $
 
 #ifndef _JUMBOROLLE_HH
 #  define _JUMBOROLLE_HH
@@ -54,9 +54,14 @@ private:
 public:
  JumboRolle() {}
  JumboRolle(ID code) throw(SQLerror,CodeError);
- JumboRolle(ID code,int maschine,const Petig::Datum &datum,int webmaschine,
-                 int soll_meter,int status,int lauf,int gang,
-                 ArtikelBase::ID artikelid) throw();
+ JumboRolle(ID _code,int _maschine,const Petig::Datum &datum,int _webmaschine,
+                 int soll_meter,int _status,int _lauf,int _gang,
+                 ArtikelBase::ID artikelid) throw()
+   : code(_code), artikel(artikelid), maschine(_maschine), plandatum(datum),
+   	webmaschine(_webmaschine), sollmeter(soll_meter), 
+   	status(Jumbo_Status(_status)), lauf(_lauf), gang(_gang),
+   	barcoist(0), rest(false)
+   {} 
  static vector<JumboRolle> create(const KettplanKette &k, bool rest=false);
  
  const std::vector<int> lagerPositionen() throw(SQLerror) { return lagerPositionen(artikel); }

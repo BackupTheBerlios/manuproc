@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.10 2002/05/06 13:41:22 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.11 2002/05/09 12:45:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -107,6 +107,7 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,Petig::Datum lieferdate,menge
 //cout << Instanz()->Id()<<' '<<Id()<<' '<<ZNr()<<'\t'<<-M<<'\n';
             AufEintragZu(*this).Neu(neuAEB,M,myznr);
             mengen_t mt=AufEintragZu(*this).setMengeDiff__(AE,-M);
+cout << *this<<'\t'<<AE<<'\t'<<-M<<'\t'<<mt<<'\n';
             assert(mt==-M);
          }
      }
@@ -135,7 +136,6 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,Petig::Datum lieferdate,menge
          }
      }
 //cout << AE.Instanz()->Id()<<' '<<AE.Id()<<' '<<AE.ZNr()<<'\t';
-//   AE.updateStk(AE.getStueck()-M,false); // macht auch das Lager
    mengen_t mt=AE.updateStkDiff__(-M,false); // macht auch das Lager
 //cout <<*this<<'\t'<< AE<<'\t'<<mt<<' '<<-M<<'\n';
 //   assert(mt==-M);
@@ -163,7 +163,7 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(mengen_t menge,bool instanzen,
   {
    Transaction tr;
    exec sql lock auftragentry in exclusive mode;
-   SQLerror::test("updateStk: lock table auftragentry");
+   SQLerror::test("updateStkDiff: lock table auftragentry");
 
    mengen_t mt=AufEintragBase::updateStkDiff__(menge);
    if(mt!=menge)
@@ -180,18 +180,19 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(mengen_t menge,bool instanzen,
 }
 
 
-void AufEintrag::updateStkDiffInstanz__(mengen_t menge,void (*callback)(void *,st_problems),void* argument) throw(SQLerror)
+void AufEintrag::updateStkDiffInstanz__(mengen_t oldmenge,void (*callback)(void *,st_problems),void* argument) throw(SQLerror)
 {
   std::list<AufEintragZu::st_reflist> KindListeU = AufEintragZu(*this).get_Referenz_list_ungeplant();
  try{
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=KindListeU.begin();i!=KindListeU.end();++i)
    {
-     ArtikelBaum::menge_t faktor = ArtikelBaum(ArtId()).Faktor(i->Art);
-     menge=faktor*menge;
-
+     ArtikelBaum::faktor_t faktor = ArtikelBaum(ArtId()).Faktor(i->Art);
+     AuftragBase::mengen_t menge=faktor*oldmenge;
+//cout <<'\t'<<AufEintragBase(*this) <<' '<<i->AEB<<'\t'<<menge<<' ';
+//cout << faktor <<' '<<menge<<'\n';
      mengen_t mt=AufEintrag(i->AEB).updateStkDiff__(menge,true,callback,argument);
      mengen_t mt2=AufEintragZu(*this).setMengeDiff__(i->AEB,menge);
-//cout << AufEintragBase(*this) <<' '<<i->AEB<<' '<<menge<<' '<<mt2<<' '<<mt<<'\n';
+//cout <<'\t'<<AufEintragBase(*this) <<' '<<i->AEB<<' '<<menge<<' '<<mt2<<' '<<mt<<'\n';
 //     assert(mt2==mengen_t(mt));
      if(mt!=mengen_t(menge)) // es konnte nicht alles bei ungeplanten reduziert werden
       {
@@ -211,8 +212,8 @@ void AufEintrag::updateStkDiffInstanz__(mengen_t menge,void (*callback)(void *,s
          }
 //cout << AufEintragBase(*this)<<"\t"<<i->AEB<<"\tgeplante: "<<KindListeG.size()<<'\n';
 //       assert(!KindListeG.empty()); // wenn Menge nicht bei ungeplanten reduziert werden kann muß es geplante geben
-if(KindListeG.empty()) 
-cout << "Komisch, Menge übrig, aber keine Kinder für "<<i->AEB<<'\n';      
+//if(KindListeG.empty()) 
+//cout << "Komisch, Menge übrig, aber keine Kinder für "<<i->AEB<<'\n';      
        for(std::list<AufEintragZu::st_reflist>::const_iterator j=KindListeG.begin();j!=KindListeG.end();++j)
         {
           AufEintrag AE(j->AEB);
@@ -359,7 +360,6 @@ void AufEintrag::split(mengen_t newmenge, const Petig::Datum &newld,void (*callb
  SQLerror::test("split: lock table auftragentry");
 
  int ZEILENNR=insertNewEntry(newmenge,newld,artikel,entrystatus,true,preis,rabatt);
-// updateStk(bestellt-newmenge,true);
  mengen_t mt=updateStkDiff__(-newmenge,true,callback,argument);
  assert(mt==-newmenge);
  

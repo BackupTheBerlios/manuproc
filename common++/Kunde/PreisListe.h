@@ -1,4 +1,4 @@
-// $Id: PreisListe.h,v 1.3 2002/05/06 13:41:23 christof Exp $
+// $Id: PreisListe.h,v 1.4 2002/05/09 12:46:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,12 +25,15 @@
 #include <Aux/Handles.h>
 #include <Aux/CacheStatic.h>
 #include <BaseObjects/ManuProcEntity.h>
-
+#include <Aux/Waehrung.h>
+#include <Aux/fixedpoint.h>
 
 class PreisListe : public ManuProcEntity
 {
 private:
  std::string name;
+ cP_Waehrung waehrung;
+ fixedpoint<2> bruttosatz;
 
 public:
   PreisListe(ID id) throw(SQLerror);

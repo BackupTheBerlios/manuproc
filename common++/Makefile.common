@@ -1,4 +1,4 @@
-# $Id: Makefile.common,v 1.2 2002/05/06 13:41:22 christof Exp $ 
+# $Id: Makefile.common,v 1.3 2002/05/09 12:45:59 christof Exp $ 
 CXXFLAGS+=-Wall -g -O2 -DNO_SQL -I. $(shell gtkmm-config --cflags)
 ADALIBS=$(shell adabas-config --libs)
 LIBDIR=$(shell petiglibs-config --libdir c++)

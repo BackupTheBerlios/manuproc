@@ -1,4 +1,4 @@
-/* $Id: EntryValueBase.h,v 1.8 2001/12/19 11:02:08 christof Exp $ */
+/* $Id: EntryValueBase.h,v 1.9 2002/05/09 12:46:00 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

@@ -1,4 +1,4 @@
-// $Id: createDynEnums.cc,v 1.2 2002/05/06 13:41:23 christof Exp $
+// $Id: createDynEnums.cc,v 1.3 2002/05/09 12:46:01 christof Exp $
 
 #include <Aux/dbconnect.h>
 #include <Aux/FetchIStream.h>

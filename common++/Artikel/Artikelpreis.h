@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.7 2002/05/06 13:41:22 christof Exp $
+// $Id: Artikelpreis.h,v 1.8 2002/05/09 12:45:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,17 +27,22 @@
 //namespace ArtikelMisc { class ProzessListe; };
 
 class Artikelpreis : public Preis
-{	bool errechnet;
+{	bool errechnet:1;
+        bool gefunden:1;
+        
 	Preis &getPreis()
 	{  return *(Preis*)this; }
 	void setPreis(const Preis &p, bool e=false)
-	{  getPreis()=p; errechnet=e; }
+	{  getPreis()=p; errechnet=e; gefunden=true; }
 public:
 	const Preis &getPreis() const
 	{  return (const Preis &)*this; }
-	Artikelpreis(const Kunde::ID liste,const ArtikelBase &a);
+	Artikelpreis(const cH_Kunde &k,const ArtikelBase &a);
+	Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a);
+
 	bool istErrechnet() const { return errechnet; }
+	bool Gefunden() const { return gefunden; }
 	
-	static void UnCache(const Kunde::ID liste,const ArtikelBase &a);
+	static void UnCache(const PreisListe::ID liste,const ArtikelBase &a);
 };
 #endif

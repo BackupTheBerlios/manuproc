@@ -1,4 +1,4 @@
-// $Id: KettplanKette.h,v 1.7 2002/05/06 13:41:23 christof Exp $
+// $Id: KettplanKette.h,v 1.8 2002/05/09 12:46:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -77,7 +77,7 @@ public:
 	
 	int Kettlaenge() const throw();
 	int Stuecklaenge() const throw();
-	int WebMaschine() const;
+	int WebMaschine() const { return barcoMaschine(); }
 	int defaultKettlaenge() const throw(SQLerror);
 	int defaultStuecklaenge() const throw(SQLerror);
 	float defaultSchussdichte() const throw(SQLerror);

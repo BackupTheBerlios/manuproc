@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.19 2002/05/06 13:41:23 christof Exp $
+// $Id: Kunde.h,v 1.20 2002/05/09 12:46:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -41,8 +41,6 @@ class Kunde : public ManuProcEntity
 {
 
 public:
-// typedef int Nummer;
-// typedef Nummer ID;
 	
  struct st_adresse
   {std::string firma;
@@ -88,35 +86,34 @@ public:
     fixedpoint<2> kundenumsatz; 
     int kalkulation;
     fixedpoint<2> rabatt;
-    bool zeilenrabatt;
+    bool zeilenrabatt:1;
     int skontofrist; 
-    PreisListe::ID preisliste; 
-//    list<PreisListe::ID> sonderpreislisten; 
+
     std::string verein; 
-    bool bankeinzug;
+    bool bankeinzug:1;
     std::string notiz; 
     Petig::Datum stand;
     fixedpoint<2> einzugrabatt;
     fixedpoint<2> skontosatz;    
     st_kddata()
     	:flaeche(0),mitarbeiter(0),planumsatz(0),umsatz(0),kundenumsatz(0),
-    	 kalkulation(0),rabatt(0),zeilenrabatt(false),skontofrist(0),preisliste(0),bankeinzug(false),
+    	 kalkulation(0),rabatt(0),zeilenrabatt(false),skontofrist(0),
+    	 bankeinzug(false),
     	 einzugrabatt(0),skontosatz(0) {}
    };
  typedef struct st_kddata Kundendaten;
 
 
 private:
-//	ID Kundennr;
 	ID KundenGruppennr;
 	ExtBezSchema::ID schema;
 	std::string IDnr;
 	
 	ID rngan;
-        bool rng_an_postfach;
-        bool lieferadresse;
-        bool rechnungsadresse;
-        bool entsorg;
+        bool rng_an_postfach:1;
+        bool lieferadresse:1;
+        bool rechnungsadresse:1;
+        bool entsorg:1;
         
 	Adresse adresse;
 	Bankverbindung bankverb;
@@ -128,13 +125,14 @@ private:
 	friend class Handle<const Kunde>;
 	friend class Handle<Kunde>;
 	static const ID _wir=1;
-//	static const ID _illegal=-1;
 	cP_Waehrung waehrung;
    // ...
 
+    mutable list<PreisListe::ID> preislisten; 
+    mutable bool prlist_valid:1;
+
 public:
 	static const ID default_id=_wir;
-//	static const ID none_id=_illegal;
 	Kunde(ID nr=default_id) throw(SQLerror);
 	static const cH_Kunde newKunde(const Kunde::ID kid, const std::string &firma) throw(SQLerror);
         const std::string LaTeX_von() const;
@@ -176,9 +174,11 @@ public:
         const bool zeilenrabatt() const { return kundendaten.zeilenrabatt; }
         const fixedpoint<2> einzugrabatt() const { return kundendaten.einzugrabatt; }
         const fixedpoint<2> skontosatz() const { return kundendaten.skontosatz; }
-        const PreisListe::ID preisliste() const { return kundendaten.preisliste; }
-        const PreisListe::ID Preisliste() const { return preisliste(); }
-        const list<PreisListe::ID> Sonderpreislisten() const;// {return kundendaten.sonderpreislisten;}
+        const PreisListe::ID preisliste() const;
+        // ja das & ist von mir CP
+        const list<PreisListe::ID> &Preislisten() const;
+        void push_backPreisListe(const PreisListe::ID p) throw(SQLerror);
+        void deletePreisListe(const PreisListe::ID p) throw(SQLerror);
         const int skontofrist() const { return kundendaten.skontofrist; }
         const std::string verein() const { return kundendaten.verein; }
         const bool bankeinzug() const { return kundendaten.bankeinzug; }
@@ -262,7 +262,6 @@ public:
         void update_e(UpdateBitsBank e);
         void update_e(UpdateBitsSonst e);
 
-//	void update() throw(SQLerror);
 	void delete_Kunde(Kunde::ID kid) throw(SQLerror);
         unsigned int nextval();
         
@@ -305,7 +304,6 @@ public:
         void set_kundenumsatz(const fixedpoint<2> s){kundendaten.kundenumsatz = s; }
         void set_umsatz(const fixedpoint<2> s){kundendaten.umsatz = s; }
         void set_verein(const std::string& s){kundendaten.verein = s; }
-        void set_preisliste(const PreisListe::ID s){kundendaten.preisliste = s; }
         void set_skontofrist(const int s){kundendaten.skontofrist = s; }
         void set_einzugrabatt(const fixedpoint<2> s){kundendaten.einzugrabatt = s; }
         void set_skontosatz(const fixedpoint<2> s){kundendaten.skontosatz = s; }        
@@ -316,8 +314,6 @@ public:
         void set_Gegenkonto(const int i) {bankverb.gegenkonto=i;}
         // set_bankkonto machte einen Datenbankzugriff
 
-        void setSonderpreisliste(const list<PreisListe::ID>& VP) const;
-        
         unsigned long int neue_bank_anlegen(const std::string& name, unsigned long int blz);        
         void get_blz_from_bankindex(unsigned int bankindex);
         cP_Waehrung getWaehrung() const { return waehrung; }

@@ -1,4 +1,4 @@
-// $Id: DynEnums_default.h,v 1.3 2002/05/06 13:41:23 christof Exp $
+// $Id: DynEnums_default.h,v 1.4 2002/05/09 12:46:00 christof Exp $
 
 #ifndef MANUPROC_DYNAMICENUMS_H
 #define MANUPROC_DYNAMICENUMS_H

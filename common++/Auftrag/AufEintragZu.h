@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.2 2002/05/06 13:41:22 christof Exp $
+// $Id: AufEintragZu.h,v 1.3 2002/05/09 12:45:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -37,7 +37,10 @@ public:
  struct st_reflist {AufEintragBase AEB;ArtikelBase Art;mengen_t Menge;
          st_reflist(AufEintragBase aeb,ArtikelBase ab,mengen_t menge) 
               :AEB(aeb),Art(ab),Menge(menge){}
-              bool operator<(const st_reflist &b) const {return Art<b.Art;}};
+              bool operator<(const st_reflist &b) const {return Art<b.Art;}
+              bool operator==(const st_reflist &b) const 
+               {return AEB==b.AEB && Art==b.Art && Menge==b.Menge ;}
+              };
 
  enum VonNachDel {Von,Nach,Delete} ;
 

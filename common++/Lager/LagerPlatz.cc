@@ -24,8 +24,9 @@ void LagerPlatz::DarstellungSetzen()
 #if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
   if(instanz == ppsInstanzID::Bandlager) darstellung=eInt;
   else if(instanz == ppsInstanzID::Rohwarenlager) darstellung=eString;
+  else
 #endif  
-  else assert(!"LagerPlatz::DarstellungSetzen: Falsche Instanz");
+       assert(!"LagerPlatz::DarstellungSetzen: Falsche Instanz");
 }
 
 

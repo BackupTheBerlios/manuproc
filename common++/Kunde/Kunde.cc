@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.17 2002/05/06 13:41:23 christof Exp $
+// $Id: Kunde.cc,v 1.18 2002/05/09 12:46:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -144,4 +144,11 @@ const std::string Kunde::LaTeX_an(bool liefer,TelArt telart,
 }
 
 
+
+const PreisListe::ID Kunde::preisliste() const
+{
+ if(!prlist_valid) Preislisten();
+ 
+ return preislisten.empty() ? PreisListe::none_id : preislisten.front();
+}
 

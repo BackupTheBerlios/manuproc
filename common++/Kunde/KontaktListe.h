@@ -1,4 +1,4 @@
-// $Id: KontaktListe.h,v 1.2 2002/05/06 13:41:23 christof Exp $
+// $Id: KontaktListe.h,v 1.3 2002/05/09 12:46:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,17 +34,19 @@ private:
  std::vector<cH_Telefon> kontakt;
  bool val;
 
- void load(const TelArt &ta, ManuProcEntity::ID kundeid,
-			ManuProcEntity::ID personid);
+ void load(ManuProcEntity::ID kundeid, ManuProcEntity::ID personid);
   
 public:
  
  KontaktListe() : val(false){}
- KontaktListe(const TelArt &ta, ManuProcEntity::ID kundeid, ManuProcEntity::ID personid);
- void reload(const TelArt &ta, ManuProcEntity::ID kundeid, ManuProcEntity::ID personid);
+ KontaktListe(ManuProcEntity::ID kundeid, ManuProcEntity::ID personid);
+ void reload(ManuProcEntity::ID kundeid, ManuProcEntity::ID personid);
  std::string get_first_kontakt(const TelArt &ta,ManuProcEntity::ID kundeid, 
  				ManuProcEntity::ID personid);
  bool valid() const { return val; } 
+ 
+ vector<cH_Telefon>::iterator begin() { return kontakt.begin(); }
+ vector<cH_Telefon>::iterator end() { return kontakt.end(); }
  
 };
 

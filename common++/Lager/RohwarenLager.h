@@ -44,6 +44,8 @@ class RohwarenLager : public Lager
    public:
 #if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
       RohwarenLager() : Lager(ppsInstanzID::Rohwarenlager) {}
+#else
+      RohwarenLager() : Lager(ppsInstanz::default_id) {}
 #endif
 
       st_rohlager RL_Inhalt(const LagerPlatz position) const;

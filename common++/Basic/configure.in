@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.15 2002/05/06 13:41:22 christof Exp $
+# $Id: configure.in,v 1.16 2002/05/09 12:46:00 christof Exp $
 
 AC_INIT(src/SQLerror.h)
 AC_CONFIG_AUX_DIR(.)
