@@ -337,9 +337,7 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
 	" on (id=artikelid ";
 
    if(!from_all_lists)
-	query+=" and p.kundennr="+itos(liste)+") ";
-   else
-	query+=") ";
+	query+=" and p.kundennr="+itos(liste);
 
     if(MINDESTMENGE)
 	query+=" and p.mindestmenge="+itos(MINDESTMENGE);
