@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.21 2003/10/23 07:49:31 christof Exp $
+// $Id: db_upgrade.cc,v 1.22 2003/10/31 15:43:01 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -90,6 +90,7 @@ int main(int argc,char *argv[])
   check_column("artikelpreise","mindestmenge","integer");
   check_column("kunden","lieferung_an","integer");
   check_column("extbezschema","textid","integer");
+  check_column("extbezschema","preis_signifikant","boolean");
   check_column("kunden","rng_notiz","text");
   check_column("kunden","auf_notiz","text");
   check_column("kunden","lief_notiz","text");
