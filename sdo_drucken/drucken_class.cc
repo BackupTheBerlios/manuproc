@@ -1465,11 +1465,35 @@ void LR_Abstraktion::page_header(std::ostream &os)
 
    
    if(Typ()==Extern)
-     os << "Ihre Lieferantennummer: ";
+     {os << "Ihre Lieferantennummer: ";
+      os.width(5);os.fill('0');
+      os << kunde_an->Id();
+     } 
    else
      os << "~\\\\\n"<<mld->MLT(MultiL_Dict::TXT_IHREKDNR)<<": ";
-   os.width(5);os.fill('0');
-   os << kunde_an->Id();
+     {
+      os.width(5);os.fill('0');
+      if(kunde_rng->Id()!=kunde_an->Id())
+        {if(Typ()==Rechnung || Typ()==Auftrag)
+           {os << kunde_rng->Id();   
+            os.width(5);os.fill('0');
+            os << "\\tiny ("<<kunde_an->Id()<<")";
+           }
+        else
+           {os << kunde_an->Id();
+            os.width(5);os.fill('0');
+            os << "\\tiny ("<<kunde_rng->Id()<<")";
+           }
+        } 
+      else
+         os << kunde_an->Id();
+     }
+
+
+
+
+
+
    if(Typ()==Extern)
      if(!kunde_an->UnsereKundenNr().empty())
 	os << ", Unsere Kundennummer: "<<kunde_an->UnsereKundenNr();
