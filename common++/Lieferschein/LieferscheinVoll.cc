@@ -1,4 +1,4 @@
-/* $Id: LieferscheinVoll.cc,v 1.14 2004/01/14 20:10:06 jacek Exp $ */
+/* $Id: LieferscheinVoll.cc,v 1.15 2004/02/03 14:06:36 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -39,7 +39,7 @@ LieferscheinVoll::LieferscheinVoll(const cH_ppsInstanz& _instanz,int lid,bool au
 : Lieferschein(_instanz,lid)
 {
   (Query(std::string("select lfrsid, zeile, artikelid, stueck, menge, palette, "
-	  "zusatzinfo, instanz, refauftragid, refzeilennr, lagerid"
+	  "zusatzinfo, instanz, refauftragid, refzeilennr, lagerid, status"
 	  " from lieferscheinentry ly "
 	  " where (instanz,lfrsid) = (?,?) order by ")+
 		  (auforder ? "refauftragid,zeile":"zeile")) 
