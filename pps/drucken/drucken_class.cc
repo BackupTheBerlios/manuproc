@@ -641,7 +641,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
  if (preise_addieren)
  { cH_Kunde kunde_an(KdNr());
    if(!kunde_an->land()->Auslaender())   
-   { os << zur_preisspalte << "+ "<<MWST<<"\\% MwSt& "<< FormatiereTeX(mwstbetrag) <<"\\\\"
+   { os << zur_preisspalte.substr(0,zur_preisspalte.size()-1) << "\\multicolumn{2}{r}{+ "<<MWST<<"\\% MwSt}& "<< FormatiereTeX(mwstbetrag) <<"\\\\"
      	"\\cline{"<<preisspalte<<"-"<<preisspalte<<"}\n";  
      --zeilen_passen_noch;
      os << zur_preisspalte
@@ -1051,6 +1051,9 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
 #endif
   
   os << "\\settowidth{\\breite}{"<<ug<<" "<<mld->MLT(MultiL_Dict::TXT_BEZEICHNUNG)<<"}%\n";
+#ifdef MABELLA_EXTENSIONS
+  os << "\\setlength{\\tabcolsep}{1.5mm}";
+#endif
   os << "\\begin{tabularx}{" << TABW << "cm}{"<<tabcolumn<<"}"<<"\\\\\n";
 
   os << ueberschriften << "\\\\" "\\hline\n";
