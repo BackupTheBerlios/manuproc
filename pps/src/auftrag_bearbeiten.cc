@@ -512,8 +512,9 @@ void auftrag_bearbeiten::andererKunde()
    aufnr_scombo->reset();
    youraufnr_scombo->reset();
  
-   Rabatt_setzen(kunde);
+
 #ifdef MABELLA_EXTENSIONS
+   Rabatt_setzen(rngkd);
    std::string eins_prlist(" and exists (select prlsnr from ku_warenkorb"
    	" where prlsnr=ku_preisliste.prlsnr and kundennr=");
    eins_prlist+=itos(kunde->Rngan())+")";
@@ -526,17 +527,18 @@ void auftrag_bearbeiten::andererKunde()
     bea_WWaehrung->set_History(rngkd->getWaehrung()->get_enum());
     WPreis->set_Waehrung(rngkd->getWaehrung()->get_enum() );
 #else
+   Rabatt_setzen(kunde);
    artikelbox->setExtBezSchemaID(kunde->getSchemaId());
 
     bea_WWaehrung->set_History(kunde->getWaehrung()->get_enum());
     WPreis->set_Waehrung(kunde->getWaehrung()->get_enum() );
 #endif
 
-    preisautomatik->set_active(kunde->Preisautomatik());
+    preisautomatik->set_active(rngkd->Preisautomatik());
     
 #ifdef MABELLA_EXTENSIONS
    if(preisautomatik->get_active())
-     artikelbox->AlleWarenkorb(kunde->Rngan());
+     artikelbox->AlleWarenkorb(rngkd);
    else
      artikelbox->EinWarenkorb(rngkd->preisliste());   
    artikelbox->Einschraenken_b(true);
