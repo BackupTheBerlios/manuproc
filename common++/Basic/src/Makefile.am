@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.20 2002/10/24 14:06:49 thoma Exp $
+# $Id: Makefile.am,v 1.21 2002/11/13 08:13:07 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -34,7 +34,8 @@ BUILT_SOURCES=Misc ostream $(DB_SRCES)
 include_HEADERS=Ausgabe_neu.h CacheStatic.h Cache_Pointer.h Datum.h Handles.h \
 	IOerror.h Kalenderwoche.h Pointer.h Postgres.h Rundungsmacros.h \
 	SQLerror.h SQLerror_postgres.h Transaction.h Zeitpunkt_new.h \
-	dbconnect.h exception.h fixedpoint.h itos.h safemap.h string0.h mystring.h \
+	dbconnect.h exception.h fixedpoint.h itos.h \
+   safemap.h string0.h mystring.h \
 	c++ostream.h mystream.h FetchIStream.h ctime_assert.h \
    EntryValueBase.h EntryValueIntString.h  EntryValueEmptyInt.h \
    	EntryValueDatum.h EmptyInt_4TeX.h Long.h MVC.h

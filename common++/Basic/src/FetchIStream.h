@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.13 2002/10/31 08:29:36 christof Exp $
+// $Id: FetchIStream.h,v 1.14 2002/11/13 08:13:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,7 @@
 #define MPB_FETCHISTREAM_H
 #include <string>
 #include <vector>
+#include <list>
 #include <Misc/SQLerror.h>
 extern "C" {
 #include <libpq-fe.h>
@@ -106,6 +107,7 @@ public:
 	~Query();
 	static void Execute(const std::string &command);
 	template <class T> void FetchArray(std::vector<T> &);
+	template <class T> void FetchArray(std::list<T> &);
 	template <class T> void FetchOne(T &);
 	template <class T> std::vector<T> FetchArray();
 	template <class T> T FetchOne();
@@ -118,6 +120,18 @@ static inline Query &operator>>(Query &q, FetchIStream &s)
 
 template <class T> 
 void Query::FetchArray(std::vector<T> &res)
+{  if (!good()) 
+   { SQLerror::test(__FUNCTION__); FetchIStream::mythrow(SQLerror(__FUNCTION__,-1,"bad result")); }
+   FetchIStream is;
+   while (((*this)>>is).good()) 
+   { T x;
+     is >> x;
+     res.push_back(x);
+   }
+}
+
+template <class T> 
+void Query::FetchArray(std::list<T> &res)
 {  if (!good()) 
    { SQLerror::test(__FUNCTION__); FetchIStream::mythrow(SQLerror(__FUNCTION__,-1,"bad result")); }
    FetchIStream is;

@@ -1,4 +1,4 @@
-/* $Id: MVC.h,v 1.3 2002/10/04 08:23:21 thoma Exp $ */
+/* $Id: MVC.h,v 1.4 2002/11/13 08:13:07 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -33,6 +33,8 @@
 class MVC_Base
 {public:
 	SigC::Signal1<void,void*> changed;
+	SigC::Signal1<void,void*> &signal_changed()
+	{ return changed; }
 };
 
 template <class T>
@@ -81,28 +83,36 @@ public:
 
 template <class T>
  class Model_ref
-{	T &value;
+{	T *value;
+	SigC::Signal1<void,void*> *changed;
 public:
-	SigC::Signal1<void,void*> &changed;
-
 	Model_ref(MVC<T> &model)
-	: value(model.Value()), changed(model.changed) {}
+	: value(&model.Value()), changed(&model.changed) {}
 	Model_ref(T &v, SigC::Signal1<void,void*> &sig)
-	: value(v), changed(sig) {}
+	: value(&v), changed(&sig) {}
+	Model_ref() : value(0), changed(0) {}
 
+	bool valid() const { return value && changed; }
+	SigC::Signal1<void,void*> &signal_changed() const
+	{  return *changed; }
 	// g++ 2.95 does not use this ...
 	operator T() const
-	{  return value; }
+	{  return *value; }
 	// .... so we need these - choose by your taste
 	const T &get_value() const
-	{  return value; }
+	{  return *value; }
 	const T &Value() const
-	{  return value; }
+	{  return *value; }
 	
 	const T &operator=(const T &v)
 	{  value=v;
-	   changed(&value);
-	   return value;
+	   signal_changed()(&value);
+	   return *value;
+	}
+	const Model_ref<T> &operator=(const Model_ref<T> &m)
+	{  value=m.value;
+	   changed=m.changed;
+	   return *this;
 	}
 };
 

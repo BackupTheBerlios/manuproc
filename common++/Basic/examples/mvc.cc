@@ -1,4 +1,4 @@
-// $Id: mvc.cc,v 1.5 2002/11/06 12:02:34 christof Exp $
+// $Id: mvc.cc,v 1.6 2002/11/13 08:13:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,6 +24,7 @@
 
 class View_int : public SigC::Object
 {	Model_ref<int> model;
+	SigC::Connection c;
 	
 	void refresh(void *x)
 	{  if (&model.get_value()==x)
@@ -31,8 +32,14 @@ class View_int : public SigC::Object
 	}
 public:
 	View_int(const Model_ref<int> &m) : model(m)
-	{  m.changed.connect(SigC::slot(this,&View_int::refresh));
+	{  c=m.signal_changed().connect(SigC::slot(this,&View_int::refresh));
 	   std::cout << "View: Initial value " << model.get_value() << '\n';
+	}
+	void operator=(const Model_ref<int> &m2)
+	{  c.disconnect();
+	   model=m2;
+	   std::cout << "View: Model changed, value " << model.get_value() << '\n';
+	   c=model.signal_changed().connect(SigC::slot(this,&View_int::refresh));
 	}
 };
 
@@ -40,15 +47,19 @@ int main()
 {  std::cout << "Model overhead " << sizeof(MVC<int>)-sizeof(int) << " bytes\n";
    std::cout << "View overhead " << sizeof(View_int) << " bytes\n";
 
-   { MVC<int> model(2);
+   { MVC<int> model(2),model2(4);
      View_int view(model);
      model=3;
+     view=model2;
+     model=7;
+     model2=8;
+     view=model;
    }
    
    // now we test a structure with a shared signal
    { MVC<std::pair<int,int> > model(std::pair<int,int>(1,2));
-     View_int view(Model_ref<int>(model.Value().first, model.changed));
-     View_int view2(Model_ref<int>(model.Value().second, model.changed));
+     View_int view(Model_ref<int>(model.Value().first, model.signal_changed()));
+     View_int view2(Model_ref<int>(model.Value().second, model.signal_changed()));
      model.Assign(model.Value().first, 5);
      model.Assign(model.Value().second, 6);
    }

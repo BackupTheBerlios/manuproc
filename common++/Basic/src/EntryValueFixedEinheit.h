@@ -1,4 +1,4 @@
-/* $Id: EntryValueFixedEinheit.h,v 1.1 2002/11/08 09:27:34 christof Exp $ */
+/* $Id: EntryValueFixedEinheit.h,v 1.2 2002/11/13 08:13:07 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -66,8 +66,8 @@ template <int decimals=2,class Ftype=double,class Itype=long>
    class cH_EntryValueFixedEinheit : public cH_EntryValue
 {
 public:
- cH_EntryValueFixedEinheit(const fixedpoint<decimals,Ftype,Itype> &v) 
- : cH_EntryValue(new EntryValueFixedEinheit<decimals,Ftype,Itype>(v)) {}
+ cH_EntryValueFixedEinheit(const fixedpoint<decimals,Ftype,Itype> &v, const std::string &e) 
+ : cH_EntryValue(new EntryValueFixedEinheit<decimals,Ftype,Itype>(v,e)) {}
 };
   
 #endif 
