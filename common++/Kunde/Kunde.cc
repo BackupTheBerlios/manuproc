@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.26 2003/04/11 07:21:30 christof Exp $
+// $Id: Kunde.cc,v 1.27 2003/04/11 09:28:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,7 @@
 #include <Misc/Transaction.h>
 #include <Kunde/Telefon.h>
 #include <DynamicEnums/DynamicEnums.h>
+#include <algorithm> // find on 2.95
 
 std::ostream &operator<<(std::ostream &o,const cH_Kunde &k)
 {return o<<k->firma()<<"("<<k->Id()<<")";}
@@ -169,13 +170,13 @@ bool Kunde::isLieferadresse() const
  std::vector<cH_Kundengruppe>::const_iterator f;
  
  if(!gruppen.size())
-   return (find(gruppen.begin(),gruppen.end(),
+   return (std::find(gruppen.begin(),gruppen.end(),
    		KundengruppeID::Lieferadresse)!=
    		gruppen.end());
   
  load_Gruppen();
    
- return (find(gruppen.begin(),gruppen.end(),
+ return (std::find(gruppen.begin(),gruppen.end(),
  		KundengruppeID::Lieferadresse)!=
    		gruppen.end());
 #else
