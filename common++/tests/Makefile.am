@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.36 2004/06/14 15:44:11 christof Exp $
+# $Id: Makefile.am,v 1.37 2004/06/18 09:10:03 christof Exp $
 
 SUBDIRS=AuftragsTest
 
@@ -65,3 +65,7 @@ $(LINKS):
 	ln -sf ../Basic/examples/$@ .
 
 BUILT_SOURCES=FetchIStream.cc insert_bestellen_bei.cc
+
+schaertest: test_schaerangaben schaerangaben.referenz
+	./test_schaerangaben >schaerangaben.out
+	diff -u schaerangaben.referenz schaerangaben.out

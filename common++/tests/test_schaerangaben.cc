@@ -1,4 +1,4 @@
-// $Id: test_schaerangaben.cc,v 1.5 2004/06/18 07:43:51 christof Exp $
+// $Id: test_schaerangaben.cc,v 1.6 2004/06/18 09:10:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -55,25 +55,44 @@ int main()
 	||artikelbezeichnung(artikelid) from schaertabelle 
 	where schaerdatum ='2004-6-18'; */
    // sort -t/ -k2
+   dump(ArtikelBase(225879),4,25000); // 1350/15/
    dump(ArtikelBase(225518),4,25000); // 1350/25/
    dump(ArtikelBase(225519),4,25000); // 1350/40/
+   dump(ArtikelBase(204806),4,25000); // 1524/40/815
    dump(ArtikelBase(123479),4,30000); // 1810/25/
+   dump(ArtikelBase(125649),6,30000); // 1810/25/755
    dump(ArtikelBase(219567),4,20000); // 1810/40/
    dump(ArtikelBase(219567),6,30000); // 1810/40/
    dump(ArtikelBase(126186),4,30000); // 1810/40/755
+   dump(ArtikelBase(182851),4,20000); // 1810/60/
+   dump(ArtikelBase(127755),6,40000); // 1810/8/
+   dump(ArtikelBase(127755),8,40000); // 1810/8/
+   dump(ArtikelBase(127754),2,30000); // 1812/25/
+   dump(ArtikelBase(127754),4,30000); // 1812/25/
    dump(ArtikelBase(127789),6,20000); // 1820/25/
    dump(ArtikelBase(127786),4,20000); // 1820/40/
    dump(ArtikelBase(127786),6,20000); // 1820/40/
    dump(ArtikelBase(219591),ArtikelBase(219602),1,11000); // 2030/40/260+355
+   dump(ArtikelBase(219020),ArtikelBase(225951),2,20000); // 22556/40/1110+2010
    dump(ArtikelBase(224996),2,16500); // 23103/40/9000
+   dump(ArtikelBase(225534),2,10000); // 23251/25/
+   dump(ArtikelBase(225533),2,25000); // 23251/40/
+   dump(ArtikelBase(225543),2,10000); // 23252/40/
    dump(ArtikelBase(225532),4,12750); // 2391/40/
    dump(ArtikelBase(127798),8,4000); // 2501/25/260
    dump(ArtikelBase(209499),ArtikelBase(212353),1,12000); // 2508/25+40/325+215
+   dump(ArtikelBase(225032),ArtikelBase(225029),1,4500); // 2522/25/260+430
    dump(ArtikelBase(220465),ArtikelBase(225167),1,6000); // 2727/25/265+420
    dump(ArtikelBase(220445),ArtikelBase(225166),1,6000); // 2727/40/265+420
    dump(ArtikelBase(220096),ArtikelBase(220100),1,6000); // 2730/40/310+360
+   dump(ArtikelBase(225021),ArtikelBase(225025),1,10000); // 2737/55/305+430
    dump(ArtikelBase(225186),ArtikelBase(225187),1,10000); // 3038/25/430+435
    dump(ArtikelBase(225193),ArtikelBase(225194),1,10000); // 3038/40/430+435
+   dump(ArtikelBase(225975),ArtikelBase(225974),1,10000); // 3039/25/300+420
+   dump(ArtikelBase(224768),ArtikelBase(224774),1,6500); // 3040/35/360+430
+   dump(ArtikelBase(224969),ArtikelBase(224967),1,6500); // 3040/75/360+420
+   dump(ArtikelBase(224479),3,25000); // 3041/25/
+   dump(ArtikelBase(224481),3,25000); // 3041/40/
    dump(ArtikelBase(225168),ArtikelBase(225169),1,10000); // 3042/40/300+310
    dump(ArtikelBase(123618),4,25000); // 375/40/
    dump(ArtikelBase(226121),2,14200); // 4409/40/20
@@ -82,10 +101,16 @@ int main()
    dump(ArtikelBase(225661),4,10000); // 4872/15/
    dump(ArtikelBase(225661),6,10000); // 4872/15/
    dump(ArtikelBase(210964),6,30000); // 4972/10/
+   dump(ArtikelBase(210968),6,22000); // 4972/25/
    dump(ArtikelBase(210964),10,30000); // 4972/3/
    dump(ArtikelBase(210964),6,30000); // 4972/3/
+   dump(ArtikelBase(210969),2,20000); // 4972/40/
+   dump(ArtikelBase(210969),4,20000); // 4972/40/
+   dump(ArtikelBase(210965),10,30000); // 4972/6/
    dump(ArtikelBase(210963),4,25000); // 5419/40/15
    dump(ArtikelBase(210970),4,28000); // 5434/40/15
-//?   dump(ArtikelBase(219567),4,30000); // 1810/40/
+   dump(ArtikelBase(225881),4,22000); // 7278/25/24
+   dump(ArtikelBase(225880),2,23000); // 7278/40/24
+   dump(ArtikelBase(225880),4,23000); // 7278/40/24
    return 0;
 }
