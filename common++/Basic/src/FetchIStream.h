@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.57 2004/09/24 15:24:18 christof Exp $
+// $Id: FetchIStream.h,v 1.58 2004/09/24 15:27:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -248,6 +248,7 @@ public:
         typedef FetchIStream Row;
 	struct check100 { check100(){} };
 	typedef Row::check_eol check_eol;
+	typedef SQLerror Error;
 
 	Query(const std::string &command);
 	~Query();
