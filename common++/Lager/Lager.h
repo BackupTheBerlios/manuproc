@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.22 2003/07/15 15:01:15 jacek Exp $ */
+/* $Id: Lager.h,v 1.23 2003/07/16 06:31:08 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -95,6 +95,8 @@ class LagerBase : public cH_ppsInstanz
      // produziert bedeutet, dass der Artikel hergestellt wurde 
      // und nicht irgendwo "gefunden" (z.B. Inventur)
      void rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid,bool produziert) const;
+     
+     // entspricht raus_aus_lager mit negativer Menge
      void wiedereinlagern(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const;
      // fuer_auftrag bedeutet, dass der Artikel für einen Auftrag verwendet wurde
      // und nicht verschwunden ist (Entnahme außer der Reihe/Inventur)

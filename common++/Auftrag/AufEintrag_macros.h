@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_macros.h,v 1.11 2003/06/23 11:45:07 christof Exp $ */
+/* $Id: AufEintrag_macros.h,v 1.12 2003/07/16 06:31:08 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,7 @@
 
 #include <Auftrag/AufEintragZu.h>
 #include <Misc/TraceNV.h>
+#include <typeinfo>
 
 // one might do this with inheritance instead of templates
 
@@ -38,7 +39,7 @@ template <class T>
  bool distribute_children(const AufEintragBase &startAEB,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, const T &callee)
-{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,article);
+{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,article,typeid(callee).name());
    AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(startAEB));
    ArtikelBaum AE_artbaum(article);
    for(AufEintragZu::map_t::const_iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var)
@@ -75,7 +76,7 @@ template <class T>
 template <class T>
  AuftragBase::mengen_t distribute_parents(const AufEintragBase &startAEB, AuftragBase::mengen_t menge,
  			const T &callee)
-{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge);
+{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,typeid(callee).name());
    assert(menge>0);
    AufEintragZu::list_t Eltern =
         AufEintragZu::get_Referenz_list(startAEB,AufEintragZu::list_eltern,
@@ -95,7 +96,7 @@ template <class T>
 template <class T>
  AuftragBase::mengen_t auf_positionen_verteilen(const SQLFullAuftragSelector &selector,
  		AuftragBase::mengen_t menge, const T &callee)
-{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,menge);
+{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,menge,typeid(callee).name());
    SelectedFullAufList auftraglist=SelectedFullAufList(selector);
 
   AuftragBase::mengen_t m=menge;

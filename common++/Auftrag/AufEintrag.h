@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.52 2003/07/07 10:51:03 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.53 2003/07/16 06:31:08 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -255,6 +255,9 @@ public:
  void ProduziertNG(mengen_t M);
 //internal ?
  void ProduziertNG(unsigned uid, mengen_t M,
+		const AufEintragBase &elter_alt,
+		const AufEintragBase &elter_neu);
+ void Einlagern2(unsigned uid, mengen_t M,
 		const AufEintragBase &elter_alt,
 		const AufEintragBase &elter_neu);
  // neuen (geschlossenen) 1er erzeugen (völlig unverzeigert)

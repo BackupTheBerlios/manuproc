@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.74 2003/07/15 11:11:11 christof Exp $
+// $Id: AufEintrag.cc,v 1.75 2003/07/16 06:31:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -248,7 +248,7 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
    return neuerAEB;
 }
 
-// etwas bestelltes wird eingelagert -> produziert markieren & vormerken (?)
+// etwas bestelltes wird produziert
 namespace { class MichProduzieren
 {	AufEintrag &mythis;
 	unsigned uid;
@@ -259,6 +259,19 @@ public:
 	   return m;
 	}
 	MichProduzieren(AufEintrag &_mythis) : mythis(_mythis), uid(getuid()) {}
+};}
+
+// etwas bestelltes wird eingelagert -> produziert markieren & vormerken (?)
+namespace { class MichEinlagern
+{	AufEintrag &mythis;
+	unsigned uid;
+public:
+	AuftragBase::mengen_t operator()(const AufEintragBase &elter,AuftragBase::mengen_t m) const
+	{  if (elter.Id()==AuftragBase::dispo_auftrag_id) return 0;
+	   mythis.Einlagern2(uid,m,elter,elter);
+	   return m;
+	}
+	MichEinlagern(AufEintrag &_mythis) : mythis(_mythis), uid(getuid()) {}
 };}
 
 // etwas bestelltes wird eingelagert -> abbestellen & vormerken
@@ -338,7 +351,7 @@ public:
 	AuftragBase::mengen_t operator()(AufEintrag &ae, AuftragBase::mengen_t m) const
 	{  AuftragBase::mengen_t rest;
 	   if (!abbestellen)
-	      rest=distribute_parents(ae,m,MichProduzieren(ae));
+	      rest=distribute_parents(ae,m,MichEinlagern(ae));
 	   else
 	      rest=distribute_parents(ae,m,AbbestellenUndVormerken(ae));
            return m-rest;
@@ -385,6 +398,8 @@ void AufEintrag::Einlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase
   MengeVormerken(instanz,artikel,menge,!produziert);
 }
 
+// eigentlich auslagern mit negativer Menge ???
+// allerdings: Reihenfolge ist umgekehrt
 void AufEintrag::WiederEinlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
          mengen_t menge,const ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
@@ -400,8 +415,24 @@ void AufEintrag::WiederEinlagern(const int uid,cH_ppsInstanz instanz,const Artik
   {  mengen_t M=min(i->getGeliefert(),menge);
      if (!M) continue;
 
-     i->ProduziertNG(-M);
-
+     // das muss einfacher gehen ...
+     //i->ProduziertNG(-M);
+     assert(i->Id()==plan_auftrag_id);
+     i->abschreiben(-M);
+     // Eltern des 0ers sind Eltern des 1ers, allerdings waren dessen 
+     // Zuordnungen 0
+     // Menge nachbestellen
+      AuftragBase zielauftrag(i->Instanz(),ungeplante_id);
+      AufEintragBase neuerAEB(zielauftrag,
+         	zielauftrag.PassendeZeile(i->getLieferdatum(),artikel,OPEN,uid));
+      AufEintrag ae(neuerAEB);
+      ae.MengeAendern(uid,M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+     // Menge wird direkt neu verplant (evtl. wieder abbestellt)
+     i->MengeAendern(uid,-M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+#if 0     
+     // passiert das jemals ohne dass es schon so ist?
+     if (!i->getRestStk()) i->setStatus(AufStatVal(CLOSED),uid,true);
+#endif
      menge-=M;
      if(!menge) break;
   }
@@ -966,26 +997,24 @@ void AufEintrag::ProduziertNG(unsigned uid, mengen_t M,
      }
    }
    else
-   {  if (M<0) assert(Id()==plan_auftrag_id);
-      if (M<0) /* && !Instanz()->LagerInstanz())*/ abschreiben(M);
-      // Rekursion bedeutet hier: freigewordene Menge neu verplanen
-      bool rek=Instanz()->LagerInstanz() && M<0;
-      MengeAendern(uid,M<0 ? M : -M,rek,M>0 ? elter_alt : AufEintragBase(),
-      				ManuProC::Auftrag::r_Produziert);
+   {  if (M<0) 
+      {  assert(Id()==plan_auftrag_id);
+         abschreiben(M);
+      }
+      MengeAendern(uid,-M.abs(),false,M>0 ? elter_alt : AufEintragBase(),
+      		ManuProC::Auftrag::r_Produziert);
       if (M<0 && !getRestStk()) setStatus(AufStatVal(CLOSED),uid,true);
-      if (M>0 || !Instanz()->LagerInstanz())
-      {  AuftragBase zielauftrag(Instanz(),M>=0?plan_auftrag_id:ungeplante_id);
-         AufStatVal st=(Instanz()->LagerInstanz() || M<0) ? OPEN : CLOSED;
-         neuerAEB=AufEintragBase(zielauftrag,
-         		zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),st,uid));
-         AufEintrag ae(neuerAEB);
-         ae.MengeAendern(uid,M<0 ? -M : M,false,
-         		M<0 || Instanz()->LagerInstanz()?elter_neu:AufEintragBase(),
-         		ManuProC::Auftrag::r_Produziert);
-         if (M>0 && !Instanz()->LagerInstanz())
-         {  ae.abschreiben(M);
-            AufEintragZu(elter_neu).Neu(neuerAEB,0);
-         }
+      AuftragBase zielauftrag(Instanz(),M>=0?plan_auftrag_id:ungeplante_id);
+      AufStatVal st=(M<0) ? OPEN : CLOSED;
+      neuerAEB=AufEintragBase(zielauftrag,
+         	zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),st,uid));
+      AufEintrag ae(neuerAEB);
+      ae.MengeAendern(uid,M.abs(),false,
+         	M<0 ?elter_neu:AufEintragBase(),
+         	ManuProC::Auftrag::r_Produziert);
+      if (M>0)
+      {  ae.abschreiben(M);
+         AufEintragZu(elter_neu).Neu(neuerAEB,0);
       }
    }
    ManuProC::Trace(trace_channel, "Kinder bearbeiten");
@@ -1002,6 +1031,43 @@ void AufEintrag::ProduziertNG(unsigned uid, mengen_t M,
    {  assert(Instanz()->ProduziertSelbst()); // sonst Endlosrekursion
       ManuProC::Trace(trace_channel, "AutomatischEinlagern");
       LagerBase(EI).rein_ins_lager(Artikel(),M,uid,true);
+   }
+}
+
+// ehemals von ProduziertNG kopiert ... aber anders?
+void AufEintrag::Einlagern2(unsigned uid, mengen_t M,
+		const AufEintragBase &elter_alt,
+		const AufEintragBase &elter_neu)
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,
+			NV("this",*this),M,NV("alt",elter_alt),NV("neu",elter_neu));
+   if (!M) return;		
+   assert(Instanz()->LagerInstanz());
+   assert(Id()!=dispo_auftrag_id && Id()<handplan_auftrag_id);
+   AufEintragBase neuerAEB=*this;
+   
+   if (M<0) 
+   {  assert(Id()==plan_auftrag_id);
+//      abschreiben(M); // dat kann nicht richtig sein ...
+      // Rekursion bedeutet hier: freigewordene Menge neu verplanen
+      MengeAendern(uid,M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+      if (!getRestStk()) setStatus(AufStatVal(CLOSED),uid,true);
+   }
+   else // M>0
+   {  MengeAendern(uid,-M,false,elter_alt,ManuProC::Auftrag::r_Produziert);
+      AuftragBase zielauftrag(Instanz(),plan_auftrag_id);
+      neuerAEB=AufEintragBase(zielauftrag,
+         		zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),OPEN,uid));
+      AufEintrag ae(neuerAEB);
+      ae.MengeAendern(uid,M,false,elter_neu,ManuProC::Auftrag::r_Produziert);
+   }
+
+   ManuProC::Trace(trace_channel, "Kinder bearbeiten");
+   // Kinder bearbeiten
+   distribute_children(*this,M,Artikel(),ProduziertNG_cb2(uid,*this,neuerAEB));
+   // bei ProduziertSelbst hilft obiges nicht allein (keine Pfeile nach unten)
+   if (M<0)
+   {  AufEintrag neuerAE=neuerAEB;
+      distribute_children(neuerAE,M,Artikel(),ProduziertRueckgaengig2(uid,neuerAE));
    }
 }
 
