@@ -7,7 +7,7 @@
 
 namespace ManuProC {
  namespace DynamicDescriptions {
-  namespace ArtikelTyp {
+  namespace ArtikelTyp_Attributes {
    std::string attrcolumns[] = {
    };
   }
