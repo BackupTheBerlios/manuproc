@@ -516,9 +516,9 @@ void auftrag_main::set_column_titles_of_simple_tree()
  ct.push_back("L.P.");
  ct.push_back("Ver.");
  ct.push_back("Letzte Lief.");
+ ct.push_back("Abteilungen");
  ct.push_back("offene Menge (Rohware)");
  ct.push_back("offene Menge");
- ct.push_back("Abteilungen");
 #ifdef PETIG_EXTENSIONS
  // einige kleine Korrekturen (ich glaube nicht ganz, dass obiges irgendwo stimmt
  ct[METER]="offene Meter";
@@ -570,7 +570,12 @@ void auftrag_main::stop_idle()
 }
 
 gint auftrag_main::idle_fill()
-{  return 0;
+{ if (idle_iter!=allaufids->aufidliste.end())
+  {  std::cerr << *idle_iter << '\n';
+     ++idle_iter;
+     return idle_iter!=allaufids->aufidliste.end();
+  }
+  return 0;
 }
 
 void auftrag_main::on_node_selected(const TreeRow &node)

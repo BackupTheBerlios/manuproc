@@ -153,7 +153,7 @@ private:
 public:
   // Spaltenbezeichnungen
    enum {KUNDE=0,A1,A2,A3,A4,LIEFERDATUM,AUFTRAG,LETZEPLANINSTANZ,
-         VERARBEITUNG,LETZTELIEFERUNG,METER,STUECK,INSTANZEN};
+         VERARBEITUNG,LETZTELIEFERUNG,INSTANZEN,METER,STUECK};
 
  cH_ppsInstanz Instanz() const {return instanz;}
  bool interneNamen_bool() const { return interne_namen_bool; }
