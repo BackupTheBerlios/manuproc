@@ -1,4 +1,4 @@
-// $Id: Transaction.pgcc,v 1.7 2002/10/24 14:06:49 thoma Exp $
+// $Id: Transaction.pgcc,v 1.8 2002/12/04 11:32:20 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -54,8 +54,11 @@ void Transaction::open(const std::string &_connection) throw(SQLerror)
       exec sql at :conn begin work;
    }
    else exec sql begin work;
+#ifdef ECPG_WARNING_IN_TRANSACTION
+   SQLerror::test(__FILELINE__"Transaction::open",ECPG_WARNING_IN_TRANSACTION);
+#else
    SQLerror::test(__FILELINE__"Transaction::open",ECPG_NOTICE_IN_TRANSACTION);
-   
+#endif
    open_connections.push_back(connection);
    
 #ifdef USE_SPEED_HACK   

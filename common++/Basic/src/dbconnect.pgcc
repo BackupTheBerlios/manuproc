@@ -1,4 +1,4 @@
-// $Id: dbconnect.pgcc,v 1.11 2002/06/27 07:26:10 christof Exp $
+// $Id: dbconnect.pgcc,v 1.12 2002/12/04 11:32:20 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,25 +28,32 @@
 extern "C" { int snprintf(char *str, size_t size, const  char  *format, ...); }
 #endif
 
+ManuProC::Connection::Connection(const std::string &h="", const std::string &d="", const std::string &u="",const std::string &n="")
+        	: host(h), dbase(d), user(u), name(n)
+{
+   std::string host_=DEFAULT_DBHOST;
+   std::string db_=DEFAULT_DB;
+
+   char *h_opt(getenv("PGHOST"));
+   char *d_opt(getenv("PGDATABASE"));
+   if(h_opt) host_=h_opt;
+   if(d_opt) db_=d_opt;
+
+   if(host.empty())  host=host_;
+   if(dbase.empty()) dbase=db_;
+}        	
+
+
+
 void ManuProC::dbconnect(const Connection &c) throw(SQLerror)
 {  exec sql begin declare section;
    char connstr[80];
    char NAME[80];
    exec sql end declare section;
 
-   std::string host;
-   std::string db;
+   std::string host=c.Host();
+   std::string db=c.Dbase();
 
-   host=DEFAULT_DBHOST;
-   db=DEFAULT_DB;
-
-   char *h_opt(getenv("PGHOST"));
-   char *d_opt(getenv("PGDATABASE"));
-   if(h_opt) host=h_opt;
-   if(d_opt) db=d_opt;
-
-   if(!c.Host().empty()) host=c.Host();
-   if(!c.Dbase().empty()) db=c.Dbase();
    if(!c.Name().empty()) strncpy0(NAME,c.Name().c_str(),sizeof NAME);
    else strncpy0(NAME,db.c_str(),sizeof NAME);
 

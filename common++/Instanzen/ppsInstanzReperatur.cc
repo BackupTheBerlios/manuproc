@@ -28,50 +28,76 @@
 #include <Aux/Transaction.h>
 
 
-void ppsInstanz::Reparatur_0_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
+bool ppsInstanz::Reparatur_0_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
 {
-   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
-  Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::plan_auftrag_id,false,ungeplant);
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+  return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::plan_auftrag_id,false,ez_ungeplant);
 }
 
-void ppsInstanz::Reparatur_2_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
+bool ppsInstanz::Reparatur_2_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
 {
-   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
-  if(LagerInstanz()) {cout << "Sinnlos für LagerInstanz\n"; return;}
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+  if(LagerInstanz()) {cout << "Sinnlos für LagerInstanz\n"; return true;}
   else
-     Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::dispo_auftrag_id,true,geplant);
-// TODO: Holt der auch die 1er? Ja
-// Was ist mit PlanungsInstanzen => Kinder weiterreichen
-
+     return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::dispo_auftrag_id,true,ez_geplant);
 }
 
-void ppsInstanz::Reparatur_Zuordnungen(const int uid,const bool analyse_only,
+bool ppsInstanz::Reparatur_2_ZuSumme_1Rest(const int uid,const bool analyse_only) const throw(SQLerror)
+{
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+  if(LagerInstanz()) {cout << "Sinnlos für LagerInstanz\n"; return true;}
+  else
+     Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::plan_auftrag_id,false,ez_dispo);
+}
+
+
+bool ppsInstanz::Reparatur_Zuordnungen(const int uid,const bool analyse_only,
    const AuftragBase::ID auftragid,const bool kinder,const e_zumode zumode) const throw(SQLerror)
 {
+   bool alles_ok=true;
    ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
    assert(Id() != ppsInstanzID::Kundenauftraege);
    SQLFullAuftragSelector sel1er= SQLFullAuftragSelector::sel_Status(Id(),OPEN,auftragid);
    SelectedFullAufList AL1(sel1er);
-cout << "Size: "<< AL1.size()<<'\t'<<'\n';
    for(SelectedFullAufList::iterator i=AL1.begin();i!=AL1.end();++i)
     {
       AuftragBase::mengen_t Msum=0;
       std::list<AufEintragZu::st_reflist> L;
       switch (zumode) {
-         case ungeplant: L=AufEintragZu(*i).get_Referenz_list_ungeplant(kinder); break;
-         case geplant:  L=AufEintragZu(*i).get_Referenz_list_geplant(kinder); break;
+         case ez_ungeplant: L=AufEintragZu(*i).get_Referenz_list_ungeplant(kinder); break;
+         case ez_geplant:   L=AufEintragZu(*i).get_Referenz_list_geplant(kinder); break;
+         case ez_dispo:     L=AufEintragZu(*i).get_Referenz_list_dispo(kinder); break;
         }
       for(std::list<AufEintragZu::st_reflist>::const_iterator j=L.begin();j!=L.end();++j)
         {
           Msum+=j->Menge;
-cout << *i<<'\t'<<j->AEB<<'\t'<<j->Menge<<'\t'<<Msum<<'\n';
+//cout << *i<<'\t'<<j->AEB<<'\t'<<j->Menge<<'\t'<<Msum<<'\n';
         }
-      if(Msum!=i->getStueck())
-       {
-         if(analyse_only) std::cout << "Zuord.-Summen ("<<Msum<<") stimmen nicht ("<<i->getStueck()<<") für "<<*i<<'\n';
-         else assert(!"nicht implementiert\n");
+      switch (zumode) {
+         case ez_ungeplant:
+         case ez_geplant:
+          {
+           if(Msum!=i->getStueck())
+            { 
+             alles_ok=false;
+             if(analyse_only) std::cout << "Analyse: Zuord.-Summen ("<<Msum<<") stimmen nicht ("<<i->getStueck()<<") für "<<*i<<'\n';
+             else assert(!"nicht implementiert\n");
+             break;         
+            }
+          }
+        case ez_dispo:
+          {
+           if(Msum>i->getRestStk())
+            { 
+             alles_ok=false;
+             if(analyse_only) std::cout << "Analyse: Zuord.-Summen ("<<Msum<<") sind größer als ("<<i->getRestStk()<<") für "<<*i<<'\n';
+             else assert(!"nicht implementiert\n");
+             break;         
+            }
+          }
        }
     }
+ return alles_ok;
 } 
 
 ////////////////////////////////////////////////////////////////////////////

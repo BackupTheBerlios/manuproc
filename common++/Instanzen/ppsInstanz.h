@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.15 2002/12/03 13:54:17 thoma Exp $
+// $Id: ppsInstanz.h,v 1.16 2002/12/04 11:32:20 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -156,8 +156,8 @@ public:
           const std::vector<ManuProcEntity<>::ID> &Vauftragid,
           const int Wert,const std::string &was,const bool analyse_only) const throw(SQLerror);
 
-      enum e_zumode{ungeplant,geplant};
-      void Reparatur_Zuordnungen(const int uid,const bool analyse_only,
+      enum e_zumode{ez_ungeplant,ez_geplant,ez_dispo};
+      bool Reparatur_Zuordnungen(const int uid,const bool analyse_only,
          const  ManuProcEntity<>::ID auftragid,const bool kinder,const e_zumode zumode) const throw(SQLerror);
 
  public:
@@ -167,10 +167,11 @@ public:
       void Reparatur_0er_und_2er(const int uid,const bool analyse_only) const throw(SQLerror);
       void Reparatur_Konsistenz(const bool analyse_only) const throw(SQLerror);
       // Summe aller 0er-Zuordnungen zu einem 1|20000 = Menge des 1|20000
-      void Reparatur_0_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror);
+      bool Reparatur_0_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror);
       // Summe aller 2er-Zuordnungen zu einem 1|20000 = Menge des 1|20000
-      void Reparatur_2_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror);
-      
+      bool Reparatur_2_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror);
+      // Summe aller 2er-Zuordnungen zu einem 1|20000 <= REST-Menge des 1|20000
+      bool Reparatur_2_ZuSumme_1Rest(const int uid,const bool analyse_only) const throw(SQLerror);
 };
 
 

@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.16 2002/12/04 11:32:20 thoma Exp $
+// $Id: adjust_store.cc,v 1.17 2002/12/04 11:34:29 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -120,7 +120,7 @@ int main(int argc,char *argv[])
   ManuProC::PrintUncaughtExceptions();
   bool alles_ok=false;
   try{
-    ManuProC::Connection conn();
+    ManuProC::Connection conn;
     conn.setHost(dbhost);
     conn.setDbase(database);
     ManuProC::dbconnect(conn);

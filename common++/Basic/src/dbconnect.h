@@ -1,4 +1,4 @@
-// $Id: dbconnect.h,v 1.8 2002/06/27 07:26:10 christof Exp $
+// $Id: dbconnect.h,v 1.9 2002/12/04 11:32:20 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -29,16 +29,15 @@ namespace ManuProC
     std::string name;
     
     public:
-    Connection(const std::string &h="", const std::string &d="", const std::string &u="",const std::string &n="")
-        	: host(h), dbase(d), user(u), name(n)
-        	{}
+         Connection(const std::string &h="", const std::string &d="", const std::string &u="",const std::string &n="");
+        	
         	
     const std::string Host() const { return host; }
     const std::string Dbase() const { return dbase; }
     const std::string User() const { return user; }
     const std::string Name() const { return name; }
-    void setHost(const std::string &h) { host=h; }
-    void setDbase(const std::string &d) { dbase=d; }
+    void setHost(const std::string &h) { if(!h.empty()) host=h; }
+    void setDbase(const std::string &d) { if(!d.empty()) dbase=d; }
     void setUser(const std::string &u) { user=u; }
     void setName(const std::string &n) { name=n; }
     // alternative API:
