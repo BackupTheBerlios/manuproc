@@ -13,12 +13,14 @@ auftrag_drucken_SOURCES = \
    $(BUILT_SOURCES) \
    auftrag_drucken.cc \
    drucken.cc \
-   drucken_class.cc 
+   drucken_class.cc \
+   multi_lang.cc
 
 
 noinst_HEADERS = \
    drucken.hh \
-   drucken_class.hh
+   drucken_class.hh \
+   multi_lang.h
 
 CXXFLAGS = @CXXFLAGS@ -DUSE_POSTGRES @KOMPONENTEN_INCLUDES@
 

@@ -5,6 +5,9 @@
 
 #include<Aux/Datum.h>
 #include<string>
+#include "multi_lang.h"
+
+extern MultiL_Dict *mld;
 
 class LR_Base
 {
@@ -19,14 +22,14 @@ public:
 			{case Lieferschein : return std::string("Lieferschein"); break;
 			case Rechnung : 
 				if(gut) return std::string("Gutschrift");
-				else return std::string("Rechnung"); break;
+				else return mld->MLT(TXT_RECHNUNG); break;
 			case Auftrag : 
 			     if(rueckstand)
 			       {ManuProC::Datum heute=ManuProC::Datum().today();
 			        return std::string("~\\\\Rückstand am ")+heute.c_str()+" zum Auftrag ";	
 				}
 			     else
-			     	return std::string("Auftrag");
+			     	return mld->MLT(TXT_AUFTRAG);
 			     break;     
 			case Intern : return std::string("Intern"); break;
 			case Extern : return std::string("Bestellung \\small Nr."); break;

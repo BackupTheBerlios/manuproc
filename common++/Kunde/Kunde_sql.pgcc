@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.28 2002/12/18 15:24:38 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.29 2003/01/02 17:36:37 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -639,6 +639,28 @@ void Kunde::showEAN(bool ea) throw(SQLerror)
 
  tr.commit();
 }
+
+
+int Kunde::Sprache() const throw(SQLerror)
+{
+ exec sql begin declare section;
+ int SPRID;
+ char *LKZ;
+ exec sql end declare section;
+
+ LKZ=(char*)land()->LKZ().c_str();
+
+ exec sql select sprid into :SPRID from lkz_sprache
+	where lkz = :LKZ;
+ SQLerror::test(__FILELINE__,100);
+
+ if(sqlca.sqlcode)
+   return 1;
+
+ return SPRID;
+}
+
+
 
 #ifdef MABELLA_EXTENSIONS
 std::string Kunde::getIBAN_Code(bool force) const

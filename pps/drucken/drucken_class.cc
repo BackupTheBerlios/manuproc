@@ -25,6 +25,7 @@
 #include <Kunde/TelefonArt.h>
 #include <pwd.h>
 #include <unistd.h>
+#include "multi_lang.h"
 
 #define TABW	"18"
 
@@ -33,6 +34,8 @@
 #define ENTSSATZ	0.002
 
 bool ents_flag=false;
+
+MultiL_Dict *mld;
 
 void LR_Abstraktion::calc_all(cH_Kunde k)
 {
@@ -128,11 +131,12 @@ void LR_Abstraktion::drucken_header(std::ostream &os)
 	os << "\\vspace*{1.2cm}%\n";
 #endif
 
+  cH_Kunde kunde_an(KdNr());
+
 #ifdef MABELLA_EXTENSIONS 
 if(!firmenpapier)
    os << "\\raisebox{0cm}[0pt][0pt]{\\makebox[0pt][l]{\\kern+140pt\\psfig{file=/usr/share/mabella/logo.eps}}}\n";
 
-   cH_Kunde kunde_an(KdNr());
    if(kunde_an->verein().size())
      os << "\\raisebox{-120pt}[0pt][0pt]{%%\n"
          "\\makebox[0pt][s]{%%\n"
@@ -141,6 +145,11 @@ if(!firmenpapier)
          "{\\color{lgray}" << string2TeX(kunde_an->verein()) << "}%%\n"
          "}}}}%%\\\\\n";
 #endif
+
+ if(! kunde_an->isRechnungsadresse())
+   kunde_an = cH_Kunde(kunde_an->Rngan());
+    
+ mld=new MultiL_Dict(kunde_an->Sprache());
 
 }
 

@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.14 2002/11/13 08:13:07 christof Exp $
+// $Id: FetchIStream.h,v 1.15 2003/01/02 17:36:37 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <map>
 #include <Misc/SQLerror.h>
 extern "C" {
 #include <libpq-fe.h>
@@ -108,6 +109,7 @@ public:
 	static void Execute(const std::string &command);
 	template <class T> void FetchArray(std::vector<T> &);
 	template <class T> void FetchArray(std::list<T> &);
+	template <class T1, class T2> void FetchArray(std::map<T1,T2> &);	
 	template <class T> void FetchOne(T &);
 	template <class T> std::vector<T> FetchArray();
 	template <class T> T FetchOne();
@@ -127,6 +129,19 @@ void Query::FetchArray(std::vector<T> &res)
    { T x;
      is >> x;
      res.push_back(x);
+   }
+}
+
+template <class T1, class T2> 
+void Query::FetchArray(std::map<T1,T2> &res)
+{  if (!good()) 
+   { SQLerror::test(__FUNCTION__); FetchIStream::mythrow(SQLerror(__FUNCTION__,-1,"bad result")); }
+   FetchIStream is;
+   while (((*this)>>is).good()) 
+   { T1 x;
+     T2 y;
+     is >> x >> y;
+     res[x]=y;
    }
 }
 
