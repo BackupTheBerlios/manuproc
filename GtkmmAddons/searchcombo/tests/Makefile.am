@@ -1,6 +1,6 @@
-# $Id: Makefile.am,v 1.1 2003/01/06 15:07:32 christof Exp $
+# $Id: Makefile.am,v 1.2 2003/04/07 16:28:13 christof Exp $
 
-noinst_PROGRAMS = gsc_test
+noinst_PROGRAMS = gsc_test db_test
 
 INCLUDES = -I../src @GTK_CFLAGS@
 
@@ -11,4 +11,8 @@ LIBS = $(top_srcdir)/src/libGtkmmAddonsWidgets.a @GTK_LIBS@
 gsc_test_DEPENDENCIES = $(top_srcdir)/src/libGtkmmAddonsWidgets.a
 
 gsc_test_SOURCES = gsc_test.c
+
+db_test_DEPENDENCIES = $(top_srcdir)/src/libGtkmmAddonsWidgets.a
+
+db_test_SOURCES = db_test.c
 
