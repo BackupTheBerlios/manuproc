@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.42 2004/02/09 15:14:29 jacek Exp $ */
+/* $Id: Lieferschein.cc,v 1.43 2004/02/10 10:53:33 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -178,12 +178,16 @@ LieferscheinBase::mengen_t Lieferschein::StandardLaenge(const ArtikelBase artike
 #ifdef DPD_LIEFERSCHEINE
 const ManuProC::Datum Lieferschein::getMaxZahlziel() const throw(SQLerror)
 {
- return (Query("SELECT max(a.zahlungsziel) from "
+ ManuProC::Datum d;
+
+ Query("SELECT max(a.zahlungsziel) from "
  	"auftrag a join lieferscheinentry e "
    	"on (refauftragid=auftragid and a.instanz=e.instanz) "
    	"where (e.instanz,e.lfrsid)=(?,?)")
    	<< Instanz()->Id() << Id()
-   	).FetchOneMap<ManuProC::Datum>();
+	>> FetchIStream::MapNull(d,ManuProC::Datum());
+
+ return d;
 }
 #endif
 
