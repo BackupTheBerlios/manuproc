@@ -1,4 +1,4 @@
-// $Id: IntStringBox.hh,v 1.8 2003/09/30 15:59:19 jacek Exp $
+// $Id: IntStringBox.hh,v 1.9 2004/01/19 09:57:10 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -79,6 +79,6 @@ private:
 	SigC::Signal0<void> reset_signal;
 public:
 	SigC::Signal0<void> &signal_activate() { return activate; }
-	SigC::Signal0<void> &signal_reset_signal() { return activate; }
+	SigC::Signal0<void> &signal_reset_signal() { return reset_signal; }
 };
 #endif
