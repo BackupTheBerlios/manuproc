@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.29 2003/01/02 17:36:37 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.30 2003/01/07 14:19:05 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -706,12 +706,17 @@ void Kunde::init_AuslandZahlung() const throw(SQLerror)
  exec sql select iban,cab,abi 
 	into :IBAN:IIBAN,:CAB:ICAB,:ABI:IABI from ausland_bankverbindung where
 	kundennr= :KUNDENNR;
- SQLerror::test(__FILELINE__);
+ SQLerror::test(__FILELINE__,100);
 
- abi=string(ABI);
- cab=string(CAB);
- iban=string(IBAN);
- 
+ if(sqlca.sqlcode==100)
+   {abi="";cab="";iban="";}
+ else
+   {
+    abi=string(ABI);
+    cab=string(CAB);
+    iban=string(IBAN);
+   }
+    
  ECPGfree_auto_mem(); 
 }
 
