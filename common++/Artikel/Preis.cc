@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.17 2003/11/06 10:57:37 jacek Exp $
+// $Id: Preis.cc,v 1.18 2003/11/06 11:22:50 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -79,7 +79,7 @@ Preis::geldbetrag_t Preis::Gesamtpreis(const cP_Waehrung w,int anzahl,preismenge
    Preis result=*this;
 
 #ifdef MABELLA_EXTENSIONS
-   bool rescale(result.Wert().Scale()>2 && (result.Wert().Scaled()%10));
+   bool rescale(result.Wert().Scale()>2 && !(result.Wert().Scaled()%10));
 #endif
 
    // Währung umrechnen?

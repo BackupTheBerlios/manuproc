@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.16 2003/01/08 09:46:56 christof Exp $
+// $Id: Preis.h,v 1.17 2003/11/06 11:22:50 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,7 +33,8 @@ public:
 	typedef fixedpoint<ManuProC::Precision::GeldBetrag> geldbetrag_t;
 	typedef geldbetrag_t pfennig_cent_t;
 	typedef fixedpoint<ManuProC::Precision::Rabatt> rabatt_t;
-	
+
+        typedef fixedpoint<2> geldbetrag_out;
 private:
       geldbetrag_t pfennig_cent;
     	preismenge_t preismenge; // 100 == /100m
