@@ -1,4 +1,4 @@
-// $Id: Kalenderwoche.h,v 1.5 2002/10/24 14:06:49 thoma Exp $
+// $Id: Kalenderwoche.h,v 1.6 2003/01/30 17:26:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,11 +23,12 @@
 
 class Kalenderwoche
 {	int yyyyww;
+ public:
 	class error : public std::exception 
 	{public:
 		virtual const char* what() const throw() { return "Kalenderwoche::error"; }
 	};
- public:
+
  	Kalenderwoche(int _yyyyww) throw(error) : yyyyww(_yyyyww)
  	{ check(); }
  	// fixes 2 digit years
