@@ -20,6 +20,7 @@
 #include "Rechnung.h"
 #include <Misc/Transaction.h>
 #include <Misc/FetchIStream.h>
+#include <Misc/Trace.h>
 #include<math.h>
 exec sql include sqlca;
 
@@ -166,6 +167,7 @@ void Rechnung::setze_Zahlziel(ManuProC::Datum zziel) throw(SQLerror)
 {
  Query("update rechnung set zahlziel=? where rngid=?")
  	<< zziel << Id();
+ SQLerror::test(__FILELINE__);
  zahlziel=zziel;
 }
 
@@ -174,6 +176,7 @@ void Rechnung::setze_Datum(ManuProC::Datum rgdatum) throw(SQLerror)
 {
  Query("update rechnung set datum=? where rngid=?")
  	<< rgdatum << Id();
+ SQLerror::test(__FILELINE__);
  // in Struktur nicht ändern ???
 }
 
@@ -182,6 +185,7 @@ void Rechnung::setze_Zahlungsart(cH_Zahlungsart z) throw(SQLerror)
 {
  Query("update rechnung set zahlart=? where rngid=?")
  	<< z->Id() << Id();
+ SQLerror::test(__FILELINE__);
  // in Struktur nicht ändern ???
 }
 
@@ -193,6 +197,7 @@ void Rechnung::deleteLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
  	<< lfrs.Id() << Id(); 
  Query("update lieferschein set rngid=null where lfrsid=?")
  	<< lfrs.Id();
+ SQLerror::test(__FILELINE__);
  tr.commit();
  
 }
@@ -251,12 +256,14 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
 void Rechnung::setzeWaehrung(const cP_Waehrung &w) throw(SQLerror)
 {  Query("update rechnung set waehrung=? where rngid=?")
    	<< w->Id() << Id();
+   SQLerror::test(__FILELINE__);
    waehrung=w;
 }
 
 void Rechnung::setze_Rabatt(rabatt_t r) throw(SQLerror)
 {  Query("update rechnung set rabatt=? where rngid=?")
 	<< Id() << r;
+   SQLerror::test(__FILELINE__);
    rabatt=r;
 }
 
@@ -301,18 +308,20 @@ Rechnung::geldbetrag_t Rechnung::Betrag(bool brutto) const throw(SQLerror)
 void RechnungBase::setEingezogen(int refnr, bool bezahlt) throw(SQLerror)
 {Query("update rechnung set bezahlt=?, einzug_refnr=? where rngid=?")
  	<< bezahlt << refnr << rngid;
+ SQLerror::test(__FILELINE__);
    // member nicht ändern?
 }
 
 void Rechnung::setBezahlt(bool _bezahlt) throw(SQLerror)
 {Query("update rechnung set bezahlt=? where rngid=?")
  	<< _bezahlt << rngid;
+ SQLerror::test(__FILELINE__);
  bezahlt=_bezahlt;
 }
 
 const std::string Rechnung::Notiz() const throw(SQLerror)
 {
- ManuProC::Trace _t(trace_channel, __FUNCTION__,str());
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,Id());
  if(notiz_valid) return notiz;
 
  Query("select notiz from rechnung where rngid=?")
@@ -324,9 +333,10 @@ const std::string Rechnung::Notiz() const throw(SQLerror)
 
 void Rechnung::Notiz(const std::string n) throw(SQLerror)
 {
- ManuProC::Trace _t(trace_channel, __FUNCTION__,str(),n);
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,Id(),n);
  Query("update rechnung set notiz=? where rngid=?")
  	<< Query::NullIf(notiz) << Id();
+ SQLerror::test(__FILELINE__);
  notiz=n;
 }
 

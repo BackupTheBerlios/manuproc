@@ -88,8 +88,9 @@ void RechnungEntry::setzePreis(const Preis &p) throw (SQLerror)
 {  preis=p;
    Query("update rechnungentry set preismenge=?, preis=? "
    	"where (rngid,zeilennr)=(?,?)")
-   	<< p.BezugsMenge() << RgArt()==RART_GUT?-p.Wert():p.Wert()
+   	<< p.BezugsMenge() << (RgArt()==RART_GUT?-p.Wert():p.Wert())
    	<< Id() << Zeile();
+   SQLerror::test(__FILELINE__);
 }
 
 
@@ -105,7 +106,7 @@ void RechnungEntryBase::setRgPayOff(int _rngid) throw(SQLerror)
  	"from rechnung where rngid=?")
  	<< _rngid
  	>> DATUM >> BEZAHLT >> KUNDENNR >> RNGART;
- rgdata[RNGID]=rng_payoff(DATUM,BEZAHLT,KUNDENNR,(RngArt)RNGART[0]);
+ rgdata[_rngid]=rng_payoff(DATUM,BEZAHLT,KUNDENNR,(RngArt)RNGART);
 }
 
 const ManuProC::Datum RechnungEntry::RgDatum() const throw(SQLerror)

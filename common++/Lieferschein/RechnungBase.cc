@@ -1,4 +1,4 @@
-/* $Id: RechnungBase.cc,v 1.3 2003/07/09 10:06:50 jacek Exp $ */
+/* $Id: RechnungBase.cc,v 1.4 2003/12/08 13:47:58 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,6 +19,7 @@
 
 
 #include"RechnungBase.h"
+#include <Misc/Trace.h>
 
 Kunde::ID RechnungBase::getVerknr() const throw(SQLerror)
 {
@@ -44,3 +45,5 @@ void RechnungBase::setze_Zahlziel(ManuProC::Datum zziel) throw(SQLerror)
 	<< zziel << Id();
 }
 
+const UniqueValue::value_t RechnungBase::trace_channel=ManuProC::Tracer::channels.get();
+static ManuProC::Tracer::Environment trace_channel_e("DEBUG_RECHNUNG",RechnungBase::trace_channel);
