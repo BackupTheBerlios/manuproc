@@ -29,6 +29,11 @@
 #define NurEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) == (x).end())
 #define MehrAlsEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) != (x).end())
 
+void TreeBase::initDepth(TreeRow *tr, guint depth) const
+{  if (color_bool)
+      tr->getTCL_API()->set_color(colors[depth%num_colors]);
+}
+
 void TreeBase::clear()
 {
   datavec.clear();
@@ -90,8 +95,12 @@ void TreeBase::summen_knoepfe()
 TreeBase::TreeBase(guint cols, guint attr) : 
 	TCList(cols), showdeep(0), attrcount(attr ? attr : cols),
 	gp(0), menu(0),
-	titles_bool(true), auffuellen_bool(false), expandieren_bool(true)
+	titles_bool(true), auffuellen_bool(false), expandieren_bool(true),
+	color_bool(true)
 {
+#ifndef MANUPROC_WITH_DATABASE
+  color_bool=false;
+#endif
   this->button_press_event.connect(SigC::slot(this,&TreeBase::MouseButton));
   click_column.connect(SigC::slot(this,&TreeBase::on_click_column));
   select_row.connect(SigC::slot(this, &TreeBase::on_row_select));
@@ -99,6 +108,16 @@ TreeBase::TreeBase(guint cols, guint attr) :
   vec_hide_cols.resize(Cols());
   for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
     (*i) = true;
+  Gdk_Color c;
+  c.set_rgb(0xffff,0xffff,0xffff); colors.push_back(c);
+  c.set_rgb(0xffff,0xbfff,0xbfff); colors.push_back(c);
+  c.set_rgb(0xbfff,0xffff,0xbfff); colors.push_back(c);
+  c.set_rgb(0xbfff,0xbfff,0xffff); colors.push_back(c);
+  c.set_rgb(0xffff,0xffff,0xbfff); colors.push_back(c);
+  c.set_rgb(0xffff,0xbfff,0xffff); colors.push_back(c);
+  c.set_rgb(0xbfff,0xffff,0xffff); colors.push_back(c);
+  c.set_rgb(0xbfff,0xbfff,0xbfff); colors.push_back(c);
+  assert(colors.size()==num_colors);
 }
 
 // We can't call these virtual functions in the ctor because 
@@ -241,15 +260,6 @@ recurse:
  else
     current_iter=std::lower_bound(current_iter,apiend,ev);
 
-#ifdef DEBUG_NEW 
-cout << "inserting @"<< deep << " " << ev->getStrVal() << " <= ";
-if (current_iter!=apiend) 
- std::cout << reinterpret_cast<TreeRow*>((*current_iter).get_user_data())->Value()->getStrVal();
-if (!MehrAlsEinKind(selseq) && upper_b!=apiend) 
- std::cout << " <= " << reinterpret_cast<TreeRow*>((*upper_b).get_user_data())->Value()->getStrVal();
-cout << '\n';
-#endif
-
  if(current_iter!=apiend) // dann einfuegen
    {// eigentlich nur ein gecastetes current_iter
     TreeRow *current_tclr=reinterpret_cast<TreeRow*>((*current_iter).get_user_data());
@@ -281,13 +291,13 @@ cout << '\n';
 				==v2->Value(selseq.front(),ValueData()));
          
 	 // vor current_iter einfügen
-         TreeRow *newnode=NewNode(deep, ev, child_s_deep, v, child_s_deep < showdeep);
+         TreeRow *newnode=NewNode(deep, ev, child_s_deep, v2, child_s_deep < showdeep, *current_tclr);
 	 newnode->initTCL(parent,current_iter,tree);
+	 tree.initDepth(newnode,deep);
 	 
-	 if (current_tclr->Leaf()) newnode->cumulate(v2);
 	 current_tclr->getTCL_API()->reparent(*parent,*newnode->getTCL_API());
-//std::cout << child_s_deep << ':' << selseq.front() << '\n';
 	 current_tclr->ValueDeep(v2->Value(selseq.front(),ValueData()),child_s_deep);
+	 tree.initDepth(current_tclr,child_s_deep);
 
 	 // das neue Blatt einsortieren
 	 newnode->cumulate(v);
@@ -305,21 +315,15 @@ cout << '\n';
       return;
      }
      else // --------------- kleinerer Wert (davor Einfügen) ----------
-	{
-#ifdef DEBUG_NEW
-cout << "davor\n";
-#endif
-	 TreeRow *newleaf=NewLeaf(deep,ev,v);
+	{  TreeRow *newleaf=NewLeaf(deep,ev,v);
 	 newleaf->initTCL(parent,current_iter,tree);
+	 tree.initDepth(newleaf,deep);
 	}
    }
  else //----------------- am Ende der Liste: anhängen ---------------------
-   {
-#ifdef DEBUG_NEW   
-cout << "am Ende\n";
-#endif
-	    TreeRow *newleaf=NewLeaf(deep,ev,v);
+   {   TreeRow *newleaf=NewLeaf(deep,ev,v);
 	    newleaf->initTCL(parent,tree); 
+	 tree.initDepth(newleaf,deep);
     }
 }                                
 
@@ -531,7 +535,9 @@ void TreeBase::on_row_select(int row, int col, GdkEvent* b)
 }
 
 TreeRow *TreeBase::NewNode
- 		(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand)
+ 		(guint deep, const cH_EntryValue &v, guint child_s_deep, 
+ 		 cH_RowDataBase child_s_data, bool expand,
+ 		 const TreeRow &suminit)
 {  return new TreeRow(deep,v,child_s_deep, child_s_data, expand); }
 
 TreeRow *TreeBase::NewLeaf
@@ -540,7 +546,9 @@ TreeRow *TreeBase::NewLeaf
 
 
 TreeRow *SimpleTree::defaultNewNode
- 		(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand)
+ 		(guint deep, const cH_EntryValue &v, guint child_s_deep, 
+ 		 cH_RowDataBase child_s_data, bool expand,
+ 		 const TreeRow &suminit)
 {  return new TreeRow(deep,v,child_s_deep, child_s_data, expand); }
 
 cH_RowDataBase TreeBase::getSelectedRowDataBase() const

@@ -42,8 +42,12 @@ class TreeBase : public TCList
  bool titles_bool:1; 
  bool auffuellen_bool:1; 
  bool expandieren_bool:1; 
+ bool color_bool:1;
  
  std::string mem_prog,mem_inst;
+
+ std::vector<Gdk_Color> colors;
+ static const unsigned int num_colors=8;
  
  void Titles(Gtk::CheckMenuItem *titles);
  void Auffuellen(Gtk::CheckMenuItem *auffuellen);
@@ -63,6 +67,7 @@ class TreeBase : public TCList
 		 	const cH_RowDataBase &d, std::deque<guint> q,guint deep);
  bool redisplay_recurse(TCListRow_API *a, const RowDataBase *r, guint col);
  void reihenfolge_anzeigen();
+ void initDepth(TreeRow *tr, guint depth) const;
  
 protected: 
  std::vector<cH_RowDataBase> datavec;
@@ -75,7 +80,9 @@ protected:
  virtual const std::string getColTitle(guint seq) const;
  // einen neuen Ast erzeugen, deep ist die Spalte, v der Wert dieser Spalte
  virtual TreeRow *NewNode
- 		(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand);
+ 		(guint deep, const cH_EntryValue &v, guint child_s_deep, 
+ 		 cH_RowDataBase child_s_data, bool expand,
+ 		 const TreeRow &suminit);
  // ein neues Blatt erzeugen, deep ist die Spalte, seqnr der Werteindex
  // deep == Attrs() !
  // eigentlich Unsinn, das hier zu überladen ...
@@ -218,17 +225,23 @@ public:
 class SimpleTree : public TreeBase
 {protected:
  typedef TreeRow *(*NewNode_fp)
- 		(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand);
+ 		(guint deep, const cH_EntryValue &v, guint child_s_deep, 
+ 		 cH_RowDataBase child_s_data, bool expand, 
+ 		 const TreeRow &suminit);
 
  std::vector<std::string> titles;
  NewNode_fp node_creation;
  
 // @ ins cc file ?
  static TreeRow *defaultNewNode
- 		(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand);
+ 		(guint deep, const cH_EntryValue &v, guint child_s_deep, 
+ 		cH_RowDataBase child_s_data, bool expand,
+ 		const TreeRow &suminit);
  virtual TreeRow *NewNode
- 		(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand)
- {  return (*node_creation)(deep,v,child_s_deep,child_s_data,expand); }
+ 		(guint deep, const cH_EntryValue &v, guint child_s_deep, 
+ 		cH_RowDataBase child_s_data, bool expand,
+ 		const TreeRow &suminit)
+ {  return (*node_creation)(deep,v,child_s_deep,child_s_data,expand,suminit); }
 public:
  SimpleTree(guint cols, guint attr, const std::vector<std::string>& T
                                 ,const std::vector<cH_RowDataBase>& D)

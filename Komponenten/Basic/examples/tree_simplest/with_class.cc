@@ -15,7 +15,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.15 2002/06/26 13:43:42 christof Exp $
+// $Id: with_class.cc,v 1.16 2002/06/28 07:33:44 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -91,10 +91,16 @@ public:
       }
    }
 
- SumNode(guint col, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand)
-   : TCListNode(col, v, child_s_deep, child_s_data, expand), sum0(0) {}
- static TCListNode *create(guint col, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand)
-    {  return new SumNode(col,v, child_s_deep, child_s_data, expand); }
+ SumNode(guint col, const cH_EntryValue &v, guint child_s_deep, 
+ 	cH_RowDataBase child_s_data, bool expand, const TreeRow &suminit)
+   : TCListNode(col, v, child_s_deep, child_s_data, expand), sum0(0) 
+ {  if (suminit.Leaf()) cumulate(child_s_data);
+    else sum0=dynamic_cast<const SumNode&>(suminit).sum0;
+ }
+ static TCListNode *create(guint col, const cH_EntryValue &v, guint child_s_deep, 
+ 	cH_RowDataBase child_s_data, bool expand,
+ 	const TreeRow &suminit)
+ {  return new SumNode(col,v, child_s_deep, child_s_data, expand, suminit); }
 };
 
 #if 1
@@ -176,13 +182,18 @@ with_class::with_class()
 //   v[SP_SUM2]="summe 3";
    treebase->setTitles(v);
    std::vector <cH_RowDataBase> datavec;
-#if 1
+#if 0
    datavec.push_back(new MyRowData(1,"X",2,3,"A"));
    datavec.push_back(new MyRowData(2,"Y",2,3,"A"));
    datavec.push_back(new MyRowData(10,"Z",2,3,"A"));
 #endif
 #if 0
-   for (int i=0;i<1000;++i)
+   datavec.push_back(new MyRowData(1,"X",2,3,"A"));
+   datavec.push_back(new MyRowData(1,"X",2,4,"A"));
+   datavec.push_back(new MyRowData(1,"Y",2,3,"A"));
+#endif
+#if 1
+   for (int i=0;i<100;++i)
       datavec.push_back(new MyRowData(i%4+1,/*"same" */
       string(1,char('A'+(i%3))),(i%5),(i%7),itos(i)));
 #endif
