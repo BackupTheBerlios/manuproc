@@ -28,21 +28,20 @@ exec sql include sqlca;
 #include<Misc/Changejournal.h>
 #include <Artikel/ArtikelStamm.h>
 #include <Misc/TraceNV.h>
+#include <Misc/FetchIStream.h>
 
 void Auftrag::deleteAuftrag() throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
- exec sql begin declare section;
- int AUFTRAGID=Id();
- int INSTANZ=int(Instanz());
- exec sql end declare section;
 
  Transaction tr;
 
- exec sql lock table auftragentry in row exclusive mode;
- exec sql lock table auftrag in row exclusive mode;
- exec sql delete from auftragentry where auftragid= :AUFTRAGID and instanz=:INSTANZ;
- exec sql delete from auftrag where auftragid= :AUFTRAGID and instanz=:INSTANZ;
+ Query("lock table auftragentry in row exclusive mode");
+ Query("lock table auftrag in row exclusive mode");
+ Query("delete from auftragentry where (instanz,auftragid)=(?,?)") 
+ 	<<  Instanz() << Id();
+ Query("delete from auftrag where (instanz,auftragid)=(?,?)") 
+ 	<<  Instanz() << Id();
  SQLerror::test(__FILELINE__"Löschen des Auftrags");
 
  tr.commit();
@@ -53,56 +52,36 @@ void Auftrag::deleteAuftrag() throw(SQLerror)
 void Auftrag::setWaehrung(cP_Waehrung w) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
- exec sql begin declare section;
- int WAEHRUNG = w->Id();
- int AUFTRAGID = Id();
- int INSTANZ = int(Instanz());
- exec sql end declare section;
 
- exec sql update auftrag set waehrung = :WAEHRUNG 
-   where auftragid= :AUFTRAGID and instanz = :INSTANZ;
+ Query("update auftrag set waehrung=? where (instanz,auftragid)=(?,?)")
+	<< w->Id()
+	<< Instanz() << Id();
  SQLerror::test(__FILELINE__"Waehrung setzen");
 }
 
 void Auftrag::Zahlziel(const ManuProC::Datum &zziel) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,zziel);
- exec sql begin declare section;
- int AUFTRAGID = Id();
- int INSTANZ = int(Instanz());
- char *ZAHLZIEL;
- int IZAHLZIEL;
- exec sql end declare section;
-
- if(zziel.valid())
-   ZAHLZIEL = (char*)zziel.to_iso().c_str();
- else
-  IZAHLZIEL = -1;
   
- exec sql update auftrag set zahlungsziel = :ZAHLZIEL:IZAHLZIEL 
-   where auftragid= :AUFTRAGID and instanz = :INSTANZ;
+ Query("update auftrag set zahlungsziel=? where (instanz,auftragid)=(?,?)")
+	<< zziel
+	<< Instanz() << Id();
  SQLerror::test(__FILELINE__"Zahlungsziel setzen");
 }
 
 void Auftrag::Zahlart(cH_Zahlungsart zart) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
- exec sql begin declare section;
- int AUFTRAGID = Id();
- int INSTANZ = int(Instanz());
- int ZAHLART;
- exec sql end declare section;
 
- if(zart->Id()!=Zahlungsart::none_id)
-   ZAHLART = zart->Id();
- else
-   {cH_Kunde k(kundennr);
+ if(zart->Id()==Zahlungsart::none_id)
+ {  cH_Kunde k(kundennr);
     cH_Kunde krng(k->Rngan());
-   ZAHLART = krng->zahlungsart()->Id();
-   }
+    zart = krng->zahlungsart();
+ }
   
- exec sql update auftrag set zahlart = :ZAHLART 
-   where auftragid= :AUFTRAGID and instanz = :INSTANZ;
+ Query("update auftrag set zahlart=? where (instanz,auftragid)=(?,?)")
+	<< zart->Id()
+	<< Instanz() << Id();
  SQLerror::test(__FILELINE__"Zahlungsart setzen");
 }
 
@@ -111,22 +90,18 @@ void Auftrag::Zahlart(cH_Zahlungsart zart) throw(SQLerror)
 void Auftrag::deleteEintrag(int zeilennr) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("ZNr",zeilennr));
- exec sql begin declare section;
- int AUFTRAGID=Id();
- int INSTANZ=int(Instanz());
- int ZEILENNR=zeilennr;
- exec sql end declare section;
 
  Transaction tr;
  
- exec sql lock table auftragentry in share row exclusive mode;
- exec sql delete from auftragentry where zeilennr= :ZEILENNR
- 		and auftragid= :AUFTRAGID and instanz = :INSTANZ;
+ Query("lock table auftragentry in share row exclusive mode");
+ Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
+	<< Instanz() << Id() << zeilennr;
  SQLerror::test(__FILELINE__"Auftragszeile löschen");
 
- exec sql update auftragentry set zeilennr=zeilennr-1
- 	where zeilennr> :ZEILENNR and auftragid= :AUFTRAGID
-   and instanz = :INSTANZ;
+ Query("update auftragentry set zeilennr=zeilennr-1 "
+ 	"where zeilennr>? and (instanz,auftragid)=(?,?)")
+	<< zeilennr
+	<< Instanz() << Id();
  SQLerror::test(__FILELINE__"Auftragszeilennr aktualisieren");
  
  tr.commit();
@@ -195,7 +170,9 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr) throw(S
 	: AuftragBase(cH_ppsInstanz(_instanz),invalid_id),
 	  zahlart(Zahlungsart::none_id)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Anlegen:",*this);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
+ 	NV("this",*this),NV("Anlegen",_instanz.instanz),NV("kdnr",kdnr),
+ 	NV("yaufnr",yaufnr));
  exec sql begin declare section;
  int AUFTRAGID;
  char DATUM[11];

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.75 2003/07/16 06:31:08 christof Exp $
+// $Id: AufEintrag.cc,v 1.76 2003/07/16 07:06:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -960,7 +960,6 @@ void AufEintrag::ProduziertNG(unsigned uid, mengen_t M,
 		const AufEintragBase &elter_neu)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,
 			NV("this",*this),M,NV("alt",elter_alt),NV("neu",elter_neu));
-//   assert(M>=0); // notwendig?
    assert(Id()!=dispo_auftrag_id);
 
    if (Instanz()->LagerInstanz())
