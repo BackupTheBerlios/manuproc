@@ -1,4 +1,4 @@
-// $Id: dbconnect.pgcc,v 1.18 2004/08/30 13:55:35 jacek Exp $
+// $Id: dbconnect.pgcc,v 1.19 2004/08/31 12:34:53 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -37,8 +37,9 @@ extern "C" { int snprintf(char *str, size_t size, const  char  *format, ...); }
 
 void ManuProC::dbconnect(const Connection &c) throw(SQLerror)
 {  exec sql begin declare section;
-   char connstr[80];
+   char connstr[100];
    char NAME[80];
+   char *USR;
    exec sql end declare section;
 
    std::string host=c.Host();
@@ -49,11 +50,12 @@ void ManuProC::dbconnect(const Connection &c) throw(SQLerror)
    else strncpy0(NAME,db.c_str(),sizeof NAME);
 
 #ifndef __MINGW32__
-  if (host=="localhost") strncpy0(connstr,db.c_str(),sizeof connstr);
+  if (host=="localhost" && port==POSTGRESQL_PORT) strncpy0(connstr,db.c_str(),sizeof connstr);
   else 
 #endif
-#if 0  
-     snprintf0(connstr,sizeof connstr,"tcp:postgresql://%s/%s",host.c_str(),db.c_str());
+#if 0
+     snprintf0(connstr,sizeof connstr,"tcp:postgresql://%s:%d/%s",
+				host.c_str(),port,db.c_str());
 #else     
      snprintf0(connstr,sizeof connstr,"%s@%s:%d",db.c_str(),host.c_str(),port);
 #endif     
@@ -69,7 +71,16 @@ void ManuProC::dbconnect(const Connection &c) throw(SQLerror)
    else if (!strcmp(opt,"-E"))
    {  ECPGdebug(1,stderr);
    }
-   exec sql connect to :connstr as :NAME;
+   if(c.User().empty())
+     exec sql connect to :connstr as :NAME;
+   else
+    {
+     std::string us=c.User();
+     if(!c.Pass().empty())
+       us+="/"+c.Pass();
+     USR=(char *)us.c_str();
+     exec sql connect to :connstr as :NAME USER :USR;
+    }
    SQLerror::test("dbconnect");
    exec sql at :NAME set autocommit to on;
    SQLerror::test("dbconnect,autocommit");

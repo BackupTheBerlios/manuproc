@@ -1,4 +1,4 @@
-// $Id: dbconnect_shared.cc,v 1.4 2004/08/30 13:55:35 jacek Exp $
+// $Id: dbconnect_shared.cc,v 1.5 2004/08/31 12:34:53 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -50,6 +50,27 @@ void ManuProC::dbdisconnect_nt(const std::string &name) throw()
    {  std::cerr << e << '\n';
    }
 }
+
+
+
+#include <iostream.h>
+#include <fstream.h>
+
+const std::string ManuProC::Connection::Pass() const throw()
+{
+ char buf[80];
+ buf[0]=0;
+
+  ifstream passfile (".remote_access");
+  if (! passfile.is_open())
+    { throw(".remote_accss not found"); } 
+  if(!passfile.eof())
+    passfile.getline(buf,sizeof buf);
+
+  passfile.close();
+  return buf;
+}
+
 
 #ifdef MPC_SQLITE
 #include <sqlite.h>
