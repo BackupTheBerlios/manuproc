@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.18 2002/12/05 08:39:19 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.19 2002/12/05 09:04:46 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,6 +25,7 @@
 #include <RowDataBase.h>
 #include <TreeRow.h>
 #include<deque>
+#include <gdkmm/color.h>
 
 // for easily accessing model methods
 class SimpleTreeModel_Proxy
@@ -53,15 +54,17 @@ class SimpleTreeStore : public SigC::Object, public SimpleTreeModel_Proxy
 	typedef Gtk::TreeStore::iterator const_iterator;
 	typedef Gtk::TreeStore::iterator iterator;
 
+protected:
+	friend class SimpleTree_Basic;
+
+	Glib::RefPtr<Gtk::TreeStore> m_refTreeStore;
+	std::deque<guint> currseq; 
+
 private:
 	NewNode_fp node_creation;
 
-	Glib::RefPtr<Gtk::TreeStore> m_refTreeStore;
-	friend class SimpleTree_Basic;
-	
 	guint columns;
 	guint showdeep;
-	std::deque<guint> currseq; 
 	std::vector<bool> vec_hide_cols;
 	gpointer gp;
 
@@ -71,7 +74,7 @@ private:
 
 	std::string mem_prog,mem_inst;
 	
-//	std::vector<Gdk_Color> colors;
+	std::vector<Gdk::Color> colors;
 	static const unsigned num_colors=8;
 
 	void save_remembered() const;

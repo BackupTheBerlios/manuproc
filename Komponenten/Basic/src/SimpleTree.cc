@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.10 2002/12/05 08:39:19 christof Exp $
+// $Id: SimpleTree.cc,v 1.11 2002/12/05 09:04:46 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,7 +34,7 @@ SimpleTree_Basic::SimpleTree_Basic(unsigned int cols,int attrs)
 }
 
 void SimpleTree_Basic::on_title_clicked(unsigned nr)
-{  unsigned idx=currseq[nr];
+{  unsigned idx=getStore().currseq[nr];
    std::deque<unsigned>::iterator i=std::find(clicked_seq.begin(),clicked_seq.end(),idx);
    if (i==clicked_seq.end())
    {  clicked_seq.push_back(idx);
