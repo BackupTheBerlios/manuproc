@@ -40,6 +40,7 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         void on_offen_leaf_selected(cH_RowDataBase d);
         void on_unselectrow_offauf(int row, int col, GdkEvent* b);
         bool deleteLiefEntry();
+#ifdef DPD_LIEFERSCHEINE
         void on_button_rng_erledigt_clicked();
         void on_button_erledigt_clicked();
         void on_spinbutton_paeckchen_activate();
@@ -50,7 +51,7 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         gint on_spinbutton_brutto_focus_out_event(GdkEventFocus *ev);
         void on_spinbutton_netto_activate();
         gint on_spinbutton_netto_focus_out_event(GdkEventFocus *ev);
-#if DPD_LIEFERSCHEINE
+#else
         void on_button_rng_erledigt_clicked(){}
         void on_button_erledigt_clicked(){}
         void on_spinbutton_paeckchen_activate(){}
