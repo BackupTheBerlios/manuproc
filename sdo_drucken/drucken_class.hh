@@ -203,7 +203,7 @@ class LR_Abstraktion: public LR_Base
 #else
  static const unsigned int ZEILEN_SEITE_1=33;
 #endif
- static const unsigned int ZEILEN_SEITE_N=43;
+ static const unsigned int ZEILEN_SEITE_N=40;
 
  fixedpoint<2> betrag;		//
  fixedpoint<2> tabellenbetrag;	// 

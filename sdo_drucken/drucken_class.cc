@@ -116,7 +116,7 @@ void LR_Abstraktion::drucken_header(std::ostream &os)
  hf.leftmargin=2 * Gtk2TeX::in_cm;
  hf.rightmargin=1.25 * Gtk2TeX::in_cm;
 
- hf.preamble+="\\definecolor{backg}{gray}{0.985}\n"
+ hf.preamble+="\\definecolor{backg}{gray}{0.83}\n"
 	      "\\definecolor{lgray}{gray}{.9}\n"
 	      "\\definecolor{altgray}{gray}{.6}\n"
 	"\\newcommand{\\shaderow}{\\raisebox{-1pt}[0pt][0pt]{\\makebox[0pt][l]"
@@ -235,7 +235,7 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 catch(SQLerror &e) { std::cout << e; return; }
 
    if(u.r->Pakete())
-     os << "\\\\\\normalsize " << u.r->Pakete() << " "<< 
+     os << "\\\\\\small " << u.r->Pakete() << " "<< 
 		mld->MLT(MultiL_Dict::TXT_PACKSPALLET)<<"\\hfill\n";
    if(u.r->BruttoGew().as_float())
      os << mld->MLT(MultiL_Dict::TXT_GEWBRUTTO)<<": " <<FormatiereTeX(u.r->BruttoGew()) << " kg\\hfill\n";
@@ -389,7 +389,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
  page_header(os);
 
 // os << "\\begin{flushright}\n";
- os << "\\normalsize\n";
+ os << "\\small\n";
 
  LieferscheinBase::ID lfrsid_mem=LieferscheinBase::none_id;
  bool lfrsid_drucken=false;
@@ -1250,7 +1250,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
       os << "\\hfill "<<kunde_von->LaTeX_von_gross(KdNr())<<"\n\n"  ;
       zeilen_passen_noch=ZEILEN_SEITE_1;
     }
-   os << "\\LARGE "<<typString()<<' '<<RngNr()<<"\\hfill\\normalsize "
+   os << "\\LARGE "<<typString()<<' '<<RngNr()<<"\\hfill\\small "
         <<(kopie?"Kopie, ":"");
    os <<"\\hfill "<< getDatum() << "\\\\\n\n";
    os <<string2TeX(getBemerkung())<<"\n\n";
@@ -1402,7 +1402,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
            	<< kunde_an->VerkName() <<"~\\\\\n";
           }
           
-        os << "\\end{flushleft}\\fussy\\normalsize\\end{minipage}}\\\\\n";          
+        os << "\\end{flushleft}\\fussy\\small\\end{minipage}}\\\\\n";          
         os << "\\vspace{1cm}";
 #else
 	os << "\\bigskip\n";
@@ -1419,16 +1419,16 @@ void LR_Abstraktion::page_header(std::ostream &os)
 #endif
 
 #ifdef MABELLA_EXTENSIONS
-     os << "\\normalsize";        
+     os << "\\small ~\\\\[3ex]";        
 #else
      os <<"\\large";
 #endif     
 
 #ifdef MABELLA_EXTENSIONS
      if(!kunde_an->isInGrp(KundengruppeID::Rechnungsadresse) && Typ()==Rechnung)
-       os <<"\n "<< string2TeX(kunde_rng->getFullName())<<"\\\\\\bigskip";
+       os <<"\n "<< string2TeX(kunde_rng->getFullName())<<"\\\\";
      else
-       os <<"\n  "<< string2TeX(kunde_an->getFullName())<<"\\\\\\bigskip";
+       os <<"\n  "<< string2TeX(kunde_an->getFullName())<<"\\\\";
        
      zeilen_passen_noch=ZEILEN_SEITE_N;
     }
@@ -1446,11 +1446,11 @@ void LR_Abstraktion::page_header(std::ostream &os)
    os <<"\\hfill " << mld->MLT(MultiL_Dict::TXT_SEITE) << " \\thepage\\\\\n";
    os << "\\large "<<typString()<<" ";
    os.width(6);os.fill('0');
-   os <<RngNr()<<"\\normalsize ~" << mld->MLT(MultiL_Dict::TXT_VOM)
+   os <<RngNr()<<"\\small ~" << mld->MLT(MultiL_Dict::TXT_VOM)
 		<<" " <<getDatum()<<". ";
    if(Typ()==Extern)
      os << "\n~\\\\\\small Die Bestellnummer bitte immer auf Auftragsbestätigung,"
-	   " Lieferschein und Rechnung angeben \\normalsize\\\\[.5ex]\n";
+	   " Lieferschein und Rechnung angeben \\small\\\\[.5ex]\n";
 
 
    if(Typ()==Auftrag  && page_counter==1 && !Rueckstand())
@@ -1483,7 +1483,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
    os << "\\LARGE ";
    if (Typ()==Auftrag) os << "Auftragsbestätigung";
    else os << typString();
-   os <<' '<<RngNr()<<"\\hfill\\normalsize "
+   os <<' '<<RngNr()<<"\\hfill\\small "
         <<(kopie?"Kopie, ":"");
    os <<"Seite "<<page_counter;
    os <<"\\hfill "<< getDatum();
@@ -1498,7 +1498,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
    if (page_counter==1 && (Typ()==Lieferschein || Typ()==Rechnung))
     {os << "\\scriptsize{"<<mld->MLT(MultiL_Dict::TXT_SIEERHIELTEN)<<"}";
      if(Typ()==Rechnung)
-       os <<  "\\hfill \\scriptsize{"<<mld->MLT(MultiL_Dict::TXT_UNSERESTNR)<<": 5131/5923/0168}\\\\\n";
+       os <<  "\\hfill \\scriptsize{"<<mld->MLT(MultiL_Dict::TXT_UNSERESTNR)<<": "+kunde_von->idnr()+"}\\\\\n";
      else os << "\\\\\n";
      --zeilen_passen_noch; // immer besser
     }
@@ -1550,7 +1550,7 @@ void LR_Abstraktion::auftrag_von(std::ostream &os, const class Auftrag &a,
       if(!a.getBemerkung().empty()) os << " "<<string2TeX(a.getBemerkung());
      os << "}";
     }
-  os << "\\normalsize";
+  os << "\\small";
   if(! only_braces) os << "\\\\[-3ex]\n";
   
 }
