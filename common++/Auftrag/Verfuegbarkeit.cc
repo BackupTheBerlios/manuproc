@@ -1,4 +1,4 @@
-/* $Id: Verfuegbarkeit.cc,v 1.2 2003/11/29 13:30:28 christof Exp $ */
+/* $Id: Verfuegbarkeit.cc,v 1.3 2003/12/02 07:57:45 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,6 +20,7 @@
 #include <Auftrag/AufEintrag.h>
 #include <Auftrag/Verfuegbarkeit.h>
 //#include <Auftrag/AufEintrag_loops.h>
+#include <Misc/relops.h>
 
 Verfuegbarkeit::mengen_t Verfuegbarkeit::Mengen::summe() const
 {  return  geliefert+ungeplant+geplant+vorraetig+error;
@@ -29,20 +30,50 @@ namespace
 {
 struct verf_recurse : distribute_children_cb
 {	Verfuegbarkeit::mengen_t offset;
+	mutable Verfuegbarkeit::map_t result;
+	mutable ArtikelBaum artbaum;
+
+	mutable ArtikelBase lastart;
+	mutable Verfuegbarkeit::mengen_t lastoffs;
+	mutable cH_ppsInstanz lastinst;
 
 	AuftragBase::mengen_t operator()(const ArtikelBase &, 
 	                const AufEintragBase &,AuftragBase::mengen_t) const;
 	void operator()(const ArtikelBase &,AuftragBase::mengen_t) const;
+
+	virtual ~verf_recurse() {}
+	verf_recurse(const Verfuegbarkeit::mengen_t &o, Verfuegbarkeit::map_t &r,
+			const ArtikelBaum &ab) 
+		: offset(o), result(r), artbaum(ab) 
+	{}
 };
 }
 
-AuftragBase::mengen_t verf_recurse::operator()(const ArtikelBase &, 
-	                const AufEintragBase &,AuftragBase::mengen_t) const
-{
+AuftragBase::mengen_t verf_recurse::operator()(const ArtikelBase &art, 
+	                const AufEintragBase &aeb,AuftragBase::mengen_t m) const
+{  if (art!=lastart)
+   {  lastart=art;
+      lastoffs=offset*artbaum.Faktor(art);
+      lastinst=aeb.Instanz();
+   }
+   AuftragBase::mengen_t offset=lastoffs;
+   
+   AufEintragZu::list_t Eltern= 
+   	AufEintragZu::get_Referenz_list(aeb,AufEintragZu::list_eltern,
+					AufEintragZu::list_ohneArtikel);
+   for (AufEintragZu::list_t::iterator i=Eltern.begin();i!=Eltern.end();++i)
+   {  if (i->AEB==aeb) break;
+      else offset+=i->Menge;
+   }
+   Verfuegbarkeit::verfuegbar(aeb,result,m,offset);
+   return m;
 }
 
-void verf_recurse::operator()(const ArtikelBase &,AuftragBase::mengen_t) const
-{
+void verf_recurse::operator()(const ArtikelBase &art,AuftragBase::mengen_t m) const
+{  if (!!lastinst)
+   {  result[Verfuegbarkeit::mapindex(lastinst,art)].error+=m;
+   }
+   else std::cerr << "verf_recurse::operator(): .error " << m << " von " << art << " über\n";
 }
 
 void Verfuegbarkeit::verfuegbar(const AufEintrag &ae, map_t &result, 
@@ -73,5 +104,6 @@ void Verfuegbarkeit::verfuegbar(const AufEintrag &ae, map_t &result,
    }
    
    // Rekursion
-//   distribute_children_artbaum_rev(ae,menge,ae.Artikel(),verf_recurse(offset));
+   distribute_children_rev_artbaum(ae,menge,ae.Artikel(),
+   		verf_recurse(offset,result,ae.Artikel()));
 }
