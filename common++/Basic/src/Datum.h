@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.17 2003/04/03 08:06:17 christof Exp $ */
+/* $Id: Datum.h,v 1.18 2003/04/13 20:42:17 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -185,8 +185,8 @@ public:
 std::ostream &operator<<(std::ostream&,const ManuProC::Datum&) throw();
 class FetchIStream;
 FetchIStream &operator>>(FetchIStream &is, ManuProC::Datum &v);
-class Query;
-Query &operator<<(Query &, const ManuProC::Datum &v);
+class ArgumentList;
+ArgumentList &operator<<(ArgumentList &, const ManuProC::Datum &v);
 
 namespace Petig
 {  using ManuProC::Datumsfehler;

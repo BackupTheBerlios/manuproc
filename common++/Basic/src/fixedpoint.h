@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.19 2003/04/03 08:55:54 christof Exp $
+// $Id: fixedpoint.h,v 1.20 2003/04/13 20:42:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -288,7 +288,7 @@ FetchIStream &operator>>(FetchIStream &is, fixedpoint<decimals,Ftype,Itype> &v)
 }
 
 template <int decimals,class Ftype,class Itype>
-Query &operator<<(Query &q, const fixedpoint<decimals,Ftype,Itype> &v)
+ArgumentList &operator<<(ArgumentList &q, const fixedpoint<decimals,Ftype,Itype> &v)
 {  q.add_argument(v.String(true));
    return q;
 }

@@ -1,6 +1,6 @@
-// $Id: AufEintragBase.cc,v 1.41 2003/03/13 08:19:54 christof Exp $
+// $Id: AufEintragBase.cc,v 1.42 2003/04/13 20:42:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ FetchIStream& operator>>(FetchIStream& is,AufEintragBase &aeb)
   return is;
 }
 
-Query &operator<<(Query &o, const AufEintragBase &aeb)
+ArgumentList &operator<<(ArgumentList &o, const AufEintragBase &aeb)
 {  o.add_argument(itos(aeb.Instanz()->Id()));
    o.add_argument(itos(aeb.Id()));
    o.add_argument(itos(aeb.ZNr()));
@@ -234,3 +234,4 @@ AuftragBase::mengen_t AufEintragBase::updateStkDiffBase__(int uid,const mengen_t
  return MENGE;
 }
 
+const int AufEintragBase::none_znr;

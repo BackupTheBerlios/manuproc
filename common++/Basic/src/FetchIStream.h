@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.26 2003/03/24 17:13:15 christof Exp $
+// $Id: FetchIStream.h,v 1.27 2003/04/13 20:42:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,6 +34,7 @@ class FetchIStream
 	const PGresult * /* const */ result;
 
 	friend class Query;
+	friend class ArgumentList;
 	// print if debugging on and then throw it	
 	static void mythrow(const SQLerror &e);
 
@@ -114,15 +115,65 @@ public:
 	void ThrowIfNotEmpty(const char *where);
 };
 
-class Query
+struct Query_types
+{	template <class T>
+	 struct NullIf_s
+	{	T data;
+		bool null;
+		
+		template <class U> NullIf_s(const T &a,const U &b) : data(a), null(a==b) {}
+	};
+	struct null { null(){} };
+};
+
+class ArgumentList
+{	unsigned params_needed;
+	std::vector<std::string> params;
+public:
+	typedef std::vector<std::string>::const_iterator const_iterator;
+	ArgumentList() : params_needed(unsigned(-1)) {}
+	void setNeededParams(unsigned i)
+	{  params_needed=i; }
+	bool complete() const { return !params_needed; }
+	const_iterator begin() const { return params.begin(); }
+	const_iterator end() const { return params.end(); }
+
+	//-------------------- parameters ------------------
+	// must be already quoted for plain SQL inclusion
+	void add_argument(const std::string &s);
+
+	ArgumentList &operator<<(const std::string &str);
+	ArgumentList &operator<<(int i)
+	{  return operator<<(long(i)); }
+	ArgumentList &operator<<(unsigned long i);
+	ArgumentList &operator<<(long i);
+	ArgumentList &operator<<(unsigned i)
+	{  return operator<< ((unsigned long)(i)); }
+	ArgumentList &operator<<(unsigned long long i);
+	ArgumentList &operator<<(double f);
+	ArgumentList &operator<<(bool b);
+	ArgumentList &operator<<(char c);
+	ArgumentList &operator<<(const ArgumentList &list);
+	ArgumentList &operator<<(const char *s)
+	{  return operator<<(std::string(s)); }
+	ArgumentList &operator<<(Query_types::null n)
+	{  add_argument("null"); return *this; }
+	
+	template <class T>
+	 ArgumentList &operator<<(const Query_types::NullIf_s<T> &n)
+	{  if (n.null) return operator<<(Query_types::null());
+	   return (*this)<<(n.data);
+	}
+};
+
+class Query : public Query_types
 {	std::string descriptor;
 	bool eof;
 	int line;
 	const PGresult *result;
-	unsigned num_params;
-	unsigned params_needed;
 	std::string query;
-	std::vector<std::string> params;
+	ArgumentList params;
+	unsigned num_params;
 	FetchIStream embedded_iterator;
 	
 	// not possible yet (because result can not refcount)
@@ -131,14 +182,8 @@ class Query
 	
 	// perform it
 	void Execute();
+	void Execute_if_complete();
 
-	template <class T>
-	 struct NullIf_s
-	{	T data;
-		bool null;
-		
-		template <class U> NullIf_s(const T &a,const U &b) : data(a), null(a==b) {}
-	};
 public:
 	Query(const std::string &command);
 	~Query();
@@ -156,32 +201,17 @@ public:
 	// for user defined << operators and temporary queries 
 	// 	you need to insert this one
 	// e.g. Query("...").lvalue() << your_type ...;
+	// is this any longer true?
 	Query &lvalue() { return *this; }
 
-	Query &operator<<(const std::string &str);
-	Query &operator<<(int i)
-	{  return operator<<(long(i)); }
-	Query &operator<<(unsigned long i);
-	Query &operator<<(long i);
-	Query &operator<<(unsigned i)
-	{  return operator<< ((unsigned long)(i)); }
-	Query &operator<<(unsigned long long i);
-	Query &operator<<(double f);
-	Query &operator<<(bool b);
-	Query &operator<<(char c);
-	Query &operator<<(const char *s)
-	{  return operator<<(std::string(s)); }
-	struct null { null(){} };
-	Query &operator<<(null n)
-	{  add_argument("null"); return *this; }
-	
+	template <class T>
+	 Query &operator<<(const T &t)
+	{  params << t;
+	   Execute_if_complete();
+	   return *this;
+	}
 	template <class T,class U> static NullIf_s<T> NullIf(const T &a,const U &b)
 	{  return NullIf_s<T>(a,b); }
-	template <class T>
-	 Query &operator<<(const NullIf_s<T> &n)
-	{  if (n.null) return operator<<(null());
-	   return (*this)<<(n.data);
-	}
 	
 	//--------------- result --------------------
 	FetchIStream &Fetch();

@@ -1,4 +1,4 @@
-// $Id: FetchIStream_ops.cc,v 1.6 2003/03/24 12:12:10 christof Exp $
+// $Id: FetchIStream_ops.cc,v 1.7 2003/04/13 20:42:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,7 +30,7 @@ FetchIStream &operator>>(FetchIStream &is, ManuProC::Datum &v)
    return is;
 }
 
-Query &operator<<(Query &q, const ManuProC::Datum &v)
+ArgumentList &operator<<(ArgumentList &q, const ManuProC::Datum &v)
 {  q.add_argument(v.postgres_null_if_invalid());
    return q;
 }
@@ -44,7 +44,7 @@ FetchIStream &operator>>(FetchIStream &is, Zeitpunkt_new &v)
    return is;
 }
 
-Query &operator<<(Query &q, const Zeitpunkt_new &v)
+ArgumentList &operator<<(ArgumentList &q, const Zeitpunkt_new &v)
 {  if (!v.valid()) return q << Query::null();
    char buf[64];
    v.write(PostgresTimestamp(buf,sizeof buf));

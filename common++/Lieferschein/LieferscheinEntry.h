@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.19 2003/03/20 15:32:01 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.20 2003/04/13 20:42:17 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -110,7 +110,7 @@ private:
  friend FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry &aeb);
 };
 
-class Query;
-Query& operator<<(Query &,const LieferscheinEntryBase &aeb);
+class ArgumentList;
+ArgumentList& operator<<(ArgumentList &,const LieferscheinEntryBase &aeb);
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.32 2003/03/24 15:46:45 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.33 2003/04/13 20:42:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -195,24 +195,19 @@ static const char *next_insert(const char *text)
 // note cursor is the name for both the cursor and the descriptor
 Query::Query(const std::string &command)
 : descriptor(std::string("Query")+ulltos(reinterpret_cast<unsigned long long>(this))), 
-	eof(true), line(0), result(0), num_params(0), params_needed(false),
-	query(command)
+	eof(true), line(), result(), query(command), num_params()
 {  const char *p=query.c_str();
    while ((p=next_insert(p))) { ++num_params; ++p; }
-   params_needed=num_params;
-   if (!params_needed) Execute();
+   params.setNeededParams(num_params);
+   Execute_if_complete();
 }
 
-void Query::add_argument(const std::string &x)
-{  if (!params_needed)
-      FetchIStream::mythrow(SQLerror("",ECPG_TOO_MANY_ARGUMENTS,"too many arguments"));
-   params.push_back(x);
-   --params_needed;
-   if (!params_needed)
+void Query::Execute_if_complete()
+{  if (params.complete())
    {  std::string expanded;
       const char *p=query.c_str();
       const char *last=p;
-      std::vector<std::string>::const_iterator piter=params.begin();
+      ArgumentList::const_iterator piter=params.begin();
       
       do
       {  p=next_insert(p);
@@ -231,7 +226,19 @@ void Query::add_argument(const std::string &x)
    }
 }
 
-Query &Query::operator<<(const std::string &str)
+void Query::add_argument(const std::string &s)
+{  params.add_argument(s);
+   Execute_if_complete();
+}
+
+void ArgumentList::add_argument(const std::string &x)
+{  if (complete())
+      FetchIStream::mythrow(SQLerror("",ECPG_TOO_MANY_ARGUMENTS,"too many arguments"));
+   params.push_back(x);
+   --params_needed;
+}
+
+ArgumentList &ArgumentList::operator<<(const std::string &str)
 {  std::string p="'";
    for (std::string::const_iterator i=str.begin();i!=str.end();++i)
    {  if (*i=='\'' || *i=='\\') p+=*i;
@@ -242,38 +249,44 @@ Query &Query::operator<<(const std::string &str)
    return *this;
 }
 
-Query &Query::operator<<(long i)
+ArgumentList &ArgumentList::operator<<(long i)
 {  add_argument(itos(i));
    return *this;
 }
 
-Query &Query::operator<<(unsigned long i)
+ArgumentList &ArgumentList::operator<<(unsigned long i)
 {  add_argument(ulltos(i));
    return *this;
 }
 
-Query &Query::operator<<(unsigned long long i)
+ArgumentList &ArgumentList::operator<<(unsigned long long i)
 {  add_argument(ulltos(i));
    return *this;
 }
 
-Query &Query::operator<<(double i)
+ArgumentList &ArgumentList::operator<<(double i)
 {  add_argument(dtos(i));
    return *this;
 }
 
-Query &Query::operator<<(bool i)
+ArgumentList &ArgumentList::operator<<(bool i)
 {  add_argument(btos(i));
    return *this;
 }
 
-Query &Query::operator<<(char i)
+ArgumentList &ArgumentList::operator<<(char i)
 {  char x[4];
    x[0]='\'';
    x[1]=i;
    x[2]='\'';
    x[3]=0;
    add_argument(x);
+   return *this;
+}
+
+ArgumentList &ArgumentList::operator<<(const ArgumentList &list)
+{  for (const_iterator i=list.begin();i!=list.end();++i) 
+      add_argument(*i);
    return *this;
 }
 

@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.32 2003/03/26 15:13:17 christof Exp $
+// $Id: AuftragBase.cc,v 1.33 2003/04/13 20:42:17 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -161,7 +161,7 @@ AuftragBase::AuftragBase(cH_ppsInstanz _instanz, ID aufid,Kunde::ID kid) throw(S
  	>> auftragid;
 }
 
-Query &operator<<(Query &q, const AuftragBase &ab)
+ArgumentList &operator<<(ArgumentList &q, const AuftragBase &ab)
 {  return q << ab.InstanzID() << ab.Id();
 }
 

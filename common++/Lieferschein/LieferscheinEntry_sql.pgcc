@@ -1,6 +1,6 @@
-/* $Id: LieferscheinEntry_sql.pgcc,v 1.33 2003/03/24 10:41:19 christof Exp $ */
+/* $Id: LieferscheinEntry_sql.pgcc,v 1.34 2003/04/13 20:42:17 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry::st_zusatz& z)
   	>> FetchIStream::MapNull(z.yourauftrag,std::string());
 }
 
-Query &operator<<(Query &q, const LieferscheinEntryBase &leb)
+ArgumentList &operator<<(ArgumentList &q, const LieferscheinEntryBase &leb)
 {  return q << leb.Instanz()->Id() << leb.Id() << leb.Zeile();
 }
 
