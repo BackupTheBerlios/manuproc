@@ -498,13 +498,13 @@ static ManuProC::Tracer::Environment trace_channel_e("DEBUG_PREIS",Artikelpreis:
 
 // einfachster Fall (keine Staffelung etc) !!!
 #ifdef PETIG_EXTENSIONS
-void insert_or_change(PreisListe::ID liste, const ArtikelBase &a, 
+void Artikelpreis::insert_or_change(PreisListe::ID liste, const ArtikelBase &a, 
                const Preis &p) throw(SQLerror)
 {  Transaction tr;
    Query("lock table artikelpreise in exclusive mode");
    try
    { Preis::geldbetrag_t alter_Preis;
-     Query("select preis, from artikelpreise where (kundennr,artikelid)=(?,?)")
+     Query("select preis from artikelpreise where (kundennr,artikelid)=(?,?)")
 	<< liste << a.Id()
 	>> alter_Preis;
      Query("insert into preis_change_journal (artikelid,prlsnr,zeitpunkt,"
