@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.56 2004/03/22 14:04:47 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.57 2004/03/24 20:38:47 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -38,7 +38,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    // return ersetzen
    if(_id == Kunde::none_id) return;
    exec sql begin declare section;
-   int ID=_id,GRUPPENID,BEZSCHEMA,BANKINDEX,RNG_AN,LFR_AN;
+   int ID=_id,BEZSCHEMA,BANKINDEX,RNG_AN,LFR_AN;
    int BRANRID;
    char SORTNAME[31], IDNR[21];
    char NAME[61], STRASSE[36], HSNR[8], POSTFACH[21],ORT[31],BANKNAME[51],
@@ -73,7 +73,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
  
    WAEHRUNGID = WaehrungID::EUR;
 
-   exec sql select coalesce(gruppennr,0), firma,
+   exec sql select firma,
 	coalesce(name2,''),
 	coalesce(sortname,firma),
     coalesce(extartbezid,1),
@@ -108,7 +108,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
 	coalesce(aktiv,true), coalesce(preisauto,true),
 	coalesce(showean,false),
 	coalesce(mwst,true)
-   	into :GRUPPENID ,:NAME, :NAME2, :SORTNAME, :BEZSCHEMA, :STRASSE, :POSTANWVOR, :POSTANWNACH,
+   	into :NAME, :NAME2, :SORTNAME, :BEZSCHEMA, :STRASSE, :POSTANWVOR, :POSTANWNACH,
            :HSNR, :PLZ, :POSTFACH,
            :POSTFACHPLZ, :ORT, :KTONR, :BLZ, :BANKNAME, :BANKINDEX, :RNG_AN,
 	   :LFR_AN, :BRANRID, :GEBDATUM:IGEBDATUM,
