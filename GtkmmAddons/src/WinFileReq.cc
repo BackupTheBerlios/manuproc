@@ -52,9 +52,8 @@ WinFileReq::WinFileReq(const SigC::Slot1<void,const std::string &> &sl,const std
 
    ZeroMemory(&ofn, sizeof (OPENFILENAME));
    ofn.lStructSize = sizeof (OPENFILENAME);
-   		// (GTK_WIDGET(h->gtkobj())->window )
-//   ofn.hwndOwner = GDK_DRAWABLE_XID(h->get_window()->gdkobj()); 
-		// GDK_WINDOW_HWND (win) 2.0
+//   ofn.hwndOwner = GDK_DRAWABLE_XID(parent->get_window()->gdkobj()); 
+   ofn.hwndOwner = GDK_WINDOW_HWND(parent->get_window()->gdkobj()); 
    ofn.lpstrFile = buf;
    ofn.nMaxFile = sizeof buf;
    if (filter.empty()) ofn.lpstrFilter = "Alle Dateien (*.*)\0*.*\0";
