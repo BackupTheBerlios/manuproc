@@ -42,9 +42,6 @@ EXPORTS
 	_ZN23EntryValueKalenderwocheD1Ev 
 	_ZN25EntryValueIntGermanStringD0Ev 
 	_ZN25EntryValueIntGermanStringD1Ev 
-	"_ZN32_GLOBAL__N_germanstring.cc0yFNib10myiterator12replacementsE" DATA
-	"_ZN32_GLOBAL__N_germanstring.cc0yFNib10myiterator12set_replacedEv" 
-	"_ZN32_GLOBAL__N_germanstring.cc0yFNib10myiteratorppEv" 
 	_ZN3Tag11parse_valueISsEET_RKSs 
 	_ZN3Tag11parse_valueIbEET_RKSs 
 	_ZN3Tag11parse_valueIdEET_RKSs 
@@ -279,4 +276,12 @@ EXPORTS
 	_ZlsRSoRKN8ManuProC5DatumE 
 	snprintf0 
 	strncpy0 
-	
+	_ZNK15Global_Settings8get_WertERKSsi
+	_ZNK15Global_Settings8get_WertEv
+	_ZN15Global_Settings8set_WertERKSs
+	_ZN15Global_SettingsC2EiRKSsS1_
+	_ZN15Global_SettingsC1EiRKSsS1_
+	_ZN15Global_Settings6createEiRKSsS1_S1_
+	_ZN15Global_Settings12default_loadEiRKSsS1_
+	_ZN15Global_Settings12default_saveEiRKSsS1_S1_
+	_ZN15Global_Settings8set_implEPFSsiRKSsS1_EPFviS1_S1_S1_E
