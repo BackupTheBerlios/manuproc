@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.36 2003/09/18 07:34:44 christof Exp $
+# $Id: Makefile.am,v 1.37 2003/10/24 06:03:40 christof Exp $
 
 if WINDOWS
 WIN_LDFLAGS=-no-undefined -export-symbols libManuProC_Base.def
@@ -38,7 +38,8 @@ libManuProC_Base_la_SOURCES=Ausgabe_neu.cc Datum.cc IOerror.cc \
 		time_t_ostr.cc EntryValueBase.cc Handles.cc \
 		EntryValueIntString.cc EntryValueIntGermanString.cc \
 		EntryValueDatum.cc $(DB_SRCES) Trace.cc \
-		germanstring.cc TagStream.cc Tag.cc EntryValueTimeStamp.cc 
+		germanstring.cc TagStream.cc Tag.cc EntryValueTimeStamp.cc \
+		Global_Settings.cc
 
 EXTRA_DIST=dbconnect.pgcc SQLerror_postgres.pgcc Transaction.pgcc \
 	FetchIStream.pgcc
@@ -55,7 +56,7 @@ include_HEADERS=Ausgabe_neu.h CacheStatic.h Cache_Pointer.h Datum.h Handles.h \
 	EntryValueDatum.h EmptyInt_4TeX.h Long.h Model.h \
 	germanstring.h TagStream.h Tag.h recodestream.h \
 	callbackbuf.h TraceNV.h EntryValueTimeStamp.h \
-	Event.h bitmask.h
+	Event.h bitmask.h Global_Settings.h
 
 CLEANFILES= *~ $(BUILT_SOURCES)
 

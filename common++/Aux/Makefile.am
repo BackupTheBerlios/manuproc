@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.45 2003/10/09 11:56:35 jacek Exp $
+# $Id: Makefile.am,v 1.46 2003/10/24 06:03:40 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@
 
@@ -46,7 +46,7 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
    Event.h Event.cc inbetween.h germanstring.h germanstring.cc \
    EntryValueIntGermanString.cc EntryValueIntGermanString.h \
    recodestream.h bitmask.h TemporaryValue.h vectormap.h intmap.h \
-   libManuProC_Base_dll.h
+   libManuProC_Base_dll.h Global_Settings.h Global_Settings.cc
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .

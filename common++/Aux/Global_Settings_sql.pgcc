@@ -20,9 +20,9 @@
 #include "Global_Settings.h"
 #include <Misc/FetchIStream.h>
 
-Global_Settings::Global_Settings(int u,const std::string& p,const std::string& n)
-: userid(u),program(p),name(n)
-{try
+std::string Global_Settings::database_load(int userid,const std::string& program,const std::string& name)
+{std::string wert;
+ try
  {Query("select wert from global_settings "
  	"where (userid,program,name)=(?,?,?)")
    << userid << program << name
@@ -30,22 +30,11 @@ Global_Settings::Global_Settings(int u,const std::string& p,const std::string& n
  } catch (SQLerror &e)
  {  SQLerror::print(__FILELINE__,100);
  }
+ return wert;
 }
 
 
-void Global_Settings::set_Wert(const std::string& wert)
-{ Query("update global_settings set wert=? "
-	"where (userid,program,name)=(?,?,?)")
-	<< wert << userid << program << name;
-  if (sqlca.sqlcode==100)
-  {  Query("insert into global_settings "
-	"(userid,program,name,wert) values (?,?,?,?)")
-	<< userid << program << name << wert;
-  }
-  SQLerror::test(__FILELINE__);
-}
-
-void Global_Settings::create(int userid,const std::string& program,
+void Global_Settings::database_save(int userid,const std::string& program,
                              const std::string& name,const std::string& wert)
 {  // saves one query in comparison to Global_Settings().set_Wert
    //  ... the select ...
@@ -58,4 +47,9 @@ void Global_Settings::create(int userid,const std::string& program,
 	<< userid << program << name << wert;
   }
   SQLerror::test(__FILELINE__);
+}
+
+void Global_Settings::database_connected(bool on)
+{  if (!on) set_impl(&default_load,&default_save);
+   else set_impl(&database_load,&database_save);
 }

@@ -7,17 +7,14 @@
 
 #include <gtkmm/main.h>
 #include "window1.hh"
-#include <Misc/dbconnect.h>
 
 int main(int argc, char **argv)
 {  
    
    Gtk::Main m(&argc, &argv);
-   ManuProC::dbconnect();
 
 window1 *window1 = new class window1();
    m.run(*window1);
 delete window1;
-   ManuProC::dbdisconnect();
    return 0;
 }

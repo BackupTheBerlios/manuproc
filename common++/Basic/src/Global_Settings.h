@@ -1,4 +1,4 @@
-/* $Id: Global_Settings.h,v 1.5 2002/11/07 07:48:35 christof Exp $ */
+/* $Id: Global_Settings.h,v 1.1 2003/10/24 06:03:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -22,22 +22,39 @@
 #define GLOBALSETTINGSCLASS
 #include <string>
 
-class Global_Settings
-{
+struct Global_Settings
+{   typedef void (*save_cb)(int userid,const std::string& program,
+		const std::string& name, const std::string& value);
+    typedef std::string (*load_cb)(int userid,const std::string& program,
+		const std::string& name);
+
     int userid;
     std::string program,name,wert;       
-  public:
+
+private:    
+    static save_cb save_impl;
+    static load_cb load_impl;
+    static void default_save(int userid,const std::string& program,
+                    const std::string& name, const std::string& value);
+    static std::string default_load(int userid,const std::string& program,
+                    const std::string& name);
+    static void database_save(int userid,const std::string& program,
+                    const std::string& name, const std::string& value);
+    static std::string database_load(int userid,const std::string& program,
+                    const std::string& name);
+public:
     Global_Settings(int userid,const std::string& program,
                 const std::string& name);
 
     std::string get_Wert() const {return wert;}
     std::string get_Wert(const std::string &seperator,int field) const;
-    void set_Wert(const std::string& wert);
-    void update_Date();
 
-    //Neuen Eintrag anlegen :
-      //Wenn 'wert' == "now()" dann wird ein Timestamp eingetragen
+    void set_Wert(const std::string& wert);
+    // saves one query in comparison to Global_Settings().set_Wert
     static void create(int userid,const std::string& program,
                 const std::string& name,const std::string& wert);
+
+    static void database_connected(bool on=true);
+    static void set_impl(load_cb ld, save_cb sv);
 };
 #endif

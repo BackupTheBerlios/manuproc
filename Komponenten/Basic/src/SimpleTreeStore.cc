@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.34 2003/10/23 12:56:25 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.35 2003/10/24 06:04:01 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -51,28 +51,21 @@ SimpleTreeModel_Proxy::~SimpleTreeModel_Proxy()
 
 // =========================================================
 
-SimpleTreeStore::load_t SimpleTreeStore::load_vfunc=&SimpleTreeStore::default_load;
-SimpleTreeStore::save_t SimpleTreeStore::save_vfunc=&SimpleTreeStore::default_save;
-
 std::pair<std::string,std::string> SimpleTreeStore::default_load(const std::string&program, const std::string&instance)
 {  std::pair<std::string,std::string> result;
-#ifdef MANUPROC_WITH_DATABASE
    if (!program.empty())
    {  result.second=Global_Settings(getuid(),program,instance+":visible").get_Wert();
       result.first=Global_Settings(getuid(),program,instance+":order").get_Wert();
    }
-#endif   
    return result;
 }
 
 void SimpleTreeStore::default_save(const std::string&program, const std::string&instance, const std::pair<std::string,std::string>&value)
 {
-#ifdef MANUPROC_WITH_DATABASE
    if (!program.empty())
    {  Global_Settings::create(getuid(),program,instance+":visible",value.second);
       Global_Settings::create(getuid(),program,instance+":order",value.first);
    }
-#endif
 }
 
 void SimpleTreeStore::save_remembered() const
@@ -100,11 +93,11 @@ void SimpleTreeStore::save_remembered() const
    
    // additional flags from derived widgets?
 
-   (*save_vfunc)(mem_prog, mem_inst, value);
+   default_save(mem_prog, mem_inst, value);
 }
 
 void SimpleTreeStore::load_remembered()
-{  std::pair<std::string,std::string> value=(*load_vfunc)(mem_prog, mem_inst);
+{  std::pair<std::string,std::string> value=default_load(mem_prog, mem_inst);
 
 //   titles_bool=value.second.find('T')==std::string::npos;
    expandieren_bool=value.second.find('E')==std::string::npos;

@@ -1,4 +1,4 @@
-// $Id: tree.cc,v 1.6 2002/12/03 08:44:30 christof Exp $
+// $Id: tree.cc,v 1.7 2003/10/24 06:04:01 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -22,16 +22,9 @@
 
 #include "simplest.hh"
 #include "with_class.hh"
-#ifdef MANUPROC_WITH_DATABASE
-#  include <Misc/dbconnect.h>
-#endif
 
 int main(int argc, char **argv)
 {   
-#ifdef MANUPROC_WITH_DATABASE
-   ManuProC::dbconnect();
-#endif
-   
    Gtk::Main m(&argc, &argv);
 //manage(new class simplest());
    class with_class *with_class=new class with_class();
