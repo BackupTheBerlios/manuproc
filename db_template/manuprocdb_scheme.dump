@@ -1,0 +1,2150 @@
+--
+-- PostgreSQL database dump
+--
+
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 454 (OID 7693468)
+-- Name: plpgsql_call_handler (); Type: FUNCTION; Schema: public; Owner: jacek
+--
+
+CREATE FUNCTION plpgsql_call_handler () RETURNS language_handler
+    AS '$libdir/plpgsql', 'plpgsql_call_handler'
+    LANGUAGE c;
+
+
+--
+-- TOC entry 453 (OID 7693469)
+-- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: public; Owner: 
+--
+
+CREATE TRUSTED PROCEDURAL LANGUAGE plpgsql HANDLER plpgsql_call_handler;
+
+
+--
+-- TOC entry 37 (OID 7693500)
+-- Name: artbez_warengruppe; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE artbez_warengruppe (
+    id smallint,
+    text text
+);
+
+
+--
+-- TOC entry 38 (OID 7693500)
+-- Name: artbez_warengruppe; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE artbez_warengruppe FROM PUBLIC;
+
+
+--
+-- TOC entry 39 (OID 7693502)
+-- Name: artbez_anzeige; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE artbez_anzeige (
+    uid smallint NOT NULL,
+    artikeltyp smallint NOT NULL,
+    "schema" integer NOT NULL,
+    anzeige_pos integer,
+    anzeige_neg integer,
+    auswahl smallint,
+    autocomplete boolean,
+    kombiniert boolean
+);
+
+
+--
+-- TOC entry 40 (OID 7693502)
+-- Name: artbez_anzeige; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE artbez_anzeige FROM PUBLIC;
+
+
+--
+-- TOC entry 2 (OID 7693506)
+-- Name: kunden_seq; Type: SEQUENCE; Schema: public; Owner: jacek
+--
+
+CREATE SEQUENCE kunden_seq
+    START 1
+    INCREMENT 1
+    MAXVALUE 2147483647
+    MINVALUE 1
+    CACHE 1;
+
+
+--
+-- TOC entry 3 (OID 7693506)
+-- Name: kunden_seq; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE kunden_seq FROM PUBLIC;
+
+
+--
+-- TOC entry 45 (OID 7693532)
+-- Name: ku_briefanr; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE ku_briefanr (
+    branr numeric(1,0) NOT NULL,
+    briefanrede text NOT NULL,
+    anrede text,
+    textid numeric(3,0),
+    textid_anrede numeric(3,0)
+);
+
+
+--
+-- TOC entry 46 (OID 7693532)
+-- Name: ku_briefanr; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE ku_briefanr FROM PUBLIC;
+
+
+--
+-- TOC entry 47 (OID 7693536)
+-- Name: ku_ansprech; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE ku_ansprech (
+    kundennr numeric(5,0) NOT NULL,
+    persnr numeric(5,0) NOT NULL,
+    _position text,
+    notiz text,
+    anschreiben_seq numeric(1,0)
+);
+
+
+--
+-- TOC entry 48 (OID 7693536)
+-- Name: ku_ansprech; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE ku_ansprech FROM PUBLIC;
+
+
+--
+-- TOC entry 4 (OID 7693541)
+-- Name: banken_bankindex_seq; Type: SEQUENCE; Schema: public; Owner: jacek
+--
+
+CREATE SEQUENCE banken_bankindex_seq
+    START 1
+    INCREMENT 1
+    MAXVALUE 2147483647
+    MINVALUE 1
+    CACHE 1;
+
+
+--
+-- TOC entry 5 (OID 7693541)
+-- Name: banken_bankindex_seq; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE banken_bankindex_seq FROM PUBLIC;
+
+
+--
+-- TOC entry 53 (OID 7693555)
+-- Name: artikelzusammensetzung; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE artikelzusammensetzung (
+    id integer NOT NULL,
+    prozessid numeric(2,0) NOT NULL,
+    altartikelid integer NOT NULL,
+    menge numeric(9,5),
+    stand timestamp(0) with time zone DEFAULT now() NOT NULL,
+    uid integer
+);
+
+
+--
+-- TOC entry 54 (OID 7693555)
+-- Name: artikelzusammensetzung; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE artikelzusammensetzung FROM PUBLIC;
+GRANT SELECT ON TABLE artikelzusammensetzung TO PUBLIC;
+
+
+--
+-- TOC entry 56 (OID 7693562)
+-- Name: prozesse; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE prozesse (
+    prozessid integer DEFAULT nextval('prozesse_prozessid_seq'::text) NOT NULL,
+    label text NOT NULL,
+    meterprostk numeric(4,1),
+    text text
+);
+
+
+--
+-- TOC entry 57 (OID 7693562)
+-- Name: prozesse; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE prozesse FROM PUBLIC;
+GRANT SELECT ON TABLE prozesse TO PUBLIC;
+
+
+--
+-- TOC entry 58 (OID 7693565)
+-- Name: artikelstamm; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE artikelstamm (
+    id integer DEFAULT nextval('artikelbezeichnun_artikelid_seq'::text) NOT NULL,
+    warengruppe smallint NOT NULL,
+    stand timestamp(0) with time zone DEFAULT now(),
+    bestellen_bei integer,
+    defaultschema integer DEFAULT 1,
+    internwarengruppe smallint,
+    einheit integer,
+    uid integer,
+    aktiv boolean DEFAULT true,
+    auslauf boolean,
+    wertabschlag numeric(4,2),
+    mindbestand numeric(5,0),
+    CONSTRAINT "$1" CHECK ((aktiv IS NOT NULL))
+);
+
+
+--
+-- TOC entry 59 (OID 7693565)
+-- Name: artikelstamm; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE artikelstamm FROM PUBLIC;
+GRANT SELECT ON TABLE artikelstamm TO PUBLIC;
+
+
+--
+-- TOC entry 60 (OID 7693576)
+-- Name: waehrung; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE waehrung (
+    wid numeric(2,0) NOT NULL,
+    kurz text NOT NULL,
+    lang text,
+    tex text,
+    fkt numeric(12,5)
+);
+
+
+--
+-- TOC entry 61 (OID 7693576)
+-- Name: waehrung; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE waehrung FROM PUBLIC;
+GRANT SELECT ON TABLE waehrung TO PUBLIC;
+
+
+--
+-- TOC entry 62 (OID 7693583)
+-- Name: artbez_insert; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE artbez_insert (
+    tabelle text NOT NULL
+);
+
+
+--
+-- TOC entry 63 (OID 7693583)
+-- Name: artbez_insert; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE artbez_insert FROM PUBLIC;
+GRANT SELECT ON TABLE artbez_insert TO PUBLIC;
+
+
+--
+-- TOC entry 2 (OID 7693920)
+-- Name: rechnung; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE rechnung (
+    rngid numeric(6,0) NOT NULL,   
+    kundennr numeric(5,0) NOT NULL,
+    datum timestamp(0) with time zone DEFAULT now() NOT NULL,
+    bezahlt boolean DEFAULT false NOT NULL,
+    zahlart numeric(2,0) NOT NULL,
+    zahlziel date,
+    rngart character(1) DEFAULT 'R' NOT NULL,
+    freitext text,
+    waehrung numeric(2,0) DEFAULT 1,
+    rabatt numeric(4,2),
+    einzug_refnr numeric(30,6),
+    entsorgung boolean,
+    gedruckt boolean,
+    notiz text,
+    verknr numeric(5,0),
+    kurs numeric(12,5), 
+    export_am date,
+    betrag numeric(10,2),
+    steuersatz numeric(3,1),
+    skontosatz numeric(3,1),
+    an_fibu_am date,
+    fibu_buchid integer
+);
+  
+  
+--
+-- TOC entry 3 (OID 7693920)
+-- Name: rechnung; Type: ACL; Schema: public; Owner: jacek
+--
+  
+REVOKE ALL ON TABLE rechnung FROM PUBLIC;
+
+
+--
+-- TOC entry 67 (OID 7693605)
+-- Name: rechnungentry; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE rechnungentry (
+    rngid numeric(6,0) NOT NULL,
+    zeilennr numeric(3,0) NOT NULL,
+    artikelid integer,
+    lfrsid numeric(6,0),
+    lfrszeile numeric(3,0),
+    menge numeric(8,2),
+    preis numeric(7,3) NOT NULL,
+    rabatt numeric(4,2),
+    preismenge integer NOT NULL,
+    stueck numeric(6,0) DEFAULT 1 NOT NULL,
+    provsatz numeric(4,2),
+    ek_preis numeric(7,3),
+    abgerechnet_in integer
+);
+
+
+--
+-- TOC entry 68 (OID 7693605)
+-- Name: rechnungentry; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE rechnungentry FROM PUBLIC;
+
+
+--
+-- TOC entry 8 (OID 7693608)
+-- Name: kunden_personen_persnr_seq; Type: SEQUENCE; Schema: public; Owner: jacek
+--
+
+CREATE SEQUENCE kunden_personen_persnr_seq
+    START 1
+    INCREMENT 1
+    MAXVALUE 2147483647
+    MINVALUE 1
+    CACHE 1;
+
+
+--
+-- TOC entry 9 (OID 7693608)
+-- Name: kunden_personen_persnr_seq; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE kunden_personen_persnr_seq FROM PUBLIC;
+
+
+--
+-- TOC entry 72 (OID 7693621)
+-- Name: auftrag; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE auftrag (
+    auftragid numeric(6,0) NOT NULL,
+    kundennr numeric(5,0) NOT NULL,
+    datum timestamp(0) with time zone DEFAULT now() NOT NULL,
+    youraufnr text,
+    bemerkung text,
+    dispoid numeric(7,0),
+    jahrgang numeric(4,0) DEFAULT 2002 NOT NULL,
+    stat smallint DEFAULT 0,
+    waehrung numeric(2,0),
+    instanz integer DEFAULT 1,
+    zahlungsziel date,
+    rabatt numeric(4,2),
+    zahlart integer,
+    notiz text,
+    verknr numeric(5,0),
+    export_am date
+);
+
+
+--
+-- TOC entry 73 (OID 7693621)
+-- Name: auftrag; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE auftrag FROM PUBLIC;
+
+
+--
+-- TOC entry 75 (OID 7693634)
+-- Name: einheiten; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE einheiten (
+    id integer NOT NULL,
+    bez_menge text,
+    tex_menge text,
+    bez_anzahl text,
+    tex_anzahl text,
+    waehrung integer
+);
+
+
+--
+-- TOC entry 76 (OID 7693634)
+-- Name: einheiten; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE einheiten FROM PUBLIC;
+GRANT SELECT ON TABLE einheiten TO PUBLIC;
+
+
+--
+-- TOC entry 80 (OID 7693653)
+-- Name: prod_instanz; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE prod_instanz (
+    insid numeric(2,0) NOT NULL,
+    name text NOT NULL,
+    lager_fuer integer,
+    sortierung integer,
+    lieferschein boolean,
+    lagername text,
+    produziert_selbst boolean,
+    prod_dauer_tage integer,
+    einlagern_in integer,
+    automatisch_einlagern boolean,
+    typ character(1),
+    externe_bestellung boolean,
+    geplant_von integer
+);
+
+
+--
+-- TOC entry 81 (OID 7693653)
+-- Name: prod_instanz; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE prod_instanz FROM PUBLIC;
+
+
+--
+-- TOC entry 82 (OID 7693660)
+-- Name: global_settings; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE global_settings (
+    userid integer NOT NULL,
+    program text NOT NULL,
+    name text NOT NULL,
+    wert text
+);
+
+
+--
+-- TOC entry 83 (OID 7693660)
+-- Name: global_settings; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE global_settings FROM PUBLIC;
+GRANT SELECT ON TABLE global_settings TO PUBLIC;
+
+
+--
+-- TOC entry 455 (OID 7693671)
+-- Name: kw2date (integer); Type: FUNCTION; Schema: public; Owner: jacek
+--
+
+CREATE FUNCTION kw2date (integer) RETURNS text
+    AS '/usr/lib/postgresql/lib/kw2date.so', 'kw2date'
+    LANGUAGE c IMMUTABLE;
+
+
+--
+-- TOC entry 90 (OID 7693686)
+-- Name: banken; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE banken (
+    bankindex integer DEFAULT nextval('"banken_bankindex_seq"'::text) NOT NULL,
+    blz numeric(8,0) NOT NULL,
+    name text NOT NULL
+);
+
+
+--
+-- TOC entry 91 (OID 7693686)
+-- Name: banken; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE banken FROM PUBLIC;
+
+
+--
+-- TOC entry 10 (OID 7693698)
+-- Name: kunden_telefon_telid_seq; Type: SEQUENCE; Schema: public; Owner: jacek
+--
+
+CREATE SEQUENCE kunden_telefon_telid_seq
+    START 1
+    INCREMENT 1
+    MAXVALUE 2147483647
+    MINVALUE 1
+    CACHE 1;
+
+
+--
+-- TOC entry 11 (OID 7693698)
+-- Name: kunden_telefon_telid_seq; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE kunden_telefon_telid_seq FROM PUBLIC;
+
+
+--
+-- TOC entry 96 (OID 7693707)
+-- Name: ku_telefon; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE ku_telefon (
+    telid numeric(5,0) NOT NULL,
+    art char(1) NOT NULL,
+    ldkenn numeric(4,0) DEFAULT 49 NOT NULL,
+    vorwahl numeric(6,0),
+    telnr numeric(8,0),
+    durchwahl numeric(5,0),
+    kundennr numeric(5,0),
+    persnr numeric(5,0),
+    text text,
+    CONSTRAINT ku_telefon_nummern CHECK (((kundennr IS NOT NULL) OR (persnr IS NOT NULL)))
+);
+
+
+--
+-- TOC entry 97 (OID 7693707)
+-- Name: ku_telefon; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE ku_telefon FROM PUBLIC;
+
+
+--
+-- TOC entry 105 (OID 7693734)
+-- Name: ku_warenkorb; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE ku_warenkorb (
+    prlsnr numeric(5,0) NOT NULL,
+    kundennr numeric(5,0) NOT NULL,
+    suchfolge integer NOT NULL
+);
+
+
+--
+-- TOC entry 106 (OID 7693734)
+-- Name: ku_warenkorb; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE ku_warenkorb FROM PUBLIC;
+
+
+--
+-- TOC entry 12 (OID 7693754)
+-- Name: prod_changejournal_chid_seq; Type: SEQUENCE; Schema: public; Owner: jacek
+--
+
+CREATE SEQUENCE prod_changejournal_chid_seq
+    START 1
+    INCREMENT 1
+    MAXVALUE 9223372036854775807
+    MINVALUE 1
+    CACHE 1;
+
+
+--
+-- TOC entry 13 (OID 7693754)
+-- Name: prod_changejournal_chid_seq; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE prod_changejournal_chid_seq FROM PUBLIC;
+
+
+--
+-- TOC entry 113 (OID 7693763)
+-- Name: ku_preisliste; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE ku_preisliste (
+    prlsnr numeric(5,0) NOT NULL,
+    notiz text,
+    waehrungid numeric(2,0) NOT NULL,
+    bruttosatz_old numeric(4,2),
+    bruttosatz numeric(5,2),
+    art character(1),
+    tablename_gruppe text
+);
+
+
+--
+-- TOC entry 114 (OID 7693763)
+-- Name: ku_preisliste; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE ku_preisliste FROM PUBLIC;
+
+
+--
+-- TOC entry 115 (OID 7693770)
+-- Name: ku_land; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE ku_land (
+    id integer NOT NULL,
+    name text NOT NULL,
+    lkz text,
+    eu_member boolean,
+    w3stat_nr character(3),
+    w3stat_code character(2)
+);
+
+
+--
+-- TOC entry 116 (OID 7693770)
+-- Name: ku_land; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE ku_land FROM PUBLIC;
+
+
+--
+-- TOC entry 14 (OID 7693777)
+-- Name: LKZ_Sprache_ID_seq; Type: SEQUENCE; Schema: public; Owner: jacek
+--
+
+CREATE SEQUENCE "LKZ_Sprache_ID_seq"
+    START 1
+    INCREMENT 1
+    MAXVALUE 9223372036854775807
+    MINVALUE 1
+    CACHE 1;
+
+
+--
+-- TOC entry 117 (OID 7693779)
+-- Name: sprache; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE sprache (
+    sprid numeric(1,0) NOT NULL,
+    sprache text
+);
+
+
+--
+-- TOC entry 118 (OID 7693779)
+-- Name: sprache; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE sprache FROM PUBLIC;
+
+
+--
+-- TOC entry 119 (OID 7693786)
+-- Name: lkz_sprache; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE lkz_sprache (
+    sprid numeric(1,0),
+    lkz text
+);
+
+
+--
+-- TOC entry 120 (OID 7693786)
+-- Name: lkz_sprache; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE lkz_sprache FROM PUBLIC;
+
+
+
+--
+-- TOC entry 456 (OID 7693931)
+-- Name: artikelbezeichnung (integer, integer, integer); Type: FUNCTION; Schema: public; Owner: jacek
+--
+
+CREATE FUNCTION artikelbezeichnung (integer, integer, integer) RETURNS text
+    AS '/usr/lib/postgresql/lib/artikelbezeichnung.so', 'artikelbezeichnung3'
+    LANGUAGE c IMMUTABLE;
+
+
+--
+-- TOC entry 457 (OID 7693932)
+-- Name: artikelbezeichnung (integer, integer, integer, integer); Type: FUNCTION; Schema: public; Owner: jacek
+--
+
+CREATE FUNCTION artikelbezeichnung (integer, integer, integer, integer) RETURNS text
+    AS '/usr/lib/postgresql/lib/artikelbezeichnung.so', 'artikelbezeichnung4'
+    LANGUAGE c IMMUTABLE;
+
+
+--
+-- TOC entry 458 (OID 7693933)
+-- Name: artikelbezeichnung (integer); Type: FUNCTION; Schema: public; Owner: jacek
+--
+
+CREATE FUNCTION artikelbezeichnung (integer) RETURNS text
+    AS '/usr/lib/postgresql/lib/artikelbezeichnung.so', 'artikelbezeichnung1'
+    LANGUAGE c IMMUTABLE;
+
+
+--
+-- TOC entry 153 (OID 7693944)
+-- Name: preis_change_journal; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE preis_change_journal (
+    artikelid integer NOT NULL,
+    prlsnr numeric(5,0) NOT NULL,
+    zeitpunkt timestamp with time zone DEFAULT now() NOT NULL,
+    preis_alt numeric(7,3),
+    preis_neu numeric(7,3) NOT NULL,
+    uid integer NOT NULL,
+    mindestmenge numeric(4,0)
+);
+
+
+--
+-- TOC entry 154 (OID 7693944)
+-- Name: preis_change_journal; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE preis_change_journal FROM PUBLIC;
+
+
+--
+-- TOC entry 155 (OID 7693949)
+-- Name: kunden_telfax_liste; Type: VIEW; Schema: public; Owner: jacek
+--
+
+CREATE VIEW kunden_telfax_liste AS
+    SELECT t1.kundennr, t1.vorwahl, t1.telnr, t2.telnr AS faxnr FROM ku_telefon t1, ku_telefon t2 WHERE ((((((t1.kundennr = t2.kundennr) AND (t1.persnr IS NULL)) AND (t2.persnr IS NULL)) AND (t1.telnr <> t2.telnr)) AND (t1.art = 'T'::text)) AND (t2.art = 'F'::text));
+
+
+--
+-- TOC entry 156 (OID 7693949)
+-- Name: kunden_telfax_liste; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE kunden_telfax_liste FROM PUBLIC;
+
+
+--
+-- TOC entry 168 (OID 7693989)
+-- Name: ku_gruppe; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE ku_gruppe (
+    grpnr numeric(4,0) NOT NULL,
+    name text NOT NULL,
+    obergruppe text,
+    kommentar text
+);
+
+
+--
+-- TOC entry 169 (OID 7693989)
+-- Name: ku_gruppe; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE ku_gruppe FROM PUBLIC;
+
+
+--
+-- TOC entry 170 (OID 7693996)
+-- Name: artikelgruppen; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE artikelgruppen (
+    bezeichnung text NOT NULL,
+    "schema" integer NOT NULL,
+    warengruppe integer NOT NULL,
+    bestellen_bei integer NOT NULL,
+    einheit integer NOT NULL
+);
+
+
+--
+-- TOC entry 171 (OID 7693996)
+-- Name: artikelgruppen; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE artikelgruppen FROM PUBLIC;
+
+
+--
+-- TOC entry 173 (OID 7694005)
+-- Name: capability; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE capability (
+    benutzer text,
+    gruppe text,
+    tabelle text,
+    spalte text,
+    aktion character(1)
+);
+
+
+--
+-- TOC entry 174 (OID 7694005)
+-- Name: capability; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE capability FROM PUBLIC;
+
+
+--
+-- TOC entry 15 (OID 7694040)
+-- Name: zeilennr_seq; Type: SEQUENCE; Schema: public; Owner: jacek
+--
+
+CREATE SEQUENCE zeilennr_seq
+    START 1
+    INCREMENT 1
+    MAXVALUE 9223372036854775807
+    MINVALUE 1
+    CACHE 1;
+
+
+--
+-- TOC entry 185 (OID 7694049)
+-- Name: text_bausteine; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE text_bausteine (
+    textid numeric(3,0) NOT NULL,
+    sprid numeric(1,0) NOT NULL,
+    text_lang text,
+    kommentar text
+);
+
+
+--
+-- TOC entry 186 (OID 7694049)
+-- Name: text_bausteine; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE text_bausteine FROM PUBLIC;
+
+
+--
+-- TOC entry 196 (OID 7694084)
+-- Name: kunden; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE kunden (
+    kundennr numeric(5,0) NOT NULL,
+    sortname text,
+    idnr text,
+    firma text NOT NULL,
+    postanwvor text,
+    strasse text,
+    postanwnach text,
+    hsnr text,
+    plz text,
+    postfach text,
+    postfplz text,
+    ort text,
+    planumsatz numeric(8,0),
+    umsatz numeric(10,2),
+    mitarbeiter numeric(5,0),
+    kundenumsatz numeric(10,2),
+    stand timestamp(0) with time zone,
+    flaeche numeric(5,0),
+    kalkulation numeric(3,0),
+    ktonr numeric(10,0),
+    rabatt numeric(3,1) DEFAULT 0,
+    notiz text,
+    rechnung_an numeric(5,0),
+    rng_an_postfach boolean DEFAULT false,
+    extbezschemaid numeric(5,0),
+    verein text,
+    bankindex integer,
+    entsorgung boolean DEFAULT false,
+    waehrungid numeric(2,0),
+    lkz text,
+    zeilenrabatt boolean,
+    buchungskonto integer,
+    unsere_kundennr text,
+    lieferantenkonto integer,
+    gegenkonto integer,
+    landid integer,
+    betreuer numeric(5,0),
+    anz_firmenpapier integer,
+    anz_weissespapier integer,
+    zahlungsart numeric(3,0),
+    lieferung_frei_haus boolean,
+    aktiv boolean DEFAULT true,
+    preisauto boolean DEFAULT true,
+    showean boolean,
+    auf_notiz text,
+    lief_notiz text,
+    rng_notiz text,
+    debitorenkonto integer,
+    name2 text,
+    gebdatum date,
+    branr integer,
+    lieferung_an numeric(5,0),
+    ab_an_rngadresse boolean DEFAULT false,
+    verknr numeric(5,0),
+    mwst boolean,
+    CONSTRAINT "$1" CHECK ((aktiv IS NOT NULL)),
+    CONSTRAINT kunden_preisauto CHECK ((preisauto IS NOT NULL))
+);
+
+
+--
+-- TOC entry 197 (OID 7694084)
+-- Name: kunden; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE kunden FROM PUBLIC;
+
+
+--
+-- TOC entry 205 (OID 7694134)
+-- Name: lieferscheinentryzusatz; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE lieferscheinentryzusatz (
+    instanz integer NOT NULL,
+    lfrsid integer NOT NULL,
+    lfsznr integer NOT NULL,
+    auftragid integer,
+    auftragznr integer,
+    menge integer NOT NULL
+);
+
+
+--
+-- TOC entry 206 (OID 7694134)
+-- Name: lieferscheinentryzusatz; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE lieferscheinentryzusatz FROM PUBLIC;
+
+
+
+--
+-- TOC entry 231 (OID 7694207)
+-- Name: auftragentry; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE auftragentry (
+    auftragid numeric(6,0) NOT NULL,
+    zeilennr integer NOT NULL,
+    bestellt numeric(8,0) NOT NULL,
+    geliefert numeric(8,0) NOT NULL,
+    lasteditdate timestamp(0) with time zone DEFAULT now() NOT NULL,
+    lasteditor text,
+    lieferdatum numeric(6,0),
+    lastedit text,
+    dispoentrynr numeric(5,0),
+    artikelid integer NOT NULL,
+    rohartikelid integer,
+    status smallint,
+    preis_old numeric(7,2),
+    rabatt numeric(4,2),
+    dummy integer,
+    lieferdate date,
+    preismenge integer,
+    instanz integer DEFAULT 1,
+    preisliste integer,
+    letzte_lieferung timestamp with time zone,
+    lastedit_uid integer,
+    provsatz numeric(4,2),
+    preis numeric(8,3)
+);
+
+
+--
+-- TOC entry 232 (OID 7694207)
+-- Name: auftragentry; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE auftragentry FROM PUBLIC;
+
+
+--
+-- TOC entry 233 (OID 7694211)
+-- Name: prod_changejournal; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE prod_changejournal (
+    datum timestamp(0) with time zone DEFAULT now() NOT NULL,
+    insid numeric(2,0) NOT NULL,
+    chid integer NOT NULL,
+    status numeric(1,0) DEFAULT 0 NOT NULL,
+    artikelid integer NOT NULL,
+    auftragid numeric(6,0) NOT NULL,
+    auftragzeile integer NOT NULL,
+    new_val numeric(8,2),
+    new_dat date,
+    delta numeric(8,2),
+    chtype character(1) NOT NULL
+);
+
+
+--
+-- TOC entry 234 (OID 7694211)
+-- Name: prod_changejournal; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE prod_changejournal FROM PUBLIC;
+
+
+--
+-- TOC entry 459 (OID 7694225)
+-- Name: text_sum(text); Type: AGGREGATE; Schema: public; Owner: jacek
+--
+
+CREATE AGGREGATE text_sum (
+    BASETYPE = text,
+    SFUNC = textcat,
+    STYPE = text,
+    INITCOND = ''
+);
+
+
+--
+-- TOC entry 241 (OID 7694242)
+-- Name: extbezschema; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE extbezschema (
+    extartbezid numeric(5,0) NOT NULL,
+    bezkomptype numeric(2,0) NOT NULL,
+    bezkomptext text NOT NULL,
+    separator character(1),
+    artikeltyp smallint,
+    signifikanz smallint,
+    spaltenname text,
+    textabformat text DEFAULT 'c',
+    jumbo_bez text,
+    textid numeric(3,0),
+    preis_signifikant boolean
+);
+
+
+--
+-- TOC entry 242 (OID 7694242)
+-- Name: extbezschema; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE extbezschema FROM PUBLIC;
+
+
+--
+-- TOC entry 252 (OID 7694283)
+-- Name: ku_email_durchwahl; Type: VIEW; Schema: public; Owner: jacek
+--
+
+CREATE VIEW ku_email_durchwahl AS
+    SELECT anr.textid_anrede, k.kundennr AS kdnr, CASE WHEN ((anr.anrede)::text IS NOT NULL) THEN (anr.anrede)::text WHEN (''::text IS NOT NULL) THEN ''::text ELSE NULL::text END AS anrede, ((CASE WHEN ((k.firma || ' '::text) IS NOT NULL) THEN (k.firma || ' '::text) WHEN ('' IS NOT NULL) THEN ''::text ELSE NULL::text END)::text || CASE WHEN (k.name2 IS NOT NULL) THEN k.name2 WHEN ('' IS NOT NULL) THEN ''::text ELSE NULL::text END) AS betr, max(f.text) AS email, max(f.durchwahl) AS durchwahl FROM ((kunden k JOIN ku_telefon f ON (((k.kundennr = f.kundennr) AND ((f.art = 'T'::text) OR (f.art = 'E'::text))))) LEFT JOIN ku_briefanr anr ON ((anr.branr = "numeric"(k.branr)))) GROUP BY ((CASE WHEN ((k.firma || ' '::text) IS NOT NULL) THEN (k.firma || ' '::text) WHEN ('' IS NOT NULL) THEN ''::text ELSE NULL::text END)::text || CASE WHEN (k.name2 IS NOT NULL) THEN k.name2 WHEN ('' IS NOT NULL) THEN ''::text ELSE NULL::text END), k.kundennr, anr.anrede, anr.textid_anrede;
+
+
+--
+-- TOC entry 253 (OID 7694283)
+-- Name: ku_email_durchwahl; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE ku_email_durchwahl FROM PUBLIC;
+
+
+--
+-- TOC entry 254 (OID 7694285)
+-- Name: fw_lager_buchung; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE fw_lager_buchung (
+    artikelid integer,
+    menge integer,
+    datum timestamp with time zone,
+    aktion character(1),
+    pid integer,
+    bestand integer,
+    lfrsid numeric(5,0)
+);
+
+
+--
+-- TOC entry 255 (OID 7694285)
+-- Name: fw_lager_buchung; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE fw_lager_buchung FROM PUBLIC;
+
+
+--
+-- TOC entry 256 (OID 7694289)
+-- Name: artikel_bestand; Type: VIEW; Schema: public; Owner: jacek
+--
+
+CREATE VIEW artikel_bestand AS
+    SELECT r.mindbestand AS mindbest, r.id AS artikelid, CASE WHEN (sum(l.menge) IS NOT NULL) THEN sum(l.menge) WHEN (0 IS NOT NULL) THEN 0::bigint ELSE NULL::bigint END AS bestand FROM (fw_lager_buchung l RIGHT JOIN artikelstamm r ON ((l.artikelid = r.id))) GROUP BY r.id, r.mindbestand;
+
+
+--
+-- TOC entry 257 (OID 7694289)
+-- Name: artikel_bestand; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE artikel_bestand FROM PUBLIC;
+
+
+--
+-- TOC entry 262 (OID 7694299)
+-- Name: lager; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE lager (
+    lagerid integer NOT NULL,
+    bezeichnung text,
+    tabelle text NOT NULL,
+    bestand_view text
+);
+
+
+--
+-- TOC entry 263 (OID 7694299)
+-- Name: lager; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE lager FROM PUBLIC;
+
+
+--
+-- TOC entry 269 (OID 7694316)
+-- Name: ku_gruppen_map; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE ku_gruppen_map (
+    kundennr numeric(5,0) NOT NULL,
+    grpnr numeric(4,0) NOT NULL
+);
+
+
+--
+-- TOC entry 270 (OID 7694316)
+-- Name: ku_gruppen_map; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE ku_gruppen_map FROM PUBLIC;
+
+
+--
+-- TOC entry 271 (OID 7694318)
+-- Name: lieferschein; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE lieferschein (
+    lfrsid numeric(6,0) NOT NULL,
+    kundennr numeric(5,0) NOT NULL,
+    datum timestamp(0) with time zone DEFAULT now() NOT NULL,
+    rngid numeric(6,0),
+    pakete numeric(2,0),
+    paeckchen numeric(3,0),
+    dpdliefnr integer,
+    geliefertam date,
+    instanz integer NOT NULL,
+    netto_kg numeric(4,1),
+    brutto_kg numeric(4,1),
+    notiz text,
+    verknr numeric(5,0)
+);
+
+
+--
+-- TOC entry 272 (OID 7694318)
+-- Name: lieferschein; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE lieferschein FROM PUBLIC;
+
+
+--
+-- TOC entry 273 (OID 7694326)
+-- Name: lieferscheinentry; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE lieferscheinentry (
+    lfrsid numeric(6,0) NOT NULL,
+    zeile numeric(3,0) NOT NULL,
+    artikelid integer NOT NULL,
+    refauftragid numeric(6,0),
+    stueck numeric(6,0),
+    refzeilennr numeric(3,0),
+    palette numeric(3,0),
+    menge numeric(8,2),
+    zusatzinfo boolean,
+    instanz integer NOT NULL,
+    lagerid integer,
+    status smallint
+);
+
+
+--
+-- TOC entry 274 (OID 7694326)
+-- Name: lieferscheinentry; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE lieferscheinentry FROM PUBLIC;
+
+
+--
+-- TOC entry 275 (OID 7694330)
+-- Name: auftragsentryzuordnung; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE auftragsentryzuordnung (
+    altauftragid integer NOT NULL,
+    altinstanz integer NOT NULL,
+    altzeilennr integer NOT NULL,
+    neuauftragid integer NOT NULL,
+    neuinstanz integer NOT NULL,
+    neuzeilennr integer NOT NULL,
+    menge integer,
+    prioritaet timestamp with time zone
+);
+
+
+--
+-- TOC entry 276 (OID 7694330)
+-- Name: auftragsentryzuordnung; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE auftragsentryzuordnung FROM PUBLIC;
+
+
+--
+-- TOC entry 277 (OID 7694334)
+-- Name: abverkauf_12m; Type: VIEW; Schema: public; Owner: jacek
+--
+
+CREATE VIEW abverkauf_12m AS
+    SELECT le.artikelid, sum(le.stueck) AS menge FROM ((lieferschein l JOIN lieferscheinentry le ON (((((l.instanz = le.instanz) AND (l.instanz = 1)) AND (l.lfrsid = le.lfrsid)) AND ((timestamptz(date(CASE WHEN (l.geliefertam IS NOT NULL) THEN timestamptz(l.geliefertam) WHEN (l.datum IS NOT NULL) THEN l.datum ELSE NULL::timestamp with time zone END)) >= (date_trunc('mon'::text, now()) - '1 year'::interval)) AND (timestamptz(date(CASE WHEN (l.geliefertam IS NOT NULL) THEN timestamptz(l.geliefertam) WHEN (l.datum IS NOT NULL) THEN l.datum ELSE NULL::timestamp with time zone END)) <= (date_trunc('mon'::text, now()) - '1 day'::interval)))))) JOIN rechnung r ON (((r.rngid = l.rngid) AND (r.rngart = 'R'::bpchar)))) GROUP BY le.artikelid;
+
+
+--
+-- TOC entry 278 (OID 7694334)
+-- Name: abverkauf_12m; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE abverkauf_12m FROM PUBLIC;
+
+
+--
+-- TOC entry 280 (OID 7694340)
+-- Name: artikelpreise; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE artikelpreise (
+    artikelid integer,
+    kundennr numeric(5,0),
+    preis numeric(7,3),
+    preismenge integer,
+    waehrung numeric(2,0),
+    mindestmenge numeric(4,0)
+);
+
+
+--
+-- TOC entry 281 (OID 7694340)
+-- Name: artikelpreise; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE artikelpreise FROM PUBLIC;
+
+
+--
+-- TOC entry 282 (OID 7694344)
+-- Name: artikelpreise_inland; Type: VIEW; Schema: public; Owner: jacek
+--
+
+CREATE VIEW artikelpreise_inland AS
+    SELECT artikelpreise.artikelid, artikelpreise.kundennr, artikelpreise.preis, artikelpreise.preismenge, artikelpreise.waehrung, artikelpreise.mindestmenge FROM artikelpreise WHERE (artikelpreise.kundennr = ANY (SELECT ku_preisliste.prlsnr FROM ku_preisliste WHERE (ku_preisliste.tablename_gruppe = ('inland'::bpchar)::text)));
+
+
+--
+-- TOC entry 283 (OID 7694344)
+-- Name: artikelpreise_inland; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE artikelpreise_inland FROM PUBLIC;
+
+
+--
+-- TOC entry 284 (OID 7694347)
+-- Name: artikelpreise_ausland; Type: VIEW; Schema: public; Owner: jacek
+--
+
+CREATE VIEW artikelpreise_ausland AS
+    SELECT artikelpreise.artikelid, artikelpreise.kundennr, artikelpreise.preis, artikelpreise.preismenge, artikelpreise.waehrung, artikelpreise.mindestmenge FROM artikelpreise WHERE (artikelpreise.kundennr = ANY (SELECT ku_preisliste.prlsnr FROM ku_preisliste WHERE (ku_preisliste.tablename_gruppe = ('ausland'::bpchar)::text)));
+
+
+--
+-- TOC entry 285 (OID 7694347)
+-- Name: artikelpreise_ausland; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE artikelpreise_ausland FROM PUBLIC;
+
+
+--
+-- TOC entry 286 (OID 7694350)
+-- Name: artikelpreise_ek; Type: VIEW; Schema: public; Owner: jacek
+--
+
+CREATE VIEW artikelpreise_ek AS
+    SELECT artikelpreise.artikelid, artikelpreise.kundennr, artikelpreise.preis, artikelpreise.preismenge, artikelpreise.waehrung, artikelpreise.mindestmenge FROM artikelpreise WHERE (artikelpreise.kundennr = ANY (SELECT ku_preisliste.prlsnr FROM ku_preisliste WHERE (ku_preisliste.tablename_gruppe = ('ek'::bpchar)::text)));
+
+
+--
+-- TOC entry 287 (OID 7694350)
+-- Name: artikelpreise_ek; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE artikelpreise_ek FROM PUBLIC;
+
+
+--
+-- TOC entry 288 (OID 7694353)
+-- Name: last_preis_change; Type: VIEW; Schema: public; Owner: jacek
+--
+
+CREATE VIEW last_preis_change AS
+    SELECT max(preis_change_journal.zeitpunkt) AS zeitpunkt, preis_change_journal.artikelid, preis_change_journal.prlsnr, preis_change_journal.mindestmenge FROM preis_change_journal GROUP BY preis_change_journal.artikelid, preis_change_journal.prlsnr, preis_change_journal.mindestmenge;
+
+
+--
+-- TOC entry 289 (OID 9459355)
+-- Name: rechnung_zahlungsart; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE rechnung_zahlungsart (
+    id integer NOT NULL,
+    kurzbezeichnung text NOT NULL,
+    bezeichnung text,
+    einzugrabatt numeric(3,1),
+    bankeinzug boolean,
+    zahlungsfrist numeric(3,0),
+    skontosatz_1 numeric(3,1),
+    skontofrist_1 numeric(3,0),
+    skontosatz_2 numeric(3,1),
+    skontofrist_2 numeric(3,0),
+    skontosatz_3 numeric(3,1),
+    skontofrist_3 numeric(3,0),
+    monatsende boolean,
+    verfahren text,
+    frist_monate numeric(2,0)
+);
+
+
+--
+-- TOC entry 290 (OID 9459355)
+-- Name: rechnung_zahlungsart; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE rechnung_zahlungsart FROM PUBLIC;
+GRANT SELECT ON TABLE rechnung_zahlungsart TO PUBLIC;
+
+
+--
+-- TOC entry 293 (OID 8949193)
+-- Name: ku_ansprech_kundennr_key; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX ku_ansprech_kundennr_key ON ku_ansprech USING btree (kundennr, persnr);
+
+
+--
+-- TOC entry 296 (OID 8949194)
+-- Name: artikelzusamm_key; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE INDEX artikelzusamm_key ON artikelzusammensetzung USING btree (id);
+
+
+--
+-- TOC entry 298 (OID 8949195)
+-- Name: prozesse_prozessid_key; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX prozesse_prozessid_key ON prozesse USING btree (prozessid);
+
+
+
+--
+-- TOC entry 306 (OID 8949201)
+-- Name: rechnungentry_pkey; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE INDEX rechnungentry_pkey ON rechnungentry USING btree (rngid);
+
+
+--
+-- TOC entry 312 (OID 8949203)
+-- Name: auftrag_pkey; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX auftrag_pkey ON auftrag USING btree (auftragid, instanz);
+
+
+--
+-- TOC entry 313 (OID 8949204)
+-- Name: auftrag_speed; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX auftrag_speed ON auftrag USING btree (auftragid, instanz, stat);
+
+
+--
+-- TOC entry 320 (OID 8949205)
+-- Name: banken_bankindex_key; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX banken_bankindex_key ON banken USING btree (bankindex);
+
+
+--
+-- TOC entry 329 (OID 8949207)
+-- Name: ku_warenkorb_kundennr_key; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX ku_warenkorb_kundennr_key ON ku_warenkorb USING btree (kundennr, suchfolge);
+
+
+--
+-- TOC entry 330 (OID 8949208)
+-- Name: ku_warenkorb_kundennr_key1; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX ku_warenkorb_kundennr_key1 ON ku_warenkorb USING btree (kundennr, prlsnr);
+
+
+--
+-- TOC entry 338 (OID 8949210)
+-- Name: ku_land_name; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX ku_land_name ON ku_land USING btree (name);
+
+
+--
+-- TOC entry 337 (OID 8949211)
+-- Name: ku_land_lkz; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX ku_land_lkz ON ku_land USING btree (lkz);
+
+
+--
+-- TOC entry 374 (OID 8949229)
+-- Name: preis_chjourn_artikel; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE INDEX preis_chjourn_artikel ON preis_change_journal USING btree (artikelid);
+
+
+--
+-- TOC entry 381 (OID 8949232)
+-- Name: ku_gruppe_name_key; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX ku_gruppe_name_key ON ku_gruppe USING btree (name);
+
+
+--
+-- TOC entry 390 (OID 8949233)
+-- Name: text_bausteine_idx; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX text_bausteine_idx ON text_bausteine USING btree (textid, sprid);
+
+
+--
+-- TOC entry 400 (OID 8949239)
+-- Name: kudnen_firma_idx; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE INDEX kudnen_firma_idx ON kunden USING btree (firma);
+
+
+--
+-- TOC entry 401 (OID 8949240)
+-- Name: kudnen_sort_idx; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE INDEX kudnen_sort_idx ON kunden USING btree (sortname);
+
+
+--
+-- TOC entry 403 (OID 8949241)
+-- Name: kunden_uniq; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX kunden_uniq ON kunden USING btree (sortname, ort);
+
+
+
+--
+-- TOC entry 410 (OID 8949244)
+-- Name: lfrsentryzusatz_idx; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE INDEX lfrsentryzusatz_idx ON lieferscheinentryzusatz USING btree (instanz, lfrsid, lfsznr);
+
+
+
+--
+-- TOC entry 314 (OID 8949248)
+-- Name: youraufnr_idx; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX youraufnr_idx ON auftrag USING btree (youraufnr, kundennr, stat);
+
+
+--
+-- TOC entry 426 (OID 8949252)
+-- Name: auftragentry_artikelid; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE INDEX auftragentry_artikelid ON auftragentry USING btree (artikelid);
+
+
+--
+-- TOC entry 428 (OID 8949253)
+-- Name: auftragentry_pkey; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX auftragentry_pkey ON auftragentry USING btree (auftragid, zeilennr, instanz);
+
+
+--
+-- TOC entry 427 (OID 8949254)
+-- Name: auftragentry_aufidinst; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE INDEX auftragentry_aufidinst ON auftragentry USING btree (auftragid, instanz);
+
+
+
+--
+-- TOC entry 325 (OID 8949257)
+-- Name: telefon_uniq; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX telefon_uniq ON ku_telefon USING btree (art, ldkenn, vorwahl, telnr, durchwahl, kundennr, persnr);
+
+
+--
+-- TOC entry 438 (OID 8949269)
+-- Name: fw_lager_buchung_new_artid; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE INDEX fw_lager_buchung_new_artid ON fw_lager_buchung USING btree (artikelid);
+
+
+--
+-- TOC entry 437 (OID 8949270)
+-- Name: fw_lager_buchung_lfrsid; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE INDEX fw_lager_buchung_lfrsid ON fw_lager_buchung USING btree (lfrsid);
+
+
+--
+-- TOC entry 441 (OID 8949273)
+-- Name: lager_bezeichnung_key; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX lager_bezeichnung_key ON lager USING btree (bezeichnung);
+
+
+--
+-- TOC entry 443 (OID 8949276)
+-- Name: ku_gruppen_map_kundennr_key; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX ku_gruppen_map_kundennr_key ON ku_gruppen_map USING btree (kundennr, grpnr);
+
+
+--
+-- TOC entry 445 (OID 8949277)
+-- Name: lieferscheinentry_artid; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE INDEX lieferscheinentry_artid ON lieferscheinentry USING btree (artikelid);
+
+
+--
+-- TOC entry 447 (OID 8949278)
+-- Name: ae_zo_alt; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE INDEX ae_zo_alt ON auftragsentryzuordnung USING btree (altinstanz, altauftragid, altzeilennr);
+
+
+--
+-- TOC entry 448 (OID 8949279)
+-- Name: ae_zo_neu; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE INDEX ae_zo_neu ON auftragsentryzuordnung USING btree (neuinstanz, neuauftragid, neuzeilennr);
+
+
+--
+-- TOC entry 449 (OID 8949280)
+-- Name: auftragsentryzuordnung_altauftr; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX auftragsentryzuordnung_altauftr ON auftragsentryzuordnung USING btree (altauftragid, altinstanz, altzeilennr, neuauftragid, neuinstanz, neuzeilennr, prioritaet);
+
+
+--
+-- TOC entry 451 (OID 8949282)
+-- Name: artikelpreise_uniq; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX artikelpreise_uniq ON artikelpreise USING btree (artikelid, kundennr, mindestmenge);
+
+
+--
+-- TOC entry 291 (OID 7693504)
+-- Name: artbez_anzeige_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY artbez_anzeige
+    ADD CONSTRAINT artbez_anzeige_pkey PRIMARY KEY (uid, artikeltyp, "schema");
+
+
+--
+-- TOC entry 292 (OID 7693534)
+-- Name: ku_briefanr_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY ku_briefanr
+    ADD CONSTRAINT ku_briefanr_pkey PRIMARY KEY (branr);
+
+
+--
+-- TOC entry 299 (OID 7693572)
+-- Name: artikelstamm_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY artikelstamm
+    ADD CONSTRAINT artikelstamm_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 300 (OID 7693581)
+-- Name: waehrung_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY waehrung
+    ADD CONSTRAINT waehrung_pkey PRIMARY KEY (wid);
+
+
+--
+-- TOC entry 301 (OID 7693588)
+-- Name: artbez_insert_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY artbez_insert
+    ADD CONSTRAINT artbez_insert_pkey PRIMARY KEY (tabelle);
+
+
+--
+-- TOC entry 316 (OID 7693639)
+-- Name: einheiten_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY einheiten
+    ADD CONSTRAINT einheiten_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 317 (OID 7693658)
+-- Name: prod_instanz_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY prod_instanz
+    ADD CONSTRAINT prod_instanz_pkey PRIMARY KEY (insid);
+
+
+--
+-- TOC entry 318 (OID 7693665)
+-- Name: global_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY global_settings
+    ADD CONSTRAINT global_settings_pkey PRIMARY KEY (userid, program, name);
+
+
+--
+-- TOC entry 321 (OID 7693692)
+-- Name: banken_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY banken
+    ADD CONSTRAINT banken_pkey PRIMARY KEY (blz);
+
+
+--
+-- TOC entry 324 (OID 7693714)
+-- Name: ku_telefon_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY ku_telefon
+    ADD CONSTRAINT ku_telefon_pkey PRIMARY KEY (telid);
+
+
+--
+-- TOC entry 336 (OID 7693768)
+-- Name: ku_preisliste_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY ku_preisliste
+    ADD CONSTRAINT ku_preisliste_pkey PRIMARY KEY (prlsnr);
+
+
+--
+-- TOC entry 339 (OID 7693775)
+-- Name: ku_land_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY ku_land
+    ADD CONSTRAINT ku_land_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 340 (OID 7693784)
+-- Name: sprache_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY sprache
+    ADD CONSTRAINT sprache_pkey PRIMARY KEY (sprid);
+
+
+--
+-- TOC entry 373 (OID 7693929)
+-- Name: new_rechnung_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY rechnung
+    ADD CONSTRAINT new_rechnung_pkey PRIMARY KEY (rngid);
+
+
+--
+-- TOC entry 382 (OID 7693994)
+-- Name: ku_gruppe_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY ku_gruppe
+    ADD CONSTRAINT ku_gruppe_pkey PRIMARY KEY (grpnr);
+
+
+--
+-- TOC entry 383 (OID 7694001)
+-- Name: artikelgruppen_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY artikelgruppen
+    ADD CONSTRAINT artikelgruppen_pkey PRIMARY KEY (bezeichnung);
+
+
+--
+-- TOC entry 402 (OID 7694102)
+-- Name: kunden_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY kunden
+    ADD CONSTRAINT kunden_pkey PRIMARY KEY (kundennr);
+
+
+--
+-- TOC entry 429 (OID 7694215)
+-- Name: prod_changejournal_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY prod_changejournal
+    ADD CONSTRAINT prod_changejournal_pkey PRIMARY KEY (chid, insid);
+
+
+--
+-- TOC entry 442 (OID 7694304)
+-- Name: lager_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY lager
+    ADD CONSTRAINT lager_pkey PRIMARY KEY (lagerid);
+
+
+--
+-- TOC entry 444 (OID 7694324)
+-- Name: lieferschein_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY lieferschein
+    ADD CONSTRAINT lieferschein_pkey PRIMARY KEY (lfrsid, instanz);
+
+
+--
+-- TOC entry 446 (OID 7694328)
+-- Name: lieferscheinentry_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY lieferscheinentry
+    ADD CONSTRAINT lieferscheinentry_pkey PRIMARY KEY (lfrsid, zeile, instanz);
+
+
+--
+-- TOC entry 452 (OID 9459360)
+-- Name: rechnung_zahlungsziel_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY rechnung_zahlungsart
+    ADD CONSTRAINT rechnung_zahlungsziel_pkey PRIMARY KEY (id);
+
+
+
+--
+-- TOC entry 463 (OID 8949286)
+-- Name: RI_ConstraintTrigger_8949286; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER INSERT OR UPDATE ON rechnungentry
+    FROM rechnung
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'rechnungentry', 'rechnung', 'UNSPECIFIED', 'rngid', 'rngid');
+
+
+--
+-- TOC entry 464 (OID 8949287)
+-- Name: RI_ConstraintTrigger_8949287; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER INSERT OR UPDATE ON rechnungentry
+    FROM lieferschein
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'rechnungentry', 'lieferschein', 'UNSPECIFIED', 'lfrsid', 'lfrsid');
+
+
+--
+-- TOC entry 465 (OID 8949288)
+-- Name: RI_ConstraintTrigger_8949288; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER UPDATE ON prod_instanz
+    FROM prod_changejournal
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
+
+
+--
+-- TOC entry 466 (OID 8949289)
+-- Name: RI_ConstraintTrigger_8949289; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER DELETE ON prod_instanz
+    FROM prod_changejournal
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
+
+
+--
+-- TOC entry 467 (OID 8949290)
+-- Name: RI_ConstraintTrigger_8949290; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER DELETE ON prod_instanz
+    FROM prod_changejournal
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
+
+
+--
+-- TOC entry 468 (OID 8949291)
+-- Name: RI_ConstraintTrigger_8949291; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER UPDATE ON prod_instanz
+    FROM prod_changejournal
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
+
+
+--
+-- TOC entry 479 (OID 8949298)
+-- Name: RI_ConstraintTrigger_8949298; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER INSERT OR UPDATE ON lkz_sprache
+    FROM ku_land
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'lkz_sprache', 'ku_land', 'UNSPECIFIED', 'lkz', 'lkz');
+
+
+--
+-- TOC entry 477 (OID 8949299)
+-- Name: RI_ConstraintTrigger_8949299; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER DELETE ON ku_land
+    FROM lkz_sprache
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'lkz_sprache', 'ku_land', 'UNSPECIFIED', 'lkz', 'lkz');
+
+
+--
+-- TOC entry 478 (OID 8949300)
+-- Name: RI_ConstraintTrigger_8949300; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER UPDATE ON ku_land
+    FROM lkz_sprache
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'lkz_sprache', 'ku_land', 'UNSPECIFIED', 'lkz', 'lkz');
+
+
+--
+-- TOC entry 481 (OID 8949304)
+-- Name: RI_ConstraintTrigger_8949304; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER INSERT OR UPDATE ON text_bausteine
+    FROM sprache
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'text_bausteine', 'sprache', 'UNSPECIFIED', 'sprid', 'sprid');
+
+
+
+--
+-- TOC entry 493 (OID 8949316)
+-- Name: RI_ConstraintTrigger_8949316; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER chjour_constr
+    AFTER UPDATE ON auftragentry
+    FROM prod_changejournal
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('chjour_constr', 'prod_changejournal', 'auftragentry', 'UNSPECIFIED', 'auftragid', 'auftragid', 'auftragzeile', 'zeilennr');
+
+
+--
+-- TOC entry 494 (OID 8949317)
+-- Name: RI_ConstraintTrigger_8949317; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER chjour_constr
+    AFTER DELETE ON auftragentry
+    FROM prod_changejournal
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_del" ('chjour_constr', 'prod_changejournal', 'auftragentry', 'UNSPECIFIED', 'auftragid', 'auftragid', 'auftragzeile', 'zeilennr');
+
+
+--
+-- TOC entry 495 (OID 8949318)
+-- Name: RI_ConstraintTrigger_8949318; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER INSERT OR UPDATE ON prod_changejournal
+    FROM prod_instanz
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
+
+--
+-- TOC entry 497 (OID 8949320)
+-- Name: RI_ConstraintTrigger_8949320; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER INSERT OR UPDATE ON ku_gruppen_map
+    FROM kunden
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'ku_gruppen_map', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
+
+
+--
+-- TOC entry 498 (OID 8949321)
+-- Name: RI_ConstraintTrigger_8949321; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER INSERT OR UPDATE ON ku_gruppen_map
+    FROM ku_gruppe
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'ku_gruppen_map', 'ku_gruppe', 'UNSPECIFIED', 'grpnr', 'grpnr');
+
+
+--
+-- TOC entry 499 (OID 8949322)
+-- Name: RI_ConstraintTrigger_8949322; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER DELETE ON lieferschein
+    FROM lieferscheinentry
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'lieferscheinentry', 'lieferschein', 'UNSPECIFIED', 'lfrsid', 'lfrsid');
+
+
+--
+-- TOC entry 500 (OID 8949323)
+-- Name: RI_ConstraintTrigger_8949323; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER UPDATE ON lieferschein
+    FROM lieferscheinentry
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'lieferscheinentry', 'lieferschein', 'UNSPECIFIED', 'lfrsid', 'lfrsid');
+
+
+--
+-- TOC entry 501 (OID 8949324)
+-- Name: RI_ConstraintTrigger_8949324; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER INSERT OR UPDATE ON lieferscheinentry
+    FROM auftrag
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'lieferscheinentry', 'auftrag', 'UNSPECIFIED', 'refauftragid', 'auftragid');
+
+
+
+--
+-- TOC entry 503 (OID 8949326)
+-- Name: rule_insert_inland_preise; Type: RULE; Schema: public; Owner: jacek
+--
+
+CREATE RULE rule_insert_inland_preise AS ON INSERT TO artikelpreise_inland DO INSTEAD INSERT INTO artikelpreise (artikelid, kundennr, preis, preismenge, waehrung, mindestmenge) SELECT new.artikelid, new.kundennr, new.preis, new.preismenge, new.waehrung, new.mindestmenge WHERE (new.kundennr = ANY (SELECT ku_preisliste.prlsnr FROM ku_preisliste WHERE (ku_preisliste.tablename_gruppe = ('inland'::bpchar)::text)));
+
+
+--
+-- TOC entry 504 (OID 8949327)
+-- Name: rule_delete_inland_preise; Type: RULE; Schema: public; Owner: jacek
+--
+
+CREATE RULE rule_delete_inland_preise AS ON DELETE TO artikelpreise_inland DO INSTEAD DELETE FROM artikelpreise WHERE (((artikelpreise.mindestmenge = old.mindestmenge) AND (artikelpreise.artikelid = old.artikelid)) AND (artikelpreise.kundennr = ANY (SELECT ku_preisliste.prlsnr FROM ku_preisliste WHERE ((ku_preisliste.tablename_gruppe = 'inland'::text) AND (ku_preisliste.prlsnr = old.kundennr)))));
+
+
+--
+-- TOC entry 505 (OID 8949328)
+-- Name: rule_update_inland_preise; Type: RULE; Schema: public; Owner: jacek
+--
+
+CREATE RULE rule_update_inland_preise AS ON UPDATE TO artikelpreise_inland DO INSTEAD UPDATE artikelpreise SET preis = new.preis, preismenge = new.preismenge, waehrung = new.waehrung, mindestmenge = new.mindestmenge WHERE (((artikelpreise.mindestmenge = old.mindestmenge) AND (artikelpreise.artikelid = old.artikelid)) AND (artikelpreise.kundennr = ANY (SELECT ku_preisliste.prlsnr FROM ku_preisliste WHERE ((ku_preisliste.tablename_gruppe = 'inland'::text) AND (ku_preisliste.prlsnr = old.kundennr)))));
+
+
+--
+-- TOC entry 506 (OID 8949329)
+-- Name: rule_insert_ausland_preise; Type: RULE; Schema: public; Owner: jacek
+--
+
+CREATE RULE rule_insert_ausland_preise AS ON INSERT TO artikelpreise_ausland DO INSTEAD INSERT INTO artikelpreise (artikelid, kundennr, preis, preismenge, waehrung, mindestmenge) SELECT new.artikelid, new.kundennr, new.preis, new.preismenge, new.waehrung, new.mindestmenge WHERE (new.kundennr = ANY (SELECT ku_preisliste.prlsnr FROM ku_preisliste WHERE (ku_preisliste.tablename_gruppe = ('ausland'::bpchar)::text)));
+
+
+--
+-- TOC entry 507 (OID 8949330)
+-- Name: rule_update_ausland_preise; Type: RULE; Schema: public; Owner: jacek
+--
+
+CREATE RULE rule_update_ausland_preise AS ON UPDATE TO artikelpreise_ausland DO INSTEAD UPDATE artikelpreise SET preis = new.preis, preismenge = new.preismenge, waehrung = new.waehrung, mindestmenge = new.mindestmenge WHERE (((artikelpreise.mindestmenge = old.mindestmenge) AND (artikelpreise.artikelid = old.artikelid)) AND (artikelpreise.kundennr = ANY (SELECT ku_preisliste.prlsnr FROM ku_preisliste WHERE ((ku_preisliste.tablename_gruppe = 'ausland'::text) AND (ku_preisliste.prlsnr = old.kundennr)))));
+
+
+--
+-- TOC entry 508 (OID 8949331)
+-- Name: rule_delete_ausland_preise; Type: RULE; Schema: public; Owner: jacek
+--
+
+CREATE RULE rule_delete_ausland_preise AS ON DELETE TO artikelpreise_ausland DO INSTEAD DELETE FROM artikelpreise WHERE (((artikelpreise.mindestmenge = old.mindestmenge) AND (artikelpreise.artikelid = old.artikelid)) AND (artikelpreise.kundennr = ANY (SELECT ku_preisliste.prlsnr FROM ku_preisliste WHERE ((ku_preisliste.tablename_gruppe = 'ausland'::text) AND (ku_preisliste.prlsnr = old.kundennr)))));
+
+
+--
+-- TOC entry 509 (OID 8949332)
+-- Name: rule_insert_ek_preise; Type: RULE; Schema: public; Owner: jacek
+--
+
+CREATE RULE rule_insert_ek_preise AS ON INSERT TO artikelpreise_ek DO INSTEAD INSERT INTO artikelpreise (artikelid, kundennr, preis, preismenge, waehrung, mindestmenge) SELECT new.artikelid, new.kundennr, new.preis, new.preismenge, new.waehrung, new.mindestmenge WHERE (new.kundennr = ANY (SELECT ku_preisliste.prlsnr FROM ku_preisliste WHERE (ku_preisliste.tablename_gruppe = ('ek'::bpchar)::text)));
+
+
+--
+-- TOC entry 510 (OID 8949333)
+-- Name: rule_delete_ek_preise; Type: RULE; Schema: public; Owner: jacek
+--
+
+CREATE RULE rule_delete_ek_preise AS ON DELETE TO artikelpreise_ek DO INSTEAD DELETE FROM artikelpreise WHERE (((artikelpreise.mindestmenge = old.mindestmenge) AND (artikelpreise.artikelid = old.artikelid)) AND (artikelpreise.kundennr = ANY (SELECT ku_preisliste.prlsnr FROM ku_preisliste WHERE ((ku_preisliste.tablename_gruppe = 'ek'::text) AND (ku_preisliste.prlsnr = old.kundennr)))));
+
+
+--
+-- TOC entry 511 (OID 8949334)
+-- Name: rule_update_ek_preise; Type: RULE; Schema: public; Owner: jacek
+--
+
+CREATE RULE rule_update_ek_preise AS ON UPDATE TO artikelpreise_ek DO INSTEAD UPDATE artikelpreise SET preis = new.preis, preismenge = new.preismenge, waehrung = new.waehrung, mindestmenge = new.mindestmenge WHERE (((artikelpreise.mindestmenge = old.mindestmenge) AND (artikelpreise.artikelid = old.artikelid)) AND (artikelpreise.kundennr = ANY (SELECT ku_preisliste.prlsnr FROM ku_preisliste WHERE ((ku_preisliste.tablename_gruppe = 'ek'::text) AND (ku_preisliste.prlsnr = old.kundennr)))));
+
+
