@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.cc,v 1.11 2003/01/08 09:46:57 christof Exp $ */
+/* $Id: KettenGarn.cc,v 1.12 2004/03/11 15:31:17 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -20,7 +20,6 @@
 #include <Misc/FetchIStream.h>  
 #include <Ketten/KettenGarn.h>
 #include <Ketten/ArtikelGang.h>
-#include <sqlca.h>
 
 void KettenGarn::setWiederholung(const ArtikelGang &AG,std::string s)  throw(SQLerror)
 {
@@ -62,9 +61,9 @@ void KettenGarn::deleteKombiniert(const Kettscheibe::st_kombi &AG1,const Artikel
       +itos(AG2.Artikel().Id())+","
       +itos(AG2.Gaenge())+","
       +itos(Index2)+")";
-  Query::Execute(S); 
+  Query q(S); 
   SQLerror::test(__FILELINE__,100);
-  if(sqlca.sqlcode)
+  if(q.Result())
    {
     S="delete from ketten_kombiniert where "
       "(artikel1,gang1,kettenindex1,artikel2,gang2,kettenindex2) "
