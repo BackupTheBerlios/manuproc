@@ -337,7 +337,7 @@ void Artikeleingabe::on_Artikel_Bestellen_activate()
   artikelbox->set_value(von_artikel);
   on_neuladen_clicked();
 
-  von_artikel = dt->Artikel2();
+  von_artikel = artikelboxb->get_Artikel();
   Loeschen_von(von_artikel);
 }
 
