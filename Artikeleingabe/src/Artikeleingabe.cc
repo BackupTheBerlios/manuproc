@@ -15,6 +15,8 @@
 #include <unistd.h>
 #include "MyMessage.h"
 #include <Misc/FILEstream.h>
+#include <gtkmm/separatortoolitem.h>
+#include <glibmm/main.h>
 
 #define D(x) 
 //cerr << x << '\n'
@@ -317,6 +319,13 @@ void Artikeleingabe::set_Prozess()
 
 }
 
+static void clear(Gtk::Container *cont)
+{ while (!cont->get_children().empty())
+  { cont->remove(**(cont->get_children().begin()));
+  }
+}
+
+// so ein Schwachsinn, sollte eher den Text ändern, als alles neu zu erzeugen
 void Artikeleingabe::Loeschen_von(const ArtikelBase& art)
 {
   if(!art) return;
@@ -324,22 +333,29 @@ void Artikeleingabe::Loeschen_von(const ArtikelBase& art)
 //  std::string button_text2 = "Artikel\n"+cH_ArtikelBezeichnung(art)->Bezeichnung();
   std::string button_text  = "Lösche\n"+cH_ArtikelBezeichnung(art,artikelbox->getBezSchema()->Id())->Bezeichnung();
   std::string button_text2 = "Artikel\n"+cH_ArtikelBezeichnung(art,artikelbox->getBezSchema()->Id())->Bezeichnung();
-  toolbar_loeschen->tools().clear();
-  button_artikel_delete = Gtk::wrap((GtkButton*)gtk_toolbar_append_element
-   (Gtk::TOOLBAR(toolbar_loeschen->gobj()), Gtk::TOOLBAR_CHILD_BUTTON, 0, 
-    button_text.c_str(),0, 0, Gtk::WIDGET(gnome_stock_pixmap_widget
-      (Gtk::WIDGET(toolbar_loeschen->gobj()), GNOME_STOCK_PIXMAP_NOT)), 0, 0));
-  toolbar_loeschen->tools().push_back(Gtk::Toolbar_Helpers::Space());
-  button_artikel_wechsel= Gtk::wrap((GtkButton*)gtk_toolbar_append_element
-   (Gtk::TOOLBAR(toolbar_loeschen->gobj()), Gtk::TOOLBAR_CHILD_BUTTON, 0, 
-    button_text2.c_str(),0, 0, Gtk::WIDGET(gnome_stock_pixmap_widget
-      (Gtk::WIDGET(toolbar_loeschen->gobj()), GNOME_STOCK_PIXMAP_FORWARD)), 0, 0));
+  clear(toolbar_loeschen);
+//  toolbar_loeschen->tools().clear();
+  Gtk::Image *button_artikel_delete_img = Gtk::manage(new class Gtk::Image(Gtk::StockID("gtk-stock-not"), Gtk::IconSize(3)));
+  button_artikel_delete = Gtk::manage(new class Gtk::ToolButton(*button_artikel_delete_img,
+		button_text));
+  button_artikel_delete_img->show();
+  button_artikel_delete->show();
+  toolbar_loeschen->append(*button_artikel_delete);
+  Gtk::SeparatorToolItem *separatortoolitem1 = Gtk::manage(new class Gtk::SeparatorToolItem());
+  separatortoolitem1->show();
+  toolbar_loeschen->append(*separatortoolitem1);
+  Gtk::Image *button_artikel_wechsel_img = Gtk::manage(new class Gtk::Image(Gtk::StockID("gtk-go-forward"), Gtk::IconSize(3)));
+  button_artikel_wechsel = Gtk::manage(new class Gtk::ToolButton(*button_artikel_wechsel_img, button_text2));
+  button_artikel_wechsel_img->show();
+  button_artikel_wechsel->show();
+  toolbar_loeschen->append(*button_artikel_wechsel);
+
   button_artikel_delete ->signal_clicked().connect(SigC::slot(*static_cast<class  Artikeleingabe*>(this), &Artikeleingabe::on_button_artikel_delete_clicked));
   button_artikel_wechsel->signal_clicked().connect(SigC::slot(*static_cast<class  Artikeleingabe*>(this), &Artikeleingabe::on_button_artikel_wechsel_clicked));
   toolbar_loeschen->show();
 }
 
-void Artikeleingabe::on_unselect_row(gint row, gint column, GdkEvent *event)
+void Artikeleingabe::on_unselect_row()
 {
  toolbar_loeschen->hide();
 // frame_artikel->set_sensitive(false);
@@ -400,7 +416,7 @@ void Artikeleingabe::optionmenu_bestellen_bei_activate()
 void Artikeleingabe::warnung(std::string s)
 {
   label_warnung->set_text(s);
-  des = Gtk::Main::signal_timeout().connect(slot(this,&Artikeleingabe::timeout_warnung),4000);
+  des = Glib::signal_timeout().connect(SigC::slot(*this,&Artikeleingabe::timeout_warnung),4000);
 }
 
 gint Artikeleingabe::timeout_warnung()
@@ -425,10 +441,8 @@ void Artikeleingabe::set_tree_titels()
  		i!=instanz_spalte.end();++i)
     t.push_back((*i)->get_Name());
  tree->setTitles(t);
- for (unsigned int i=0;i<instanz_spalte.size();++i)
-    tree->column(i).set_visiblity(true);
- for (unsigned int i=instanz_spalte.size();i<tree->Cols();++i)
-    tree->column(i).set_visiblity(false);
+ for (unsigned i=0;i<tree->Cols();++i)
+    tree->set_column_visibility(i,i<instanz_spalte.size());
 // tree->show_titles(false);
 }
 
@@ -442,9 +456,6 @@ void Artikeleingabe::on_togglebutton_edit_toggled()
 }
 
 
-#include "../src/stock_button_apply.xpm"
-#include "../src/stock_button_cancel.xpm"
-
 void Artikeleingabe::eingabe_activate()
 {
 //  ArtikelBase artikel=fuer_artikel;
@@ -454,9 +465,9 @@ void Artikeleingabe::eingabe_activate()
   cH_ArtikelBezeichnung::Deregister(artikelbox->getBezSchema()->Id(),
 				    artikelbox->get_value().Id());
   artikelbox->set_value(artikelbox->get_value());
-  pixmap_edit->set(stock_button_apply_xpm);
+  pixmap_edit->set(Gtk::StockID("gtk-stock-apply"), Gtk::IconSize(3));
   while(Gtk::Main::events_pending()) Gtk::Main::iteration() ;
-  des = Gtk::Main::signal_timeout().connect(slot(this,&Artikeleingabe::timeout_save_edited_artikel),4000);
+  des = Glib::signal_timeout().connect(SigC::slot(*this,&Artikeleingabe::timeout_save_edited_artikel),4000);
  }catch(SQLerror &e) {mess->Show(e);}
 }
 
@@ -470,7 +481,7 @@ void Artikeleingabe::on_einheit_activate()
 
 gint Artikeleingabe::timeout_save_edited_artikel()
 {
-  pixmap_edit->set(stock_button_cancel_xpm);
+  pixmap_edit->set(Gtk::StockID("gtk-stock-cancel"), Gtk::IconSize(3));
   return 0;
 }
 
@@ -497,9 +508,9 @@ void Artikeleingabe::on_alias_eingabe_activate()
     save_edited_artikel2();
   cH_ArtikelBezeichnung::Deregister(alias_schema->get_value(),
 				    artikelbox->get_value().Id());  
-  alias_pixmap->set(stock_button_apply_xpm);
+  alias_pixmap->set(Gtk::StockID("gtk-stock-apply"), Gtk::IconSize(3));
   while(Gtk::Main::events_pending()) Gtk::Main::iteration() ;
-  des2 = Gtk::Main::signal_timeout().connect(slot(this,&Artikeleingabe::timeout_save_edited_artikel2),4000);
+  des2 = Glib::signal_timeout().connect(SigC::slot(*this,&Artikeleingabe::timeout_save_edited_artikel2),4000);
   }
   catch(SQLerror &e)
     {std::cerr<<e<<'\n';
@@ -515,7 +526,7 @@ void Artikeleingabe::on_alias_eingabe_activate()
 
 gint Artikeleingabe::timeout_save_edited_artikel2()
 {
-  alias_pixmap->set(stock_button_cancel_xpm);
+  alias_pixmap->set(Gtk::StockID("gtk-stock-cancel"), Gtk::IconSize(3));
   return 0;
 }
 
@@ -536,7 +547,7 @@ void Artikeleingabe::on_button_drucken_clicked()
    Gtk2TeX::Header(os,hf);   
    Gtk2TeX::TableFlags tf;   
 //   tf.element_cb=&scale;     
-   Gtk2TeX::CList2Table(os,tree,tf);
+   Gtk2TeX::TreeView2Table(os,tree,tf);
    Gtk2TeX::Footer(os);
    os.close();
    pclose(f); 
