@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.18 2003/09/15 14:58:29 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.19 2003/12/03 12:27:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -68,7 +68,7 @@ AufEintragBase AufEintrag::ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
    // Im Lager von späteren Aufträgen vorgemerkte Menge wegschnappen
    if (menge>0 && wo->LagerInstanz())
    {  M_dispo=min(AIL.getMengePlan(),menge);
-      menge-=AIL.reduce_in_plan(M_dispo,ElternAEB);
+      if (!!M_dispo) menge-=AIL.reduce_in_plan(M_dispo,ElternAEB);
    }
    // Rest nachbestellen
    AuftragBase ab(wo,ungeplante_id);

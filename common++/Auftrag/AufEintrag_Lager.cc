@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.29 2003/12/03 09:58:40 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.30 2003/12/03 12:27:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -128,6 +128,7 @@ struct AufEintrag::Auslagern_cb : public auf_positionen_verteilen_cb
 	}
 };
 
+// static
 AuftragBase::mengen_t AufEintrag::Auslagern
 	(const AuftragBase &ab,const ArtikelBase &artikel,mengen_t menge, 
 	 bool fuer_auftraege,
@@ -164,17 +165,18 @@ AufEintragBase AufEintrag::default_opfer(cH_ppsInstanz i,mengen_t menge,const Ar
 AufEintragBase (*AufEintrag::opfer_auswaehlen)(cH_ppsInstanz,mengen_t,const ArtikelBase &)
 	= &AufEintrag::default_opfer;
 
+// Zuordnung muss Instanz darüber machen (Ausnahme: 0er Pfeil anlegen)
+		// warum? - ändern?
+// member
 AuftragBase::mengen_t AufEintrag::Auslagern
-	(mengen_t menge, const ProductionContext &ctx,
-		bool fuer_auftraege)
+	(mengen_t menge, const ProductionContext &ctx,bool fuer_auftraege)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
-		NV("ctx",ctx),NV("menge",menge));
+		NV("ctx",ctx),NV("menge",menge),NV("fuer_auftraege",fuer_auftraege));
    assert(ctx.aeb.valid());
    assert(Id()==plan_auftrag_id || Id()==ungeplante_id);
 
    if (Id()==plan_auftrag_id)
-   {  // Zuordnung muss Instanz darüber machen (Ausnahme: 0er Pfeil anlegen)
-      if (fuer_auftraege) 
+   {  if (fuer_auftraege) 
       {  abschreiben(menge);
          // wird für AP gebraucht
          if (menge>0) AufEintragZu(ctx.aeb).Neu(*this,0);
@@ -209,16 +211,25 @@ AuftragBase::mengen_t AufEintrag::Auslagern
 // müsste Produzierte Menge unten löschen wenn nicht prod_selbst!
      while (!!brauch_noch)
      {AufEintragBase opfer=(*opfer_auswaehlen)(Instanz(),brauch_noch,Artikel());
+      ManuProC::Trace(trace_channel,"",NV("opfer",opfer));
       if (!opfer)
-      {  std::cerr << "LOG: ausgeliefert ohne Lagerinhalt\n";
+      {  std::cerr << "LOG: ausgeliefert ohne Lagermenge von "<< Artikel()<<"\n";
          brauch_noch=0;
       }
-      else
-         brauch_noch=AufEintrag(opfer).Auslagern(brauch_noch,ctx,false);
+      else 
+      {  AufEintrag opfer2(opfer);
+         mengen_t M=AuftragBase::min(brauch_noch,opfer2.getRestStk());
+         if (!!M)
+         {  // Menge verschwindet einfach aus dem Lager
+            opfer2.MengeNeubestellen(M);
+            // taucht einfach so wieder auf
+            opfer2.MengeAendern(M,false,AufEintragBase());
+            // produzieren
+            opfer2.Auslagern(M,ctx,true);
+            brauch_noch-=M;
+         }
+      }
      }
-      // produzieren
-      unbestellteMengeProduzieren(Instanz(),Artikel(),menge,true,
-      		ctx.aeb/*oder *this?*/,ctx.leb,getLieferdatum());
    }
    return 0;
 }
@@ -392,14 +403,13 @@ void AufEintrag::Einlagern2(mengen_t M,
       if (!getRestStk()) setStatus(AufStatVal(CLOSED),true);
    }
    else // M>0
-   {  // hier stand mal false - wozu?
-      // true bewirkt in AP dass gelieferte Menge im Einkauf abbestellt wird
+   {  // true bewirkt in AP dass gelieferte Menge im Einkauf abbestellt wird
       // false bewirkt in L dass geliefert und nicht abbestellt wird
       bool instanzen=(Id()==ungeplante_id && Instanz()->AutomatischEinlagern());
       MengeAendern(-M,instanzen,elter_alt);
       AuftragBase zielauftrag(Instanz(),plan_auftrag_id);
       neuerAEB=AufEintragBase(zielauftrag,
-         		zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),OPEN));
+         	zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),OPEN));
       AufEintrag ae(neuerAEB);
       ae.MengeAendern(M,false,elter_neu);
       if (ctx.aeb.valid()) // nach unten verzeigern
