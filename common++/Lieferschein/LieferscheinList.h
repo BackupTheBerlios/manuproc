@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList.h,v 1.15 2003/02/03 10:49:55 christof Exp $ */
+/* $Id: LieferscheinList.h,v 1.16 2003/02/04 11:12:27 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -77,7 +77,7 @@ public:
  void setFromDate(const ManuProC::Datum _vom) { vom=_vom;}
  void setToDate(const ManuProC::Datum _bis) { bis=_bis;}
  void setForInstanz(cH_ppsInstanz inst) { instanz=inst;}
- void setWithZusatzinfo(bool zi) __deprecated { }
+ __deprecated void setWithZusatzinfo(bool zi) { }
  void setForArtikeltyp(const ArtikelTyp::ID atid) { arttyp=atid;}
  void setHoleEntries(bool he) { hole_entries=he; }
  void reset(); 

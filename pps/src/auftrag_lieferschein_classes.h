@@ -14,7 +14,7 @@
 #include<Artikel/ArtikelBezeichnung.h>
 #include<Artikel/Einheiten.h>
 #include<Auftrag/AufEintrag.h>
-#include <Instanzen/ppsInstanzProduziert.h>
+#include <Auftrag/ppsInstanzProduziert.h>
 #include <unistd.h>
 
 
