@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnungEntry.h,v 1.8 2003/12/16 15:36:47 jacek Exp $ */
+/* $Id: ProvAbrechnungEntry.h,v 1.9 2004/01/28 16:31:24 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -67,7 +67,8 @@ public:
  static void newAbrechnungEntries(
  	const ManuProcEntity<>::ID _abrnr, 
  	const Kunde::ID _verknr, const Rechnung &rng) throw(SQLerror);
- 	
+ int RgZeilennr() const { return rngentry.Zeile(); }
+ RechnungBase::ID RgId() const { return rngentry.Id(); }
 };
 
 #endif
