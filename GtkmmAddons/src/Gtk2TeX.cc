@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: Gtk2TeX.cc,v 1.6 2003/11/11 12:53:55 christof Exp $
+// $Id: Gtk2TeX.cc,v 1.7 2003/11/12 10:35:29 christof Exp $
 
 #include "Gtk2TeX.h"
 #include "gtkhacks.h"
@@ -28,7 +28,7 @@ static bool is_lines(const std::string &s)
    return true;
 }
 
-static Glib::ustring get_text(const Gtk::TreeModel::iterator &y,const Gtk::TreeViewColumn*col)
+static Glib::ustring get_text(const Gtk::TreeModel::const_iterator &y,const Gtk::TreeViewColumn*col)
 {  int column=get_ModelColumn(col,"text");
    if (!column==-1) return std::string();
    Glib::ustring content;
@@ -37,7 +37,7 @@ static Glib::ustring get_text(const Gtk::TreeModel::iterator &y,const Gtk::TreeV
 }
 
 static void TreeView2Table_sub(std::ostream &os,const Gtk::TreeView *cl,
-	const Gtk2TeX::TableFlags &fl,const Gtk::TreeModel::iterator &y,
+	const Gtk2TeX::TableFlags &fl,const Gtk::TreeModel::const_iterator &y,
 	bool is_last_line)
 {  bool has_lines(false),has_text(false);
    int col(1);
@@ -84,9 +84,18 @@ static void TreeView2Table_sub(std::ostream &os,const Gtk::TreeView *cl,
       }
    }
    if (fl.postline_cb) (*fl.postline_cb)(os,y,fl.user_data);
-   if ((has_text || !has_lines) && !is_last_line)
+   bool visible_children=const_cast<Gtk::TreeView*>(cl)
+   		->row_expanded(cl->get_model()->get_path(y))
+   	 && !y->children().empty();
+   if ((has_text || !has_lines) 
+       && !(is_last_line && !visible_children))
    	// Nur clines und letzte Zeile erfordern kein '\\'
       os << "\\\\\n";
+      
+   if (visible_children)
+      for (Gtk::TreeModel::Children::const_iterator i=y->children().begin();
+   		i!=y->children().end();++i)
+         TreeView2Table_sub(os,cl,fl,i,is_last_line?(i+1!=y->children().end()):false);
 }
 
 std::ostream &Gtk2TeX::TreeView2Table(std::ostream &os,const Gtk::TreeView *cl,const TableFlags &fl)
@@ -127,13 +136,6 @@ std::ostream &Gtk2TeX::TreeView2Table(std::ostream &os,const Gtk::TreeView *cl,c
    }
 
 #if 0   
-   if (fl.selection && fl.selection->begin()!=fl.selection->end())
-   {  Gtk::CList::SelectionList::iterator yend(fl.selection->end()),last(yend);
-      --last;
-      for (Gtk::CList::SelectionList::iterator 
-      				y=fl.selection->begin();y!=yend;++y)
-      	 CList2Table_sub(os,cl,fl,*y,y==last);
-   }
    else if ((fl.first_line!=0 || fl.last_line!=-1) 
    	&& cl->rows().begin()!=cl->rows().end())  // empty() is non const :-(
    {  guint last=fl.last_line;
@@ -142,13 +144,17 @@ std::ostream &Gtk2TeX::TreeView2Table(std::ostream &os,const Gtk::TreeView *cl,c
       for (guint y=fl.first_line;y<=last;++y)
       	 CList2Table_sub(os,cl,fl,cl->row(y),y==last);
    }
-   else
-   {  Gtk::CList::RowList::iterator yend(cl->rows().end()),last(yend);
-      --last;
-      for (Gtk::CList::RowList::iterator y=cl->rows().begin();y!=yend;++y)
-         CList2Table_sub(os,cl,fl,*y,y==last);
-   }
 #endif   
+   if (fl.selection) //  && fl.selection->begin()!=fl.selection->end())
+   {  TreeView2Table_sub(os,cl,fl,fl.selection,true);
+   }
+   else
+   {  Gtk::TreeModel::const_iterator yend(const_cast<Gtk::TreeView*>(cl)->get_model()->children().end());
+      // no working const_iterator yet ...   
+      for (Gtk::TreeModel::iterator y=const_cast<Gtk::TreeView*>(cl)->get_model()->children().begin();y!=yend;++y)
+         TreeView2Table_sub(os,cl,fl,y,y+1!=yend);
+   }
+   
    if (fl.postlist_cb) (*fl.postlist_cb)(os,fl.user_data);
    if (fl.environment)
       os << "\\end{" << (fl.longtable?"longtable":"tabular") << "}";

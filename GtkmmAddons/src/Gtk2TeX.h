@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: Gtk2TeX.h,v 1.5 2003/11/11 12:07:36 christof Exp $
+// $Id: Gtk2TeX.h,v 1.6 2003/11/12 10:35:29 christof Exp $
 
 #include <TeX.h>
 #include <iostream>
@@ -27,8 +27,8 @@ namespace Gtk2TeX
 
 	typedef std::string (*ColumnType_cb)(int col,const std::string &typ,const std::string &title,gpointer user_data);
 	typedef std::string (*ColumnTitle_cb)(int col,const std::string &title,gpointer user_data);
-	typedef std::string (*Element_cb)(const Gtk::TreeModel::iterator &r,int col,const std::string &text,gpointer user_data);
-	typedef void (*Row_cb)(std::ostream &o,const Gtk::TreeModel::iterator &r,gpointer user_data);
+	typedef std::string (*Element_cb)(const Gtk::TreeModel::const_iterator &r,int col,const std::string &text,gpointer user_data);
+	typedef void (*Row_cb)(std::ostream &o,const Gtk::TreeModel::const_iterator &r,gpointer user_data);
 	struct TableFlags
 	{	bool longtable:1;
 		bool headline:1; // output ...\endhead
@@ -37,9 +37,12 @@ namespace Gtk2TeX
 		ColumnType_cb columntype_cb;
 		Row_cb preline_cb,postline_cb;
 		Simple_cb prehead_cb,posthead_cb,postlist_cb;
-		Glib::RefPtr<Gtk::TreeSelection> selection;
+		
+		// e.g. by tv->get_selection()->get_selected(tv->get_model());
+		Gtk::TreeModel::const_iterator selection;
+		// Glib::RefPtr<Gtk::TreeSelection> selection;
 		// there's no selection ctor ... so 
-		gint first_line,last_line;
+//		gint first_line,last_line; // perhaps as paths ?
 		gpointer user_data;
 		ColumnTitle_cb columntitle_cb;
 		Element_cb element_cb;
@@ -49,7 +52,7 @@ namespace Gtk2TeX
 		  multicolumn(0),
 		  columntype_cb(0), preline_cb(0), postline_cb(0),
 		  prehead_cb(0), posthead_cb(0), postlist_cb(0),
-		  first_line(0), last_line(-1),
+//		  first_line(0), last_line(-1),
 		  user_data(0), columntitle_cb(0),
 		  element_cb(0)
 		{}
