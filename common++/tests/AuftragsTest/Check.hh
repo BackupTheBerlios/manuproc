@@ -1,6 +1,7 @@
-// $Id: Check.hh,v 1.27 2003/06/23 12:23:57 christof Exp $
+// $Id: Check.hh,v 1.28 2003/07/16 11:49:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, 
+ *  written by Malte Thoma + Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,7 +18,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
+#ifndef MPC_CHECK_HH
+#define MPC_CHECK_HH
 #include <Artikel/ArtikelBaum.h>
 #include <Artikel/Prozess.h>
 #include <Lager/LagerPlatz.hh>
@@ -47,3 +49,5 @@ class Check
 
 Check::was_checken operator|(Check::was_checken a, Check::was_checken b);
 bool operator&(Check::was_checken a, Check::was_checken b);
+
+#endif

@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.39 2003/07/16 07:41:35 christof Exp $
+// $Id: steuerprogramm.hh,v 1.40 2003/07/16 11:49:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -49,6 +49,7 @@
 #include <Artikel/ArtikelBase.h>
 #include <Auftrag/auftrag_status.h>
 #include <Instanzen/ppsInstanz.h>
+#include "Check.hh"
 
 #ifdef PETIG_TEST
 
@@ -122,5 +123,9 @@
 #endif
 
 #define UID 1001
+
+// convenience functions
+void vergleichen(Check::was_checken w, const std::string &zusatz,
+        const std::string &name, const std::string &graphname, bool vor_dem_test_reparieren=false);
 
 #endif

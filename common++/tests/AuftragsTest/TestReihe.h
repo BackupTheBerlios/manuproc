@@ -22,16 +22,22 @@
 
 struct TestReihe
 {	typedef bool (*callback_t)(); // Rückgabe bislang ignoriert
+	typedef bool (*callback_auftrag_t)(AufEintrag &);
 
 	callback_t aufruf;
+	callback_auftrag_t aufruf_mit_auftrag;
 	std::string kuerzel,bezeichnung;
-	bool auftrag_anlegen;
 	TestReihe *next;
 	
 	static TestReihe *first;
 	
-	TestReihe(callback_t cb,const std::string &k,const std::string &b,bool aa=true)
-		: aufruf(cb), kuerzel(k), bezeichnung(b), auftrag_anlegen(aa), 
+	TestReihe(callback_t cb,const std::string &b,const std::string &k)
+		: aufruf(cb), aufruf_mit_auftrag(), kuerzel(k), bezeichnung(b),
+		  next(first)
+	{  first=this;
+	}
+	TestReihe(callback_auftrag_t cb,const std::string &b,const std::string &k)
+		: aufruf(), aufruf_mit_auftrag(cb), kuerzel(k), bezeichnung(b),
 		  next(first)
 	{  first=this;
 	}
