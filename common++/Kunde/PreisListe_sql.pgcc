@@ -1,5 +1,5 @@
 
-// $Id: PreisListe_sql.pgcc,v 1.13 2004/08/14 14:27:03 jacek Exp $
+// $Id: PreisListe_sql.pgcc,v 1.14 2005/02/04 16:25:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -56,7 +56,7 @@ PreisListe::PreisListe(ID _id) throw(SQLerror)
    exec sql end declare section;
 
    exec sql select coalesce(notiz,''),waehrungid,
-	bruttosatz,art, tablename_gruppe
+	bruttosatz,coalesce(art,''), tablename_gruppe
 	into :NAME,:WAEHID,:BRUTTOSATZ:IBRUTTOSATZ,:ART,
 		:TABLENAMEGRP:ITABLENAMEGRP
       from ku_preisliste
