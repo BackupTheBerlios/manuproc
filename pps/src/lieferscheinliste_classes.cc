@@ -2,7 +2,6 @@
 #include "lieferscheinliste_classes.hh"
 #include <Misc/EntryValueIntString.h>
 #include <Misc/EntryValueDatum.h>
-#include <Misc/EntryValueQuartal.h>
 
 
 const cH_EntryValue Data_LListe::Value(guint seqnr,gpointer gp) const

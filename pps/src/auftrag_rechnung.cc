@@ -536,8 +536,8 @@ auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
   preis_ergaenzen->hide();
  _tooltips.set_tip(*button27,"Linke Maustaste: N Orig. (Brief) + N Kopien (Weiß). "
 		"Mittlere Maustaste: 1 Kopie (Weiß oder Brief)","");
-  std::string nuraktiv(" and coalesce(aktiv,true)=true");
-  lieferkunde->Einschraenkung(nuraktiv,true);
+//  std::string nuraktiv(" and coalesce(aktiv,true)=true");
+//  lieferkunde->Einschraenkung(nuraktiv,true);
   lieferkunde->EinschraenkenKdGr(KundengruppeID::Auftragsadresse);      
   lieferkunde->setExpandStr1(true);
   lieferkunde->setExpandStr2(true);

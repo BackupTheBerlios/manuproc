@@ -1,4 +1,4 @@
-/* $Id: EntryValueDatum.cc,v 1.8 2002/10/24 14:06:49 thoma Exp $ */
+/* $Id: EntryValueDatum.cc,v 1.9 2003/10/09 12:37:51 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -105,4 +105,34 @@ const std::string EntryValueKalenderwoche::getStrVal() const
 }
 
 
+
+///////////////////////////////////////////////////////////////////////
+
+
+bool EntryValueQuartal::operator==(const EntryValueBase &v) const
+{ 
+ try{
+    const EntryValueQuartal &b=dynamic_cast<const EntryValueQuartal &>(v);
+    return (jahr==b.jahr && quartal==b.quartal);
+    } 
+    catch (std::bad_cast &e)
+    {  return false;
+    }
+}
+
+bool EntryValueQuartal::operator<(const EntryValueBase &v) const
+{  try
+   {  const EntryValueQuartal &b=dynamic_cast<const EntryValueQuartal &>(v);
+     if(jahr*10000+quartal < (b.jahr*10000+b.quartal)) return true;
+     return false;
+   } catch (std::bad_cast &e)
+   {  return false;
+   }
+}
+
+
+const std::string EntryValueQuartal::getStrVal() const
+{
+ return itos(quartal)+".Q/"+itos(jahr);
+}
 

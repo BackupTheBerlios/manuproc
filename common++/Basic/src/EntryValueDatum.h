@@ -1,4 +1,4 @@
-/* $Id: EntryValueDatum.h,v 1.8 2002/10/24 14:06:49 thoma Exp $ */
+/* $Id: EntryValueDatum.h,v 1.9 2003/10/09 12:37:51 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -93,6 +93,30 @@ class cH_EntryValueKalenderwoche : public cH_EntryValue
 public:
  cH_EntryValueKalenderwoche(const Kalenderwoche &v) 
  : cH_EntryValue(new EntryValueKalenderwoche(v)) {}
+};
+
+/////////////////////////////////////////////////////////////////////
+
+class EntryValueQuartal : public EntryValueBase
+{
+ int quartal;
+ int jahr;
+ 
+public:
+ EntryValueQuartal(const ManuProC::Datum &v) 
+ : quartal(v.Quartal()),jahr(v.Jahr()) {}
+   
+ virtual bool operator==(const EntryValueBase &v) const;
+ virtual bool operator<(const EntryValueBase &v) const;
+ virtual int getIntVal() const { return jahr*10000+quartal;}
+ virtual const std::string getStrVal() const;
+};
+
+class cH_EntryValueQuartal : public cH_EntryValue
+{
+public:
+ cH_EntryValueQuartal(const ManuProC::Datum &v) 
+ : cH_EntryValue(new EntryValueQuartal(v)) {}
 };
 
 
