@@ -1,4 +1,4 @@
-// $Id: window1.cc,v 1.5 2001/08/20 08:32:20 christof Exp $
+// $Id: window1.cc,v 1.6 2001/09/19 15:00:04 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,6 +25,7 @@
 
 #include "window1.hh"
 #include <gtk--/main.h>
+#include <Artikel/ArtikelBezeichnung.h>
 
 void window1::andererKunde()
 {  artikelbox->setExtBezSchema(cH_Kunde(kundenbox->get_value())->getSchema());
@@ -46,11 +47,16 @@ void window1::on_reset()
 void window1::on_show_clicked()
 {  std::cout << "Datum "<<datum->get_value() << '\n';
    std::cout << "Prozess " << prozess->get_value()->Id() << '\n';
-   std::cout << "Artikel "<<artikelbox->get_value().Id() << '\n';
+   if (artikelbox->get_value().Id())
+    {
+      ArtikelBezeichnung AB(artikelbox->get_value().Id());
+      std::cout << "Artikel "<<artikelbox->get_value().Id() <<'\t'<<AB.Bezeichnung() <<'\n';
+    }   
    std::cout << "Kunde " << kundenbox->get_value() << '\n';
 //   std::cout << "Waehrung "<< WWaehrung->Langbezeichnung()<<"\t"<<WWaehrung->Kurzbezeichnung()<<"\n";
    std::cout << "Preis " << WPreis->get_Betrag()<<"\n";
-//WWaehrung->set_History(Waehrung::EUR);
+//WWaehrung->set_History(Waehrung::USD);
+//WPreis->set_Waehrung(Waehrung::USD);
 }
 
 void window1::on_show_complete()

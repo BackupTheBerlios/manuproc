@@ -65,12 +65,6 @@ void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned int sp,u
   }
  else // wenn die Anzeige kombiniert ist
   {
-/*ALTE VERSION
-    std::string text = "artikelbezeichnung(id," +itos(schema->Typ())+ "," 
-               +itos(schema->Id())+ "," +itos(signifikanz[l])+")";
-    what = text ;
-    constraint = text+" like '"+combos[l][0]->get_text()+"%'";
-*/
     for (unsigned int i=0;i<vl.size();++i)
       {
         what += vl[i]->getStrVal();
@@ -148,7 +142,6 @@ case GTK_SEARCH_CLOSE:
   }
 
 }
-
 
 void ArtikelBox::fuelleMenu()
 {  

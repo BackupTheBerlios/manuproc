@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.8 2001/08/31 10:04:22 christof Exp $
+// $Id: ArtikelBox.cc,v 1.9 2001/09/19 15:00:04 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -23,7 +23,7 @@
 #include <gtk--/box.h>
 #include <gtk--/paned.h>
 #include <algorithm>
-#include <Aux/EntryValueIntString.h>
+#include <Artikel/ArtikelBezeichnung.h>
 #include "stock_button_apply.xpm"
 #include "stock_button_cancel.xpm"
 
@@ -239,7 +239,8 @@ Gtk::Container* ArtikelBox::init_table(int l)
  assert(!labels[l].size());
  unsigned int i=0; 
  for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz[l]);j!=schema->sigend(signifikanz[l]);++j)
-   {Gtk::SearchCombo *sc;
+   {
+    Gtk::SearchCombo *sc;
     combos[l].push_back(sc=manage (new Gtk::SearchCombo(true)));
     sc->set_usize(50,0);
     sc->set_autoexpand(false);
@@ -359,7 +360,8 @@ void ArtikelBox::setzeSignifikanz(int t)
 
 
 void ArtikelBox::Autocomplete(Gtk::CheckMenuItem *autocomplete)
-{ for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
+{ 
+   for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
       for (t_combos::iterator i=j->begin();i!=j->end();++i)
         (*i)->set_autoexpand(autocomplete->get_active()); 
   autocompletebool=autocomplete->get_active();

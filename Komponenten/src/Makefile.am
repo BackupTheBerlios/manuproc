@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.5 2001/08/20 08:32:20 christof Exp $
+# $Id: Makefile.am,v 1.6 2001/09/19 15:00:04 christof Exp $
 CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK_INCLUDES@ @COMMONXX_INCLUDES@  
 
@@ -20,7 +20,8 @@ include_HEADERS = datewin.h logwin.h\
 	SearchComboContent.hh SearchCombo.hh \
 	rowdata.h tclistrowdata.h \
 	tclistnode.h tclistleaf.h treebase.h \
-   WWaehrung.hh WPreis.hh WAuftragStatus.hh
+   WWaehrung.hh WPreis.hh WAuftragStatus.hh \
+   Optionmenu_Instanz.hh Artikel_Bestellen.hh
 
 lib_LIBRARIES= libKomponenten.a
 
@@ -30,10 +31,12 @@ libKomponenten_a_SOURCES=datewin.cc \
 		datewin_glade.cc KundenBox_glade.cc \
 		$(BUILT_SOURCES_L) \
 		tclistrowdata.cc \
-		tclistnode.cc tclistleaf.cc treebase.cc
+		tclistnode.cc tclistleaf.cc treebase.cc \
+      Artikel_Bestellen.cc
 
 BUILT_SOURCES_L= ArtikelBox_sql.cc ProzessBox.cc KundenBox.cc $(LINKS) \
-   WWaehrung_sql.cc WPreis_sql.cc WAuftragStatus_sql.cc
+   WWaehrung_sql.cc WPreis_sql.cc WAuftragStatus_sql.cc \
+   Optionmenu_Instanz_sql.cc
 BUILT_SOURCES=datewin.hh SimpleTree.hh $(BUILT_SOURCES_L) 
 
 # for datewin_glade.cc

@@ -95,6 +95,7 @@ public:
  void set_value_data(gpointer _p) {gp = _p;}
  gpointer ValueData() const { return gp; }
  void Stutzen ( bool s) {stutzen_bool=s;}
+ void Expand_recursively(TCListRow_API &api);
  std::deque<guint> get_seq() const {return currseq;}
  
  void clear();

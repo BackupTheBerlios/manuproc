@@ -124,11 +124,19 @@ void TreeBase::setColTitles()
  if (!menu) fillMenu();
 }
 
+#define NurEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) == (x).end())
+//#define NurEinKind(x) ((x).size())
+#define MehrAlsEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) != (x).end())
+//#define NurEinKind(x) ((x).size())
+
 bool TreeBase::stutzen(TCListRow_API *parent, TCListRow_API *we,
 						TCList &tclist)
 {
- if (we->size()==1)
- {  while (we->size()==1)
+//cout << "Size = "<<we->size()<<"\t"<<NurEinKind(*we)<<"\t"<<MehrAlsEinKind(*we)<<"\n";
+// if (we->size()==1)
+// {  while (we->size()==1)
+ if (NurEinKind(*we)==1)
+ {  while (NurEinKind(*we)==1)
     {  TCListRow *child_and_brother_to_be= &* (we->begin());
        TCListRow *we_as_a_row=static_cast<TCListRow*>(we);
 
@@ -148,7 +156,8 @@ bool TreeBase::stutzen(TCListRow_API *parent, TCListRow_API *we,
     return true;
  }
 
- if(we->size()>1)
+// if(we->size()>1)
+ if(MehrAlsEinKind(*we))
  {  for (TCListRow_API::iterator i = we->begin();i!=we->end();++i)
        if (stutzen(we,&*i,tclist)) 
           return true;
@@ -273,6 +282,12 @@ void TreeBase::insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
    }
 }
 
+void TreeBase::Expand_recursively(TCListRow_API &api)
+{  api.expand();
+   for (TCListRow_API::iterator i=api.begin();i!=api.end();++i)
+     if ((*i).size()) Expand_recursively(*i);
+}
+         
 
 void TreeBase::fillMenu()
 { assert(menu==0); 

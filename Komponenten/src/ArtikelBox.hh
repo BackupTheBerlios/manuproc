@@ -16,15 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.9 2001/08/31 10:04:22 christof Exp $
+// $Id: ArtikelBox.hh,v 1.10 2001/09/19 15:00:04 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
 #include <Kunde/Kunde.h>
-#include <Artikel/ArtikelBase.h>
-#include <Artikel/ArtikelBezeichnung.h>
+#include <Aux/EntryValueBase.h>
 #include <Aux/SQLerror.h>
-#include <ExtBezSchema/ExtBezSchemaHandle.h>
 #include <Aux/Transaction.h>
 #include <gtk--/menu.h>
 #include <gtk--/table.h>
@@ -119,7 +117,6 @@ public:
 	const std::string operator[](guint i) const { return combos[0][i]->get_text(); }
 
    void reset()
-
    { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
       for (t_combos::iterator i=j->begin();i!=j->end();++i)
         (*i)->reset(); }  

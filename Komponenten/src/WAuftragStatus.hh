@@ -17,6 +17,7 @@ class WAuftragStatus : public Gtk::OptionMenu
 
       void set_History(AufStatVal a) {set_history(a);} 
       AufStatVal get_Status();
+      std::string get_Status_Name();
 
       SigC::Signal0<void> activate;
       
