@@ -330,7 +330,6 @@ try{
   Artikelpreis::UnCache(rngkd->preisliste(),RE.Artikel());
   label_artikelpreis->set_text(Formatiere(Artikelpreis(rngkd->preisliste(),RE.Artikel(),RE.Stueck()).Wert()));
   spinbutton_preiseingabe->set_value(RE.getPreis().Wert().as_float());
-  table_preisvergleich->show_all();
   try{
     label_auftragspreis->set_text(Formatiere(RE.getAuftragsPreis().Wert()));
    }catch(AufEintrag::NoAEB_Error &e) 
@@ -339,18 +338,30 @@ try{
        label_auftragspreis->hide();
        radiobutton_artikelpreis->set_active(true);
     }
-//#ifndef MABELLA_EXTENSIONS 
   button_pr->set_sensitive(true);
-//#endif
 
+  radiobutton_artikelpreis->set_sensitive(true);
+  radiobutton_auftragspreis->set_sensitive(true);
+  radiobutton_preiseingabe->set_sensitive(true);
+  spinbutton_preiseingabe->set_sensitive(
+  	radiobutton_preiseingabe->get_active()); 
+ 
 }catch(std::exception &e) {std::cerr<<e.what();}
+
+
 }
 
 void auftrag_rechnung::on_unselectrow_rtree(int row, int col, GdkEvent* b)
 {
  rngentry_del->set_sensitive(false); 
  button_pr->set_sensitive(false);
- table_preisvergleich->hide();
+ radiobutton_artikelpreis->set_sensitive(false);
+ radiobutton_auftragspreis->set_sensitive(false);
+ radiobutton_preiseingabe->set_sensitive(false);
+ spinbutton_preiseingabe->set_value(0);
+ spinbutton_preiseingabe->set_sensitive(false); 
+ label_artikelpreis->set_text(Formatiere(fixedpoint<2>(0)));
+ label_auftragspreis->set_text(Formatiere(fixedpoint<2>(0)));
 }
 
 
@@ -407,6 +418,15 @@ void auftrag_rechnung::on_unselectrow_rtree_offen(int row, int col, GdkEvent* b)
 
 void auftrag_rechnung::Preis_setzen()
 {  
+ ja_nein_frage jnf("Wollen Sie wirklich den Preis ändern?");
+  
+ jnf.set_transient_for(*this);
+
+ int ret=jnf.run();
+
+ if(ret==1) return;
+
+
   cH_Kunde liefknd(lieferkunde->get_value());
   cH_Kunde rngkd(liefknd->Rngan());
 
@@ -470,7 +490,7 @@ auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
 : instanz(_instanz)
 {
 #ifdef MABELLA_EXTENSIONS
-// preis_ergaenzen->hide();
+  preis_ergaenzen->hide();
  _tooltips.set_tip(*button27,"Linke Maustaste: 1 Orig. 2 Kopien. "
 		"Mittlere Maustaste: 1 Kopie","");
   std::string nuraktiv(" and coalesce(aktiv,true)=true");
@@ -641,6 +661,12 @@ gint auftrag_rechnung::on_bezahlt_toggled(GdkEventButton *ev)
 
  return false;
 }
+
+void auftrag_rechnung::on_radiobutton_preiseingabe_toggled()
+{  
+ spinbutton_preiseingabe->set_sensitive(radiobutton_preiseingabe->get_active());
+}
+
 
 void auftrag_rechnung::on_gutschrift_activate()
 {
