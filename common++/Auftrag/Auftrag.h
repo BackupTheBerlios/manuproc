@@ -1,4 +1,4 @@
-/* $Id: Auftrag.h,v 1.29 2004/11/04 17:16:33 christof Exp $ */
+/* $Id: Auftrag.h,v 1.30 2005/02/08 11:27:45 jacek Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -117,7 +117,8 @@ public:
                 const ManuProC::Datum lieferdatum, const ArtikelBase& artikel,
                 const AufStatVal status,const bool setInstanzAuftraege,
                 const Preis& preis=Preis(),const rabatt_t aufeintragsrabatt=0,
-                const cH_PreisListe &preisliste=PreisListe::none_id) const throw(SQLerror);
+                const cH_PreisListe &preisliste=PreisListe::none_id,
+                const ArtikelBase& component_from=ArtikelBase()) const throw(SQLerror);
    void insert(unsigned zeilennr, const mengen_t bestellt, 
                 const ManuProC::Datum lieferdatum, const ArtikelBase& artikel,
                 const AufStatVal status,const bool setInstanzAuftraege,

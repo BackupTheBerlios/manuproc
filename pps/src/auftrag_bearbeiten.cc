@@ -518,7 +518,36 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
              combined=true;
           }
 
-         auftrag->push_back(
+          
+          if(combined)
+          {std::map<ArtikelBase::ID,int> altartikel;
+           Query q("select altartikelid,menge from artikelzusammensetzung"
+               " where id=?");
+           q << artikelbox->get_value().Id();
+           FetchIStream fi=q.Fetch();
+           while(fi.good())
+             {ArtikelBase::ID aid;
+              int menge;
+              fi >> aid >> menge;
+              altartikel[aid]=menge;
+              fi=q.Fetch();
+             }
+    	   std::map<ArtikelBase::ID,int>::const_iterator i;
+           for(i=altartikel.begin();i!=altartikel.end();++i)
+             {
+               auftrag->push_back(
+               stkmtr_spinbutton->get_value_as_int() * (*i).second,
+               liefdatum_datewin->get_value(),
+               ArtikelBase((*i).first),
+               WAufEntryStat->get_Status(),
+               WPreis->get_Preis(),
+               rabattentry_spinbutton->get_value_as_float(),
+               artpreis,
+               artikelbox->get_value());              
+             }
+          }
+         else 
+           auftrag->push_back(
                stkmtr_spinbutton->get_value_as_int(),
                liefdatum_datewin->get_value(),
                artikelbox->get_value(),

@@ -1,4 +1,4 @@
-// $Id: Auftrag.cc,v 1.14 2004/11/04 17:16:33 christof Exp $
+// $Id: Auftrag.cc,v 1.15 2005/02/08 11:27:45 jacek Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -126,7 +126,8 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
   const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
   const AufStatVal status,const bool setInstanzAuftraege,
   const Preis& preis,const fixedpoint<2> rabatt,
-  const cH_PreisListe &preisliste) const throw(SQLerror)
+  const cH_PreisListe &preisliste,
+  const ArtikelBase& component_from) const throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
    NV("Menge",bestellt),NV("Datum",lieferdatum),
@@ -146,6 +147,17 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
 	>> Query::Row::MapNull(ZEILENNR,1);
  insert(ZEILENNR,bestellt,lieferdatum,artikel,status,setInstanzAuftraege,
   	preis,rabatt,preisliste);
+  	
+ if(component_from.valid())
+   {
+    ExtraColumns ec("auftragentry","instanz","auftragid","zeilennr");
+              ec << instanz->Id() << Id() << ZEILENNR;
+    if(ec.hasColumn("component_from"))
+      Query("update auftragentry set component_from = ? where"
+            " (instanz,auftragid,zeilennr)= (?,?,?)")
+       << component_from.Id() << instanz->Id() << Id() << ZEILENNR;	
+   } 
+  	
  tr.commit();
  return AufEintragBase(*this,ZEILENNR);
 }

@@ -31,7 +31,9 @@ void AuftragFull::push_back(AufEintrag aeb)
 AufEintragBase AuftragFull::push_back(AuftragBase::mengen_t bestellt,
                ManuProC::Datum lieferdatum, ArtikelBase artid,
                AufStatVal status,
-               Preis preis, fixedpoint<2> rabatt,const cH_PreisListe &preisliste) throw (SQLerror)
+               Preis preis, fixedpoint<2> rabatt,
+               const cH_PreisListe &preisliste,
+               const ArtikelBase& component_from) throw (SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
 
@@ -40,7 +42,7 @@ AufEintragBase AuftragFull::push_back(AuftragBase::mengen_t bestellt,
 
   AufEintragBase newAEB=Auftrag::push_back(bestellt,lieferdatum,artid,status,
 		setInstanzAuftraege,
-		preis,rabatt,preisliste);
+		preis,rabatt,preisliste,component_from);
 
   AufEintrag tmpae(newAEB,
       bestellt,artid,lieferdatum,getStatus(),getKundennr(),getYourAufNr(),
