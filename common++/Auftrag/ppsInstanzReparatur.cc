@@ -410,7 +410,7 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
                }
                else // Sum zu gross: abbestellen (falls 0er, bei 1er 2er erzeugen)
                {  if (ae.Instanz()==ppsInstanzID::Kundenauftraege)
-                  {  ae.ArtikelInternAbbestellen(uid,richtigeMenge-menge,
+                  {  ae.ArtikelInternAbbestellen(uid,menge-richtigeMenge,
                		ManuProC::Auftrag::r_Reparatur);
                   }
                   else if (ae.Id()==AuftragBase::ungeplante_id)
