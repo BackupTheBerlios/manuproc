@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.59 2004/08/03 14:21:03 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.60 2004/08/05 10:20:32 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,6 +25,23 @@
 #include <Misc/FetchIStream.h>
 exec sql include sqlca;
 
+void Kunde::setVerkNr(Kunde::ID v) throw(SQLerror)
+{
+ Query("update kunden set verknr=? where kundennr=?")
+ << Query::NullIf(v,Kunde::none_id) << Id();
+ SQLerror::test(__FILELINE__);
+
+ verkaeufer = v;
+}
+
+const std::string Kunde::VerkName() const throw(SQLerror) { 
+ cH_Kunde v(verkaeufer);
+
+ if(v->Id()==Kunde::none_id) return "";
+
+ return v->getFullName(); 
+}
+
 Kunde::Kunde(ID _id) throw(SQLerror) 
 : ManuProcHandle<>(_id), KundenGruppennr(0),schema(ExtBezSchema::default_id),rngan(0),
   rng_an_postfach(false),
@@ -32,8 +49,9 @@ Kunde::Kunde(ID _id) throw(SQLerror)
 //lieferadresse(false),
 //rechnungsadresse(false),
   entsorg(false),
-  waehrung(WaehrungID::EUR),lieferung_frei_haus(true),
-  mwst(true)
+  mwst(true),
+  waehrung(WaehrungID::EUR),
+  lieferung_frei_haus(true)
 { 
    // return ersetzen
    if(_id == Kunde::none_id) return;
@@ -186,7 +204,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    kundendaten.notiz=NOTIZ;
    waehrung = cP_Waehrung(Waehrung::ID(WAEHRUNGID));
 
-   verkaeufer.verknr=VERKNR;
+   verkaeufer=VERKNR;
    betreuer=BETREUER;
    prlist_valid=false;
    isaktiv=AKTIV;
@@ -389,6 +407,7 @@ std::list<cH_Telefon> Kunde::getTelefon() const
  return T;
 }
 
+/*
 const Kunde::Verkaeufer &Kunde::getVerkaeufer() const throw(SQLerror)
 {
  if(verkaeufer.verknr == Kunde::none_id) return verkaeufer;
@@ -407,6 +426,7 @@ const Kunde::Verkaeufer &Kunde::getVerkaeufer() const throw(SQLerror)
 
   return verkaeufer;
 }
+*/
 
 enum Kunde::B_UPDATE_BITS_ADRESSE &operator++(enum Kunde::B_UPDATE_BITS_ADRESSE &s)
 {  ++(int&)s;
@@ -513,7 +533,7 @@ std::cout << i<<'\t'<<e<<'\t'<<(e&(1<<i))<<'\n';
      else if (i==B_Notiz      ) query += "notiz  = '"+notiz()+"',";
      else if (i==B_GebDatum      ) query += "gebdatum  = '"+getGebDatum().postgres_null_if_invalid()+"',";
      else if (i==B_Entsorgung ) query += "entsorgung  = "+btos(entsorgung())+",";
-     else if (i==B_Verknr     ) query += "verknr  = "+itos(verkaeufer.verknr)+",";
+     else if (i==B_Verknr     ) query += "verknr  = "+itos(verkaeufer)+",";
      else if (i==B_Betreuer     ) query += "betreuer  = "+itos(betreuer)+",";
      else if (i==B_AnzAusFirmenPapier) query += "anz_firmenpapier  = "+itos(anzahl_ausdruck_firmenpapier())+",";
      else if (i==B_AnzAusWeissesPapier) query += "anz_weissespapier  = "+itos(anzahl_ausdruck_weissespapier())+",";

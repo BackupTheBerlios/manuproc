@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.62 2004/08/03 14:21:03 jacek Exp $
+// $Id: Kunde.h,v 1.63 2004/08/05 10:20:32 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -82,12 +82,13 @@ public:
    };
  typedef struct st_bankverb Bankverbindung;
 
- struct st_verkaeufer {int verknr; std::string name; std::string kurz;
-        st_verkaeufer() : verknr(none_id),name(""),kurz("") {}
-        st_verkaeufer(int v,std::string n, std::string k)
-           : verknr(v),name(n),kurz(k) {} };
- typedef struct st_verkaeufer Verkaeufer;
-    
+// struct st_verkaeufer {int verknr; std::string name; std::string kurz;
+//        st_verkaeufer() : verknr(none_id),name(""),kurz("") {}
+//        st_verkaeufer(int v,std::string n, std::string k)
+//           : verknr(v),name(n),kurz(k) {} };
+// typedef struct st_verkaeufer Verkaeufer;
+
+ mutable Kunde::ID verkaeufer;   
  
  struct st_kddata
    {int flaeche;
@@ -138,7 +139,7 @@ private:
 	Bankverbindung bankverb;
         Kundendaten kundendaten;
         
-   mutable Verkaeufer verkaeufer;
+//   mutable Verkaeufer verkaeufer;
    Person::ID betreuer;
 	
 	friend class Handle<const Kunde>;
@@ -338,10 +339,10 @@ public:
 
 	ID Schema() const { return schema; }
 
-        const Verkaeufer &getVerkaeufer() const throw(SQLerror);
-        void setVerkNr(int v) {verkaeufer.verknr = v;}
-        ID VerkNr() const { return verkaeufer.verknr; }
-        const std::string VerkName() const { return verkaeufer.name; }
+//        const Verkaeufer &getVerkaeufer() const throw(SQLerror);
+        void setVerkNr(Kunde::ID v) throw(SQLerror);
+        ID VerkNr() const { return verkaeufer; }
+        const std::string VerkName() const throw(SQLerror);
         
 
         // update_Bankeinzug machte Datenbnakzugriff;

@@ -10,7 +10,7 @@ void windowTop::show_details()
 {
   table_details->set_sensitive(true);
   fire_enabled=false;
-   scc_verkaeufer->set_value(kundendaten->getVerkaeufer().verknr);
+   scc_verkaeufer->set_value(kundendaten->VerkNr());
    if(kundendaten->getBetreuer() != Person::none_id)
      betreuer->set_value(kundendaten->getBetreuer());
    else
