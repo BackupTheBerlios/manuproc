@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.cc,v 1.19 2004/05/03 12:00:05 christof Exp $
+// $Id: TreeViewUtility.cc,v 1.20 2004/05/03 13:44:36 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -93,7 +93,11 @@ static void mark_line(const Gtk::TreeModel::Path &p,int *i)
 
 int TreeViewUtility::CListEmulator::get_selected_row_num() const
 {  int row=-1;
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+   view->get_selection()->selected_foreach_path(sigc::bind(sigc::ptr_fun(&mark_line),&row));
+#else
    view->get_selection()->selected_foreach(SigC::bind(SigC::slot(&mark_line),&row));
+#endif
    return row;
 }
 
@@ -101,7 +105,11 @@ static void increment(const Gtk::TreeModel::iterator&,int *i) { ++*i; }
 
 bool TreeViewUtility::CListEmulator::selection_empty() const
 {  int num=0;
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+   view->get_selection()->selected_foreach_iter(sigc::bind(sigc::ptr_fun(&increment),&num));
+#else
    view->get_selection()->selected_foreach(SigC::bind(SigC::slot(&increment),&num));
+#endif   
    return !num;
 }
 

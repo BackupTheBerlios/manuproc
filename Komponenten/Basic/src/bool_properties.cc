@@ -1,4 +1,4 @@
-// $Id: bool_properties.cc,v 1.1 2003/02/26 13:32:22 christof Exp $
+// $Id: bool_properties.cc,v 1.2 2004/05/03 13:44:36 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -21,6 +21,9 @@
 #include "bool_properties.hh"
 #include <gtkmm/widget.h>
 #include <sigc++/bind.h>
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/compatibility.h>
+#endif
 
 static void visibility_cb(gpointer gp,Model_ref<bool> model,Gtk::Widget *w)
 {  if (model.matches(gp))
