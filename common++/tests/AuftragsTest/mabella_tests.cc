@@ -53,6 +53,7 @@ static bool Lieferschein_Kunde(AufEintrag &AE)
        AufEintragBase auf2=AuftragsVerwaltung().anlegen2();
 	AufEintragBase aeb2(KUNDENINSTANZ,auf2.Id(),1);
 	 AufEintrag ae2(aeb2);
+       vergleichen(Check::Menge,"LS_auftrag2","2. Auftrag anlegen","a");
 
        Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE2));
        liefs.push_back(ae2,ARTIKEL_TRIO,7);
