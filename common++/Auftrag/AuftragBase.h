@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.60 2004/03/01 17:11:01 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.61 2004/10/21 09:58:43 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -51,7 +51,7 @@ class AuftragBase
    static const ID handplan_id =  handplan_auftrag_id;
    static const ID dispo_id =  dispo_auftrag_id;
    static const ID plan_id  =  plan_auftrag_id;
-   static const ID auffuellen_id =  3; // Mindestmengenbestellung im Lager
+//   static const ID auffuellen_id =  3; // Mindestmengenbestellung im Lager
    
    static const int jahresmultiplikator = 10000;
 
