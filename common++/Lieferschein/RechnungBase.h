@@ -1,4 +1,4 @@
-/* $Id: RechnungBase.h,v 1.13 2003/07/09 10:06:50 jacek Exp $ */
+/* $Id: RechnungBase.h,v 1.14 2003/07/09 10:51:10 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -59,6 +59,7 @@ class RechnungBase // : ManuProcEntity
 	Kunde::ID getVerknr() const throw(SQLerror);
 	void setVerknr(const Kunde::ID vid) const throw(SQLerror);	
 	virtual void setze_Zahlziel(ManuProC::Datum zziel) throw(SQLerror);
+
 };
 
 #endif
