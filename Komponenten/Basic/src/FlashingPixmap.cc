@@ -56,8 +56,6 @@ void FlashingPixmap::setTime(unsigned int msec)
    }
 }
 
-
-
 bool FlashingPixmap::timeout() 
 { 
   switchPix();
@@ -68,3 +66,8 @@ void FlashingPixmap::switchPix()
 {  def=!def;
    Gtk::Image::set(def?defaultPix:flashPix);
 }
+
+void FlashingPixmap::set(Glib::RefPtr<Gdk::Pixbuf> d,Glib::RefPtr<Gdk::Pixbuf> f,unsigned int msec)
+{setDefault(d);setFlash(f);setTime(msec); Gtk::Image::set(defaultPix);
+}
+
