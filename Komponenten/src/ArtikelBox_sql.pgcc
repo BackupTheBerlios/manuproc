@@ -23,12 +23,16 @@
 #include <unistd.h>
 #include "stock_button_apply.xpm"
 #include "stock_button_cancel.xpm"
+#include <Aux/FetchIStream.h>
 
 exec sql include sqlca;
 
 void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned int sp,unsigned int l) throw(SQLerror)
 {
-
+ std::vector<cH_EntryValue> vl,va;
+ if (kombiniertbool) { vl = expand_kombi(l,LABEL);
+                       va = expand_kombi(l,ARTIKEL);
+                     }
  try
  {switch(newsearch)
   { case GTK_SEARCH_OPEN:
@@ -45,7 +49,6 @@ void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned int sp,u
  std::string squery; 
 
  unsigned int spalte=0;
- 
  if(!kombiniertbool)
  for (ExtBezSchema::const_iterator i=schema->begin();i!=schema->end();++i)
   { if (i->signifikanz!=signifikanz[l]) continue;
@@ -55,40 +58,81 @@ void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned int sp,u
        break;
     }
     else 
-    {  constraint += "text("+i->spaltenname +")='"+combos[l][spalte]->get_text()+"' AND ";
+    {  
+       constraint += "text("+i->spaltenname +")='"+combos[l][spalte]->get_text()+"' AND ";
        ++spalte;
     }
   }
- else
+ else // wenn die Anzeige kombiniert ist
   {
+/*ALTE VERSION
     std::string text = "artikelbezeichnung(id," +itos(schema->Typ())+ "," 
                +itos(schema->Id())+ "," +itos(signifikanz[l])+")";
     what = text ;
     constraint = text+" like '"+combos[l][0]->get_text()+"%'";
+*/
+    for (unsigned int i=0;i<vl.size();++i)
+      {
+        what += vl[i]->getStrVal();
+        if (i+1!=vl.size()) what +=", ";
+      }    
+    for (unsigned int i=0;i<va.size();++i)
+      {
+        constraint += vl[i]->getStrVal() +" like '"+ va[i]->getStrVal() +"%'";
+        if (i+1!=va.size()) constraint += " and "; 
+      }    
   }
- squery = "SELECT DISTINCT "+what+" FROM "+table+" WHERE "+constraint;
-
+ squery = "SELECT DISTINCT "+what+" FROM "+table ;
+ if (constraint!="") squery += " WHERE "+constraint;
+//cout << squery<<"\n";
     (const char*)QUERY=squery.c_str();
     tr.open();
     exec sql prepare QUERY from :QUERY;
     exec sql declare extbezfeld cursor for QUERY;
     exec sql open extbezfeld;
-//std::cout << QUERY<<"\n"     ;
     SQLerror::test("ArtikelBox::searchFunc: select text",100);
     if(sqlca.sqlcode==100) return;
     }
     // fall through
     
 case GTK_SEARCH_FETCH:   
- { exec sql begin declare section;
- char TEXT[51];
- exec sql end declare section;
-
- exec sql fetch in extbezfeld into :TEXT;
+ {
+   exec sql allocate descriptor spalten;
+   exec sql fetch extbezfeld into sql descriptor spalten;
+   SQLerror::test(__FILELINE__);
+//   exec sql close extbezfeld;
+//   SQLerror::test(__FILELINE__);
+   FetchIStream is("spalten");
+   vector<std::string> sv;
+   std::string t;
+   if (kombiniertbool)
+     for (vector<std::cH_EntryValue>::const_iterator i=vl.begin();i!=vl.end();++i)
+      {
+         is >> FetchIStream::MapNull<string>(t,"");
+//cout <<"-"<< t<<"-\n";
+         sv.push_back(t);
+      }
+   else { is >> FetchIStream::MapNull<string>(t,"");
+        sv.push_back(t);
+      }
+ exec sql deallocate descriptor spalten;
  SQLerror::test("ArtikelBox::searchFunc: fetch resulttable",100);
  if(sqlca.sqlcode==100){  combos[l][sp]->add_item(""); return;}
 
- combos[l][sp]->add_item(TEXT);
+ std::string text;
+
+ unsigned int c=0;
+ if(kombiniertbool)
+   for (ExtBezSchema::const_sigiterator i=schema->sigbegin(signifikanz[l]);i!=schema->sigend(signifikanz[l]);++i)
+    {
+     std::string sep = i->separator;
+     if (kombiniertbool) text +=sv[c++];
+     if (sep==" ") text += "_";
+     else text +=sep;
+//cout << "\t"<<c<<"\t-"<<sv[c-1]<<"-\t-"<<sep<<"-\t"<<text<<"\n";
+    }
+ else  text = sv[0];
+ combos[l][sp]->add_item(text);
 
  *cont=true;
  }
@@ -138,9 +182,7 @@ void ArtikelBox::fuelleMenu()
    menu->append(*optionen);   
    optionen->set_submenu(*optionen_menu);
    menu->append(*neu);
-
-   if (12 == schema->Typ()) neu->set_submenu(*neu_menu);
-   else neu->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::Neuer_Eintrag),"???"));
+   neu->activate.connect(SigC::slot(this,&ArtikelBox::Neuer_Eintrag));
 
    // Einträge für den Menüeintrag 'Typ'
    exec sql select DISTINCT e.artikeltyp, w.text into :id, :bez
@@ -254,20 +296,6 @@ void ArtikelBox::fuelleMenu()
    vertikal->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::set_Vertikal),vertikal));
 
 
-   // Einträge für den Menüeintrag 'Neu'
-   Gtk::MenuItem *gewebt   = manage(new class Gtk::MenuItem("als gewebtes Band"));      
-   Gtk::MenuItem *gefaerbt = manage(new class Gtk::MenuItem("als gefärbtes Band"));      
-   Gtk::MenuItem *bedruckt = manage(new class Gtk::MenuItem("als bedrucktes Band"));      
-   neu_menu->append(*gewebt);
-   neu_menu->append(*gefaerbt);
-   neu_menu->append(*bedruckt);
-   gewebt->show();
-   gefaerbt->show();
-   bedruckt->show();
-   gewebt->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::Neuer_Eintrag),"gewebt"));
-   gefaerbt->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::Neuer_Eintrag),"gefaerbt"));
-   bedruckt->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::Neuer_Eintrag),"bedruckt"));
-   
    // Menu anzeigen
    typ_menu->show();
    typ->show();
@@ -277,11 +305,21 @@ void ArtikelBox::fuelleMenu()
    anzeige->show();
    optionen_menu->show();
    optionen->show();
-   if (3!=schema->Typ()) // Kein neues 'aufgemachtes Band' mehr anlegen MAT
-    {
-      neu_menu->show();
-      neu->show();
-    }
+   if (neuanlegen()) neu->show();
+}
+
+bool ArtikelBox::neuanlegen()
+{
+ exec sql begin declare section;
+   bool B;
+   char TABELLE[20];
+ exec sql end declare section;
+ std::string table="artbez_"+itos(schema->Typ())+"_"+itos(schema->Id());
+ strncpy(TABELLE,table.c_str(),sizeof(TABELLE));
+ exec sql select true into :B from artbez_insert where tabelle =:TABELLE; 
+ SQLerror::test(__FILELINE__,100);
+ if (sqlca.sqlcode) B=false;
+ return B;
 }
 
 std::string ArtikelBox::kombinierteAnzeige(int sig, int atyp, int id)
@@ -303,7 +341,7 @@ std::string ArtikelBox::kombinierteAnzeige(int sig, int atyp, int id)
   if (!sqlca.sqlcode)
   for (int i=0;i<sqlca.sqlerrd[2];++i)
      { std::string t= db_text[i];
-       std::string s=db_sep[i];
+       std::string s= db_sep[i];
        text += t+s;
      }
   return text;
@@ -376,7 +414,7 @@ void ArtikelBox::Benutzerprofil_speichern()
   SQLerror::test(__FILELINE__);
 }
 
-void ArtikelBox::Neuer_Eintrag(std::string wo)
+void ArtikelBox::Neuer_Eintrag()
 {
  try {
  /* testen ob ID eingetragen => FEHLER */
@@ -388,24 +426,62 @@ void ArtikelBox::Neuer_Eintrag(std::string wo)
         return;
       }
    }
-  // In welches Schema eintragen?
-  std::string strtyp;
-  if (wo =="???")      strtyp = itos(schema->Typ());
-  if (wo =="gewebt")   strtyp = "0";
-  if (wo =="gefaerbt") strtyp = "1";
-  if (wo =="bedruckt") strtyp = "2";
-
   exec sql begin declare section;
-   int db_id, db_warengruppe,db_schema;   
-   char db_query[1024];
+   int db_id,db_id_jumbo;
   exec sql end declare section;
 
-  std::string table = "artbez_"+strtyp+"_"+itos(schema->Id());
   exec sql select nextval ('artikelbezeichnun_artikelid_seq') into :db_id;
   std::string where, what;
   where = "(id,stand," ;
   what  = "("+itos(db_id)+",now(),";
-  where_what(where,what);
+  where_what(where,what,false);
+
+#warning Was in die ArtikelBox eingegeben wird wird als Kundenauftrag = 9 bestellt
+#warning Das sollten wir unbedingt überdenken.
+  Neuer_Eintrag_sql(db_id,where,what,9);
+
+ 
+ std::string aufmachung;
+  for (unsigned int j=0;j<combos.size();++j)
+   for (unsigned int i=0; i<combos[j].size(); ++i)
+    if (labels[j][i]->get_text()==schema->JumboTitel())
+       aufmachung=combos[j][i]->get_text();
+
+ if (schema->JumboBez()!=aufmachung) // Wenn ich selber keine Jumborolle bin
+  {
+    int jumbo_id=jumbo_exist();
+    if(jumbo_id==0)  // Wenn es keine entsprechende Jumborolle vorhanden sofort eine anlegen 
+      {
+        exec sql select nextval ('artikelbezeichnun_artikelid_seq') into :db_id_jumbo;
+        jumbo_id=db_id_jumbo;      
+        where = "(id,stand," ;
+        what  = "("+itos(db_id_jumbo)+",now(),";
+        where_what(where,what,true);
+   
+#warning 'aufgemachte' Ware wird im Bandlager = 8 bestellt
+        Neuer_Eintrag_sql(db_id_jumbo,where,what,8);
+      }
+    insert_into_artikelzusammensetzung(db_id,jumbo_id,31,get_menge_from_artikelbox());
+  }
+
+
+  artikel=db_id;
+  pixmap->set(stock_button_apply_xpm);
+  new_article_inserted(db_id);
+  activate();
+  }catch (SQLerror &e)   {  std::cerr << e << '\n';}
+}
+
+
+void ArtikelBox::Neuer_Eintrag_sql(int id, std::string where, std::string what,int bestellen_bei)
+{
+  exec sql begin declare section;
+   int db_id=id, db_warengruppe,db_schema,db_bestellen_bei=bestellen_bei;   
+   char db_query[1024];
+  exec sql end declare section;
+
+  std::string strtyp = itos(schema->Typ());
+  std::string table = "artbez_"+strtyp+"_"+itos(schema->Id());
   std::string sq = "insert into "+table +" "+ where+" values "+what;
   strncpy(db_query,sq.c_str(),sizeof(db_query));
   exec sql execute immediate :db_query;
@@ -414,16 +490,11 @@ void ArtikelBox::Neuer_Eintrag(std::string wo)
   // Eintrag in Artikelbezeichnung
   db_warengruppe= atoi(strtyp.c_str());
   db_schema = schema->Id();
-  exec sql insert into artikelstamm (id,stand,warengruppe,defaultschema)
-     values (:db_id,now(),:db_warengruppe,:db_schema);
+  exec sql insert into artikelstamm (id,stand,warengruppe,defaultschema,bestellen_bei)
+     values (:db_id,now(),:db_warengruppe,:db_schema,:db_bestellen_bei);
   SQLerror::test(__FILELINE__);
      
-  artikel=db_id;
-  pixmap->set(stock_button_apply_xpm);
 
-  new_article_inserted(db_id);
-  activate();
-  }catch (SQLerror &e)   {  std::cerr << e << '\n';}
 }
 
 #if 0
@@ -452,22 +523,29 @@ unsigned int ArtikelBox::intern_id(int typ)
 }
 #endif
 
-void ArtikelBox::where_what(std::string& where, std::string& what)
+void ArtikelBox::where_what(std::string& where, std::string& what, bool jumbo)
 {
   unsigned int l=0; 
+  bool Jumbo=false;
+
   for (std::vector<int>::const_iterator i=signifikanz.begin();i!=signifikanz.end();++i)
    {
      unsigned int spalte=0;   
      if (labels[l][0]->get_text() =="ID") continue;
      for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz[l]);j!=schema->sigend(signifikanz[l]);)
       {
+        if(jumbo && j->spaltenname==schema->JumboSpalte()) Jumbo=true;
+
         std::vector<cH_EntryValue> v;
-        if (kombiniertbool) v = expand_kombi_Artikel(l);
+        if (kombiniertbool) v = expand_kombi(l,ARTIKEL);
         if (j->spaltenname!="id") where += j->spaltenname  ;
-        if (j->spaltenname!="id") 
+        if (j->spaltenname!="id" && !Jumbo) 
          { if (!kombiniertbool) what += "'"+combos[l][spalte]->get_text()+"'" ; 
-           else what += "'"+v[spalte]->getStrVal()+"'";
+           else                 what += "'"+v[spalte]->getStrVal()+"'";
          }
+        if (j->spaltenname!="id" && Jumbo) 
+            what += "'"+schema->JumboBez()+"'" ; 
+         
          ++spalte; ++j;
         if (j!=schema->sigend(signifikanz[l]) 
             || i+1!=signifikanz.end() && labels[l+1][0]->get_text() !="ID")  
@@ -476,4 +554,62 @@ void ArtikelBox::where_what(std::string& where, std::string& what)
      ++l;
    }
   where += ")"; what+=")";
+}
+
+int ArtikelBox::jumbo_exist() 
+{
+  unsigned int l=0; 
+  std::string table = "artbez_"+itos(schema->Typ())+"_"+itos(schema->Id());
+  std::string squery = "select id from "+table+" where ";
+
+  for (std::vector<int>::const_iterator i=signifikanz.begin();i!=signifikanz.end();++i)
+   {
+     unsigned int spalte=0;   
+     if (labels[l][0]->get_text() =="ID") continue;
+     for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz[l]);j!=schema->sigend(signifikanz[l]);)
+      {
+        std::vector<cH_EntryValue> v;
+        if (kombiniertbool) v = expand_kombi(l,ARTIKEL);
+        if (j->spaltenname!="id") squery += j->spaltenname+"="  ;
+        if (j->spaltenname!="id" && j->spaltenname!=schema->JumboSpalte()) 
+         { if (!kombiniertbool) squery += "'"+combos[l][spalte]->get_text()+"'" ; 
+           else                 squery += "'"+v[spalte]->getStrVal()+"'";
+         }
+        if(j->spaltenname==schema->JumboSpalte() && j->spaltenname!="id") 
+            squery += "'"+schema->JumboBez()+"'" ; 
+         
+         ++spalte; ++j;
+        if (j!=schema->sigend(signifikanz[l]) 
+            || i+1!=signifikanz.end() && labels[l+1][0]->get_text() !="ID")  
+               { squery += " and ";}
+      }
+     ++l;
+   }
+ exec sql begin declare section;
+   char query[1024];
+   int db_jumbo_id;
+ exec sql end declare section;
+ strncpy(query,squery.c_str(),sizeof(query));
+ Transaction tr;
+ exec sql prepare jein_ from :query ;
+ exec sql declare jein cursor for jein_ ;
+ exec sql open jein;
+ SQLerror::test(__FILELINE__);
+ exec sql fetch jein into  :db_jumbo_id;
+ SQLerror::test(__FILELINE__,100);
+ if (sqlca.sqlcode) db_jumbo_id=0;
+ exec sql close jein;
+ tr.close();
+ return db_jumbo_id;
+}
+
+void ArtikelBox::insert_into_artikelzusammensetzung(int id, int id_jumbo, int prozess,double menge)
+{
+ exec sql begin declare section;
+   int db_id=id,db_id_jumbo=id_jumbo,db_prozess=prozess;
+   double db_menge=menge;
+ exec sql end declare section;
+ exec sql insert into artikelzusammensetzung (id,prozessid,altartikelid,menge,stand)
+    values (:db_id,:db_prozess,:db_id_jumbo,:db_menge,now());
+ SQLerror::test(__FILELINE__);
 }

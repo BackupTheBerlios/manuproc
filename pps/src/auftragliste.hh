@@ -20,12 +20,47 @@
 #  include "auftragliste_glade.hh"
 #  define _AUFTRAGLISTE_HH
 
+#include <Auftrag/AufEintragBase.h>
+#include<Auftrag/auftrag_status.h>
+#include <Aux/EntryValueDatum.h>
+
+
 class auftragliste : public auftragliste_glade
 {   
-        
+        ppsInstanz instanz;
+        AufEintragBase2 selected_Auftrag;
+               
         friend class auftragliste_glade;
-        void on_selauftraglist_select_row(gint row, gint column, GdkEvent *event);
-        void on_selauftraglist_click_column(gint column);
+        void optionmenu_stil_deactivate();
         void on_closebutton_clicked();
+        void on_button_erfassen_clicked();
+        void set_column_titles();
+        void fill_tree();
+        void on_leaf_selected(cH_RowDataBase d);
+   public:
+       auftragliste(ppsInstanz _i);
+};
+
+class Data_aliste : public RowDataBase
+{
+
+   const AufEintragBase &AB ;
+   enum {KUNDE,AUFTRAGS_NR,AUFTRAGS_DATUM,KD_AUFTR_NR};
+ public:
+   Data_aliste(const AufEintragBase& ab) : AB(ab) {}
+   virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
+    {
+       switch (seqnr) {
+         case KUNDE : return  cH_EntryValueIntString(AB.getKdNr());
+         case AUFTRAGS_NR : return cH_EntryValueIntString(AB.getAuftragid());
+#warning Ist das Lieferdatum hier richtig? MAT
+         case AUFTRAGS_DATUM : return cH_EntryValueDatum(AB.getLieferdatum());
+         case KD_AUFTR_NR : return cH_EntryValueIntString(AB.getYourAufNr());
+         }   
+      return cH_EntryValueIntString("?");
+    }
+
+  int get_aid() const {return AB.getAuftragid();}
+  int get_zeilennr() const {return AB.getZnr();}
 };
 #endif

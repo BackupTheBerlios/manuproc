@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema_sql.pgcc,v 1.5 2001/08/27 09:33:49 christof Exp $
+// $Id: ExtBezSchema_sql.pgcc,v 1.6 2001/08/31 10:03:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -53,7 +53,7 @@ ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
 
  Transaction tr;
  exec sql declare BEZKOMP cursor for 
- 	select bezkomptype, bezkomptext, separator, 
+ 	select bezkomptype, bezkomptext, coalesce(separator,''), 
  		coalesce(spaltenname,bezkomptext), coalesce(signifikanz,0),
 		coalesce(textabformat,'c'),coalesce(jumbo_bez,'')
  	from extbezschema
@@ -67,12 +67,12 @@ ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
  while(!sqlca.sqlcode)
    {
     exec sql fetch from BEZKOMP 
-	into :BEZKOMPTYPE, :BEZKOMPTEXT, :SEPARATOR:ISEPARATOR,
+	into :BEZKOMPTYPE, :BEZKOMPTEXT, :SEPARATOR,
 		:SPALTENNAME, :SIGNIFIKANZ, :TEXTABFORMAT, :JUMBOBEZ ;
     SQLerror::test(__FILELINE__"ExtBezSchema::ExtBezSchema","BEZKOMP",100);
     if(sqlca.sqlcode==100) break;
     bezkomps.push_back(BezKomp(BEZKOMPTYPE,BEZKOMPTEXT,
-    		ISEPARATOR ? " ":SEPARATOR,SPALTENNAME,SIGNIFIKANZ,TEXTABFORMAT));
+    		SEPARATOR,SPALTENNAME,SIGNIFIKANZ,TEXTABFORMAT));
     if (!IDseen && std::string(SPALTENNAME)=="id") IDseen=true;
     if (BEZKOMPTYPE>maxBKT) maxBKT=BEZKOMPTYPE;
     if ((std::string)JUMBOBEZ!="") 

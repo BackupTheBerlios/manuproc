@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.8 2001/08/20 08:32:20 christof Exp $
+// $Id: ArtikelBox.hh,v 1.9 2001/08/31 10:04:22 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -84,13 +84,20 @@ class ArtikelBox : public Gtk::EventBox
  std::string kombinierteAnzeige(int sig, int atyp, int id);
  void Autocomplete(Gtk::CheckMenuItem *autocomplete);
  void kombiniert(Gtk::CheckMenuItem *kombi);
- std::vector<cH_EntryValue> expand_kombi_Artikel(unsigned int l);
+ vector<cH_EntryValue> expand_kombi_Artikel(unsigned int l,std::string text);
+ enum enum_art_label {ARTIKEL,LABEL};
+ vector<cH_EntryValue> expand_kombi(unsigned int l,enum_art_label eal);
  void set_Vertikal(Gtk::CheckMenuItem *verti);
  void Benutzerprofil_speichern();
  void Benutzerprofil_laden();
- void Neuer_Eintrag(std::string wo);
+ void Neuer_Eintrag();
+ void Neuer_Eintrag_sql(int db_id, std::string where, std::string what,int bestellen_bei);
  unsigned int intern_id(int typ);
- void where_what(std::string& where, std::string& what);
+ void where_what(std::string& where, std::string& what,bool jumbo);
+ bool neuanlegen();
+ int jumbo_exist();
+ void insert_into_artikelzusammensetzung(int id, int id_jumbo, int prozess,double menge);
+ double get_menge_from_artikelbox();
 
  void loadArtikel(unsigned int l) throw(SQLerror);
  static gint try_grab_focus(GtkWidget *w,gpointer gp);

@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.7 2001/08/20 08:32:20 christof Exp $
+// $Id: ArtikelBox.cc,v 1.8 2001/08/31 10:04:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -45,8 +45,10 @@ void ArtikelBox::selectFunc(unsigned int sp,unsigned int l) throw(SQLerror)
  }
  pixmap->set(stock_button_cancel_xpm);
  artikel=ArtikelBase();
- 
+
+//cout << l<<"\t"<<sp<<combos[l][sp+1]->get_text(); 
  combos[l][sp+1]->reset();
+//cout << l<<"\t"<<sp<< combos[l][sp+1]->get_text(); 
  combos[l][sp+1]->grab_focus();
 }
 
@@ -82,12 +84,7 @@ gint ArtikelBox::try_grab_focus(GtkWidget *w,gpointer gp)
 void ArtikelBox::set_value(const ArtikelBase &art)
 throw(SQLerror,ArtikelBoxErr)
 {cH_ArtikelBezeichnung artbez(art,schema->Id());
-//<<<<<<< ArtikelBox.cc
-// if (schema->Typ()!=artbez->getExtBezSchema()->Typ() ||  
-//    schema->Id() !=artbez->getExtBezSchema()->Id() )
-//=======
  if (schema!=artbez->getExtBezSchema()) 
-//>>>>>>> 1.72
     setExtBezSchema(artbez->getExtBezSchema());
 
  artikel=art;
@@ -96,40 +93,56 @@ throw(SQLerror,ArtikelBoxErr)
 
  for (unsigned int j=0;j<signifikanz.size();++j)
  {  
-#if 0 
-    if (j>=combos.size())
-    {  cerr << __FILELINE__": Keine Ahnung warum aber in ArtikelBox stimmt was nicht\n";
-       cerr << combos.size() << '/' << signifikanz.size() << ' '
-       	<< schema->Id() << ',' << schema->Typ() << '|'
-       	<< artbez->getExtBezSchema()->Id() << ',' 
-       	<< artbez->getExtBezSchema()->Typ() << '\n';
-       return;
-    }
-#endif
     assert(j<combos.size());
     ArtikelBezeichnung::const_sigiterator ci = artbez->sigbegin(signifikanz[j]);
-    for (unsigned int i=0; ci!=artbez->sigend(signifikanz[j]) 
-    		&& i<combos[j].size(); ++ci, ++i)
-    { combos[j][i]->set_text((*ci)->getStrVal());
-    }
+    if (!kombiniertbool)   
+       for (unsigned int i=0; ci!=artbez->sigend(signifikanz[j]) 
+       		&& i<combos[j].size(); ++ci, ++i)
+         { combos[j][i]->set_text((*ci)->getStrVal());
+         }
+    else
+      { std::string text;
+        cH_ExtBezSchema schema = artbez->getExtBezSchema();
+        ExtBezSchema::const_sigiterator is=schema->sigbegin(signifikanz[j]);
+        for(;ci!=artbez->sigend(signifikanz[j])
+            && is!=schema->sigend(signifikanz[j]) ;++ci,++is)
+           text += (*ci)->getStrVal() + is->separator;
+        combos[j][0]->set_text(text);
+      }
  }
-
 }
 
+vector<cH_EntryValue> ArtikelBox::expand_kombi(unsigned int l,enum_art_label eal)
+{
+ std::string text;
+ vector<cH_EntryValue> v;
+ if (eal==ARTIKEL) 
+   { text = combos[l][0]->get_text(); 
+     v=expand_kombi_Artikel(l,text);
+   }
+ if (eal==LABEL)
+    for (ExtBezSchema::const_sigiterator i=schema->sigbegin(signifikanz[l]);i!=schema->sigend(signifikanz[l]);++i)
+       v.push_back(cH_EntryValueIntString(i->spaltenname));
+ return v;
+}
 
-vector<cH_EntryValue> ArtikelBox::expand_kombi_Artikel(unsigned int l)
+vector<cH_EntryValue> ArtikelBox::expand_kombi_Artikel(unsigned int l,std::string text)
 {
      std::vector<cH_EntryValue> v;
-     const std::string text=combos[l][0]->get_text();
-     std::string::const_iterator i1=text.begin();
-     for (ExtBezSchema::const_sigiterator i=schema->sigbegin(signifikanz[l]);i!=schema->sigend(signifikanz[l]);++i)
+     std::string::size_type s1=0;
+     for (ExtBezSchema::const_sigiterator i=schema->sigbegin(signifikanz[l]);i!=schema->sigend(signifikanz[l]);)
      { 
-      std::string::const_iterator i2;
-      if (i->separator.size()==0) i2 = text.end();
-      else i2 = search(i1,text.end(),i->separator.begin(),i->separator.end());
-      std::string sx(i1,i2);
-      i1=i2+i->separator.size();
-      v.push_back(cH_EntryValueIntString(sx));
+      std::string sep = i->separator;
+      ExtBezSchema::const_sigiterator j=i;
+      if (sep==" "&& ++j!=schema->sigend(signifikanz[l]) ) sep="_";
+//      if (sep==" ") sep="_";
+      std::string::size_type s2=0;
+      if (sep.size()==0) s2 = std::string::npos;
+      else s2 = text.find(sep,s1);
+      std::string sx(text,s1,s2-s1);
+      s1=s2   + sep.size();
+      if (sx!="") v.push_back(cH_EntryValueIntString(sx));
+      if (s2==std::string::npos) break;
      }
  return v;
 }
@@ -140,17 +153,23 @@ void ArtikelBox::loadArtikel(unsigned int l) throw(SQLerror)
   { for (unsigned int i=0;i<combos[l].size();++i)
      v.push_back(cH_EntryValueIntString(combos[l][i]->get_text()));
   }
- else v = expand_kombi_Artikel(l);
+ else v = expand_kombi(l,ARTIKEL);
  try {
+  while (v.size()<schema->size(signifikanz[l])) v.push_back(cH_EntryValueIntString(""));
   cH_ArtikelBezeichnung bez(signifikanz[l],v,schema);
   artikel=bez->Id();
   pixmap->set(stock_button_apply_xpm);
 
+  std::string st=bez->Bezeichnung();
   for (unsigned int j=0;j<signifikanz.size();++j)
    {  ExtBezSchema::const_sigiterator ci = schema->sigbegin(signifikanz[j]);
       for (unsigned int i=0; ci!=schema->sigend(signifikanz[j]) 
       		&& i<combos[j].size(); ++ci, ++i)
-         combos[j][i]->set_text((*bez)[ci->bezkomptype]->getStrVal());
+       { if(kombiniertbool && schema->size(signifikanz[j])!=1)
+            combos[j][i]->set_text(st);
+         else  
+            combos[j][i]->set_text((*bez)[ci->bezkomptype]->getStrVal());
+       }
    }
  } catch (SQLerror &e)
  {  std::cerr << "ArtikelBox::loadArtikel: setArtikel threw "<< e<< "\n";
@@ -362,3 +381,22 @@ void ArtikelBox::kombiniert(Gtk::CheckMenuItem *kombi)
   setExtBezSchema(schema);
 }
 
+double ArtikelBox::get_menge_from_artikelbox()
+{
+  std::string aufmachung;
+  for (unsigned int j=0;j<combos.size();++j)
+   for (unsigned int i=0; i<combos[j].size(); ++i)
+    if (labels[j][i]->get_text()==schema->JumboTitel())
+       aufmachung=combos[j][i]->get_text();
+  std::string smenge;
+  for (std::string::const_iterator i=aufmachung.begin();i!=aufmachung.end();++i)
+   {
+     char c=*i;
+#warning KOMMA ist erlaubt MAT
+     if (c=='0'||c=='1'||c=='2'||c=='3'||c=='4'||c=='5'||c=='6'||c=='7'||c=='8'||c=='9'||c=='.'||c==',')
+       { if(c==',') c='.'; smenge += c; }
+     else break;     
+   }
+  double menge=atof(smenge.c_str());
+  return menge;
+}

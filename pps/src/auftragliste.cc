@@ -24,15 +24,79 @@
 // This file is for your program, I won't touch it again!
 
 #include "auftragliste.hh"
+#include <vector.h>
+#include<Auftrag/selFullAufEntry.h>
+#include "auftrag_bearbeiten.hh"
+//#include<ExtBezSchema/ExtBezSchema.h>
+#include "auftrag_main.hh"
 
-void auftragliste::on_selauftraglist_select_row(gint row, gint column, GdkEvent *event)
-{   
+extern auftrag_main *auftragmain;
+
+auftragliste::auftragliste(ppsInstanz _i)
+: instanz(_i)
+{
+  set_column_titles();
+  optionmenu_stil_deactivate();
 }
 
-void auftragliste::on_selauftraglist_click_column(gint column)
-{   
+void auftragliste::set_column_titles()
+{
+  vector<string> ct;
+  ct.push_back("Kunde");
+  ct.push_back("Auftragsnr.");
+  ct.push_back("Auftr.Datum");
+  ct.push_back("Kd.Auftr.Nr.");
+  auftragsliste->setTitles(ct);
 }
+
+void auftragliste::fill_tree()
+{
+   AufStatVal stat=WAufStat->get_Status();
+   SelectedFullAufList *allaufids;
+   SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Status(instanz,(AufStatVal)stat);
+   allaufids = new SelectedFullAufList(psel,cH_ExtBezSchema(1,ExtBezSchema::default_Typ));
+
+ vector<cH_RowDataBase> datavec;
+
+ for(vector<AufEintragBase>::iterator i = allaufids->aufidliste.begin();i!=allaufids->aufidliste.end();++i)
+  {
+   datavec.push_back(new Data_aliste(*i));
+  } 
+
+ auftragsliste->setDataVec(datavec);
+ auftragsliste->leaf_selected.connect(SigC::slot(this,&auftragliste::on_leaf_selected));
+}
+
+void auftragliste::on_leaf_selected(cH_RowDataBase d)
+{
+ const Data_aliste *dt=dynamic_cast<const Data_aliste*>(&*d);
+ selected_Auftrag=AufEintragBase2(instanz,dt->get_aid(),dt->get_zeilennr());
+// selected_Artikel=dt->get_Artikel_ID();
+}
+
+void auftragliste::on_button_erfassen_clicked()
+{
+// hide();
+ if (!selected_Auftrag.AufId()) return; 
+ try
+ { manage(new auftrag_bearbeiten(selected_Auftrag));
+ } catch (SQLerror &e)
+ {  cerr << e << '\n';
+    show();
+ } 
+ selected_Auftrag=AufEintragBase2(instanz);
+ destroy();
+}
+
+
+void auftragliste::optionmenu_stil_deactivate()
+{
+  fill_tree();
+}
+
 
 void auftragliste::on_closebutton_clicked()
 {   
+ auftragmain->show();
+ destroy();
 }

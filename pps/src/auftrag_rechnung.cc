@@ -36,6 +36,7 @@ extern MyMessage *meldung;
 
 void auftrag_rechnung::on_rng_close()
 {   
+   timeout_connection.disconnect();
    destroy();
 }
 
@@ -88,8 +89,18 @@ void auftrag_rechnung::rngzeile_delete()
 
 void auftrag_rechnung::on_rngdate_activate()
 {   
-
+ Rechnung &rg = rechnung_liste->getRechnung();
+ rg.setze_Datum(rngdatum->get_value());
+ label_rechnung_ctl->set_text("Rechungsdatum geändert");
+ timeout_connection = Gtk::Main::timeout.connect(slot(this,&auftrag_rechnung::timeout),1000);
 }
+
+gint auftrag_rechnung::timeout()
+{ 
+   label_rechnung_ctl->set_text("");
+   return 0; 
+}
+       
 
 void auftrag_rechnung::redisplay()
 {try{ 
@@ -106,14 +117,20 @@ void auftrag_rechnung::on_rngnr_activate()
  offene_lieferscheine->setKunde(cH_Kunde(lieferkunde->get_value()));
  offene_lieferscheine->clear();
  offene_lieferscheine->showOffLief();
+ // neues WWaehrung-Widget
+ rng_WWaehrung->set_History(rechnung_liste->getRechnung().getWaehrung()->get_enum());
+
+/* ALTes Waehrungs-Optionmenu
  if (*(rechnung_liste->getRechnung().getWaehrung())==Waehrung::EUR)
-    rng_waehrung->set_history(rng_waehrung::Euro);
+   rng_waehrung->set_history(rng_waehrung::Euro);
  else if (*(rechnung_liste->getRechnung().getWaehrung())==Waehrung::DM)
-    rng_waehrung->set_history(rng_waehrung::DM);
+   rng_waehrung->set_history(rng_waehrung::DM);
+*/
  fixedpoint<2> rabatt=rechnung_liste->getRechnung().Rabatt();
  if (rabatt<0.0) { rabatt=-rabatt; rabatt_typ->set_history(rabatt_typ::Zuschlag); }
  else rabatt_typ->set_history(rabatt_typ::Rabatt);
  rabatt_wert->set_value(rabatt);
+ rngdatum->set_Datum(rechnung_liste->getRechnung().getDatum());
 
  rechnung_liste->show();
  vbox_n_b_lieferscheine->show();
@@ -220,13 +237,19 @@ void auftrag_rechnung::Preis_ergaenzen()
 }
 
 void auftrag_rechnung::waehrung_geaendert()
-{  switch (rng_waehrung::enum_t(int(rng_waehrung->get_menu()->get_active()->get_user_data())))
+{
+ rechnung_liste->getRechnung().setzeWaehrung(rng_WWaehrung->get_enum()); // NEU
+/* ALT[B
+  switch (rng_waehrung::enum_t(int(rng_waehrung->get_menu()->get_active()->get_user_data())))
    {  case rng_waehrung::DM: rechnung_liste->getRechnung().setzeWaehrung(Waehrung::DM);
    	 break;
       case rng_waehrung::Euro: rechnung_liste->getRechnung().setzeWaehrung(Waehrung::EUR);
    	 break;
    }
+*/
    // eigentlich alle Preise umrechnen .... Katastrophe
+#warning dadurch wird der Knopf 'Preis setzen' doch eigentlich überflüssig, oder?
+#warning ich würde ihn wegnehmen MAT
    Preis_setzen();
 }
 

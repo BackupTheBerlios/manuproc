@@ -1,0 +1,61 @@
+#include <Aux/dbconnect.h>
+//#include <string>
+#include <Aux/Transaction.h>
+#include <Aux/SQLerror.h>
+exec sql include sqlca;
+
+int main()
+{
+try {
+      Petig::dbconnect(Petig::Connection("","petigdb"));
+      
+
+
+ exec sql begin declare section;
+   int ID,PROZESSE,INSTANZ;
+   short IINSTANZ;
+   char LABEL[50]; 
+ exec sql end declare section;
+ Transaction tr; 
+ exec sql declare ein1 cursor for SELECT id,prozesse.prozessid,label from 
+   artikelzusammensetzung,prozesse where prozesse.prozessid=
+      artikelzusammensetzung.prozessid;
+ exec sql open ein1;
+ SQLerror::test(__FILELINE__); 
+
+ while (true)
+  {
+   exec sql fetch ein1 into :ID,:PROZESSE,:LABEL;
+   SQLerror::test(__FILELINE__,100);
+   if (sqlca.sqlcode) break;
+
+   std::string label=LABEL;
+   if (label=="Drucken") {INSTANZ = 3; IINSTANZ=0;}
+   if (label=="Färben")  { INSTANZ = 2;   IINSTANZ=0;}
+   if (label=="Rollen") {  INSTANZ = 1;   IINSTANZ=0;}
+   if (label=="Verarbeitung") IINSTANZ = -1;  
+   if (label=="Äquivalenz") IINSTANZ = -1;  
+
+   exec sql update artikelstamm set bestellen_bei = :INSTANZ:IINSTANZ 
+      where id=:ID; 
+cout << ID<<"\n";
+  }
+
+   exec sql update artikelstamm set bestellen_bei = 9 where not exists 
+      (select true from artikelzusammensetzung az where az.id=artikelstamm.id);
+   SQLerror::test(__FILELINE__);
+
+   exec sql update artikelstamm set bestellen_bei = 8 where 
+      bestellen_bei = 9 and warengruppe !=  4;
+   SQLerror::test(__FILELINE__);
+
+
+  tr.commit();
+   Petig::dbdisconnect("petigdb");
+   } catch (SQLerror &e)
+   {  std::cerr << e << '\n';
+      return 1;
+   }
+   return 0;
+
+}

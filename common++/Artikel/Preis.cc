@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.4 2001/08/20 08:24:31 christof Exp $
+// $Id: Preis.cc,v 1.5 2001/08/31 10:03:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,8 +25,10 @@
 
 Preis::pfennig_cent_t Preis::Wert_fr(cP_Waehrung tp,float stueckgr) const throw()
 {  float result=pfennig_cent;
+   float preism=preismenge;
+   if (!preism) preism=1;
    if (tp!=waehrung) result*=Waehrung::Umrechnung(*waehrung,*tp);
-   if (stueckgr>0 && preismenge!=stueckgr) result*=stueckgr/preismenge;
+   if (stueckgr>0 && preism!=stueckgr) result*=stueckgr/preism;
    return result; // erst hier wird wieder gerundet!
 }
 

@@ -59,7 +59,7 @@ void AuftragBase::insertNewEntry(unsigned long int bestellt,
 // artikel=cH_AufArtikel(ARTIKELID,schema);
 
  exec sql select coalesce(max(zeilennr)+1,1) into :ZEILENNR from auftragentry
-	where auftragid= :AUFTRAGID;
+	where auftragid= :AUFTRAGID and instanz =:INSTANZ;
  SQLerror::test("generate next zeilennr");
 
  exec sql insert into auftragentry (instanz,auftragid, zeilennr,

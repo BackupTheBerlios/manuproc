@@ -1,0 +1,69 @@
+#include "WPreis.hh"
+#include <Aux/Transaction.h>
+#include <Aux/SQLerror.h>
+exec sql include sqlca;
+#include <gtk--/adjustment.h>
+
+WPreis::WPreis()
+{
+  betrag();
+  waehrung();
+  preismenge();
+  einheit(); 
+#warning warum kann ich damit der Tabelle keine feste Breite geben, damit 
+#warning damit sie unabhängig von der Anwendug immer gleichbreit bleibt?
+#warning oder anders ausgedrückt: wie macht man das sonst?
+  set_usize(50, -1);
+  show();
+}
+
+void WPreis::update()
+{
+  gtk_spin_button_update(SP->gtkobj());
+  gtk_spin_button_update(SP2->gtkobj());
+}
+void WPreis::reset()
+{
+  set_Betrag(0);
+  set_Preismenge(1.0);
+}
+
+void WPreis::set_all(double d1, double d2)
+{
+  set_Betrag(d1);
+  set_Preismenge(d2);
+}
+
+void WPreis::betrag()
+{
+  Gtk::Adjustment *SP_adj = manage(new class Gtk::Adjustment(0, 0, 10000, 1, 10, 10));
+  SP=manage(new class Gtk::SpinButton(*SP_adj, 1, 2));
+  SP->show();
+  SP->activate.connect(activate.slot());
+  attach(*SP,0,1,0,1);
+}
+void WPreis::waehrung()
+{
+  LA=manage(new Gtk::Label("DM"));
+  LA->set_alignment(0, 0.5);
+  LA->show();
+  attach(*LA,1,2,0,1);
+}
+void WPreis::preismenge()
+{
+  Gtk::Label *LAp=manage(new Gtk::Label("per"));
+  LAp->show();
+  attach(*LAp,2,3,0,1);
+  Gtk::Adjustment *SP_adj = manage(new class Gtk::Adjustment(1, 0, 10000, 1, 10, 10));
+  SP2=manage(new class Gtk::SpinButton(*SP_adj, 1, 3));
+  SP2->show();
+  SP2->activate.connect(activate.slot());
+  attach(*SP2,3,4,0,1);
+}
+void WPreis::einheit()
+{
+  LA2=manage(new Gtk::Label("kg"));
+  LA2->set_alignment(0, 0.5);
+  LA2->show();
+  attach(*LA2,4,5,0,1);
+}

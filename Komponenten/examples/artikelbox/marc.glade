@@ -57,7 +57,7 @@
 
 	<widget>
 	  <class>GtkMenu</class>
-	  <name>menu1</name>
+	  <name>Datei_menu</name>
 
 	  <widget>
 	    <class>GtkMenuItem</class>
@@ -68,6 +68,12 @@
 	      <last_modification_time>Mon, 01 Feb 1999 10:30:21 GMT</last_modification_time>
 	    </signal>
 	    <label>Beenden</label>
+	    <right_justify>False</right_justify>
+	  </widget>
+
+	  <widget>
+	    <class>GtkMenuItem</class>
+	    <name>trennlinie2</name>
 	    <right_justify>False</right_justify>
 	  </widget>
 	</widget>

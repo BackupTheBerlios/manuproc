@@ -29,10 +29,11 @@ void LR_Abstraktion::drucken_header(ofstream &os)
    os <<    "\\usepackage{isolatin1,t1enc,german,helvetic,vmargin}\n";
    os <<    "\\usepackage{pstricks}\n";
    os <<    "\\usepackage{tabularx}\n";
+   os <<    "\\usepackage{eurosym}\n";
    os <<    "\\renewcommand{\\rmdefault}{phv}\n";
    os <<    "\\setmarginsrb{2.25cm}{2.8cm}{3.25cm}{1in}{0pt}{0pt}{0pt}{0pt}\n";
-   os <<    "\\DeclareFontFamily{T1}{peur}{}\n";
-   os <<    "\\DeclareFontShape{T1}{peur}{m}{n}{<-> peurr}{}\n";
+//   os <<    "\\DeclareFontFamily{T1}{peur}{}\n";
+//   os <<    "\\DeclareFontShape{T1}{peur}{m}{n}{<-> peurr}{}\n";
 //   os <<    "\\newcommand{\\nullpf}{--{}--}\n";
 //   os <<    "\\newlength{\\breite} \n";
 //   os <<    "\\newrgbcolor{mygray}{0.5 1 0.75}";

@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.5 2001/08/27 09:33:49 christof Exp $
+// $Id: ExtBezSchema.h,v 1.6 2001/08/31 10:03:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,7 +25,6 @@
 #include <Aux/Handles.h>
 #include <Artikel/ArtikelTyp.h>
 
-//class ExtBezSchemaHandle;
 class cH_ExtBezSchema;
 
 class ExtBezSchema : public HandleContent
@@ -117,7 +116,7 @@ private: // I don't like these API - Christof
  const static unsigned int first_index=1; // this is now invalid
 
 public:
-	ExtBezSchema(ID eid=default_ID,const ArtikelTyp &t=default_Typ) throw(SQLerror);
+  ExtBezSchema(ID eid=default_ID,const ArtikelTyp &t=default_Typ) throw(SQLerror);
 
 // int AnzBezKomp() const { return bezkomps.size();}
  ID Id() const { return extartbezid; }

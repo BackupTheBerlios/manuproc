@@ -1,0 +1,39 @@
+#include "WAuftragStatus.hh"
+//#include <Aux/Transaction.h>
+//#include <Aux/SQLerror.h>   
+#include <Gtk_OStream.h>
+exec sql include sqlca; 
+
+WAuftragStatus::WAuftragStatus()
+{
+  fuelleMenu();
+  show();
+}
+
+
+AufStatVal WAuftragStatus::get_Status()
+{
+  return (AufStatVal) int(get_menu()->get_active()->get_user_data());
+#warning warum MUß man zuerst nach 'int' casten? MAT
+}
+
+
+void WAuftragStatus::fuelleMenu()
+{
+  {
+   // Reinfolge wie in <Auftrag/auftrag_status.h> !
+   Gtk::OStream os(this);
+   os << "unbestätigt";
+   os.flush((gpointer)UNCOMMITED);
+   os << "offen";
+   os.flush((gpointer)OPEN);
+   os << "fertig";
+   os.flush((gpointer)CLOSED);
+//   os << "storniert";
+//   os.flush((gpointer)STORNO);
+  }
+
+#warning erst NACH dem zerstören von 'os' existiert das Menu 
+  get_menu()->deactivate.connect(activate.slot());
+}
+

@@ -125,34 +125,33 @@ void TreeBase::setColTitles()
 }
 
 bool TreeBase::stutzen(TCListRow_API *parent, TCListRow_API *we,
-						TCList &tclist,guint deep)
+						TCList &tclist)
 {
  if (we->size()==1)
- {  guint d=deep;
-    while (we->size()==1)
+ {  while (we->size()==1)
     {  TCListRow *child_and_brother_to_be= &* (we->begin());
        TCListRow *we_as_a_row=static_cast<TCListRow*>(we);
 
        we->reparent_children(*parent);
        // copy non-empty attribute cells
-       for (unsigned int i=0;i<=d;++i)
+       for (unsigned int i=0;i<we->get_expanding_column();++i)
        {  const std::string t(we_as_a_row->get_text(i));
           if (t.size())
              child_and_brother_to_be->set_text(i,t);
+//else 
+//child_and_brother_to_be->set_text(i,"XX");
+//cout << i<<"\t"<<t.size()<<"\t"<<t<<"\n";
        }
        tclist.erase(TCListRow_iterator(parent,static_cast<TCListRow*>(we)));
        we=child_and_brother_to_be;
-       d++;
     }
     return true;
  }
 
  if(we->size()>1)
- {  TCListRow_API::iterator i = we->begin();
-    while(i!=we->end())
-    {  if (stutzen(we,&*i,tclist,deep+1)) return true;
-       i++;
-    }
+ {  for (TCListRow_API::iterator i = we->begin();i!=we->end();++i)
+       if (stutzen(we,&*i,tclist)) 
+          return true;
  }
 
   return false;
@@ -183,11 +182,11 @@ void TreeBase::refillTCL()
 
 // Aeste mit einem Blatt kuerzen 
  if (stutzen_bool)
- for(TCListRow_API::iterator i = begin(); i!=end();)
- {if (stutzen((TCListRow_API*)this,(TCListRow_API*)(&(*i)),*this,0))
-      i=begin(); // reloop
-  else ++i;
- }
+    for(TCListRow_API::iterator i = begin(); i!=end();)
+    {  if (stutzen((TCListRow_API*)this,(TCListRow_API*)(&(*i)),*this))
+          i=begin(); // reloop
+       else ++i;
+    }
 
 // Summen anzeigen
  for(TCListRow_API::iterator i = begin(); i!=end(); ++i)

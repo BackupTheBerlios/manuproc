@@ -1,0 +1,25 @@
+#include "auftrag_main.hh"
+#include <Aux/Transaction.h>
+#include <Aux/SQLerror.h>
+exec sql include sqlca;
+
+map<int,std::string> auftrag_main::get_all_instanz()
+{
+ map<int,std::string> v;
+ exec sql begin declare section;  
+   int db_i;
+   char db_s[50];
+ exec sql end declare section;  
+ exec sql declare ins_ein cursor for select insid,name from prod_instanz order by name;
+ Transaction tr;
+ exec sql open ins_ein;
+ SQLerror::test(__FILELINE__);
+ while (true)
+   {
+     exec sql fetch ins_ein into :db_i, :db_s;
+     SQLerror::test(__FILELINE__,100);
+     if (sqlca.sqlcode) break;
+     v[db_i]=db_s;
+   }
+ return v;
+}

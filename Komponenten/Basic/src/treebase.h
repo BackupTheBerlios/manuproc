@@ -59,7 +59,7 @@ class TreeBase : public TCList
  void insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
 		 	const cH_RowDataBase &d, std::deque<guint> q,guint deep);
  static bool stutzen(TCListRow_API *parent, TCListRow_API *child,
- 				TCList &tclist,guint deep);
+ 				TCList &tclist);
 
 protected: 
  std::vector<cH_RowDataBase> datavec;

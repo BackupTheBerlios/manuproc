@@ -27,26 +27,19 @@
 #include "auftrag_bearbeiten.hh"
 #include"auftragbase.h"
 #include<Auftrag/selFullAufEntry.h>
-//#include<Auftrag/AuftragFull.h>
 #include<Auftrag/AufEintragBase2.h>
 #include<Auftrag/auftrag_status.h>
 #include"auftrag_lieferschein.hh"
 #include"auftrag_rechnung.hh"
 #include <Gtk2TeX.h>
 #include <fstream.h>
+#include <gtk--/radiomenuitem.h>
 
-#include "auftrag_main.hh"
-#include "auftrag_bearbeiten.hh"
-#include"auftragbase.h"
-#include<Auftrag/selFullAufEntry.h>
-//#include<Auftrag/AuftragFull.h>  
-#include<Auftrag/AufEintragBase2.h>
-#include<Auftrag/auftrag_status.h> 
-#include"auftrag_lieferschein.hh"  
-#include"auftrag_rechnung.hh"
+#include "auftragliste.hh"
+#include "AufEintrag.h"
 
+AUFENTRYMAP aufentrymap;
 
-extern AUFENTRYMAP aufentrymap;
 extern MyMessage *meldung;
 
 SelectedFullAufList *allaufids;
@@ -62,7 +55,7 @@ bool auftragflag;/* zeigt an ab wann auftragid in den Zeilen */
 
 void auftrag_main::on_beenden_activate()
 {   
- maintree->detach_from_clist();
+ maintree_s->detach_from_clist();
  Gtk::Main::instance()->quit();
 }
 
@@ -70,12 +63,12 @@ void auftrag_main::on_erfassen_activate()
 {   
  hide();
  try
- { manage(new auftrag_bearbeiten(selected));
+ { manage(new auftrag_bearbeiten(selected_Auftrag));
  } catch (SQLerror &e)
  {  cerr << e << '\n';
     show();
  } 
- selected=AufEintragBase2(instanz);
+ selected_Auftrag=AufEintragBase2(instanz);
 }
 
 void auftrag_main::on_neuladen_activate()
@@ -84,12 +77,11 @@ void auftrag_main::on_neuladen_activate()
 // SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Status(OPEN));
 
  if(allaufids) { delete(allaufids); allaufids=NULL; }
- aufentrymap.clear();
- showtree();
-
+ fill_simple_tree();
 }
 
 #define TEXCMD "tex2prn -2 -q -Phl1260"
+//#define TEXCMD "tex2prn -2 -G -Phl1260" // Preview
 
 static void expand_recursively(TCListRow_API &api)
 {  api.expand();
@@ -115,7 +107,8 @@ static string shorten_some(int col,const string &title,gpointer user_data)
 }
 
 void auftrag_main::on_main_drucken_activate()
-{  expand_recursively(*maintree);
+{  
+   expand_recursively(*maintree_s);
    FILE *f=popen(TEXCMD,"w");
    ofstream os(fileno(f));
    Gtk2TeX::HeaderFlags fl;
@@ -127,7 +120,7 @@ void auftrag_main::on_main_drucken_activate()
    Gtk2TeX::TableFlags tf;
    tf.columntype_cb=&kopfzeile;
    tf.columntitle_cb=&shorten_some;
-   Gtk2TeX::CList2Table(os,maintree,tf);
+   Gtk2TeX::CList2Table(os,maintree_s,tf);
    Gtk2TeX::Footer(os);
    os.close();
    pclose(f);
@@ -143,63 +136,52 @@ void auftrag_main::on_rechnung_activate()
  manage (new auftrag_rechnung(instanz));
 }
 
-void auftrag_main::on_main_kndbez_activate()
+void auftrag_main::on_main_bezeichnung_activate()
 {
- interne_namen = false;
-
- for(vector<AufEintragBase>::iterator j = allaufids->aufidliste.begin();
-        j!=allaufids->aufidliste.end(); ++j)
-     {
-      AufEintrag &af = aufentrymap[(*j).mapKey()];
-      cH_ExtBezSchema cs(af.getKdNr(),ExtBezSchema::default_Typ);
-      af.setArtikelBezeichnung(cs);
-     }
-
- showtree();
-}
-
-void auftrag_main::on_main_intbez_activate()
-{   
- interne_namen = true;
+ interne_namen = main_intbez->get_active();
 
  cH_ExtBezSchema cs(1,ExtBezSchema::default_Typ);
  for(vector<AufEintragBase>::iterator j = allaufids->aufidliste.begin();
         j!=allaufids->aufidliste.end(); ++j)
-  {
-   AufEintrag &af = aufentrymap[(*j).mapKey()];
-   af.setArtikelBezeichnung(cs);
-  }
-
- showtree();
+     {
+      AufEintrag &af = aufentrymap[(*j).mapKey()];
+      if(interne_namen) cs = cH_ExtBezSchema(af.getKdNr(),ExtBezSchema::default_Typ);
+      af.setArtikelBezeichnung(cs);
+     }
+ fill_simple_tree();
+}
+void auftrag_main::on_kunden_anr_activate()
+{
+  kunden_anr_bool=kundenauftragsnummer->get_active();
+  fill_simple_tree();
+}
+void auftrag_main::on_zeitdarstellung_activate()
+{
+  zeit_kw_bool=kalenderwoche->get_active();
+  fill_simple_tree();
+}
+void auftrag_main::on_kundendarstellung_activate()
+{
+  kunden_nr_bool=kunden_nr->get_active();
+  fill_simple_tree();
 }
 
 void auftrag_main::on_mainprint_button_clicked()
 {   on_main_drucken_activate();
 }
 
-void auftrag_main::on_main_showtreebutton_clicked()
-{   
- showtree();
-}
-
-void auftrag_main::on_main_defaultattrbutton_clicked()
-{   
- maintree->setDefaultSeq();
-}
 
 auftrag_main::auftrag_main()
-  : instanz(ppsInstanz::INST_KNDAUF), selected(instanz), selectedmyrow(0)
+  : instanz(ppsInstanz::INST_KNDAUF), selected_Auftrag(instanz)
 {
- scrolledwindow_maintree_s->hide();
+ menu_instanz();
  auftragmain=this;
  allaufids=0;
  interne_namen=true;
+ zeit_kw_bool=true;
+ kunden_nr_bool=false;
+ kunden_anr_bool=true;
  showdeep=0;
-
- showtree();
-
- maintree->select_row.connect(SigC::slot(this,&auftrag_main::onRowSelect));
- maintree->unselect_row.connect(SigC::slot(this,&auftrag_main::onRowUnselect));
 
  set_column_titles_of_simple_tree();
  fill_simple_tree();
@@ -219,9 +201,12 @@ void auftrag_main::set_column_titles_of_simple_tree()
  ct.push_back("offene Meter");
  ct.push_back("offene Stück");
  maintree_s->setTitles(ct);
+ maintree_s->set_NewNode(&create_MyNode); ///?MAT
 }
+
 void auftrag_main::fill_simple_tree()
 {
+//cout << "I="<<instanz<<"\t";
  if(!allaufids) 
    { SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Status(instanz,(AufStatVal)OPEN);
      if(interne_namen)
@@ -229,75 +214,34 @@ void auftrag_main::fill_simple_tree()
 			cH_ExtBezSchema(1,ExtBezSchema::default_Typ));
      else allaufids = new SelectedFullAufList(psel);
    }
- vector<cH_RowDataBase> datavec;
+//cout << allaufids->size()<<"\n";
 
+ vector<cH_RowDataBase> datavec;
+//cout << interne_namen<<"\t"<<zeit_kw_bool<<"\t"<<kunden_nr_bool<<"\n";
  for(vector<AufEintragBase>::iterator i = allaufids->aufidliste.begin();i!=allaufids->aufidliste.end(); ++i)
   {
-/*
-   int auftragid    = (*i).getAuftragid() ;   
-   int artikelid    = (*i).ArtikelID();
-   int lieferwoche  = (*i).getZnr();
-   string yauftragid= (*i).getYourAufNr();
-   int verarbeitung = (*i).getProzDat();
-   int offene_meter = (*i).getRest();
-   int offene_stueck= (*i).getRestStk();
-   datavec.push_back(new Data_auftrag(auftragid,"s",artikelid,3,4,lieferwoche,yauftragid,verarbeitung,offene_meter,offene_stuck));
-*/
    datavec.push_back(new Data_auftrag(*i,this));
   }
-// maintree_s->Stutzen(false);
  maintree_s->setDataVec(datavec);
+ maintree_s->leaf_selected.connect(SigC::slot(this,&auftrag_main::on_leaf_selected));
 }
 
 
-
-void auftrag_main::showtree()
+void auftrag_main::on_leaf_selected(cH_RowDataBase d)
 {
- maintree->detach_from_clist();
- maintree->clear();
- maintree->setShowdeep(showdeep);
-
- if(!allaufids) 
-   { SQLFullAuftragSelector psel=SQLFullAuftragSelector::sel_Status(instanz,(AufStatVal)OPEN);
-     if(interne_namen)
-       allaufids = new SelectedFullAufList(psel,
-			cH_ExtBezSchema(1,ExtBezSchema::default_Typ));
-     else allaufids = new SelectedFullAufList(psel);
-   }
-
- maintree->fill(*allaufids, showdeep);
- maintree->stutzeBaum();
- maintree->updateSummen();
- maintree->attach_to_clist();
-}	 
-
-
-void auftrag_main::onRowUnselect(int row, int col, GdkEvent* b)
-{if(selectedmyrow)
-   if(selectedmyrow->Leaf())
-      prozlist_scombo->reset();
- selected=AufEintragBase2(instanz);
- selectedmyrow=0;
-}
-
-void auftrag_main::onRowSelect(int row, int col, GdkEvent* b)
-{
- TCListRow *tclr=(TCListRow*)(maintree->get_row_data(row));
- selectedmyrow = (MyRow*)(*tclr).get_user_data();
- selected=AufEintragBase2(instanz,selectedmyrow->getAuftragid(),selectedmyrow->getZeilennr());
+ const Data_auftrag *dt=dynamic_cast<const Data_auftrag*>(&*d);
+ selected_Auftrag=AufEintragBase2(instanz,dt->get_aid(),dt->get_zeilennr());
+ selected_Artikel=dt->get_Artikel_ID();
  prozlist_scombo->reset();
- if(selectedmyrow->Leaf())   
-   prozlist_scombo->set_text(selectedmyrow->ProzessText());
+ prozlist_scombo->set_text(dt->ProzessText());
 }
 
 void auftrag_main::on_prozlistscombo_search(int *cont, GtkSCContext newsearch)
 {if (newsearch!=GTK_SEARCH_OPEN) return;
- if(selectedmyrow)
-   if(selectedmyrow->Leaf())     
-     {  ArtikelBaum artb(selectedmyrow->getArtID());
+     {  //ArtikelBaum artb(selectedmyrow->getArtID());
+        ArtikelBaum artb(selected_Artikel.Id());
         cH_Prozess p(Prozess::default_id);
         ArtikelBase::ID tmpid;   
-
         prozlist.erase(prozlist.begin(),prozlist.end());
 
         while((p=artb.getErzeugendenProzess())->Id()!=Prozess::default_id)
@@ -318,24 +262,58 @@ void auftrag_main::on_prozlistscombo_search(int *cont, GtkSCContext newsearch)
 
 void auftrag_main::on_prozlistscombo_activate()
 {
- if(selectedmyrow)
-   if(selectedmyrow->Leaf())
      {
       int pid=atoi(prozlist_scombo->get_text().c_str());
-      AufEintrag &af=aufentrymap[selected.mapKey()];
+      AufEintrag &af=aufentrymap[selected_Auftrag.mapKey()];
       try{af.setVerarbeitung(cH_Prozess(pid));}
       catch(SQLerror &e)
         {meldung->Show(e); return;}
-      foot_statusbar->push(0,selectedmyrow->Description(
-                                cH_ExtBezSchema(ExtBezSchema::default_ID)));
+//      foot_statusbar->push(0,selectedmyrow->Description(
+//                                cH_ExtBezSchema(ExtBezSchema::default_ID)));
 
       cH_EntryValue ev=af.getSeqValue(PROZ_SEQ);
-
-      vector<int> buf = maintree->getCurrSeq();
+      deque<guint> buf = maintree_s->get_seq();
       size_t i;
       for(i=0; (i<buf.size()) && (buf[i]!=PROZ_SEQ); i++);
 
-      selectedmyrow->setText(i,ev->getStrVal());
+// Schneller aber (noch?) nicht implementiert
+//      selectedmyrow->setText(i,ev->getStrVal());
+// stattdessen Neueinlesen der Liste:
+      fill_simple_tree();
      }
 }
 
+void auftrag_main::on_button_auftraege_clicked()
+{
+ hide();
+ manage (new auftragliste(instanz));
+}
+
+
+void auftrag_main::menu_instanz()
+{
+ Gtk::Menu *instanz_menu = manage(new class Gtk::Menu());
+ Gtk::MenuItem *instanz = manage(new class Gtk::MenuItem("Instanz"));
+ instanz->set_submenu(*instanz_menu);
+
+ map<int,std::string> map_instanz = get_all_instanz();
+ Gtk::RadioMenuItem::Group _RadioMIGroup_;
+ for (map<int,std::string>::const_iterator i=map_instanz.begin();i!=map_instanz.end();++i)
+  {
+    Gtk::RadioMenuItem *rm = manage(new class Gtk::RadioMenuItem(_RadioMIGroup_,i->second));
+    instanz_menu->append(*rm);
+    rm->activate.connect(SigC::bind(SigC::slot(this,&auftrag_main::instanz_selected),i->first));
+    rm->show();    
+    if (i->first==1) rm->set_active();
+  }
+ main_menubar->append(*instanz);
+ instanz->show();
+       
+}
+
+void auftrag_main::instanz_selected(int _instanz_)
+{
+  instanz=(ppsInstanz::ppsInstId) _instanz_;
+  selected_Auftrag=instanz;
+  on_neuladen_activate();
+}

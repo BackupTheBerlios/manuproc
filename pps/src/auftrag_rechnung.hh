@@ -26,6 +26,8 @@ class auftrag_rechnung : public auftrag_rechnung_glade
 {   
         ppsInstanz instanz;
         friend class auftrag_rechnung_glade;
+        SigC::Connection timeout_connection;
+
         void on_rng_close();
         void on_rng_neu();
         void on_rng_save();
@@ -33,6 +35,7 @@ class auftrag_rechnung : public auftrag_rechnung_glade
         void on_rng_print();
         void rngzeile_delete();
         void on_rngdate_activate();
+        gint timeout();
         void on_rngnr_activate();
         void on_rngnr_search(int *_continue, GtkSCContext newsearch);
         void on_lieferkunde_activate();

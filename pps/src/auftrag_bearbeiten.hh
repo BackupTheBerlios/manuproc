@@ -64,8 +64,8 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_aufentrystat_optionmenu_clicked();
 	void waehrung_geaendert();
         void on_preisart_optionmenu_clicked();
-        void on_preis_spinbutton_activate();
-	void on_preismenge_activate();
+//ALT void on_preis_spinbutton_activate();
+//ALT	void on_preismenge_activate(); 
         void on_auftrag_clist_select_row(gint row, gint column, GdkEvent *event);
         void on_auftrag_clist_unselect_row(gint row, gint column, GdkEvent *event);
 	void on_splitten();
@@ -76,6 +76,8 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_auftrag_ok_clicked();
         void on_aufbemerkung_activate();
         void on_kunden_activate();
+
+   void on_activate_wpreis();
 
  void loadAuftrag(const AuftragBase& auftrag);
  void fillMask();
