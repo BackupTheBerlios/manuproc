@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.7 2003/09/02 09:26:20 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.8 2003/09/09 07:33:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -43,17 +43,25 @@ static std::string Nametrans(std::string n)
 static const UniqueValue::value_t trace_channel_menge=ManuProC::Tracer::channels.get();
 static ManuProC::Tracer::Environment trace_channelme("DEBUG_MENGE",trace_channel_menge);
 
-// passende Menge für distribute_children
+// passende Menge für distribute_children, distribute_parents
 static AufEintragBase::mengen_t
-	MinPfeil_or_MinGeliefert(const AufEintragZu::st_reflist &zuloop_var,AufEintragBase::mengen_t AE_menge2)
+	MinPfeil_or_MinGeliefert(const AufEintragZu::st_reflist &zuloop_var,
+				AufEintragBase::mengen_t AE_menge2,
+				bool offen=false)
 {  if (AE_menge2>=0) 
    {  ManuProC::Trace _t(trace_channel_menge, __FUNCTION__,"min",zuloop_var.Menge,AE_menge2);
       return AuftragBase::min(zuloop_var.Menge,AE_menge2);
    }
    else 
    {  AufEintrag ae(zuloop_var.AEB);
-      ManuProC::Trace _t(trace_channel_menge, __FUNCTION__,"-min",-AE_menge2,ae.getGeliefert());
-      return -AuftragBase::min(-AE_menge2,ae.getGeliefert());
+      AuftragBase::mengen_t vergl=offen?ae.getRestStk():ae.getGeliefert();
+      ManuProC::Trace _t(trace_channel_menge, __FUNCTION__,"-min",-AE_menge2,vergl,
+      		NV("AEB",zuloop_var.AEB),NV("offen",offen));
+      if (offen) // Spezialfall: Rückgängig von EinlagernIn
+      {  assert(ae.Instanz()->LagerInstanz());
+         assert(ae.Id()==AuftragBase::plan_auftrag_id);
+      }
+      return -AuftragBase::min(-AE_menge2,vergl);
    }
 }
 
@@ -188,12 +196,12 @@ bool distribute_children_twice_rev(const AufEintragBase &startAEB,
 AuftragBase::mengen_t distribute_parents(const AufEintragBase &startAEB, 
 	AuftragBase::mengen_t menge,const distribute_parents_cb &callee)
 {  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,Nametrans(typeid(callee).name()));
-   assert(menge>0);
+//   assert(menge>0);
    AufEintragZu::list_t Eltern =
         AufEintragZu::get_Referenz_list(startAEB,AufEintragZu::list_eltern,
                                          AufEintragZu::list_ohneArtikel);
    for (AufEintragZu::list_t::iterator i=Eltern.begin();i!=Eltern.end();++i)
-   {  AuftragBase::mengen_t m=AuftragBase::min(i->Menge,menge);
+   {  AuftragBase::mengen_t m=MinPfeil_or_MinGeliefert(*i,menge,true);
       if (!m) continue;
 
       m=callee(i->AEB,m);

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.71 2003/09/05 10:42:38 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.72 2003/09/09 07:33:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -70,6 +70,7 @@ class AufEintrag : public AufEintragBase
      class ProduziertRueckgaengig2;
      class ProduziertNG_cb2;
      class ArtikelAbbestellen_bevorzugt;
+     class EinlagernRueckgaengig;
 
 private: 
  mengen_t bestellt;
