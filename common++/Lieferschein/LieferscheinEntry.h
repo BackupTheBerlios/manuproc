@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.38 2004/09/08 09:46:02 jacek Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.39 2004/09/15 10:17:27 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -126,6 +126,7 @@ private:
  void ZusaetzeLaden();
  friend FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry &aeb);
  void showZusatzInfos() const;
+ void change_status(AufStatVal new_status);
 };
 
 #endif

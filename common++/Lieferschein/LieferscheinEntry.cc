@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.72 2004/09/13 10:25:38 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.73 2004/09/15 10:17:27 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -122,6 +122,7 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
        // verhindern dass negative Menge auftreten
        assert (!(abmenge<0 && -abmenge>AE.getGeliefert()));
        AE.ProduziertNG(abmenge,*this);
+       change_status(new_status);
     }
     else 
      {
@@ -185,15 +186,22 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
           else updateZusatzEntry(i->aeb,i->menge + i->abmenge);
         }
        }
+     // change status realy now
+     change_status(new_status);
      }
-
-
-  } 
+   } 
+  else
+    change_status(new_status);
   // END OF   
   // if(new_status==OPEN || ((status==OPEN || status==CLOSED) && new_status==STORNO))
+  
+ tr.commit();  
+}
 
 
-if(new_status==STORNO)
+void LieferscheinEntry::change_status(AufStatVal new_status)
+{
+ if(new_status==STORNO)
    {Query("delete from lieferscheinentry  where "
 	"(lfrsid,instanz,zeile)=(?,?,?)")
 	<< Id() << Instanz()->Id() << Zeile();
@@ -205,9 +213,8 @@ if(new_status==STORNO)
 	<< Query::NullIf(new_status,(AufStatVal)NOSTAT)
 	<< Id() << Instanz()->Id() << Zeile();
   }
-
- tr.commit();  
 }
+
 
 
 void LieferscheinEntry::changeMenge(int _stueck, mengen_t _menge,
