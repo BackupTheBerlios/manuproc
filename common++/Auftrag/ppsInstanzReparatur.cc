@@ -363,12 +363,16 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
       }
    }
    else // 0er, 1er, 3er
-   {  for (AufEintragZu::map_t::iterator i=kinder.begin();i!=kinder.end();++i)
+   {  ArtikelBaum ab(ae.Artikel());
+      ppsInstanz::ID next=ae.Instanz()->NaechsteInstanz(ae.Artikel());
+      ManuProC::Datum newdate=ae.getLieferdatum()-ae.Instanz()->ProduktionsDauer();
+      
+      for (AufEintragZu::map_t::iterator i=kinder.begin();i!=kinder.end();++i)
       {  AuftragBase::mengen_t menge;
+         bool artikel_passt_nicht=false;
          ManuProC::Trace(AuftragBase::trace_channel,"-Artikel-",i->first/*,i->second.size()*/);
          for (AufEintragZu::list_t::iterator j=i->second.begin();j!=i->second.end();)
-         {  if (ae.Instanz()->NaechsteInstanz(ae.Artikel())!=ppsInstanzID::None
-         	&& j->AEB.Instanz()!=ae.Instanz()->NaechsteInstanz(i->first))
+         {  if (next!=ppsInstanzID::None && j->AEB.Instanz()!=next)
             {  analyse("Instanz passt nicht",ae,j->AEB,j->Menge);
              weg1:
                if (!analyse_only) AufEintragZu::remove(ae,j->AEB);
@@ -376,9 +380,10 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
                alles_ok=false;
                continue;
             }
-            else if (ae.Instanz()->NaechsteInstanz(ae.Artikel())==ppsInstanzID::None)
-            {  if (!ArtikelBaum(ae.Artikel()).istKind(i->first))
+            else if (next==ppsInstanzID::None)
+            {  if (!ab.istKind(i->first))
                {  analyse("Kindartikel falsch",ae,j->AEB,j->Menge);
+                  artikel_passt_nicht=true;
                   goto weg1;
                }
                // Artikel ist schon mal richtig ...
@@ -389,8 +394,7 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
                }
             }
             AufEintrag ae2(j->AEB);
-            if (ae2.getLieferdatum()+ae.Instanz()->ProduktionsDauer()
-            		>ae.getLieferdatum()) 
+            if (ae2.getLieferdatum()>newdate)
             {  analyse("Datum passt nicht",ae,j->AEB,j->Menge);
                goto weg1;
             }
@@ -398,8 +402,15 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
             ++j;
          }
          // schauen ob offeneMenge=Sum(kinder)
+         if (ae.Instanz()==ppsInstanzID::Kundenauftraege)
+            if (ae.Artikel()!=i->first) // Artikel passt nicht!
+               continue;
+         else // Intern
+            if (artikel_passt_nicht) 
+               continue;
+         
          AuftragBase::mengen_t richtigeMenge=
-         	ae.getRestStk()*ArtikelBaum(ae.Artikel()).Faktor(i->first);
+         	ae.getRestStk()*ab.Faktor(i->first);
          if (menge!=richtigeMenge)
          {  analyse("Zuordnungen!=eigene RestMenge",ae,menge,richtigeMenge);
             alles_ok=false;
@@ -419,10 +430,22 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
                   else
                   {  assert(ae.Id()>=AuftragBase::handplan_auftrag_id);
                      AuftragBase(make_value(Instanz()),AuftragBase::dispo_auftrag_id)
-                     	.BestellmengeAendern(menge-richtigeMenge,ae.getLieferdatum(),
+                     	.BestellmengeAendern(menge-richtigeMenge,newdate,
                      		ae.Artikel(),OPEN,uid,ae);
                   }
                }
+            }
+         }
+      }
+      for (ArtikelBaum::const_iterator i=ab.begin();i!=ab.end();++i)
+      {  AufEintragZu::map_t::const_iterator f=kinder.find(i->rohartikel);
+         if (f==kinder.end() && !!ae.getRestStk()) // Artikel nie bestellt
+         {  AuftragBase::mengen_t M=ae.getRestStk()*i->menge;
+            analyse("Rohartikel fehlt völlig",ae,itos(i->rohartikel.Id()),M.String(true));
+            if (!analyse_only)
+            {  AufEintrag::ArtikelInternNachbestellen(
+            		ppsInstanz::getBestellInstanz(i->rohartikel),
+            		M,newdate,i->rohartikel,uid,ae);
             }
          }
       }

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.47 2003/05/22 15:00:55 christof Exp $
+// $Id: AufEintrag.cc,v 1.48 2003/05/22 16:10:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -245,7 +245,8 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
    ae.abschreiben(menge);
    if (elter.valid()) AufEintragZu(elter).Neu(ae,0);
    if (rekursiv)
-   {  if (instanz->LagerInstanz()) // NaechsteInstanz verwenden
+   {  // NaechsteInstanz geht nicht wegen static (nächste wovon)
+      if (instanz->LagerInstanz()) 
       {  cH_ppsInstanz pi=ppsInstanz::getProduktionsInstanz(artikel);
          if (pi!=ppsInstanzID::None && !pi->ProduziertSelbst())
             unbestellteMengeProduzieren(pi,artikel,menge,uid,true,neuerAEB);
@@ -532,6 +533,7 @@ AufEintragBase AufEintrag::ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
 {  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
    	wo,menge,lieferdatum,artikel,NV("ElternAEB",ElternAEB));
    if (!menge) return AufEintragBase(); // hmmm
+   assert(wo!=ppsInstanzID::None && wo!=ppsInstanzID::Kundenauftraege);
    assert(menge>0);
    assert(ElternAEB.valid());
 
@@ -564,17 +566,10 @@ void AufEintrag::ArtikelInternNachbestellen(int uid,mengen_t menge,
   assert(menge>0);
   assert(Id()!=dispo_auftrag_id);
 
-  if (Instanz()==ppsInstanzID::Kundenauftraege) // NaechsteInstanz ?
-  {  cH_ppsInstanz i=ppsInstanz::getBestellInstanz(Artikel());
-     if (i!=ppsInstanzID::None && i!=ppsInstanzID::Kundenauftraege)
-     {  AufEintrag::ArtikelInternNachbestellen(i,menge,
-		getLieferdatum(),Artikel(),uid,*this);
-     }
-  }
-  else if (Instanz()->LagerInstanz())
-  {  assert(Id()==ungeplante_id);
-     ArtikelInternNachbestellen(ppsInstanz::getProduktionsInstanz(Artikel()),
-     		menge,getLieferdatum(),Artikel(),uid,*this);
+  ppsInstanz::ID next=Instanz()->NaechsteInstanz(Artikel());
+  if (next!=ppsInstanzID::None)
+  {  AufEintrag::ArtikelInternNachbestellen(next,menge,getLieferdatum(),
+  			Artikel(),uid,*this);
   }
   else
   {  ManuProC::Datum newdate=getLieferdatum()-Instanz()->ProduktionsDauer();

@@ -131,7 +131,9 @@ int ProdLager::Lieferzeit_in_Tagen()
 */
 
 ppsInstanz::ID ppsInstanz::NaechsteInstanz(const ArtikelBase &art) const
-{  if (Id()==ppsInstanzID::Kundenauftraege) return getBestellInstanz(art)->Id();
-   if (LagerInstanz()) return getProduktionsInstanz(art)->Id();
-   return ppsInstanzID::None;
+{  ppsInstanz::ID next=ppsInstanzID::None;
+   if (Id()==ppsInstanzID::Kundenauftraege) next=getBestellInstanz(art)->Id();
+   else if (LagerInstanz()) next=getProduktionsInstanz(art)->Id();
+   if (next==ppsInstanzID::Kundenauftraege) next=ppsInstanzID::None;
+   return next;
 }
