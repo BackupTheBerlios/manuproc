@@ -105,6 +105,7 @@ class windowTop : public windowTop_glade
         int fill_bank_bei(unsigned long int blz);
         void on_button_neue_bank_clicked();
 
+	gint on_acc_entry_changed(GdkEventFocus *e);
         gint on_abi_entry_changed(GdkEventFocus *e);
         gint on_cab_entry_changed(GdkEventFocus *e);
         gint on_iban_entry_changed(GdkEventFocus *e);

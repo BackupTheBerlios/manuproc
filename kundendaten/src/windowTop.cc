@@ -268,9 +268,11 @@ void windowTop::on_riba_save_clicked()
 {
 #ifdef MABELLA_EXTENSIONS 
  try{
- kundendaten->setABI_CAB(abi_entry->get_text(),cab_entry->get_text());
+ kundendaten->setABI_CAB(abi_entry->get_text(),cab_entry->get_text(),
+				acc_entry->get_text());
  abi_entry->set_text(kundendaten->getABI_Code(true));
  cab_entry->set_text(kundendaten->getCAB_Code());
+ acc_entry->set_text(kundendaten->getRiBaACC());
  }  
  catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e); }   
 
@@ -329,6 +331,13 @@ void windowTop::on_iban_save_clicked()
  iban_save->set_sensitive(false);
  iban_abbruch->set_sensitive(false);
 #endif
+}
+
+gint windowTop::on_acc_entry_changed(GdkEventFocus *e)
+{
+ riba_save->set_sensitive(true);
+ riba_abbruch->set_sensitive(true);  
+ return false;
 }
 
 gint windowTop::on_abi_entry_changed(GdkEventFocus *e)

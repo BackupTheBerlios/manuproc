@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.55 2004/03/19 16:33:39 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.56 2004/03/22 14:04:47 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -798,7 +798,7 @@ void Kunde::init_AuslandZahlung() const throw(SQLerror)
 	where abi = :ABI;
     SQLerror::test(__FILELINE__,100);
     if(sqlca.sqlcode==100)
-      bankname="!! UNBEKANNT !!";
+      bankname="";
     else
       bankname=BANK;
    }
