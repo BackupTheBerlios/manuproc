@@ -34,6 +34,10 @@
 #include <Artikel/ArtikelStamm.h>
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Artikel/ArtikelBaum.h>
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#include <sigc++/bind.h>
+#include <sigc++/compatibility.h>
+#endif
 
 exec sql include sqlca;
 

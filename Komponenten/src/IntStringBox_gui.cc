@@ -1,4 +1,4 @@
-// $Id: IntStringBox_gui.cc,v 1.6 2003/03/17 16:53:36 christof Exp $
+// $Id: IntStringBox_gui.cc,v 1.7 2004/09/13 09:10:56 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,14 +18,18 @@
  */
 
 #include "IntStringBox_gui.hh"
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#include <sigc++/bind.h>
+#include <sigc++/compatibility.h>
+#endif
 
-static GlademmData gd=GlademmData(Glib::RefPtr<Gtk::AccelGroup>());
+//static GlademmData gd=GlademmData(Glib::RefPtr<Gtk::AccelGroup>());
 
-IntStringPopup::IntStringPopup() : IntStringPopup_glade(&gd)
+IntStringPopup::IntStringPopup() : IntStringPopup_glade()
 {  }
 
 IntStringBox_gui::IntStringBox_gui() 
-: IntStringBox_glade(&gd), menu(0)
+: IntStringBox_glade(), menu(0)
 {  fuelleMenu();
   this->signal_button_press_event().connect(SigC::slot(*this,&IntStringBox_gui::MouseButton));
 }
