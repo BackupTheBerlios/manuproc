@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.35 2003/03/13 08:19:54 christof Exp $
+// $Id: AufEintrag.cc,v 1.36 2003/03/17 08:06:39 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -106,7 +106,9 @@ void AufEintrag::Produziert(mengen_t menge,
    ManuProcEntity<>::ID lfrsid) throw(SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Menge",menge));
-  ProduziertNG(menge);
+#warning Produziert mit negatviver Menge nicht implementiert
+  if(menge>0)  
+    ProduziertNG(menge);
 }
 
 
