@@ -146,18 +146,22 @@ void windowTop::scc_verkaeufer_activate()
 		" where provsatznr=0)") << kundendaten->Id();
    }
 
+
  Query q("update kunden set stand=now(), verknr=? where kundennr=?");
- q << Query::NullIf(scc_verkaeufer->get_value(),Kunde::none_id) << kundendaten->Id();
+   q << Query::NullIf(scc_verkaeufer->get_value(),Kunde::none_id) << kundendaten->Id();
 
- Query("delete from prov_verkaeufer where kundennr=?") << kundendaten->Id();
-
- Query("insert into prov_verkaeufer (SELECT ?,?,provsatz1,provsatz2 from"
-   " prov_verkaeufer where verknr=? group by provsatz1,provsatz2 order by "
-   " count(*) desc limit 1)") << scc_verkaeufer->get_value()
+ cH_Kunde new_verk(scc_verkaeufer->get_value());
+ if(new_verk->Rngan() != kundendaten->VerkNr())
+ {
+  Query("delete from prov_verkaeufer where kundennr=?") << kundendaten->Id();
+  Query("insert into prov_verkaeufer (SELECT ?,?,provsatz1,provsatz2 from"
+    " prov_verkaeufer where verknr=? group by provsatz1,provsatz2 order by "
+    " count(*) desc limit 1)") << scc_verkaeufer->get_value()
 				<< kundendaten->Id()
 				<< scc_verkaeufer->get_value();
- SQLerror::test(__FILELINE__,100);
-
+  SQLerror::test(__FILELINE__,100);
+ }
+ 
  tr.commit();
 
  kundendaten->setVerkNr(scc_verkaeufer->get_value());
