@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.48 2004/03/09 16:26:20 jacek Exp $
+// $Id: FetchIStream.pgcc,v 1.49 2004/03/10 14:37:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,7 +22,7 @@
 #include <Misc/FetchIStream.h>
 #include <Misc/SQLerror.h>
 
-#ifdef SQLITE
+#ifdef MPC_SQLITE
 int sqlite_error;
 int sqlite_lines;
 #else
@@ -177,7 +177,7 @@ FetchIStream &FetchIStream::operator>>(bool &b)
 // note cursor is the name for both the cursor and the descriptor
 void Query::Execute() throw(SQLerror)
 {
-#ifdef SQLITE
+#ifdef MPC_SQLITE
    if(database.empty())
      throw SQLerror(__FUNCTION__,SQLITE_ERROR,"no SQLite Database specified");
 
@@ -239,7 +239,7 @@ static const char *next_insert(const char *text)
 Query::Query(const std::string &command,const std::string db)
 : descriptor(std::string("Query")+ulltos(reinterpret_cast<unsigned long long>(this))), 
 	eof(true), line(), 
-#ifdef SQLITE
+#ifdef MPC_SQLITE
 	database(db),
 #else
 	result(), 
@@ -343,7 +343,7 @@ void Query::Fetch(FetchIStream &is)
 {  if (!params.complete())
       FetchIStream::mythrow(SQLerror(query,ECPG_TOO_FEW_ARGUMENTS,"to few input parameter"));
 
-#ifdef SQLITE
+#ifdef MPC_SQLITE
    if (!eof)
    {  if (line<result.size()) 
       {  is=FetchIStream(result,line++);
@@ -386,7 +386,7 @@ Query::~Query()
 }
 
 
-#ifdef SQLITE
+#ifdef MPC_SQLITE
 int Query::SQLiteCallBack(void *db_struct,int argc, char **argv, char **colname)
 {
  sqlite_lines=0;
@@ -401,7 +401,7 @@ int Query::SQLiteCallBack(void *db_struct,int argc, char **argv, char **colname)
 
 void Query::Execute(const std::string &command,const std::string database) throw(SQLerror)
 {
-#ifdef SQLITE
+#ifdef MPC_SQLITE
    if(database.empty())
      throw SQLerror(__FUNCTION__,SQLITE_ERROR,"no SQLite Database specified");
 
@@ -447,7 +447,7 @@ void Query::ThrowOnBad(const char *where) const
 
 int Query::Code() {  
 
-#ifdef SQLITE
+#ifdef MPC_SQLITE
 	return sqlite_error;
 #else
 	return sqlca.sqlcode; 
@@ -456,7 +456,7 @@ int Query::Code() {
 }
 
 unsigned Query::Lines() { 
-#ifdef SQLITE
+#ifdef MPC_SQLITE
 	return sqlite_lines;
 #else
 	return sqlca.sqlerrd[2]; 
