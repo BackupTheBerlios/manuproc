@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.59 2004/07/06 13:10:05 christof Exp $
+# $Id: Makefile.am,v 1.60 2004/09/24 15:20:11 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@ 
 
@@ -25,7 +25,7 @@ libMisc_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		Event.cc germanstring.cc EntryValueIntGermanString.cc \
 		EntryValueSort.cc create_parse.cc dbconnect_shared.cc \
 		FetchIStream_common.cc SQLerror_sqlite.cc \
-		Global_Settings_db.cc 
+		Global_Settings_db.cc ExtraColumns.cc
 
 libMisc.a: $(libMisc_a_OBJECTS) $(libMisc_a_DEPENDENCIES) Makefile
 	(for i in $(libMisc_a_OBJECTS) ; do echo Misc/$$i ; done ) >$@
@@ -53,7 +53,7 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
    Global_Settings_db.cc EntryValueSort.h EntryValueSort.cc \
    EntryValueInvert.h create_parse.cc create_parse.h \
    dbconnect_shared.cc SQLerror_sqlite.h FetchIStream_common.cc \
-   SQLerror_sqlite.cc algorithm.h
+   SQLerror_sqlite.cc algorithm.h ExtraColumns.cc ExtraColumns.h
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .

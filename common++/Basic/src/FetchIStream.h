@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.55 2004/05/25 12:28:21 christof Exp $
+// $Id: FetchIStream.h,v 1.56 2004/09/24 15:20:11 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -42,6 +42,7 @@ extern "C" {
 class FetchIStream
 {public:
 	struct check_eol { check_eol() {} };
+	class Fake;
 private:
 	int naechstesFeld;
 	/* const */ int zeile;
@@ -49,8 +50,10 @@ private:
 #ifdef MPC_SQLITE
 	const char * const * result;
 	unsigned nfields;
-#else	
+#else
+protected:
 	const PGresult * /* const */ result;
+private:
 #endif	
 
 	friend class Query;
@@ -143,6 +146,20 @@ public:
 	
 	void ThrowIfNotEmpty(const char *where);
 };
+
+// one time internal (fake) result (mostly a hack)
+class FetchIStream::Fake : public FetchIStream
+{ 	  std::string value;
+          void operator=(const Fake &);
+          Fake(const Fake &);
+          
+          void init();
+public:
+          Fake() { init(); } // NULL
+          Fake(const std::string &value);
+          ~Fake();
+};
+
 
 struct Query_types
 {	template <class T>

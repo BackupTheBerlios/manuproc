@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.53 2004/09/02 07:45:54 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.54 2004/09/24 15:20:11 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -175,5 +175,39 @@ int Query::Code() {
 
 unsigned Query::Lines() { 
 	return sqlca.sqlerrd[2]; 
+}
+
+#include <internal/libpq-int.h>
+
+void FetchIStream::Fake::init()
+{  PGresult *res=PQmakeEmptyPGresult(0,PGRES_TUPLES_OK);
+   res->ntups=1;
+   res->numAttributes=1;
+   res->attDescs=(PGresAttDesc*)calloc(1,sizeof(PGresAttDesc));
+   res->attDescs->name="col";
+   res->attDescs->typid=25;
+   res->attDescs->typlen=0;
+   res->attDescs->atttypmod=0;
+   res->tuples=(PGresAttValue**)calloc(1,sizeof(PGresAttValue*));
+   res->tuples[0]=(PGresAttValue*)calloc(1,sizeof(PGresAttValue));
+   res->tuples[0][0].len=NULL_LEN;   
+   res->tupArrSize=1;
+   res->binary=false;
+   result=res;
+}
+
+FetchIStream::Fake::Fake(const std::string &val) : value(val)
+{  init();
+   const_cast<PGresult*>(result)->tuples[0][0].len=value.size();
+   const_cast<PGresult*>(result)->tuples[0][0].value=
+		const_cast<char*>(value.c_str());
+}
+
+FetchIStream::Fake::~Fake()
+{  if (result) 
+   { free(result->attDescs);
+     free(result->tuples[0]);
+     PQclear(const_cast<PGresult*>(result));
+   }
 }
 #endif
