@@ -411,7 +411,7 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
             }
             else if (next==ppsInstanzID::None)
             {  if (!ab.istKind(i->first))
-               {  analyse("Kindartikel falsch",ae,j->AEB,j->Menge);
+               {  analyse("Kindartikel falsch "+itos(ab.Id())+" "+itos(i->first.Id()),ae,j->AEB,j->Menge);
                   artikel_passt_nicht=true;
                   goto weg1;
                }
@@ -436,8 +436,9 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
          }
          // schauen ob offeneMenge=Sum(kinder)
          if (ae.Instanz()==ppsInstanzID::Kundenauftraege)
-            if (ae.Artikel()!=i->first) // Artikel passt nicht!
+         {  if (ae.Artikel()!=i->first) // Artikel passt nicht!
                continue;
+         }
          else // Intern
             if (artikel_passt_nicht) 
                continue;
