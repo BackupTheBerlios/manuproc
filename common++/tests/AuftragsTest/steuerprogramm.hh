@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.6 2002/07/05 12:35:02 christof Exp $
+// $Id: steuerprogramm.hh,v 1.7 2002/10/09 14:47:22 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -44,8 +44,8 @@
 #define NEWDATUM ManuProC::Datum(31,12,2020)
 
 #define KUNDE 1000
+#define KUNDE2 1111
 
-#define UID 1000
-
+#define UID 1001
 
 #endif

@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.14 2002/10/04 13:57:49 thoma Exp $ */
+/* $Id: Lieferschein.cc,v 1.15 2002/10/09 14:48:07 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,7 +22,8 @@
 #include <Auftrag/selFullAufEntry.h>
 #include <Artikel/Einheiten.h>
 #include <Aux/FetchIStream.h>
-#include <Instanzen/Produziert.h>
+//#include <Instanzen/Produziert.h>
+#include <Instanzen/ppsInstanzProduziert.h>
 #include <unistd.h> 
 
 
@@ -58,7 +59,11 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
    {  SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
       LieferscheinEntry(*this, *i,artikel, anzahl,mengeneinheit,palette,false);
 
-      Produziert(kunde->Id(),*i,menge,getuid(),Id()).NichtSelbst();      
+      i->Produziert(menge,Id());
+//      ManuProC::st_produziert sp(kunde->Id(),*i,menge,getuid(),Id());
+//      Instanz()->Produziert(sp);
+
+//      Produziert(kunde->Id(),*i,menge,getuid(),Id()).NichtSelbst();      
 //      i->abschreiben(menge,Id());
    }
    else
@@ -76,7 +81,11 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
            else lmenge=abmenge;
            LieferscheinEntry(*this,*i,artikel,lstueck,lmenge,0,true);
 
-	   Produziert(kunde->Id(),*i,abmenge,getuid(),Id()).NichtSelbst();           
+           i->Produziert(abmenge,Id());
+
+//           ManuProC::st_produziert sp(kunde->Id(),*i,abmenge,getuid(),Id());
+//           Instanz()->Produziert(sp);
+//	   Produziert(kunde->Id(),*i,abmenge,getuid(),Id()).NichtSelbst();           
 //           i->abschreiben(abmenge,Id());
 
            menge-=abmenge;
@@ -104,10 +113,9 @@ void Lieferschein::push_back(AufEintrag &aufeintrag,
  else mng= anzahl*menge;
  
 #ifdef MABELLA_EXTENSIONS
-// aufeintrag.abschreiben(mng,Id());
- Produziert(kunde->Id(),aufeintrag,mng,getuid(),Id()).NichtSelbst();
+ aufeintrag.abschreiben(mng,Id());
 #else       
- Produziert(kunde->Id(),aufeintrag,mng,getuid(),Id()).NichtSelbst();
+   aufeintrag.Produziert(mng,Id());
 #endif
 }
 
@@ -135,7 +143,7 @@ void Lieferschein::closeLfrs()
 void Lieferschein::setDPDlnr(int d) const throw(SQLerror)
 {
  std::string query="update lieferschein set dpdliefnr=nullif("+itos(d)
-      +","+itos(Offen)+") where (instanz,lfrsid) = ("+itos(Instanz())+","+itos(Id())+")";
+      +","+itos(Offen)+") where (instanz,lfrsid) = ("+itos(Instanz()->Id())+","+itos(Id())+")";
  Query::Execute(query);
  SQLerror::test(__FILELINE__);
 }
@@ -143,7 +151,7 @@ void Lieferschein::setDPDlnr(int d) const throw(SQLerror)
 void Lieferschein::setPakete(const int p) throw(SQLerror)
 {  
  std::string query="update lieferschein set pakete="+itos(p)
-   +" where (instanz,lfrsid) = ("+itos(Instanz())+","+itos(Id())+")";
+   +" where (instanz,lfrsid) = ("+itos(Instanz()->Id())+","+itos(Id())+")";
  Query::Execute(query);
  SQLerror::test(__FILELINE__);
 }
@@ -151,7 +159,7 @@ void Lieferschein::setPakete(const int p) throw(SQLerror)
 void Lieferschein::setPaeckchen(const int p) throw(SQLerror)
 {  
  std::string query="update lieferschein set paeckchen="+itos(p)
-   +" where (instanz,lfrsid) = ("+itos(Instanz())+","+itos(Id())+")";
+   +" where (instanz,lfrsid) = ("+itos(Instanz()->Id())+","+itos(Id())+")";
  Query::Execute(query);
  SQLerror::test(__FILELINE__);
 }
@@ -159,7 +167,7 @@ void Lieferschein::setPaeckchen(const int p) throw(SQLerror)
 void Lieferschein::setGewichtNetto(const fixedpoint<1> i) throw(SQLerror)
 {  
  std::string query="update lieferschein set netto_kg="+dtos(i)
-   +" where (instanz,lfrsid) = ("+itos(Instanz())+","+itos(Id())+")";
+   +" where (instanz,lfrsid) = ("+itos(Instanz()->Id())+","+itos(Id())+")";
  Query::Execute(query);
  SQLerror::test(__FILELINE__);
 }
@@ -167,7 +175,7 @@ void Lieferschein::setGewichtNetto(const fixedpoint<1> i) throw(SQLerror)
 void Lieferschein::setGewichtBrutto(const fixedpoint<1> i) throw(SQLerror)
 {  
  std::string query="update lieferschein set brutto_kg="+dtos(i)
-   +" where (instanz,lfrsid) = ("+itos(Instanz())+","+itos(Id())+")";
+   +" where (instanz,lfrsid) = ("+itos(Instanz()->Id())+","+itos(Id())+")";
  Query::Execute(query);
  SQLerror::test(__FILELINE__);
 }

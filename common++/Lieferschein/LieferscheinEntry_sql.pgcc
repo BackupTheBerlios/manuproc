@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry_sql.pgcc,v 1.20 2002/10/04 13:57:49 thoma Exp $ */
+/* $Id: LieferscheinEntry_sql.pgcc,v 1.21 2002/10/09 14:48:07 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,7 +23,8 @@
 #include <Auftrag/AufEintragBase.h>
 #include<Auftrag/auftrag_status.h>
 #include <unistd.h>
-#include <Instanzen/Produziert.h>
+//#include <Instanzen/Produziert.h>
+#include <Instanzen/ppsInstanzProduziert.h>
 
 exec sql include sqlca;
 
@@ -31,7 +32,7 @@ LieferscheinEntry::LieferscheinEntry(const LieferscheinEntryBase &lsbase)
  throw(SQLerror) : LieferscheinEntryBase(lsbase) 
 {
  exec sql begin declare section;
- int INSTANZ=Instanz();
+ int INSTANZ=Instanz()->Id();
  int LFRSID=Id();
  int ZEILE=Zeile();
  int REFAUFTRAGID;
@@ -52,7 +53,17 @@ LieferscheinEntry::LieferscheinEntry(const LieferscheinEntryBase &lsbase)
 		:PALETTE, :ZUSATZINFO
 	from lieferscheinentry 
    where (instanz,lfrsid,zeile) = (:INSTANZ,:LFRSID,:ZEILE);
- SQLerror::test(__FILELINE__);
+ SQLerror::test(__FILELINE__,100);
+ if(sqlca.sqlcode)
+  {
+    artikel=ArtikelBase();
+    refauftrag=AufEintragBase();
+    stueck=0;
+    menge=0;  
+    palette=0;
+    zusatzinfo=false;
+    return;
+  }
  artikel=ArtikelBase(ARTIKELID);
  refauftrag=AufEintragBase(Instanz(),REFAUFTRAGID,REFZEILENNR);
 
@@ -70,7 +81,7 @@ throw(SQLerror) : LieferscheinEntryBase(lsb),artikel(art),
 			palette(_palette), zusatzinfo(_zusatzinfo)
 {
  exec sql begin declare section;
- int INSTANZ=Instanz();
+ int INSTANZ=Instanz()->Id();
  int LFRSID=Id();
  int ARTIKELID=artikel.Id();
  int REFAUFID=refauftrag.Id();
@@ -115,7 +126,7 @@ LieferscheinEntry::LieferscheinEntry(const LieferscheinBase &lsb,
 void LieferscheinEntry::deleteEntry(const LieferscheinEntry &lse) throw(SQLerror)
 {
  exec sql begin declare section;
-  int INSTANZ=lse.Instanz();
+  int INSTANZ=lse.Instanz()->Id();
   int LFRSID=lse.Id();
   int ZEILE=lse.Zeile();
  exec sql end declare section;
@@ -133,8 +144,14 @@ void LieferscheinEntry::deleteEntry(const LieferscheinEntry &lse) throw(SQLerror
  {  AuftragBase::mengen_t geliefert=lse.Anzahl();
     if (lse.Menge()) geliefert *= lse.Menge();
     AufEintrag AE(lse.getAufEintragBase());
-    cH_Kunde K=Lieferschein(lse).getKunde();
-    Produziert(K->Id(),AE,-geliefert,getuid(),LFRSID).NichtSelbst();    
+
+//    cH_Kunde K=Lieferschein(lse).getKunde();
+//    ManuProC::st_produziert sp(K->Id(),AE,-geliefert,getuid(),LFRSID);
+//    cH_ppsInstanz(AE.Instanz())->Produziert(sp);
+
+    AE.Produziert(-geliefert,LFRSID);
+
+//    Produziert(K->Id(),AE,-geliefert,getuid(),LFRSID).NichtSelbst();    
 //    AufEintrag(lse.getAufEintragBase()).abschreiben(-geliefert,LFRSID);
  }
 

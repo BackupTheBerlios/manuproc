@@ -1,4 +1,4 @@
-/* $Id: AuftragFull.h,v 1.24 2002/10/04 08:23:20 thoma Exp $ */
+/* $Id: AuftragFull.h,v 1.25 2002/10/09 14:48:07 thoma Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -70,6 +70,7 @@ public:
                
 	bool existsEntry(const ArtikelBase::ID art, AufStatVal stat,
         		ManuProC::Datum lieferdatum) throw(SQLerror);               
+	bool existsEntry(const ArtikelBase::ID art, AufStatVal stat) throw(SQLerror);
 
         void setStatusAuftragFull(AufStatVal status,int uid) throw(SQLerror);
 };

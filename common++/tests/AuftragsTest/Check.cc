@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.12 2002/10/04 08:23:21 thoma Exp $
+// $Id: Check.cc,v 1.13 2002/10/09 14:47:22 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -107,6 +107,10 @@ bool Check::vergleich(e_check check)
      case LieferscheinZusatzMinusKunde: zusatz="_LSZMK"; break;
      case LieferscheinZweiAufTeil: zusatz="_LSZA"; break;
      case LieferscheinZweiAufVoll: zusatz="_LSZAV"; break;
+     case ZweiKundenTest_anlegen: zusatz="_ZK_anlegen"; break;
+     case ZweiKunden_Teil1: zusatz="_ZK_abschreiben1T"; break;
+     case ZweiKunden_Teil2: zusatz="_ZK_abschreiben2T"; break;
+     case ZweiKunden_Ueber1:zusatz="_ZK_abschreiben1U"; break;
 
      // Jumbo 
      case Jumbo_richtig : zusatz="_richtig"; break;
@@ -184,10 +188,11 @@ void Check::dump(e_check check)
   unlink((tempdir+"auftragsentryzuordnung").c_str());
   unlink((tempdir+"auftragentry").c_str());
 
-  std::string s1=psql_cmd+" \"select to_char(instanz,'99') ||' - ' "
-      "|| to_char(auftragid,'99999') || ' - ' || text(zeilennr) as "
+  std::string s1=psql_cmd+" \"select to_char(e.instanz,'99') ||' - ' "
+      "|| to_char(e.auftragid,'99999') || ' - ' || text(zeilennr) as "
       "\\\"instanz-id-znr\\\",bestellt,"
-      "geliefert,lieferdate,status,artikelid from auftragentry "
+      "geliefert,lieferdate,e.status,a.stat,kundennr,artikelid from auftragentry e"
+      ", auftrag a where a.auftragid=e.auftragid and a.instanz=e.instanz "
       "order by 1;\" > "+tempdir+"auftragentry"; 
   system(s1.c_str());
 

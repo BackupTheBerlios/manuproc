@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.25 2002/10/04 13:57:48 thoma Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.26 2002/10/09 14:48:07 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,7 +38,7 @@
 #include <Auftrag/Auftrag.h>
 #include <algorithm>
 #include <unistd.h>
-#include <Instanzen/Produziert.h>
+//#include <Instanzen/ppsInstanzProduziert.h>
 
 exec sql include sqlca;
 
@@ -128,6 +128,7 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
  if(entrystatus == newstatus) return;     // nichts geändert
  if(newstatus == OPEN && entrystatus != UNCOMMITED && !force) return;
 
+
  Transaction tr; 
  exec sql lock auftragentry in exclusive mode;
  SQLerror::test("setStatus: lock table auftragentry");
@@ -161,7 +162,6 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
     else 
       InstanzAuftraegeAnlegen(artikel,ZNr(),lieferdatum,newstatus,uid,bestellt);
    }
-
 
  if(newstatus==OPEN)
    {

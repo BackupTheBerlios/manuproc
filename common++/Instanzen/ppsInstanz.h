@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.5 2002/10/04 13:57:48 thoma Exp $
+// $Id: ppsInstanz.h,v 1.6 2002/10/09 14:48:07 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,7 +28,12 @@
 #include <DynamicEnums/DynamicEnums.h>
 #include <DynamicEnums/DefaultValues.h>
 
+class AufEintrag;
+class ArtikelBase;
+
 namespace ppsInstanzID=ManuProC::DynamicEnums::Instanzen;
+namespace ManuProC{ struct st_produziert; }
+
 
 class ppsInstanz : public HandleContent
 {
@@ -90,7 +95,17 @@ public:
  {  return instid==b; }
  bool operator!=(ID b) const
  {  return instid!=b; }
+
+ //////////////////////////////////////////////////////////////////////////
+ // Für die Produktion
+ public:
+      void Produziert(ManuProC::st_produziert &P) const ;
+      void Lager_abschreiben(ManuProC::st_produziert &P) const ;
+ private:
+      void rekursion(ManuProC::st_produziert &P) const ;
+
 };
+
 
 class cH_ppsInstanz : public Handle<const ppsInstanz>
 {

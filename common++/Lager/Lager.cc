@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.13 2002/10/04 08:23:21 thoma Exp $
+// $Id: Lager.cc,v 1.14 2002/10/09 14:48:07 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -33,7 +33,8 @@
 #include <algorithm>
 #include <unistd.h>
 #include <Aux/AdminProblems.h>
-#include <Instanzen/Produziert.h>
+//#include <Instanzen/Produziert.h>
+#include <Instanzen/ppsInstanzProduziert.h>
 
 
 H_Lager::H_Lager(const ArtikelBase& artikel) 
@@ -65,7 +66,9 @@ void Lager::rein_ins_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int u
      dispo_auftrag_aendern(artikel,menge);
      Lager_Vormerkungen::freigegeben_menge_neu_verplanen(instanz,artikel,menge,uid,AufEintragBase::r_Produziert);
      cH_ppsInstanz I(instanz);
-     Produziert(I->LagerFuer(),artikel,menge,uid).NichtSelbst();
+     ManuProC::st_produziert sp(artikel,menge,uid);
+     cH_ppsInstanz(I->LagerFuer())->Produziert(sp);
+//     Produziert(I->LagerFuer(),artikel,menge,uid).NichtSelbst();
      tr.commit();
    } catch(SQLerror &e)
      { std::cout << e <<'\n';}
@@ -75,7 +78,12 @@ void Lager::raus_aus_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int u
 {
   assert(menge>=0);
   try{
-    Produziert(instanz,artikel,menge,uid).Lager_abschreiben();
+    assert(cH_ppsInstanz(instanz)->ProduziertSelbst());
+
+     ManuProC::st_produziert sp(artikel,menge,uid);
+     cH_ppsInstanz(instanz)->Lager_abschreiben(sp);
+
+//    Produziert(instanz,artikel,menge,uid).Lager_abschreiben();
    } catch(SQLerror &e) { std::cout << e <<'\n';}
 }
 

@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.27 2002/10/04 08:23:21 thoma Exp $
+// $Id: Kunde.h,v 1.28 2002/10/09 14:48:07 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -203,6 +203,7 @@ public:
         bool entsorgung() const { return entsorg; }
         bool Rng_an_postfach() const {return rng_an_postfach;}
         bool Auslaender() const { return adresse.land->Auslaender(); }
+        bool EU() const { return adresse.land->EU(); }
 	bool Preisautomatik() const { return preisautomatik;}
 	void Preisautomatik(bool pa) throw(SQLerror);
 	bool showEAN() const { return showean;}

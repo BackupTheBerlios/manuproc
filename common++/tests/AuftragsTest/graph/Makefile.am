@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.3 2002/10/04 08:23:21 thoma Exp $
+# $Id: Makefile.am,v 1.4 2002/10/09 14:47:22 thoma Exp $
 
 CXXFLAGS=@CXXFLAGS@ @COMMONXX_INCLUDES@
 LDFLAGS=@LDFLAGS@  @COMMONXX_LDFLAGS@

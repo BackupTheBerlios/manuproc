@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for x in M P S L Z D Ls Lm LZ; do
+for x in M P S L Z D Ls Lm LZ LA ; do
 
   ./steuerprogramm $x
 

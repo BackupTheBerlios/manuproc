@@ -1,4 +1,4 @@
-// $Id: AuftragsVerwaltung.cc,v 1.5 2002/10/04 08:23:21 thoma Exp $
+// $Id: AuftragsVerwaltung.cc,v 1.6 2002/10/09 14:47:22 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -86,6 +86,12 @@ AufEintragBase AuftragsVerwaltung::anlegen3()
 {
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
    return auftrag.push_back(300,DATUM9,ARTIKEL_ROLLEREI,OPEN,UID,true);
+}
+
+AufEintragBase AuftragsVerwaltung::anlegenK()
+{
+   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE2);
+   return auftrag.push_back(200,NEWDATUM,ARTIKEL_ROLLEREI,OPEN,UID,true);
 }
 
 //#endif

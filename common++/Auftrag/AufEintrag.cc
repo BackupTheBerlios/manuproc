@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.10 2002/10/04 08:23:20 thoma Exp $
+// $Id: AufEintrag.cc,v 1.11 2002/10/09 14:48:07 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,6 +22,8 @@
 #include <Aux/Transaction.h>
 #include <Auftrag/AufEintragZu.h>
 #include <Auftrag/Auftrag.h>
+#include <unistd.h>
+#include <Instanzen/ppsInstanzProduziert.h>
 
 AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, mengen_t _bestellt,
 	ArtikelBase _artikel, const ManuProC::Datum _lieferdatum,
@@ -262,5 +264,14 @@ void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,e
     menge-=M;
     if(menge==AuftragBase::mengen_t(0)) return;
   }
+}
+
+
+void AufEintrag::Produziert(mengen_t menge,
+   ManuProcEntity::ID lfrsid=ManuProcEntity::none_id) throw(SQLerror)
+{
+  Kunde::ID kunde=Auftrag(*this).getKundennr();
+  ManuProC::st_produziert sp(kunde,*this,menge,getuid(),lfrsid);
+  Instanz()->Produziert(sp);
 }
 

@@ -1,4 +1,4 @@
-// $Id: graph.cc,v 1.4 2002/10/04 08:23:21 thoma Exp $
+// $Id: graph.cc,v 1.5 2002/10/09 14:47:22 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -47,6 +47,7 @@ void usage(std::string s)
        << "\t\t[Lm] Lieferschein Mengenänderung\n"
        << "\t\t[LZ] Lieferschein mit Zustazeinträgen\n"
        << "\t\t[LA] Lieferschein mit Zwei Aufträgen\n"
+       << "\t\t[ZK] Zwei Kunden Zwei Aufträgen\n"
        << "\t\t[X]  LEGENDE \n";
   cout << "\t b => black [default] "
        << "\t c => colour \n\n";
@@ -77,6 +78,7 @@ int main(int argc, char *argv[])
   else if(string(argv[optind])=="Lm")mode=LieferscheinMenge;
   else if(string(argv[optind])=="LZ")mode=LieferscheinZusatz;
   else if(string(argv[optind])=="LA")mode=LieferscheinZweiAuftraege;
+  else if(string(argv[optind])=="ZK")mode=ZweiKunden;
   else if(string(argv[optind])=="X") mode=Legende;
   Petig::PrintUncaughtExceptions();
   try{

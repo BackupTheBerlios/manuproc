@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.15 2002/10/04 08:23:21 thoma Exp $
+// $Id: steuerprogramm.cc,v 1.16 2002/10/09 14:47:22 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -26,7 +26,8 @@
 #include <Aux/exception.h>
 #include <Lager/Lager.h>
 #include <Auftrag/Auftrag.h>
-#include <Instanzen/Produziert.h>
+#include <Instanzen/ppsInstanzProduziert.h>
+
 #include <unistd.h>
 // Jumbo
 #include <Ketten/KettplanKette.h>
@@ -39,6 +40,7 @@
 enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       ZweiterAuftrag_frueheresDatum,Lieferscheintest,LieferscheintestMenge,
       LieferscheintestZusatz,Lieferscheintest_ZweiterAuftrag_frueheresDatum,
+      ZweiKundenTest,
       JumboLager};
 
 int fehler()
@@ -65,7 +67,8 @@ int auftragstests(e_mode mode)
 
    // ANLEGEN eines Auftrags mit Bandlager und Rohwarenlager
    if (mode!=JumboLager)
-   {  AE.setStatus(OPEN,UID);
+   {  
+      AE.setStatus(OPEN,UID);
       erfolgreich=C.teste(Check::Open);
       if(!erfolgreich) 
          { cout << "Öffnen des Auftrags fehlgeschlagen\n"; return fehler();}
@@ -185,18 +188,18 @@ int auftragstests(e_mode mode)
       if(!erfolgreich) { cout << "Bandlager einlagern\n";
                return fehler();}
 
-//      AufEintrag(AEB).abschreiben(300);
+//cout << "\n\n300 ABSCHREIBEN\n\n\n";
       {AufEintrag AE(AEB);
-       Produziert(AEB.Instanz()->Id(),AE.Artikel(),300,getuid()).NichtSelbst();
+        AE.Produziert(300);
       }
       erfolgreich=C.teste(Check::Kunden_Teillieferung);
       if(!erfolgreich) { cout << "Kunde Teillieferung\n";
                return fehler();}
 
+//cout << "\n\n120 ABSCHREIBEN\n\n\n";
       {AufEintrag AE(AEB);
-       Produziert(AEB.Instanz()->Id(),AE.Artikel(),120,getuid()).NichtSelbst();
+        AE.Produziert(120);
       }
-//      AufEintrag(AEB).abschreiben(120);
       erfolgreich=C.teste(Check::Kunden_Ueberlieferung);
       if(!erfolgreich) { cout << "Kunde Überlieferung\n";
                return fehler();}      break;
@@ -229,9 +232,8 @@ int auftragstests(e_mode mode)
                return fehler();}
 
        {
-//          AufEintrag(AEB).abschreiben(200);
           AufEintrag AE(AEB);
-       Produziert(AEB.Instanz()->Id(),AE.Artikel(),200,getuid()).NichtSelbst();
+        AE.Produziert(200);
        }
        erfolgreich=C.teste(Check::ZweiterAuftrag_frueheresDatum_abschreiben);
        if(!erfolgreich) { cout << "Teil-Abschreiben des zweiten Auftrags ["<<AEB<<"] \n\n";
@@ -360,6 +362,37 @@ int auftragstests(e_mode mode)
 
        break;
      }
+    case ZweiKundenTest:
+     {
+       AufEintragBase AEB2=auftrag.anlegenK();
+       erfolgreich=C.teste(Check::ZweiKundenTest_anlegen);
+       if(!erfolgreich) { cout << "Anlegen eines zweiten (offenen) Auftrags für einen anderen Kunden ["<<AEB<<"] \n\n";
+               return fehler();}
+
+      {AufEintrag AE(AEB);
+        AE.Produziert(300);
+      }
+      erfolgreich=C.teste(Check::ZweiKunden_Teil1);
+      if(!erfolgreich) { cout << "Zwei Kunden Teillieferung 1\n";
+               return fehler();}
+
+      {AufEintrag AE(AEB2);
+        AE.Produziert(180);
+      }
+      erfolgreich=C.teste(Check::ZweiKunden_Teil2);
+      if(!erfolgreich) { cout << "Zwei Kunden Teillieferung 2\n";
+               return fehler();}
+
+      {AufEintrag AE(AEB);
+        AE.Produziert(200);
+      }
+      erfolgreich=C.teste(Check::ZweiKunden_Ueber1);
+      if(!erfolgreich) { cout << "Zwei Kunden Volllieferung 1\n";
+               return fehler();}
+
+
+       break;
+     }
     case JumboLager:
      { 
 #if defined (PETIG_EXTENSIONS) && defined (MANUPROC_DYNAMICENUMS_CREATED)
@@ -412,6 +445,7 @@ void usage(const std::string &argv0,const std::string &argv1)
                   "\t(S)plittest|(Z)weiAuftraege|ZweiterAuftrag_frueheres(D)atum|\n"
                   "\t(L)iefer(s)cheine|(L)ieferscheine(m)engen|\n"
                   "\t(L)ieferschein(Z)usatzeintrag|(L)ieferscheinZweiter(A)uftrag_frueheresDatum|\n"
+                  "\t(Z)wei(K)unden)\n"
                   "\t(J)umboLager] aufgerufen werden\n"
        << " nicht mit '"<<argv1<<"'\n";
   exit(1);
@@ -432,6 +466,7 @@ int main(int argc,char *argv[])
    else if(std::string(argv[1])=="Lm" || std::string(argv[1])=="LieferscheintestMenge")  mode=LieferscheintestMenge;
    else if(std::string(argv[1])=="LZ" || std::string(argv[1])=="LieferscheintestZusatz")  mode=LieferscheintestZusatz;
    else if(std::string(argv[1])=="LA" || std::string(argv[1])=="Lieferscheintest_ZweiterAuftrag_frueheresDatum")  mode=Lieferscheintest_ZweiterAuftrag_frueheresDatum;
+   else if(std::string(argv[1])=="ZK" || std::string(argv[1])=="ZweiKunden")  mode=ZweiKundenTest;
    else if(std::string(argv[1])=="J" || std::string(argv[1])=="JumboLager")  mode=JumboLager;
 
    if(mode==None) { usage(argv[0],argv[1]); return 1; }

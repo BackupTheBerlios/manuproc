@@ -1,4 +1,4 @@
-/* $Id: LieferscheinVoll.cc,v 1.8 2002/09/02 13:04:04 christof Exp $ */
+/* $Id: LieferscheinVoll.cc,v 1.9 2002/10/09 14:48:07 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -45,7 +45,7 @@ LieferscheinVoll::LieferscheinVoll(const cH_ppsInstanz& _instanz,int lid,bool au
   " coalesce(ly.refzeilennr,"+itos(ManuProcEintrag::none_znr)+")"
   " from lieferscheinentry ly "
   " left join auftrag a on (ly.refauftragid,ly.instanz) = (a.auftragid,a.instanz)"
-  " where (ly.instanz,ly.lfrsid) = ("+itos(Instanz())+","+itos(Id())+") order by "+
+  " where (ly.instanz,ly.lfrsid) = ("+itos(Instanz()->Id())+","+itos(Id())+") order by "+
   (auforder ? "ly.refauftragid,ly.zeile":"ly.zeile");
   
  int artikelid,stueck,palette,zeile;

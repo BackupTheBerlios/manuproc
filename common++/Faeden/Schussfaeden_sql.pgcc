@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Schussfaeden_sql.pgcc,v 1.4 2002/10/04 13:57:48 thoma Exp $
+// $Id: Schussfaeden_sql.pgcc,v 1.5 2002/10/09 14:48:07 thoma Exp $
 
 #include "Schussfaeden.hh"
 #include <Aux/Transaction.h>

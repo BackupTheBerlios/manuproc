@@ -76,7 +76,7 @@ libcommon___a_LIBADD= \
 		Faeden/Webangaben.o \
 		Faeden/Webangaben_sql.o \
 		Instanzen/Produktionsdauer.o \
-		Instanzen/Produziert.o \
+		Instanzen/ppsInstanzProduziert.o \
 		Instanzen/ppsInstanz_sql.o \
       Ketten/ArtikelGang.o \
       Ketten/ArtikelGang_sql.o \

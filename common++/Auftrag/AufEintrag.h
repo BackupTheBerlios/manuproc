@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.15 2002/10/04 13:57:48 thoma Exp $ */
+/* $Id: AufEintrag.h,v 1.16 2002/10/09 14:48:07 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -170,13 +170,19 @@ public:
  rabatt_t Rabatt() const { return rabatt;}
  Preis::preismenge_t PreisMenge() const { return preis.PreisMenge(); }
 
-#ifndef MABELLA_EXTENSIONS
-private: // use Produziert::NichtSelbst() 
- friend class Produziert;
+private: 
+   friend struct ManuProC::st_produziert;
+   friend void ppsInstanz::Produziert(ManuProC::st_produziert &P) const;
+#ifdef MABELLA_EXTENSIONS
+public:
 #endif 
-
  void abschreiben(mengen_t menge,
     ManuProcEntity::ID lfrsid=ManuProcEntity::none_id) throw(SQLerror);
+
+public:
+ void Produziert(mengen_t menge,
+     ManuProcEntity::ID lfrsid=ManuProcEntity::none_id)  throw(SQLerror);
+
 
 public:
  bool allesOK() const;

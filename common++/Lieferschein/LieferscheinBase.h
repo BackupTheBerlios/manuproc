@@ -1,4 +1,4 @@
-/* $Id: LieferscheinBase.h,v 1.7 2002/06/20 06:29:53 christof Exp $ */
+/* $Id: LieferscheinBase.h,v 1.8 2002/10/09 14:48:07 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -39,7 +39,7 @@ class LieferscheinBase
 	     : instanz(_instanz), lieferid(lid) {}
 
 	ID Id() const {return lieferid;}
-        ppsInstanz::ID Instanz() const {return instanz->Id(); }
+   cH_ppsInstanz Instanz() const {return instanz; }
 };
 
 #endif

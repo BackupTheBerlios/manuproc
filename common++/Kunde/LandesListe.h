@@ -1,4 +1,4 @@
-// $Id: LandesListe.h,v 1.4 2002/06/20 06:29:53 christof Exp $
+// $Id: LandesListe.h,v 1.5 2002/10/09 14:48:07 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -31,14 +31,16 @@ class LandesListe : public ManuProcEntity
 {
 private:
  std::string name,lkz;
+ bool eu;
 
 public:
   LandesListe(ID id) throw(SQLerror);
-  LandesListe() {}
+  LandesListe() : eu(false) {}
   ID Id() const { return entityid; } 
   const std::string Name() const { return name; }
   const std::string LKZ() const { return lkz; }
   bool Auslaender() const { return (lkz!="D"); }
+  bool EU() const { return eu; }
 
 };
 

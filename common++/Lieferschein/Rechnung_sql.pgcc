@@ -205,7 +205,7 @@ void Rechnung::deleteLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
 void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
 {
  exec sql begin declare section; 
- int INSTANZ=lfrs.Instanz();
+ int INSTANZ=lfrs.Instanz()->Id();
  int LFRSID=lfrs.Id();
  int RNGID=Id();
  int MAXZNR,MINZNR;

@@ -1,6 +1,6 @@
-// $Id: Produziert.cc,v 1.5 2002/10/04 13:57:48 thoma Exp $
+// $Id: ppsInstanzProduziert.cc,v 1.1 2002/10/09 14:48:07 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,8 +17,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "ppsInstanz.h"
+#include "ppsInstanzProduziert.h"
 
-#include "Produziert.h"
 #include <Artikel/ArtikelBaum.h>
 #include <Artikel/ArtikelStamm.h>
 #include <Auftrag/sqlAuftragSelector.h>
@@ -26,109 +27,109 @@
 #include <Aux/AdminProblems.h>    
 #include <Lager/Lager.h>
 
-void Produziert::NichtSelbst()
+
+void ppsInstanz::Produziert(ManuProC::st_produziert &P) const
 {
-  if(instanz->ProduziertSelbst())  return  ;
-  try{
-   if(menge>=0)
+ assert(Id()!=ppsInstanzID::None) ; 
+ if(Id()==ppsInstanzID::Kundenauftraege)
+     { assert(P.AE.valid());
+       P.AE.abschreiben(P.menge);
+       rekursion(P);
+       return;
+     }     
+ else if(ProduziertSelbst())  return  ;
+ try{
+   if(P.menge>=0)
     {
-      AuftragBase::mengen_t restmenge=abschreiben_oder_reduzieren(
-                  AuftragBase::PlanId_for(instanz),menge);
+      AuftragBase::mengen_t restmenge=P.abschreiben_oder_reduzieren(Id(),
+                  AuftragBase::PlanId_for(Id()),P.menge);
+//cout << Name()<<'\t'<<P.menge<<' '<<restmenge<<'\n';
       if(restmenge>0)
        {
-          /*AuftragBase::mengen_t restmenge2=*/abschreiben_oder_reduzieren(
+          AuftragBase::mengen_t restmenge2=P.abschreiben_oder_reduzieren(Id(),
                   AuftragBase::ungeplante_id,restmenge);
+//cout << Name()<<' '<<Id()<<'\t'<<P.menge<<' '<<restmenge<<' '<<restmenge2<<'\n';
 #if 0
-if(restmenge2>0) 
-{
+          if(restmenge2>0) 
+           {
 cerr << "Restmenge nach Abschreiben bei geplantem Auftrag war "
 <<restmenge<<"\nRestmenge nach Reduzieren des ungeplanten Auftrags ist "
 <<restmenge2<<"\n   und Was machen wir nun?\n"
-<<"\tVorschlag: die Restmenge HIER ins Lager einlagern\n"
-<<"\tFrage: Kann die Restmenge auch bei nicht-Lager-Instanzen > 0 sein?\tJa, sie kann :-("
-<< instanz->BestellungFuer()<<'\n';
-//assert(cH_ppsInstanz(instanz->BestellungFuer())->LagerInstanz());
-
-//assert (cH_ppsInstanz(instanz(instanz->BestellungFuer()))->LagerInstanz());
-}
+           }
 #endif
         }       
-     check_dispo_auftraege();
+     P.check_dispo_auftraege(Id());
     }
    else //if(menge<0)
     {
-      AuftragBase::mengen_t restmenge=abschreiben_oder_reduzieren(AuftragBase::plan_auftrag_id,menge);
+      AuftragBase::mengen_t restmenge=P.abschreiben_oder_reduzieren
+                                    (Id(),AuftragBase::plan_auftrag_id,P.menge);
       if(restmenge<0) 
        {
          // da bin ich mal gespannt wann das hier fehlschlägt MAT 2.10.02
-         assert(restmenge==menge);
-         assert(instanz==ppsInstanzID::Kundenauftraege) ;
-         assert(AE.valid());         
-         AE.abschreiben(restmenge);
+         assert(restmenge==P.menge);
+         assert(Id()==ppsInstanzID::Kundenauftraege) ;
+         assert(P.AE.valid());         
+         P.AE.abschreiben(restmenge);
        }
     }
-  rekursion();
+  rekursion(P);
   }catch(SQLerror &e) { cerr << e<<'\n';}
 }
 
-void Produziert::Lager_abschreiben()
+void ppsInstanz::Lager_abschreiben(ManuProC::st_produziert &P) const 
 {
-  assert(instanz->LagerInstanz());
-  AuftragBase::mengen_t restmenge=abschreiben_oder_reduzieren(
-                                       AuftragBase::plan_auftrag_id,menge);
+  assert(LagerInstanz());
+  AuftragBase::mengen_t restmenge=P.abschreiben_oder_reduzieren(Id(),
+                                       AuftragBase::plan_auftrag_id,P.menge);
   if(restmenge>0)
    {
-     AuftragBase::mengen_t restmenge2=abschreiben_oder_reduzieren(
+     AuftragBase::mengen_t restmenge2=P.abschreiben_oder_reduzieren(Id(),
                   AuftragBase::dispo_auftrag_id,restmenge);
-     if(restmenge2!=AuftragBase::mengen_t(0)) fehler(Mehr_produziert_als_moeglich,
-               AuftragBase::dispo_auftrag_id,menge,restmenge2) ;
+     if(restmenge2!=AuftragBase::mengen_t(0)) P.fehler(*this,P.Mehr_produziert_als_moeglich,
+               AuftragBase::dispo_auftrag_id,P.menge,restmenge2) ;
    }
 }
 
 
-void Produziert::rekursion()
+void ppsInstanz::rekursion(ManuProC::st_produziert &P) const 
 {
- ArtikelStamm as(artikel);
+ ArtikelStamm as(P.artikel);
  
  if(as.BestellenBei()==ppsInstanzID::None) return;
 
-  if(instanz!=as.BestellenBei()) // LagerFür Instanzen und Kundeninstanzen
+//cout << "Prod1: "<<Name()<<'\n';
+  if(Id()!=as.BestellenBei()->Id()) // LagerFür Instanzen und Kundeninstanzen
    {
      cH_ppsInstanz I=as.BestellenBei();
-     Produziert(I,artikel,menge,uid).NichtSelbst();
+     P.kunde=ManuProC::DefaultValues::EigeneKundenId;
+     I->Produziert(P);
      return;
    }   
-   ArtikelBaum AB(artikel);
-//cout << "Rekursion für "<<instanz->Name()<<'\n';
-   for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
+   ArtikelBaum AB(P.artikel);
+   for(ArtikelBaum::iterator i=AB.begin();i!=AB.end();++i)
      {
-       ArtikelStamm AS(i->rohartikel);
-//cout << "\t"<<AS.BestellenBei()->Name()<<'\n';
-     }
-//cout <<'\n';
-   for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
-     {
-       ArtikelStamm AS(i->rohartikel);
-       Produziert(AS.BestellenBei(),i->rohartikel,double(i->menge)*menge,uid).NichtSelbst();
+       cH_ppsInstanz I((ArtikelStamm(i->rohartikel).BestellenBei()));
+       ManuProC::st_produziert sp(i->rohartikel,double(i->menge)*P.menge,P.uid);
+       I->Produziert(sp);
      }
 }
 
-
-AuftragBase::mengen_t Produziert::abschreiben_oder_reduzieren(int id,AuftragBase::mengen_t abmenge)
+AuftragBase::mengen_t ManuProC::st_produziert::abschreiben_oder_reduzieren(ppsInstanz::ID instanz,int id,AuftragBase::mengen_t abmenge)
 {
-
   assert(id==AuftragBase::handplan_auftrag_id || id==AuftragBase::dispo_auftrag_id ||
          id==AuftragBase::plan_auftrag_id     || id==AuftragBase::ungeplante_id);
 
   SQLFullAuftragSelector sel;
   if(abmenge>=0) sel=SQLFullAuftragSelector(SQLFullAuftragSelector::sel_Artikel_Planung_id
-                                                   (instanz->Id(),kunde,artikel,id));
+                                                   (instanz,kunde,artikel,id));
   else sel=SQLFullAuftragSelector(SQLFullAuftragSelector::sel_Artikel_Planung_id
-                                                   (instanz->Id(),kunde,artikel,id,CLOSED));
+                                                   (instanz,kunde,artikel,id,CLOSED));
+
 
   SelectedFullAufList L(sel);
 
-//cout <<"SIZE: "<< L.size()<<'\n';
+//cout <<"\tSIZE: "<< L.size()<<'\n';
   for(SelectedFullAufList::iterator i=L.begin();i!=L.end();++i)
    {
      AuftragBase::mengen_t abschreibmenge;
@@ -153,7 +154,7 @@ AuftragBase::mengen_t Produziert::abschreiben_oder_reduzieren(int id,AuftragBase
        {
          AuftragBase::mengen_t mt=i->updateStkDiffBase__(uid,-abschreibmenge);
 //cout << "Produziert:: updateStkDiffBase__ bei "<<*i<<" Menge:"<<abschreibmenge<<'\n';
-         if(mt!=-abschreibmenge) fehler(Mehr_ausgelagert_als_im_Lager_war,
+         if(mt!=-abschreibmenge) fehler(instanz,Mehr_ausgelagert_als_im_Lager_war,
                                         i->Id(),abschreibmenge,-mt);
         }   
      else // plan_auftrag_id || handplan_auftrag_id
@@ -169,7 +170,9 @@ AuftragBase::mengen_t Produziert::abschreiben_oder_reduzieren(int id,AuftragBase
  return abmenge;
 }
 
-void Produziert::Reduce_Zuordnung_Add_Parent(const AufEintragBase &aeb,AuftragBase::mengen_t menge)
+
+
+void ManuProC::st_produziert::Reduce_Zuordnung_Add_Parent(const AufEintragBase &aeb,AuftragBase::mengen_t menge)
 {
    std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_list_ungeplant(false);
    for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
@@ -183,25 +186,26 @@ void Produziert::Reduce_Zuordnung_Add_Parent(const AufEintragBase &aeb,AuftragBa
 }
 
 
-void Produziert::check_dispo_auftraege()
+void ManuProC::st_produziert::check_dispo_auftraege(ppsInstanz::ID instanz)
 {
   AuftragBase::mengen_t freie_menge2=
-               get_Menge_for(AuftragBase::dispo_auftrag_id);
+               get_Menge_for(instanz,AuftragBase::dispo_auftrag_id);
   AuftragBase::mengen_t geplante_menge1=
-               get_Menge_for(AuftragBase::AuftragBase::PlanId_for(instanz));
+               get_Menge_for(instanz,AuftragBase::AuftragBase::PlanId_for(instanz));
 
 //cout<< "PI: "<<instanz->Name()<<'\t'<<geplante_menge1<<' '<<freie_menge2<<'\n';
   if(geplante_menge1<freie_menge2)
    {
 //cout << "Do something\n";
-     abschreiben_oder_reduzieren(AuftragBase::dispo_auftrag_id,freie_menge2-geplante_menge1);
+     abschreiben_oder_reduzieren(instanz,AuftragBase::dispo_auftrag_id,freie_menge2-geplante_menge1);
    }
 }
 
-AuftragBase::mengen_t Produziert::get_Menge_for(int id_)
+
+AuftragBase::mengen_t ManuProC::st_produziert::get_Menge_for(ppsInstanz::ID instanz,int id_)
 {
   SQLFullAuftragSelector sel=SQLFullAuftragSelector(SQLFullAuftragSelector::sel_Artikel_Planung_id
-          (instanz->Id(),kunde,artikel,id_));
+          (instanz,kunde,artikel,id_));
   SelectedFullAufList L(sel);
   AuftragBase::mengen_t m=0;
   for(SelectedFullAufList::iterator i=L.begin();i!=L.end();++i)
@@ -210,18 +214,17 @@ AuftragBase::mengen_t Produziert::get_Menge_for(int id_)
 }
 
 
-
-void Produziert::fehler(Probleme typ,int id,AuftragBase::mengen_t m1,
+void ManuProC::st_produziert::fehler(ppsInstanz::ID instanz,Probleme typ,int id,AuftragBase::mengen_t m1,
                                       AuftragBase::mengen_t m2)
 {
   std::string s;
   if(typ==Mehr_produziert_als_moeglich) 
-   { s="Produziert hat in "+instanz->Name()+
+   { s="Produziert hat in "+cH_ppsInstanz(instanz)->Name()+
                " nicht die komplette Menge ("+itos(m1)+") reduzieren"
                " (bzw. abschreiben) können, sondern nur "+itos(m2);
    }
   if(typ==Mehr_ausgelagert_als_im_Lager_war) 
-   { s="Produziert hat aus Lager "+instanz->Name()+
+   { s="Produziert hat aus Lager "+cH_ppsInstanz(instanz)->Name()+
                   " mehr Menge ausgelagert ("+itos(m1)+") als drin war ("
                   +itos(m2)+")\n";
    }

@@ -148,8 +148,8 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
 
  NONE_ID=Zahlungsart::none_id;
 
-if(Instanz()==ppsInstanzID::Kundenauftraege)
-ECPGdebug(true,stdout);
+//if(Instanz()==ppsInstanzID::Kundenauftraege)
+//ECPGdebug(true,stdout);
  exec sql select coalesce(kundennr,:INVALID_ENTITY), date(coalesce(datum,now())), 
  		stat, coalesce(youraufnr,''), coalesce(bemerkung,''),
 		 coalesce(waehrung,2),coalesce(rabatt,0),

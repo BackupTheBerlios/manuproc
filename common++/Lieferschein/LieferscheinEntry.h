@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.14 2002/09/19 15:04:45 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.15 2002/10/09 14:48:07 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -42,7 +42,7 @@ public:
 	LieferscheinEntryBase(const LieferscheinBase &lsb, int znr)
 	: LieferscheinBase(lsb), zeilennr(znr) {}
 	// unschön, da Ints ...
-	LieferscheinEntryBase(ppsInstanz::ID inst, int ls, int znr)
+	LieferscheinEntryBase(cH_ppsInstanz inst, int ls, int znr)
 	: LieferscheinBase(inst,ls), zeilennr(znr) {}
 
  int Zeile() const { return zeilennr; }

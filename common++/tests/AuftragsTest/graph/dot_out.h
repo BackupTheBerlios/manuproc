@@ -1,4 +1,4 @@
-// $Id: dot_out.h,v 1.4 2002/10/04 08:23:21 thoma Exp $
+// $Id: dot_out.h,v 1.5 2002/10/09 14:47:22 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
