@@ -88,6 +88,7 @@ public:
 		PRINTF_ZAHLUNG9=73,
 		PRINTF_ZAHLUNG10=74,
 		MWST=75,
+		PREISDIFFERENZ=76,
 	     } LangTXT;
 
  MultiL_Dict(int sprache, int default_spr=1);

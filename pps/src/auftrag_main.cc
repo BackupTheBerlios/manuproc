@@ -445,11 +445,6 @@ void auftrag_main::set_column_titles_of_simple_tree()
 
  std::vector<std::string> ct;
  ct.push_back("Kunde");
-// ct.push_back("Artikel");
-// ct.push_back("Breite");
-// ct.push_back("Farbe");
-// ct.push_back("Aufmachung");
-
 
  int i=0;
  for(ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(signif); 
@@ -1088,5 +1083,22 @@ void auftrag_main::on_offwarengrp_activate()
 {
  Global_Settings::create(int(getuid()),"pps","warengruppe maintree",
 	itos(offen_warengruppe->get_value()));
+
+ int signif=1;
+ cH_ExtBezSchema ebz(ExtBezSchema::default_id,offen_warengruppe->get_value());
+
+ std::vector<std::string> ct;
+ ct.push_back("Kunde");
+
+ int i=0;
+ int bezidx=A1;
+ for(ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(signif); 
+	bezit!=ebz->sigend(signif); ++bezit,i++,bezidx++) 
+   maintree_s->set_column_title(maintree_s->ColumnFromIndex(bezidx)
+				,bezit->bezkomptext);
+ for(int j=i; j<4; j++, bezidx++) // auffüllen bis 4
+   maintree_s->set_column_title(maintree_s->ColumnFromIndex(bezidx)
+				,"");
+
 }
 
