@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.8 2004/03/11 17:11:16 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.9 2004/03/11 17:36:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -341,6 +341,7 @@ Query::~Query()
    {  std::cerr << "The query " << query << " still needed " 
    	<< params.HowManyNeededParams() 
    	<< " parameters on destruction and got never executed!\n";
+      SQLerror::last_code=ECPG_TOO_FEW_ARGUMENTS;
    }
    if (result)
    {  sqlite_free_table((char**)result);
@@ -348,4 +349,7 @@ Query::~Query()
    }
 }
 
+int Query::Code() 
+{  return SQLerror::last_code; 
+}
 #endif
