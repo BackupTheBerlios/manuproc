@@ -1,4 +1,4 @@
-// $Id: Association.cc,v 1.3 2003/11/29 13:33:21 christof Exp $
+// $Id: Association.cc,v 1.4 2004/05/03 13:59:05 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -52,7 +52,13 @@ void ManuProC::attach(Glib::Object &widget, SigC::Object &connobj,
 template <class T,class W,class C>
  static typename C::Connection::this_t &Association_impl(W &w)
 {  SigC::Object *r=0;
-   if ((r=lookup(w))) return *dynamic_cast<typename C::Connection::this_t *>(r);
+   if ((r=lookup(w))) 
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+      // since sigc::trackable is not polymorphic ...
+      return *static_cast<typename C::Connection::this_t *>(r);
+#else
+      return *dynamic_cast<typename C::Connection::this_t *>(r);
+#endif      
    typename C::Connection::this_t *r2=new typename C::Connection(&w);
    attach(w,*r2);
    return *r2;

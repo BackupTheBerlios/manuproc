@@ -1,4 +1,4 @@
-// $Id: ModelWidgetConnection.h,v 1.8 2004/05/03 11:53:31 christof Exp $
+// $Id: ModelWidgetConnection.h,v 1.9 2004/05/03 13:59:05 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -24,6 +24,7 @@
 #include <BaseObjects/Model.h>
 #include <sigc++/object.h>
 #include <glib/gtypes.h>
+#include <gtkmmconfig.h>
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
 #  include <sigc++/compatibility.h>
 #endif
