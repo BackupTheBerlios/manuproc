@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReparatur.h,v 1.5 2003/05/20 10:47:25 christof Exp $
+// $Id: ppsInstanzReparatur.h,v 1.6 2003/05/22 08:32:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -75,9 +75,8 @@ class ppsInstanzReparatur : public ppsInstanz
       bool KK_teste_summen_fuer(const AufEintragBase aeb,const ArtikelBase KundenArtikel,const int uid,const bool analyse_only) const;
 #endif
 
-      void analyse(const std::string &s,const AufEintrag &AE,const std::string &x,const std::string &y) const;
+      void analyse(const std::string &s,const AufEintrag &AE,const std::string &x=std::string(),const std::string &y=std::string()) const;
       // Wrapper:
-      void analyse(const std::string &s,const AufEintrag &AE) const{analyse(s,AE,"","");}
       void analyse(const std::string &s,const AufEintrag &AE,const AufEintragBase &x,const ABmt &y) const;
       void analyse(const std::string &s,const AufEintrag &AE,const ABmt &x,const ABmt &y) const;
       void analyse(const std::string &s,const AufEintrag &AE,const ArtikelBase &x,const ArtikelBase &y) const;
