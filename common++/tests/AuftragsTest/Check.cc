@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.19 2002/11/27 14:59:05 christof Exp $
+// $Id: Check.cc,v 1.20 2002/11/27 15:42:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -171,6 +171,10 @@ bool Check::vergleich(was_checken was,const std::string &zusatz)
   {  files.push_back("auftragsentryzuordnung");
      files.push_back("auftragentry");
   }
+  if (was & RohLager) 
+  {  files.push_back("rl_inhalt");
+     files.push_back("rl_log");
+  }
 
   for (std::vector<std::string>::const_iterator i=files.begin();i!=files.end();++i)
   {  std::string fz1=tempdir+*i;
@@ -208,7 +212,7 @@ void Check::dump(was_checken check)
 
      system((psql_cmd+" \""+
   	"select code,maschine,lauf,gang,status,wiederinslager,verarb_datum,"
-  	  "artikelid,rest,lagerplatz from rohjumbo order by 1;"
+  	  "artikelid,rest,lagerplatz from rohjumbo order by code;"
   	    +"\" >"+tempdir+"rohjumbo").c_str());
      system((psql_cmd+" \""+
   	"select code,action,name,lagerplatz from lager_bewegung order by code,zeit;"
@@ -256,6 +260,19 @@ void Check::dump(was_checken check)
       "order by 1,2;\" > "+tempdir+"auftragsentryzuordnung"; 
   system(s2.c_str());
  }
+  if(check & RohLager)
+  {  unlink((tempdir+"rl_inhalt").c_str());
+     unlink((tempdir+"rl_log").c_str());
+
+     system((psql_cmd+" \""+
+  	"select position_ as pos,material,kartons,kg_per_karton as a,"
+  		" reste,rest_kg as kg  from rl_inhalt order by 1;"
+  	    +"\" >"+tempdir+"rl_inhalt").c_str());
+     system((psql_cmd+" \""+
+  	"select position_ as pos,material,typ,kartons,kg_per_karton as a,"
+  		" reste,rest_kg as kg,misc from rl_log order by zeit;"
+  	    +"\" >"+tempdir+"rl_log").c_str());
+  }
 }
 
 Check::was_checken operator|(Check::was_checken a, Check::was_checken b)

@@ -35,12 +35,13 @@
 
 class Check
 {
-   enum was_checken_p { b_Jumbo, b_Lieferschein, b_Menge };
+   enum was_checken_p { b_Jumbo, b_Lieferschein, b_Menge, b_RohLager };
  public:
    enum was_checken { Nix,
    		Jumbo=1<<b_Jumbo,
    		Lieferschein=1<<b_Lieferschein,
-   		Menge=1<<b_Menge };
+   		Menge=1<<b_Menge,
+   		RohLager=1<<b_RohLager };
    		
    enum e_check {Open,Menge_Plus,Menge_Minus,Menge_MinusMinus,StatusClosed,
                  Datumsaenderung,Rohwarenlager_einlagern,Bandlager_einlagern,

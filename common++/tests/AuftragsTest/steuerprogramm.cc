@@ -367,7 +367,7 @@ std::cout << dummystring<<'\n';
                return fehler();} 
 
       // test von force, leer, etc
-#if 0      
+#if 1
       dummystring="";
       RohwarenLager::st_rohlager stRL10(LagerPlatzKupfer2,6,35,1,7,ARTIKEL_ACETAT,ManuProC::Datum().today());
       RL.RL_Einlagern(LagerPlatzKupfer2,stRL10,UID,dummystring,true);
@@ -375,20 +375,20 @@ std::cout << "D10: "<<dummystring<<'\n';
 
       dummystring="";
       RohwarenLager::st_rohlager stRL11(LagerPlatzKupfer,0,0,2,1,ARTIKEL_ACETAT,ManuProC::Datum().today());
-      RL.RL_Entnahme(LagerPlatzKupfer,stRL10,UID,dummystring);
+      RL.RL_Entnahme(stRL10,UID,dummystring);
 std::cout << "D11: "<<dummystring<<'\n';
-      vergleichen(C,Check::Menge,"_force_art","force, falscher Artikel",mit_reparatur_programm);
+      vergleichen(C,Check::Menge|Check::RohLager,"_force_art","force, falscher Artikel",mit_reparatur_programm);
 
       dummystring="";
       RohwarenLager::st_rohlager stRL12(LagerPlatzKupfer2,10,35,0,0,ARTIKEL_ACETAT,ManuProC::Datum().today());
-      RL.RL_Entnahme(LagerPlatzKupfer2,stRL10,UID,dummystring);
+      RL.RL_Entnahme(stRL10,UID,dummystring);
 std::cout << "D12: "<<dummystring<<'\n';
 
       dummystring="";
       RohwarenLager::st_rohlager stRL13(LagerPlatzAcetat,2,7,0,0,ARTIKEL_ACETAT,ManuProC::Datum().today());
-      RL.RL_Entnahme(LagerPlatzKupfer,stRL10,UID,dummystring,false,true);
+      RL.RL_Entnahme(stRL10,UID,dummystring,false,true);
 std::cout << "D13: "<<dummystring<<'\n';
-      vergleichen(C,Check::Menge,"_zuviel","zuviel Entnommen",mit_reparatur_programm);
+      vergleichen(C,Check::Menge|Check::RohLager,"_zuviel","zuviel Entnommen",mit_reparatur_programm);
 #endif
                
       cout << "Lager-Test erfolgreich\n";

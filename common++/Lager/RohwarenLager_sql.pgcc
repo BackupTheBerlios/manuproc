@@ -33,7 +33,7 @@ std::string RohwarenLager::st_rohlager::Menge_als_Text() const
 {  std::string s;
    if (kartons) s+=itos(kartons)+" Kartons à " + itos(kg_pro_karton)+ "kg ";
    if (reste||reste_kg) s+=itos(reste) +" Reste="+ itos(reste_kg) + "kg";
-   if (s.empty()) s="(keine Menge)";
+   if (s.empty()) s="nichts";
    return s;
 }
 
@@ -275,7 +275,7 @@ RohwarenLager::st_rohlager RohwarenLager::RL_Inhalt(const LagerPlatz position) c
       from rl_inhalt where position_= :POSITION;
   SQLerror::test(__FILELINE__,100);
   ManuProC::Datum date; 
-  if(sqlca.sqlcode==100)
+  if(sqlca.sqlcode)
    {
      return st_rohlager(position,0,0,0,0, ArtikelBase(0),date);
    }
