@@ -1,0 +1,13 @@
+#! /bin/sh
+
+PIDNAME=~/mabellas_ssh.pid
+
+kill `cat ~/mabellas_ssh.pid`
+
+/usr/bin/ssh -2 -C -i ~/.ssh/query_rsa mabella@petig-baender.dyndns.org \
+-N  -L25432:felix:5432 &
+
+echo $! > ~/mabellas_ssh.pid
+
+sleep 15
+

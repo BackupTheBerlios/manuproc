@@ -1,4 +1,4 @@
-// $Id: dbconnect_shared.cc,v 1.6 2004/08/31 15:42:06 jacek Exp $
+// $Id: dbconnect_shared.cc,v 1.7 2004/09/02 13:57:24 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -58,7 +58,9 @@ void ManuProC::dbdisconnect_nt(const std::string &name) throw()
 
 const std::string ManuProC::Connection::Pass() const throw(AuthError)
 {
- char buf[80];
+// not nedeed at the time
+
+/* char buf[80];
  buf[0]=0;
 
   ifstream passfile (".remote_access");
@@ -68,7 +70,8 @@ const std::string ManuProC::Connection::Pass() const throw(AuthError)
     passfile.getline(buf,sizeof buf);
 
   passfile.close();
-  return buf;
+*/
+  return "";
 }
 
 
