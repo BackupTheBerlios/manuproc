@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.34 2003/11/20 14:09:31 christof Exp $
+// $Id: SimpleTree.cc,v 1.35 2003/12/11 11:03:32 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -152,6 +152,19 @@ cH_RowDataBase SimpleTree::getSelectedRowDataBase() const
       if (!row[getStore()->m_columns.childrens_deep])
          return row[getStore()->m_columns.leafdata];
       else throw notLeafSelected();
+   }
+   else throw noRowSelected(); // oder multipleRowsSelected()
+}
+
+
+Gtk::TreeRow &SimpleTree::getSelectedNode() const 
+ 	throw(noNodeSelected,multipleNodesSelected,notNodeSelected)
+{
+  Gtk::TreeModel::iterator sel=const_cast<SimpleTree*>(this)
+		->get_selection()->get_selected();
+   if (sel)
+   { //const Gtk::TreeRow &row=*sel;  
+     return const_cast<Gtk::TreeRow&>(*sel);
    }
    else throw noRowSelected(); // oder multipleRowsSelected()
 }
