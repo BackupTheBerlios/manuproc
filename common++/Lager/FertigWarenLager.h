@@ -1,4 +1,4 @@
-// $Id: FertigWarenLager.h,v 1.8 2003/07/15 15:01:15 jacek Exp $
+// $Id: FertigWarenLager.h,v 1.9 2003/07/15 16:21:38 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -52,7 +52,6 @@ public:
   void Auslagern() {Buchen(FertigWaren::Raus);}
   void WiederEinlagern() {Buchen(FertigWaren::WiederRein);}
   void Inventur();
-  
 };
 
 #endif
