@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.47 2004/11/08 08:52:39 christof Exp $
+# $Id: Makefile.am,v 1.48 2004/11/08 09:01:25 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -66,7 +66,7 @@ libKomponenten_a_SOURCES= \
 	string_Label.cc Event.cc Association.cc \
         CellRendererSimpleTree.cc ArtikelBox.cc \
         KundenBox2.cc int_ImageButton.cc \
-        Optionmenu_Instanz.cc
+        Optionmenu_Instanz.cc Artikel_Bestellen.cc
 
 lateron= \
 		KundenBox_glade.cc \

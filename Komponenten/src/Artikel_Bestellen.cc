@@ -1,4 +1,4 @@
-// $Id: Artikel_Bestellen.cc,v 1.9 2004/11/08 08:53:53 christof Exp $
+// $Id: Artikel_Bestellen.cc,v 1.10 2004/11/08 09:01:25 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,6 +21,7 @@
 #include "Artikel_Bestellen.hh"
 #include <gtkmm/adjustment.h>
 #include <Gtk_OStream.h>
+#include <sigc++/compatibility.h>
 
 Artikel_Bestellen::Artikel_Bestellen()
 {
@@ -28,8 +29,8 @@ Artikel_Bestellen::Artikel_Bestellen()
   artikel();
   prozess();
 
-  PB_prozess->signal_activate().connect(SigC::Slot(*SP_menge,&grab_focus);
-  SP_menge->signal_activate().connect(SigC::Slot(*AB_artikel,&grab_focus);
+  PB_prozess->signal_activate().connect(SigC::slot(*SP_menge,&Artikel_Bestellen::grab_focus));
+  SP_menge->signal_activate().connect(SigC::slot(*AB_artikel,&Artikel_Bestellen::grab_focus));
 
 //  show();
 }
@@ -47,8 +48,8 @@ ArtikelBase Artikel_Bestellen::get_Artikel() const
 
 double Artikel_Bestellen::get_Menge() const
 {
-  gtk_spin_button_update(SP_menge->gobj());
-  return SP_menge->get_value_as_float();
+  SP_menge->update();
+  return SP_menge->get_value();
 }
 
 void Artikel_Bestellen::prozess()

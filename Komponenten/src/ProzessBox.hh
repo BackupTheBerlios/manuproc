@@ -1,4 +1,4 @@
-// $Id: ProzessBox.hh,v 1.3 2002/07/05 12:36:56 christof Exp $
+// $Id: ProzessBox.hh,v 1.4 2004/11/08 09:01:25 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ProzessBox.hh,v 1.3 2002/07/05 12:36:56 christof Exp $
+// $Id: ProzessBox.hh,v 1.4 2004/11/08 09:01:25 christof Exp $
 
 #ifndef PROZESS_BOX_HH
 #define PROZESS_BOX_HH
@@ -33,6 +33,7 @@ class ProzessBox : public Gtk::HBox // we can't derive from SearchCombo since
 	Prozess::ID prozessid;
 	bool allow_empty:1;
 	Transaction tr;
+	SigC::Signal0<void> activate;
 
         void search_prozess(gboolean *cont, GtkSCContext newsearch);
         void combo_activated();
@@ -45,6 +46,7 @@ public:
 	void set_allow_empty(bool on)
 	{  allow_empty=on; }
 	
-	SigC::Signal0<void> activate;
+	SigC::Signal0<void> &signal_activate()
+	{  return activate; }
 };
 #endif

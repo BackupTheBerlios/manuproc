@@ -37,7 +37,7 @@ int main(int argc, char **argv)
  Gtk::Main m(argc, argv);
  try{ Petig::dbconnect(conn); 
  mess = new MyMessage();
- Artikeleingabe *ae=new class Artikeleingabe(argc,argv));
+ Artikeleingabe *ae=new class Artikeleingabe(argc,argv);
  m.run(*ae);
  delete ae;
  delete mess;
