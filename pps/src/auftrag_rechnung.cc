@@ -254,7 +254,12 @@ void auftrag_rechnung::lieferschein_uebernehmen()
 {   
  try{
  if(rtree_offen->selection().size())
-   {if (rechnung.Id()<1) on_rng_neu();
+   {if (rechnung.Id()<1) 
+     {
+      on_rng_neu();
+      if(rechnung.Id()<1)
+        return;
+     }
    if(!(rechnung.Bezahlt()))
 	{
     try {
