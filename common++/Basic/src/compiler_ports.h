@@ -1,4 +1,4 @@
-// $Id: compiler_ports.h,v 1.5 2003/06/18 07:58:40 christof Exp $
+// $Id: compiler_ports.h,v 1.6 2003/07/30 11:16:55 christof Exp $
 
 // this macros cater for the various incompatible compilers
 
@@ -31,4 +31,11 @@
 #define make_value(x) ((void)0,x)
 #else
 #define make_value(x) x
+#endif
+
+// g++-3.0 has problems to decide which operator to chose
+#if defined(__GNUC__) && __GNUC__==3 && __GNUC_MINOR__==0
+#define std_neq(x,y) std::operator!=((x),(y))
+#else
+#define std_neq(x,y) (x)!=(y)
 #endif

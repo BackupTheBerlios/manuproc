@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.38 2003/07/29 09:15:03 jacek Exp $
+// $Id: Lager.cc,v 1.39 2003/07/30 11:16:55 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -185,12 +185,12 @@ void LagerBase::LagerInhaltSum(std::vector<class LagerInhalt>& LI)
 {
   std::sort(LI.begin(),LI.end());  
   std::vector<class LagerInhalt>::iterator i,j,k;
-  for(i=LI.begin();i!=LI.end();)
+  for(i=LI.begin();std_neq(i,LI.end());)
    {
      j=i; ++j;
      if(*i!=*j) {++i; continue;}
      k=j;
-     for(;k!=LI.end() && *i==*k ;++k)  *i+=*k ;
+     for(;std_neq(k,LI.end()) && *i==*k ;++k)  *i+=*k ;
      i=LI.erase(j,k);     
    }
 }

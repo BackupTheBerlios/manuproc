@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.9 2003/06/27 08:04:44 christof Exp $
+// $Id: Faden.cc,v 1.10 2003/07/30 11:16:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -100,7 +100,7 @@ int Fadenliste::add (Faden f, const unsigned int r)
 
    std::vector<Faden>::iterator si = sumliste.begin();
    std::vector<Faden>::iterator sie = sumliste.end();
-   while ((si != sie) && (*si != f))
+   while (std_neq(si,sie) && *si!=f)
    {
       si++;
       index++;
@@ -120,7 +120,7 @@ int Fadenliste::add (Faden f, const unsigned int r)
 
    std::vector<Wiederholung>::reverse_iterator i = repliste.rbegin();
    std::vector<Wiederholung>::reverse_iterator ie = repliste.rend();
-   while ((i != ie) && (i->getEnd() >= row))
+   while (std_neq(i,ie) && (i->getEnd() >= row))
    {
       unsigned int s = i->getStart();
       if (s > row)
@@ -147,7 +147,7 @@ bool Fadenliste::del (const unsigned int row, unsigned int& index)
    std::vector<Faden>::iterator si = sumliste.begin();
    std::vector<Faden>::iterator sie = sumliste.end();
    index = 0;
-   while ((si != sie) && (*si != *f))
+   while (std_neq(si, sie) && (*si!=*f))
    {
       si++;
       index++;
@@ -169,7 +169,7 @@ bool Fadenliste::del (const unsigned int row, unsigned int& index)
 
    std::vector<Wiederholung>::reverse_iterator i = repliste.rbegin();
    std::vector<Wiederholung>::reverse_iterator ie = repliste.rend();
-   while ((i != ie) && (i->getEnd() >= row))
+   while (std_neq(i,ie) && (i->getEnd() >= row))
    {
       unsigned int s = i->getStart();
       if (s > row)
@@ -200,7 +200,7 @@ bool Fadenliste::rep_add (const unsigned int s, const unsigned int e, const unsi
 
    std::vector<Wiederholung>::iterator i = repliste.begin();
    std::vector<Wiederholung>::iterator ie = repliste.end();
-   while ((i != ie) && (*i < w))
+   while (std_neq(i, ie) && (*i < w))
       i++;
    if (i == ie)
       repliste.push_back (w);
@@ -216,7 +216,7 @@ bool Fadenliste::rep_add (const unsigned int s, const unsigned int e, const unsi
       Faden f = *(fi+i);
       std::vector<Faden>::iterator si = sumliste.begin();
       std::vector<Faden>::iterator sie = sumliste.end();
-      while ((si != sie) && (*si != f))
+      while (std_neq(si,sie) && (*si != f))
          si++;
       if (si == sie)
         return false;
@@ -236,7 +236,7 @@ bool Fadenliste::rep_del (const unsigned int s, const unsigned int e)
 
    std::vector<Wiederholung>::iterator i = repliste.begin();
    std::vector<Wiederholung>::iterator ie = repliste.end();
-   while ((i != ie) && (*i != w))
+   while (std_neq(i,ie) && (*i!=w))
       i++;
    if (i == ie)
       return false;
@@ -253,7 +253,7 @@ bool Fadenliste::rep_del (const unsigned int s, const unsigned int e)
       Faden f = *(fi+i);
       std::vector<Faden>::iterator si = sumliste.begin();
       std::vector<Faden>::iterator sie = sumliste.end();
-      while ((si != sie) && (*si != f))
+      while (std_neq(si,sie) && (*si != f))
          si++;
       if (si == sie)
         return false;
@@ -298,7 +298,7 @@ void Fadenliste::EntfalteWiederholungen_recurse(std::vector<Faden> &liste_out,
 {reloop:
    if (i==e) return;
    // Zeilen vor der aktuellen Wiederholung
-   while ((i!=e) && (ri==repend() || index<ri->getStart()))
+   while (std_neq(i,e) && (ri==repend() || index<ri->getStart()))
    {  liste_out.push_back(*i);
       ++i; ++index;
    }

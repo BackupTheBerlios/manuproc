@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.37 2003/07/25 12:53:17 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.38 2003/07/30 11:16:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -35,9 +35,12 @@
 #include <Artikel/ArtikelBase.h>
 #endif
 
-#if !defined(__GNUC__) || __GNUC__>=3
+#if !defined(__GNUC__) || __GNUC__>3 || (__GNUC__==3 && __GNUC_MINOR__ >0)
 #define NurEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) == (x).end())
 #define MehrAlsEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) != (x).end())
+#elif __GNUC__==3 && __GNUC_MINOR__==0
+#define NurEinKind(x) (std::operator!=((x).begin(),(x).end()) && ++((x).begin()) == (x).end())
+#define MehrAlsEinKind(x) (std::operator!=((x).begin(),(x).end()) && std::operator!=(++((x).begin()),(x).end()))
 #else
 #define NurEinKind(x) ((x).begin()!=(x).end() && ((x).begin()+1) == (x).end())
 #define MehrAlsEinKind(x) ((x).begin()!=(x).end() && ((x).begin()+1) != (x).end())
@@ -63,7 +66,7 @@ void LieferscheinEntry::setPalette(int p) throw(SQLerror)
 
 void LieferscheinEntry::showZusatzInfos() const
 {  std::cerr << "Zusatzinfos " << *this << ": ";
-   for (zusaetze_t::const_iterator i=VZusatz.begin();i!=VZusatz.end();++i)
+   for (zusaetze_t::const_iterator i=VZusatz.begin();std_neq(i,VZusatz.end());++i)
       std::cerr << i->aeb << '=' << i->menge << ' ';
    std::cerr << '\n';
 }
@@ -347,7 +350,7 @@ void LieferscheinEntry::updateZusatzEntry(const AufEintragBase &Z,const AuftragB
   	<< Query::NullIf(Z.Id(),AufEintragBase::none_id)
   	<< Query::NullIf(Z.ZNr(),AufEintragBase::none_znr);
   SQLerror::test(__FILELINE__);
-  for (zusaetze_t::iterator i=VZusatz.begin();i!=VZusatz.end();++i)
+  for (zusaetze_t::iterator i=VZusatz.begin();std_neq(i,VZusatz.end());++i)
      if (i->aeb==Z)
      {  i->menge=menge;
         break;
@@ -371,7 +374,7 @@ void LieferscheinEntry::deleteZusatzEntry(const AufEintragBase &Z) throw(SQLerro
   	<< Query::NullIf(Z.Id(),AufEintragBase::none_id)
   	<< Query::NullIf(Z.ZNr(),AufEintragBase::none_znr);
   SQLerror::test(__FILELINE__,100);
-  for (zusaetze_t::iterator i=VZusatz.begin();i!=VZusatz.end();++i)
+  for (zusaetze_t::iterator i=VZusatz.begin();std_neq(i,VZusatz.end());++i)
      if (i->aeb==Z)
      {  i=VZusatz.erase(i);
         break;
@@ -394,7 +397,7 @@ void LieferscheinEntry::addZusatzEntry_db(const AufEintragBase &AEB,const mengen
 void LieferscheinEntry::addZusatzEntry(const AufEintragBase &AEB,const mengen_t &menge) throw(SQLerror)
 { ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("this",*this),
 	NV("AEB",AEB),NV("menge",menge));
-  for (zusaetze_t::const_iterator i=VZusatz.begin();i!=VZusatz.end();++i)
+  for (zusaetze_t::const_iterator i=VZusatz.begin();std_neq(i,VZusatz.end());++i)
   {  ManuProC::Trace(AuftragBase::trace_channel, __FILELINE__, NV("i->aeb",i->aeb),
   		NV("AEB",AEB));
      if (i->aeb==AEB)
@@ -417,15 +420,15 @@ void LieferscheinEntry::addZusatzEntry(const AufEintragBase &AEB,const mengen_t 
 std::vector<LieferscheinEntry::st_AuftragMenge> LieferscheinEntry::getAuftragsMenge() const
 {  typedef std::map<AuftragBase,AuftragBase::mengen_t> map_t;
    map_t map;
-   for (zusaetze_t::const_iterator i=VZusatz.begin();i!=VZusatz.end();++i)
+   for (zusaetze_t::const_iterator i=VZusatz.begin();std_neq(i,VZusatz.end());++i)
       map[i->aeb]+=i->menge;
    std::vector<LieferscheinEntry::st_AuftragMenge> result;
-   for (map_t::const_iterator i=map.begin();i!=map.end();++i)
+   for (map_t::const_iterator i=map.begin();std_neq(i,map.end());++i)
    {  if (i->first!=AuftragBase())
          result.push_back(st_AuftragMenge(i->first,i->second));
    }
    map_t::const_iterator i=map.find(AuftragBase());
-   if (i!=map.end()) 
+   if (std_neq(i,map.end())) 
       result.push_back(st_AuftragMenge(i->first,i->second));
    return result;
 }

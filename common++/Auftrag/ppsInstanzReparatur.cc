@@ -124,12 +124,7 @@ try_again:
 //std::cout << "Anzahl der Artikel im Lager = "<<LI.size()<<'\n';
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Instanz());
   for(std::vector<LagerInhalt>::const_iterator i=LI.begin();
-#if __GNUC__ == 3 && __GNUC_MINOR__ == 0
-		std::operator!=(i,LI.end()); // sorry, gtk2 backport on woody
-#else
-  		i!=LI.end();
-#endif
-  				++i)
+				  		std_neq(i,LI.end());++i)
    {
      bool set_dispo_to_zero=false;
      AuftragBase::mengen_t menge=i->GesamtMenge();
