@@ -26,9 +26,9 @@ public:
 
   static void class_init_function(void* g_class, void* class_data);
 
-protected:
-
   static Glib::ObjectBase* wrap_new(GObject*);
+
+protected:
 
   //Callbacks (default signal handlers):
   //These will call the *_impl member methods, which will then call the existing default signal callbacks, if any.

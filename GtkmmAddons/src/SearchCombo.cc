@@ -3,7 +3,7 @@
 #include <gtkmm/SearchCombo.h>
 #include <gtkmm/private/SearchCombo_p.h>
 
-/* $Id: SearchCombo.ccg,v 1.1.1.1 2003/01/06 15:07:33 christof Exp $ */
+/* $Id: SearchCombo.ccg,v 1.3 2003/11/10 08:23:45 christof Exp $ */
 
 /* searchcombo.h
  * 
@@ -240,6 +240,7 @@ GType SearchCombo::get_base_type()
   return gtk_search_combo_get_type();
 }
 
+
 void SearchCombo::set_value_in_list(bool value, bool empty)
 {
   gtk_searchcombo_set_value_in_list(gobj(), static_cast<int>(value), static_cast<int>(empty));
@@ -305,6 +306,16 @@ void SearchCombo::set_start_on_idle(bool val)
   gtk_searchcombo_set_start_on_idle(gobj(), static_cast<int>(val));
 }
 
+Entry* SearchCombo::get_entry()
+{
+  return Glib::wrap((GtkEntry*)(gobj()->entry));
+}
+
+const Entry* SearchCombo::get_entry() const
+{
+  return Glib::wrap((GtkEntry*)(gobj()->entry));
+}
+
 gint SearchCombo::get_selected_index() const
 {
   return gtk_searchcombo_get_selected_index(const_cast<GtkSearchCombo*>(gobj()));
@@ -322,19 +333,49 @@ Glib::SignalProxy2<void,gboolean *,GtkSCContext> SearchCombo::signal_search()
 }
 
 
+/**
+ * You rarely need to use properties because there are get_ and set_ methods for almost all of them.
+ * @return A PropertyProxy that allows you to get or set the property of the value, or receive notification when
+ * the value of the property changes. 
+ */
 Glib::PropertyProxy<bool> SearchCombo::property_case_sensitive()
 {
-  return Glib::PropertyProxy<bool>(this, "case_sensitive");
+  return /**
+ * You rarely need to use properties because there are get_ and set_ methods for almost all of them.
+ * @return A PropertyProxy that allows you to get or set the property of the value, or receive notification when
+ * the value of the property changes. 
+ */
+Glib::PropertyProxy<bool>(this, "case_sensitive");
 }
 
+/**
+ * You rarely need to use properties because there are get_ and set_ methods for almost all of them.
+ * @return A PropertyProxy that allows you to get or set the property of the value, or receive notification when
+ * the value of the property changes. 
+ */
 Glib::PropertyProxy<bool> SearchCombo::property_allow_empty()
 {
-  return Glib::PropertyProxy<bool>(this, "allow_empty");
+  return /**
+ * You rarely need to use properties because there are get_ and set_ methods for almost all of them.
+ * @return A PropertyProxy that allows you to get or set the property of the value, or receive notification when
+ * the value of the property changes. 
+ */
+Glib::PropertyProxy<bool>(this, "allow_empty");
 }
 
+/**
+ * You rarely need to use properties because there are get_ and set_ methods for almost all of them.
+ * @return A PropertyProxy that allows you to get or set the property of the value, or receive notification when
+ * the value of the property changes. 
+ */
 Glib::PropertyProxy<bool> SearchCombo::property_value_in_list()
 {
-  return Glib::PropertyProxy<bool>(this, "value_in_list");
+  return /**
+ * You rarely need to use properties because there are get_ and set_ methods for almost all of them.
+ * @return A PropertyProxy that allows you to get or set the property of the value, or receive notification when
+ * the value of the property changes. 
+ */
+Glib::PropertyProxy<bool>(this, "value_in_list");
 }
 
 

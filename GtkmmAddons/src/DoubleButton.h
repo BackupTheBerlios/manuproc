@@ -5,7 +5,7 @@
 
 #include <glibmm.h>
 
-/* $Id: DoubleButton.h,v 1.4 2003/11/10 08:23:45 christof Exp $ */
+/* $Id: DoubleButton.h,v 1.5 2004/01/29 14:59:55 christof Exp $ */
 
 /* searchcombo.h
  * 
@@ -76,7 +76,10 @@ public:
   static GType get_base_type() G_GNUC_CONST;
 #endif
 
+  ///Provides access to the underlying C GtkObject.
   doublebutton*       gobj()       { return reinterpret_cast<doublebutton*>(gobject_); }
+
+  ///Provides access to the underlying C GtkObject.
   const doublebutton* gobj() const { return reinterpret_cast<doublebutton*>(gobject_); }
 
 

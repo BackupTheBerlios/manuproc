@@ -5,7 +5,7 @@
 
 #include <glibmm.h>
 
-/* $Id: SearchCombo.hg,v 1.5 2004/01/29 14:55:52 christof Exp $ */
+/* $Id: SearchCombo.hg,v 1.6 2004/01/29 15:01:24 christof Exp $ */
 
 /* searchcombo.h
  * 
@@ -28,6 +28,7 @@
 
 #include <gtkmm/box.h>
 #include <gtksearchcombo.h>
+#include <gtkmm/entry.h>
 
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
