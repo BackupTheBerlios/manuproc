@@ -26,6 +26,8 @@
 #include "lr_base.h"
 //#include <Artikel/Einheiten.h>
 #include <Kunde/PreisListe.h>
+#include <Artikel/Artikelpreis.h>
+#include <map>
 
 class Einheit;
 
@@ -37,9 +39,27 @@ class LR_Entry: public LR_Base
             u_t(const RechnungEntry *_r) : r(_r) {}
             u_t(const AufEintrag *_a) : a(_a) {}
          } u;
+         
+    std::map<AufEintragBase,Preis> we_preis; // Preis für den Wareneingangsschein     
 public:   
-   LR_Entry(const LieferscheinEntry *l)
-      : LR_Base(Lieferschein), u(l) {}
+   LR_Entry(const LR_Base::typ _typ,const LieferscheinEntry *l)
+      : LR_Base(_typ), u(l) 
+      {
+       if(_typ==Wareneingang)
+         if(u.l->getZusatzInfos().empty())
+           {Artikelpreis ap(u.l->KdID(),u.l->Artikel(),u.l->Stueck());
+            we_preis[AufEintragBase()]=Preis(ap.Wert(),Waehrung::default_id);
+           }
+         else
+          {LieferscheinEntry::zusaetze_t::const_iterator i=
+                                  u.l->getZusatzInfos().begin();
+           for(;i!=u.l->getZusatzInfos().end(); ++i)
+             {
+              AufEintrag AB((*i).aeb);
+              we_preis[(*i).aeb]=AB.EPreis();
+             }
+          }
+      }
    LR_Entry(const RechnungEntry *r)
       : LR_Base(Rechnung), u(r) {}
    LR_Entry(const LR_Base::typ _typ,const AufEintrag *a)
@@ -55,17 +75,14 @@ public:
       if (Typ()==Auftrag)  return u.a->EPreis(brutto);  
       if (Typ()==Rechnung) return u.r->getPreis(brutto); 
       if (Typ()==Wareneingang) 
-        {
-         if(u.l->getZusatzInfos().empty())
-	   return Preis();
-	 else
-	   {
-	    return Preis();
-	   }
+        {if(u.l->getZusatzInfos().empty())
+           return (*(we_preis.find(AufEintragBase()))).second;          
+        else
+           return (*(we_preis.find((u.l->getZusatzInfos()[0]).aeb))).second;
         }
         
       return Preis();
-      abort();}
+      }
 
    const cH_PreisListe getPreisliste() const {
 	 if(Typ()==Auftrag) return u.a->getPreisliste();
@@ -163,13 +180,13 @@ public:
         {  return !(*this==b);
         }
         const LR_Entry operator*() const
-        {  if (Typ()==Lieferschein || Typ()==Wareneingang) return &*(u.l);
+        {  if (Typ()==Lieferschein || Typ()==Wareneingang) return LR_Entry(Typ(),&*u.l);
            if (Typ()==Rechnung)     return &*(u.r);
            if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern) return LR_Entry(Typ(),&*u.a);
            abort();
         }
-   LR_Iterator(const LieferscheinVoll::const_iterator &l)
-   : LR_Base(Lieferschein), u(l) {}
+   LR_Iterator(const LR_Base::typ _typ, const LieferscheinVoll::const_iterator &l)
+   : LR_Base(_typ), u(l) {}
    LR_Iterator(const RechnungVoll::const_iterator &r)
    : LR_Base(Rechnung), u(r) {}
    LR_Iterator(const LR_Base::typ _typ,const AuftragFull::const_iterator &a)
@@ -252,7 +269,7 @@ public:
   LR_Abstraktion()
   	: LR_Base(NICHTS),UEBLICHE_INITIALISIERUNG(false,ppsInstanz::Kundenauftraege)
   {}
-  LR_Abstraktion(const LieferscheinVoll *l, LR_Base::typ t=Lieferschein,bool fp=false) 
+  LR_Abstraktion(const LieferscheinVoll *l, LR_Base::typ t,bool fp=false) 
 	: LR_Base(t),UEBLICHE_INITIALISIERUNG(fp,l->Instanz())
   { u.l=l; }
   LR_Abstraktion(const RechnungVoll *r, bool fp=false) 
@@ -271,11 +288,13 @@ public:
   const_iterator begin() const { 
       if (Typ()==Rechnung)     return u.r->begin();
       if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern)      return LR_Iterator(Typ(),u.a->begin());
-      if (Typ()==Lieferschein || Typ()==Wareneingang) return u.l->begin(); abort();}
+      if (Typ()==Lieferschein || Typ()==Wareneingang) return LR_Iterator(Typ(),u.l->begin()); 
+      abort();}
   const_iterator end() const { 
-      if (Typ()==Rechnung)     return u.r->end();
-      if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern)      return LR_Iterator(Typ(),u.a->end());
-      if (Typ()==Lieferschein || Typ()==Wareneingang) return u.l->end(); abort();}
+      if (Typ()==Rechnung) return u.r->end();
+      if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern) return LR_Iterator(Typ(),u.a->end());
+      if (Typ()==Lieferschein || Typ()==Wareneingang) return LR_Iterator(Typ(),u.l->end()); 
+      abort();}
   size_t size() const { 
       if (Typ()==Rechnung)     return u.r->size();
       if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern)      return u.a->size();
