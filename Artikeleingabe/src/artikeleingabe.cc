@@ -36,6 +36,7 @@ int main(int argc, char **argv)
      
  Gtk::Main m(argc, argv);
  try{ Petig::dbconnect(conn); 
+ Query ("set names 'utf-8'");
  mess = new MyMessage();
  Artikeleingabe *ae=new class Artikeleingabe(argc,argv);
  m.run(*ae);
