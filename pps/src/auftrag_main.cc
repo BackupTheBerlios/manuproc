@@ -518,10 +518,11 @@ void auftrag_main::set_column_titles_of_simple_tree()
  ct.push_back("Letzte Lief.");
  ct.push_back("offene Menge (Rohware)");
  ct.push_back("offene Menge");
+ ct.push_back("Abteilungen");
 #ifdef PETIG_EXTENSIONS
  // einige kleine Korrekturen (ich glaube nicht ganz, dass obiges irgendwo stimmt
- ct[10]="offene Meter";
- ct[11]="offene Stück";
+ ct[METER]="offene Meter";
+ ct[STUECK]="offene Stück";
 #endif
  maintree_s->setTitles(ct);
  maintree_s->set_NewNode(&Data_Node::create);
@@ -532,7 +533,7 @@ void auftrag_main::set_column_titles_of_simple_tree()
 }
 
 void auftrag_main::fill_simple_tree()
-{
+{ stop_idle();
   if(allaufids) { delete(allaufids); allaufids=0; }
 //  if(instanz->LagerInstanz())
 //      lager_zeigen();   
@@ -556,8 +557,21 @@ void auftrag_main::fill_simple_tree()
      }
     maintree_s->setDataVec(datavec);
    }
+   start_idle();
 }
 
+void auftrag_main::start_idle()
+{ idle_iter=allaufids->aufidliste.begin();
+  idle_con=Gtk::Main::idle.connect(slot(this,&auftrag_main::idle_fill));
+}
+
+void auftrag_main::stop_idle()
+{ idle_con.disconnect();
+}
+
+gint auftrag_main::idle_fill()
+{  return 0;
+}
 
 void auftrag_main::on_node_selected(const TreeRow &node)
 {

@@ -1,5 +1,5 @@
 /*  pps: ManuProC's production planning system
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -144,10 +144,16 @@ private:
 
 	static std::string FirstRow(gpointer user_data, int deep, std::deque<guint> seq);
 
+	SelectedFullAufList::const_iterator idle_iter;
+	gint idle_fill();
+	SigC::Connection idle_con;
+	void start_idle();
+	void stop_idle();
+
 public:
   // Spaltenbezeichnungen
    enum {KUNDE=0,A1,A2,A3,A4,LIEFERDATUM,AUFTRAG,LETZEPLANINSTANZ,
-         VERARBEITUNG,LETZTELIEFERUNG,METER,STUECK};
+         VERARBEITUNG,LETZTELIEFERUNG,METER,STUECK,INSTANZEN};
 
  cH_ppsInstanz Instanz() const {return instanz;}
  bool interneNamen_bool() const { return interne_namen_bool; }
