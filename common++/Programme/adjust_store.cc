@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.30 2003/05/20 10:47:25 christof Exp $
+// $Id: adjust_store.cc,v 1.31 2003/05/21 10:24:38 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -84,13 +84,6 @@ const static struct option options[]=
  { NULL,      0,       NULL, 0 }
 };
 
-int ende(bool alles_ok)
-{
-  if(alles_ok) return 0;
-  else         return 1;
-}
-
-
 int main(int argc,char *argv[])
 {
   int opt;
@@ -129,20 +122,19 @@ int main(int argc,char *argv[])
     ManuProC::dbconnect(conn);
 
     if(instanz!=ppsInstanzID::None) 
-      alles_ok=check_for(argv[0],cH_ppsInstanz(instanz),aktion,analyse_only);
+      alles_ok&=check_for(argv[0],cH_ppsInstanz(instanz),aktion,analyse_only);
     else
      { std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
        for(std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)
         {
          //if((*i)->KundenInstanz()) continue;
-         bool x=check_for(argv[0],*i,aktion,analyse_only);
-         if(!x) alles_ok=x;
+         alles_ok&=check_for(argv[0],*i,aktion,analyse_only);
         }
      }    
 
     ManuProC::dbdisconnect();
-  }catch(SQLerror &e){std::cout << e<<'\n'; return ende(false);}
-  return ende(alles_ok);
+  }catch(SQLerror &e){std::cout << e<<'\n'; return 1;}
+  return !alles_ok;
 }
 
 

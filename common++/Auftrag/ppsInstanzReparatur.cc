@@ -854,13 +854,17 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
       AuftragBase::mengen_t menge2;
       for (AufEintragZu::map_t::iterator i=kinder.begin();i!=kinder.begin();++i)
       {  for (AufEintragZu::list_t::iterator j=i->second.begin();j!=i->second.end();)
-         {  if (j->AEB.Instanz()!=ae.Instanz())
-            {  analyse("Instanz passt nicht",ae,j->AEB,j->Menge);
+         {  if (ae.Instanz()->LagerInstanz())
+            {  analyse("Ein Lager 2er darf keine Kinder haben",ae,j->AEB,j->Menge);
              weg:
                if (!analyse_only) AufEintragZu::remove(ae,j->AEB);
                j=i->second.erase(j);
                alles_ok=false;
                continue;
+            }
+            if (j->AEB.Instanz()!=ae.Instanz())
+            {  analyse("Instanz passt nicht",ae,j->AEB,j->Menge);
+               goto weg;
             }
             AufEintrag ae2(j->AEB);
             if (ae2.Artikel()!=ae.Artikel()
@@ -872,7 +876,7 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
             ++j;
          }
       }
-      if (menge2!=ae.getStueck())
+      if (!ae.Instanz()->LagerInstanz() && menge2!=ae.getStueck())
       {  analyse("2er: Zuordnungen!=eigene Menge",ae,menge2,ae.getStueck());
          if (!analyse_only) 
             ae.MengeAendern(getuid(),menge2-ae.getStueck(),false,
@@ -933,7 +937,7 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    if (in(ae.Id(),AuftragBase::dispo_auftrag_id,AuftragBase::ungeplante_id))
    {  if (!!ae.getGeliefert())
       {  alles_ok=false;
-         analyse("Bei 0/2ern darf nichts geliefert worden sein.\n",ae);
+         analyse("Bei 0/2ern darf nichts geliefert worden sein.",ae);
          if (!analyse_only) 
             Query("update auftragentry set geliefert=0 "
          	"where (instanz,auftragid,zeilennr) = (?,?,?)")
@@ -942,12 +946,12 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
       }
       if (ae.getAufStatus()!=OPEN)
       {  alles_ok=false;
-         analyse("0/2er Aufträge müssen offen sein\n",ae);
+         analyse("0/2er Aufträge müssen offen sein",ae);
          if (!analyse_only) Auftrag(ae).setStatusAuftrag_(OPEN);
       }
       if (ae.getEntryStatus()!=OPEN)
       {  alles_ok=false;
-         analyse("0/2er Einträge müssen offen sein\n",ae);
+         analyse("0/2er Einträge müssen offen sein",ae);
          if (!analyse_only) ae.setStatus(OPEN,getuid(),true);
       }
    }
@@ -965,37 +969,40 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    if (ae.Id()==AuftragBase::plan_auftrag_id)
    {  if (ae.Instanz()==ppsInstanzID::Kundenauftraege)
       {  alles_ok=false;   
-         analyse("Es darf keine 1er bei den Kundenaufträgen geben\n",ae);
+         analyse("Es darf keine 1er bei den Kundenaufträgen geben",ae);
          // Bitte von Hand reparieren!
       }
       else if (!!ae.getRestStk() && !ae.Instanz()->LagerInstanz())
       {  alles_ok=false;
-         analyse("1er Aufträge sollten CLOSED sein\n",ae);
+         analyse("1er Aufträge sollten CLOSED sein",ae);
          if (!analyse_only) ae.abschreiben(ae.getRestStk());
       }
       if (ae.getEntryStatus()!=CLOSED && !ae.Instanz()->LagerInstanz())
       {  alles_ok=false;
-         analyse("1er Aufträge sollten CLOSED sein\n",ae);
+         analyse("1er Aufträge sollten CLOSED sein",ae);
          if (!analyse_only) ae.setStatus(CLOSED,getuid(),true);
       }
    }
    if (ae.Instanz()!=ppsInstanzID::Kundenauftraege
    	&& !in(ae.getEntryStatus(),OPEN,CLOSED))
    {  alles_ok=false;
-      analyse("Interne Aufträge müssen OPEN/CLOSED sein\n",ae);
+      analyse("Interne Aufträge müssen OPEN/CLOSED sein",ae);
       if (!analyse_only) ae.setStatus(CLOSED,getuid(),true);
    }
    if (ae.getGeliefert()>=ae.getStueck()
-   	&& ae.getEntryStatus()!=CLOSED)
+   	&& ae.getEntryStatus()!=CLOSED
+   	&& !(ae.Instanz()!=ppsInstanzID::Kundenauftraege 
+   	    && in(ae.Id(),AuftragBase::dispo_auftrag_id,AuftragBase::ungeplante_id))
+   	&& !(ae.Id()==AuftragBase::plan_auftrag_id && !ae.getStueck()))
    {  alles_ok=false;
-      analyse("Erfüllte Aufträge müssen CLOSED sein\n",ae);
+      analyse("Erfüllte Aufträge müssen CLOSED sein",ae,ae.getGeliefert(),ae.getStueck());
       if (!analyse_only) ae.setStatus(CLOSED,getuid(),true);
    }
    else if (ae.Instanz()!=ppsInstanzID::Kundenauftraege 
    	&& ae.getGeliefert()!=ae.getStueck()
    	&& ae.getEntryStatus()!=OPEN)
    {  alles_ok=false;
-      analyse("Offene interne Aufträge müssen OPEN sein\n",ae);
+      analyse("Offene interne Aufträge müssen OPEN sein",ae,ae.getGeliefert(),ae.getStueck());
       if (!analyse_only) ae.setStatus(OPEN,getuid(),true);
    }
    

@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.42 2003/01/08 14:25:31 christof Exp $
+// $Id: Check.cc,v 1.43 2003/05/21 10:24:38 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -50,43 +50,19 @@ bool Check::teste(was_checken check,const std::string &zusatz, bool mit_reparatu
   std::string Com="../../Programme/adjust_store -y -d "+std::string(getenv("PGDATABASE"));
   for(std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)
    {
-     if((*i)->KundenInstanz())
-      {
-        std::string com=Com+" -i "+itos((*i)->Id())+" -a K ";
-        system(com.c_str());
-      }
-     if((*i)->KundenInstanz()) continue;
-
      if((*i)->LagerInstanz() && (*i)->EigeneLagerKlasseImplementiert())
       {
         std::string com=Com+" -i "+itos((*i)->Id())+" -a A";
         system(com.c_str());
       }
-     std::string com=Com+" -i "+itos((*i)->Id())+" -a B";
-     system(com.c_str());
+     std::string com=Com+" -i "+itos((*i)->Id())+" -a X";
+     int x=system(com.c_str());
 
      std::string com2=Com+" -i "+itos((*i)->Id())+" -a C";
-     system(com2.c_str());
-     std::string comD=Com+" -i "+itos((*i)->Id())+" -a D  ";
-     int d=system(comD.c_str());
-     std::string comE=Com+" -i "+itos((*i)->Id())+" -a E  ";
-     int e=system(comE.c_str());
-     std::string comF=Com+" -i "+itos((*i)->Id())+" -a F  ";
-     int f=system(comF.c_str());
-     std::string comG=Com+" -i "+itos((*i)->Id())+" -a G  ";
-     int g=system(comG.c_str());
-     int h=0;
-     if((*i)->LagerInstanz())
-      {
-        std::string comH=Com+" -i "+itos((*i)->Id())+" -a H  ";
-        h=system(comH.c_str());
-      }
-     std::string comS=Com+" -i "+itos((*i)->Id())+" -a S  ";
-     int s=system(comS.c_str());
-     std::string comT=Com+" -i "+itos((*i)->Id())+" -a T  ";
-     int t=system(comT.c_str());
-     if(d||e||f||g||h||s||t) 
-         {std::cout <<*i<<'\t'<< d<<e<<f<<g<<h<<s<<t<<'\n'; return false; }
+     int c=0; // system(com2.c_str());
+
+     if(x||c) 
+     {std::cout <<*i<<'\t'<< c<<x<<'\n'; return false; }
    }  
   dump(check,zusatz);  
   return vergleich(check,zusatz);
