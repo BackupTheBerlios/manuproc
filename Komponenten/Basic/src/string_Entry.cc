@@ -1,4 +1,4 @@
-// $Id: string_Entry.cc,v 1.2 2002/12/03 09:09:05 christof Exp $
+// $Id: string_Entry.cc,v 1.3 2002/12/03 09:10:44 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,9 +18,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "MVC_string_Widget.hh"
+#include "string_Entry.hh"
 
-void MVC_string_Widget::refresh(gpointer x)
+void string_Entry::refresh(gpointer x)
 { if (x==&model.Value()) 
   {my_ch_con.block();
    Gtk::Entry::set_text(model.get_value());
@@ -29,7 +29,7 @@ void MVC_string_Widget::refresh(gpointer x)
   }
 }
 
-bool MVC_string_Widget::on_focus_out(GdkEventFocus *ev)
+bool string_Entry::on_focus_out(GdkEventFocus *ev)
 {  if (any_change)
    {  ch_con.block();
       model=Gtk::Entry::get_text();
@@ -40,27 +40,27 @@ bool MVC_string_Widget::on_focus_out(GdkEventFocus *ev)
    return false;
 }
 
-bool MVC_string_Widget::on_focus_in(GdkEventFocus *ev)
+bool string_Entry::on_focus_in(GdkEventFocus *ev)
 {  select_region(0,-1);
    return false;
 }
 
-MVC_string_Widget::MVC_string_Widget(const Model_ref<T> &m)
+string_Entry::string_Entry(const Model_ref<T> &m)
 	: any_change(false), model(m)
 {  Gtk::Entry::set_text(model.get_value());
-   signal_focus_out_event().connect(SigC::slot(*this,&MVC_string_Widget::on_focus_out),true);
-   signal_focus_in_event().connect(SigC::slot(*this,&MVC_string_Widget::on_focus_in),true);
+   signal_focus_out_event().connect(SigC::slot(*this,&string_Entry::on_focus_out),true);
+   signal_focus_in_event().connect(SigC::slot(*this,&string_Entry::on_focus_in),true);
    // I'm not quite sure whether this is needed at all
-   signal_activate().connect(SigC::slot(*this,&MVC_string_Widget::on_activate),true);
-   ch_con=model.signal_changed().connect(SigC::slot(*this,&MVC_string_Widget::refresh));
-   my_ch_con=signal_changed().connect(SigC::slot(*this,&MVC_string_Widget::keypress));
+   signal_activate().connect(SigC::slot(*this,&string_Entry::on_activate),true);
+   ch_con=model.signal_changed().connect(SigC::slot(*this,&string_Entry::refresh));
+   my_ch_con=signal_changed().connect(SigC::slot(*this,&string_Entry::keypress));
 };
 
-void MVC_string_Widget::keypress()
+void string_Entry::keypress()
 {  any_change=true;
 }
 
-void MVC_string_Widget::on_activate()
+void string_Entry::on_activate()
 {  on_focus_out(0);
 }
 

@@ -1,4 +1,4 @@
-// $Id: int_SpinButton.hh,v 1.2 2002/12/03 09:09:05 christof Exp $
+// $Id: int_SpinButton.hh,v 1.3 2002/12/03 09:10:44 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -24,7 +24,7 @@
 #include <gtkmm/spinbutton.h>
 #include <BaseObjects/Model.h>
 
-class MVC_int_Widget : public Gtk::SpinButton
+class int_SpinButton : public Gtk::SpinButton
 {	typedef int T;
 	bool any_change;
 	SigC::Connection ch_con, my_ch_con;
@@ -40,7 +40,7 @@ class MVC_int_Widget : public Gtk::SpinButton
 	gint get_value_as_int() const;
 	void set_value(gfloat);
 public:
-	MVC_int_Widget(const Model_ref<T> &model,T min,T max);
+	int_SpinButton(const Model_ref<T> &model,T min,T max);
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: bool_CheckButton.cc,v 1.2 2002/12/03 09:09:05 christof Exp $
+// $Id: bool_CheckButton.cc,v 1.3 2002/12/03 09:10:44 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,9 +18,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "MVC_bool_Widget.hh"
+#include "bool_CheckButton.hh"
 
-void MVC_bool_Widget::refresh(gpointer x)
+void bool_CheckButton::refresh(gpointer x)
 {  if (x==&model.Value())
    {  my_ch_con.block();
       Gtk::CheckButton::set_active(model.get_value());
@@ -28,14 +28,14 @@ void MVC_bool_Widget::refresh(gpointer x)
    }
 }
 
-MVC_bool_Widget::MVC_bool_Widget(const Model_ref<T> &m, const std::string &text)
+bool_CheckButton::bool_CheckButton(const Model_ref<T> &m, const std::string &text)
 	: Gtk::CheckButton(text), model(m)
 {  Gtk::ToggleButton::set_active(m.get_value());
-   my_ch_con=signal_toggled().connect(SigC::slot(*this,&MVC_bool_Widget::on_toggled));
-   ch_con=model.signal_changed().connect(SigC::slot(*this,&MVC_bool_Widget::refresh));
+   my_ch_con=signal_toggled().connect(SigC::slot(*this,&bool_CheckButton::on_toggled));
+   ch_con=model.signal_changed().connect(SigC::slot(*this,&bool_CheckButton::refresh));
 };
 
-void MVC_bool_Widget::on_toggled()
+void bool_CheckButton::on_toggled()
 {  ch_con.block();
    model=Gtk::CheckButton::get_active();
    ch_con.unblock();

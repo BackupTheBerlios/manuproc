@@ -1,4 +1,4 @@
-// $Id: string_Entry.hh,v 1.2 2002/12/03 09:09:05 christof Exp $
+// $Id: string_Entry.hh,v 1.3 2002/12/03 09:10:44 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -24,7 +24,7 @@
 #include <gtkmm/entry.h>
 #include <BaseObjects/Model.h>
 
-class MVC_string_Widget : public Gtk::Entry
+class string_Entry : public Gtk::Entry
 {	typedef std::string T;
 	bool any_change;
 	SigC::Connection ch_con, my_ch_con;
@@ -40,7 +40,7 @@ class MVC_string_Widget : public Gtk::Entry
 	unsigned int get_text_length() const;
 	void set_text(const Glib::ustring& text);
 public:
-	MVC_string_Widget(const Model_ref<T> &model);
+	string_Entry(const Model_ref<T> &model);
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: int_RadioButtons.cc,v 1.2 2002/12/03 09:09:05 christof Exp $
+// $Id: int_RadioButtons.cc,v 1.3 2002/12/03 09:10:44 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,25 +18,25 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "MVC_int_RadioButtons.hh"
+#include "int_RadioButtons.hh"
 
-void MVC_int_RadioButtons::refresh(gpointer x)
+void int_RadioButtons::refresh(gpointer x)
 {  if (x==&model.Value())
    {  my_ch_con.disconnect();
       Gtk::CheckButton::set_active(model.get_value());
-      my_ch_con=toggled.connect(SigC::slot(this,&MVC_int_RadioButtons::on_toggled));
+      my_ch_con=toggled.connect(SigC::slot(this,&int_RadioButtons::on_toggled));
    }
 }
 
-MVC_int_RadioButtons::MVC_int_RadioButtons(const Model_ref<T> &m, const std::string &text)
+int_RadioButtons::int_RadioButtons(const Model_ref<T> &m, const std::string &text)
 	: Gtk::CheckButton(text), model(m)
 {  Gtk::ToggleButton::set_active(m.get_value());
-   my_ch_con=toggled.connect(SigC::slot(this,&MVC_int_RadioButtons::on_toggled));
-   ch_con=model.changed.connect(SigC::slot(this,&MVC_int_RadioButtons::refresh));
+   my_ch_con=toggled.connect(SigC::slot(this,&int_RadioButtons::on_toggled));
+   ch_con=model.changed.connect(SigC::slot(this,&int_RadioButtons::refresh));
 };
 
-void MVC_int_RadioButtons::on_toggled()
+void int_RadioButtons::on_toggled()
 {  ch_con.disconnect();
    model=Gtk::CheckButton::get_active();
-   ch_con=model.changed.connect(SigC::slot(this,&MVC_int_RadioButtons::refresh));
+   ch_con=model.changed.connect(SigC::slot(this,&int_RadioButtons::refresh));
 }

@@ -1,4 +1,4 @@
-// $Id: int_RadioButtons.hh,v 1.2 2002/12/03 09:09:05 christof Exp $
+// $Id: int_RadioButtons.hh,v 1.3 2002/12/03 09:10:44 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -26,7 +26,7 @@
 #include <BaseObjects/Model.h>
 #include <vector>
 
-class MVC_int_RadioButtons : public Gtk::VBox
+class int_RadioButtons : public Gtk::VBox
 {public:
 	typedef int T;
 	typedef std::pair<int, std::string> key_name_t;
@@ -40,7 +40,7 @@ private:
 	void refresh(gpointer);
 	void on_toggled();
 public:
-	MVC_int_RadioButtons(const Model_ref<T> &model, 
+	int_RadioButtons(const Model_ref<T> &model, 
 		const std::vector<key_name_t> &names);
 };
 
