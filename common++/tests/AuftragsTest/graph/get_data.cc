@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.9 2002/11/07 07:49:16 christof Exp $
+// $Id: get_data.cc,v 1.10 2002/11/22 15:19:37 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -45,7 +45,7 @@ void graph_data_node::get_values_from_files()
   for(std::vector<st_files>::const_iterator i=vec_files_auftragentry.begin();i!=vec_files_auftragentry.end();++i)
    {
      std::ifstream F((i->filename).c_str());
-     if(!F) {cout <<"FEHLER: "<< i->filename<<" kann nicht geöffnet werden\n"; exit(1);}
+     if(!F) {cout <<"FEHLER: "<< i->filename<<" kann nicht geöffnet werden: "<<F<<"\n"; exit(1);}
      std::string zeile;
      for(int j=0;j<2;++j) std::getline(F,zeile); // Kopfzeilen überlesen
      while(std::getline(F,zeile))
@@ -57,12 +57,14 @@ void graph_data_node::get_values_from_files()
         AufStatVal status=NOSTAT;
         std::string::size_type s1;
         for(int j=0;j<8;++j)
-         {
+          {
            std::string trenner;
            if(j<2) trenner="-";
            else trenner ="|";
            s1=zeile.find(trenner);
-           if     (j==0) instanz=cH_ppsInstanz(ppsInstanz::ID(atoi(zeile.substr(0,s1).c_str())));
+           if     (j==0) { int i=atoi(zeile.substr(0,s1).c_str());
+                           if(i!=0) instanz=cH_ppsInstanz(ppsInstanz::ID(i));
+                  }
            else if(j==1) id=atoi(zeile.substr(0,s1).c_str());
            else if(j==2) znr=atoi(zeile.substr(0,s1).c_str());         
            else if(j==3) bestellt=atof(zeile.substr(0,s1).c_str());         
@@ -71,9 +73,10 @@ void graph_data_node::get_values_from_files()
                }catch(ManuProC::Datum::Formatfehler &e) {}
            else if(j==6) status=AufStatVal(atoi(zeile.substr(0,s1).c_str()));         
            zeile=zeile.substr(s1+1,std::string::npos);
-         }
+          }
         if(instanz==ppsInstanzID::None) continue;
         AufEintragBase aeb(instanz,id,znr);
+
         list_auftrag.push_back(st_auftrag(aeb,bestellt,geliefert,status,datum,i->prefix));
       }
    }
@@ -100,10 +103,16 @@ void graph_data_node::get_values_from_files_Z()
            if(j==2||j==5) trenner="|";
            else trenner ="-";
            s1=zeile.find(trenner);
-           if     (j==0) instanzALT=cH_ppsInstanz(ppsInstanz::ID(atoi(zeile.substr(0,s1).c_str())));
+//           if     (j==0) instanzALT=cH_ppsInstanz(ppsInstanz::ID(atoi(zeile.substr(0,s1).c_str())));
+           if     (j==0) { int i=atoi(zeile.substr(0,s1).c_str());
+                           if(i!=0) instanzALT=cH_ppsInstanz(ppsInstanz::ID(i));
+                  }
            else if(j==1) idALT=atoi(zeile.substr(0,s1).c_str());
            else if(j==2) znrALT=atoi(zeile.substr(0,s1).c_str());         
-           else if(j==3) instanzNEU=cH_ppsInstanz(ppsInstanz::ID(atoi(zeile.substr(0,s1).c_str())));
+//           else if(j==3) instanzNEU=cH_ppsInstanz(ppsInstanz::ID(atoi(zeile.substr(0,s1).c_str())));
+           if     (j==3) { int i=atoi(zeile.substr(0,s1).c_str());
+                           if(i!=0) instanzNEU=cH_ppsInstanz(ppsInstanz::ID(i));
+                  }
            else if(j==4) idNEU=atoi(zeile.substr(0,s1).c_str());
            else if(j==5) znrNEU=atoi(zeile.substr(0,s1).c_str());         
            zeile=zeile.substr(s1+1,std::string::npos);
@@ -245,6 +254,7 @@ void graph_data_node::get_files(emode mode)
       case LieferscheinZweiAuftraege : filenames=LAfiles(); break;
       case LieferscheinJacek: filenames=LSJfiles(); break;
       case ZweiKunden : filenames=ZKfiles(); break;
+      case ZweiKundenMengeFreigeben : filenames=ZKMfiles(); break;
       case ManuProCTest : filenames=ManuProCfiles(); break;
       case Legende: break;
       default: assert(!"never get here");
@@ -368,6 +378,13 @@ std::vector<graph_data_node::st_files> graph_data_node::LSJfiles()
   vec_files.push_back(st_files("mit_lager_open"));  
   vec_files.push_back(st_files("LS_volllieferung","V"));  
   vec_files.push_back(st_files("LS_mengenaenderung_minus","M"));  
+  vec_files.push_back(st_files("PP","PPW"));  
+  vec_files.push_back(st_files("PPE","PPE"));  
+  vec_files.push_back(st_files("planen_kupfer","E"));  
+  vec_files.push_back(st_files("LSZ","LW"));  
+  vec_files.push_back(st_files("LSZP","LW"));  
+  vec_files.push_back(st_files("LSZM","LW"));  
+  vec_files.push_back(st_files("zwei_auftraege_anlegen",""));
   return vec_files;
 }
 
@@ -381,6 +398,15 @@ std::vector<graph_data_node::st_files> graph_data_node::ZKfiles()
   vec_files.push_back(st_files("ZK_abschreiben1T"));  
   vec_files.push_back(st_files("ZK_abschreiben2T"));  
   vec_files.push_back(st_files("ZK_abschreiben1U"));  
+  return vec_files;
+}
+
+std::vector<graph_data_node::st_files> graph_data_node::ZKMfiles()
+{
+  std::vector<st_files>  vec_files;
+  vec_files.push_back(st_files("mit_lager_open"));  
+  vec_files.push_back(st_files("ZK_anlegen"));  
+  vec_files.push_back(st_files("ZKM"));  
   return vec_files;
 }
 

@@ -1,4 +1,4 @@
-// $Id: dot_out.cc,v 1.9 2002/11/07 07:49:16 christof Exp $
+// $Id: dot_out.cc,v 1.10 2002/11/22 15:19:37 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -41,6 +41,7 @@ void dot_out::write()
      case LieferscheinZweiAuftraege : label="Lieferschein Zwei Aufträge"; break;
      case LieferscheinJacek : label="Lieferschein Test für Jacek"; break;
      case ZweiKunden : label="ZweiKunden"; break;
+     case ZweiKundenMengeFreigeben : label="ZweiKundenMengeFreigeben"; break;
      case ManuProCTest : label="ManuProC"; break;
      case Legende : label="Legende"; break;
      default: label= "Fehler, kein Label gestze \n"; 
@@ -106,7 +107,7 @@ void dot_out::write_node(ofstream &fout)
               AufEintragBase a2=k->node.Auftrag();
               if(a1.Instanz()==a2.Instanz())
                {
-                 if(a2.Id()==20000 ) rank=sink;
+                 if(a2.Id()>=20000 ) rank=sink;
                  else rank=same;
                }
               Edge(fout,i->node,k->node,j->second,rank);
