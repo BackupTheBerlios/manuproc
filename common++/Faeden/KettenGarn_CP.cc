@@ -1,4 +1,4 @@
-/* $Id: KettenGarn_CP.cc,v 1.23 2004/07/06 15:42:03 christof Exp $ */
+/* $Id: KettenGarn_CP.cc,v 1.24 2004/07/27 14:37:45 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -50,14 +50,21 @@ struct map_index_t
 }
 
 static void GleicheFaedenZusammenfassen(Kettscheibe &x)
-{  for (std::vector<KS_Garn>::iterator j=x.faeden.begin();j!=x.faeden.end();)
-      {  std::vector<KS_Garn>::iterator b=j+1;
+{  ManuProC::Trace _t(trace_channel,__FUNCTION__);
+   for (std::vector<KS_Garn>::iterator j=x.faeden.begin();j!=x.faeden.end();)
+      {  std::vector<KS_Garn>::iterator b=j;
+         ++b;
          if (b==x.faeden.end()) break;
          if (j->material==b->material && j->wiederholungen==b->wiederholungen)
-         {  j->faeden+=b->faeden;
+         {  ManuProC::Trace(trace_channel,"si",j->faeden);
+            j->faeden+=b->faeden;
             j=x.faeden.erase(b);
+            --j;
          }
-         else ++j;
+         else 
+         {  ManuProC::Trace(trace_channel,"no",j->material.Id(),b->material.Id(),j->wiederholungen,b->wiederholungen);
+            ++j;
+         }
       }
 }
 
@@ -135,6 +142,31 @@ std::vector<Kettscheibe> Kettscheibe::Load(const std::vector<ArtikelGang> &ag, u
    }
   }
   
+   // Wiederholungen, die nur einen Faden dieser Kette betreffen, auflösen
+   for (map_t::iterator i=intermed.begin();i!=intermed.end();++i)
+   {  if (i->second.faeden.empty()) continue; // 8-O (sollte nicht sein, aber ...)
+      for (std::vector<Wiederholung>::iterator r=i->second.wiederholungen.begin();
+               r!=i->second.wiederholungen.end();)
+      {  std::vector<KS_Garn>::iterator end=i->second.faeden.end();
+         std::vector<KS_Garn>::iterator erster=end;
+         std::vector<KS_Garn>::iterator letzter=end;
+         
+         for (std::vector<KS_Garn>::iterator j=i->second.faeden.begin();j!=end;++j)
+         {  if (j->zeile<r->start || j->zeile>r->end) continue;
+            if (erster==end) erster=j;
+            letzter=j;
+         }
+         
+         if (erster!=end && erster==letzter)
+         {  erster->faeden*=r->anzahl;
+            erster->wiederholungen/=r->anzahl;
+            i->second.wiederholungen.erase(r);
+            r=i->second.wiederholungen.begin();
+         }
+         else ++r;
+      }
+   }
+
    // gleiche aufeinanderfolgende Fäden zusammenfassen
    for (map_t::iterator i=intermed.begin();i!=intermed.end();++i)
       GleicheFaedenZusammenfassen(i->second);

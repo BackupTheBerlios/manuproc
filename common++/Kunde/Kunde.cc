@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.42 2004/01/21 13:00:17 jacek Exp $
+// $Id: Kunde.cc,v 1.43 2004/07/27 14:37:45 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -70,9 +70,16 @@ const std::string Kunde::LaTeX_von() const
 {
   std::string s="\\underline{\\scriptsize ";
   s+= string2TeX(getName()+", ");
-  
+
+#ifndef PETIG_EXTENSIONS 
+  // eigentlich ist das ein Relikt aus der Zeit, als man das Land nicht
+  // drunterschreiben musste, sondern stattdessen innerhalb der EU das 
+  // KFZ Kennzeichen vor die PLZ schreiben konnte
   std::string lkz=adresse.land->LKZ();
   if (!lkz.empty()) lkz+='-';
+#else
+  std::string lkz;
+#endif
 
   if(!adresse.postfach.empty())
     s+= string2TeX("Postfach "+adresse.postfach+", "+
@@ -123,7 +130,7 @@ const std::string Kunde::LaTeX_an(bool liefer,TelArt telart,
   std::string strasse_postfach;
   std::string lkz_plz_ort;
 
-#ifdef MABELLA_EXTENSIONS  // meines Wissens nicht mehr üblich, CP
+#ifdef MABELLA_EXTENSIONS  // meines Wissens nicht mehr üblich, CP (s.o.)
   if (!adresse.land->LKZ().empty()) 
 	lkz_plz_ort += adresse.land->LKZ()+" - ";
 #endif  
