@@ -1,4 +1,4 @@
-/* $Id: RechnungBase.h,v 1.15 2003/11/07 11:12:50 jacek Exp $ */
+/* $Id: RechnungBase.h,v 1.16 2003/12/08 10:58:27 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,6 +27,7 @@
 #include <BaseObjects/ManuProcEntity.h>
 #include <Misc/Ausgabe_neu.h>
 #include <Kunde/Kunde.h>
+#include <Misc/UniqueValue.h>
 
 // ableiten von ManuProcEntity wg. HandleCOntent nicht möglich :-( MAT
 class RechnungBase // : ManuProcEntity
@@ -43,6 +44,7 @@ class RechnungBase // : ManuProcEntity
 	typedef Preis::rabatt_t rabatt_t; // in Prozent
 	typedef Preis::geldbetrag_t geldbetrag_t;
 	typedef LieferscheinBase::mengen_t mengen_t;
+	static const UniqueValue::value_t trace_channel;
 	
 	RechnungBase() : rngid(none_id),verknr(Kunde::none_id) {}
 	RechnungBase(ID rid) : rngid(rid),verknr(Kunde::none_id) {}
@@ -63,5 +65,3 @@ class RechnungBase // : ManuProcEntity
 };
 
 #endif
-
-

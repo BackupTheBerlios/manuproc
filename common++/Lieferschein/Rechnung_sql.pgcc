@@ -164,63 +164,35 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
 
 void Rechnung::setze_Zahlziel(ManuProC::Datum zziel) throw(SQLerror)
 {
- exec sql begin declare section;
-   int RNGID=Id();
-   char DATE[50];
-   int IDATE; 
- exec sql end declare section;
-
- if(!zziel.valid()) IDATE=-1;
- else 
-  {IDATE=0;
-   zziel.write_postgres(DATE,sizeof(DATE));
-  }
-
- exec sql update rechnung set zahlziel=:DATE:IDATE where rngid=:RNGID;
- SQLerror::test(__FILELINE__":Rechnung: setze_Zahlziel(ManuProC::Datum rgdatum)");	
+ Query("update rechnung set zahlziel=? where rngid=?")
+ 	<< zziel << Id();
  zahlziel=zziel;
 }
 
 
 void Rechnung::setze_Datum(ManuProC::Datum rgdatum) throw(SQLerror)
 {
- exec sql begin declare section;
-   int RNGID=Id();
-   char DATE[50]; 
- exec sql end declare section;
- rgdatum.write_postgres(DATE,sizeof(DATE));
- exec sql update rechnung set datum=:DATE where rngid=:RNGID;
- SQLerror::test(__FILELINE__":Rechnung: setze_Datum(ManuProC::Datum rgdatum)");	
+ Query("update rechnung set datum=? where rngid=?")
+ 	<< rgdatum << Id();
+ // in Struktur nicht ändern ???
 }
 
 
 void Rechnung::setze_Zahlungsart(cH_Zahlungsart z) throw(SQLerror)
 {
- exec sql begin declare section;
-   int RNGID=Id();
-   int ZAHLART=z->Id(); 
- exec sql end declare section;
- exec sql update rechnung set zahlart=:ZAHLART where rngid=:RNGID;
- SQLerror::test(__FILELINE__":Rechnung: setze_Zahlungsart");	
+ Query("update rechnung set zahlart=? where rngid=?")
+ 	<< z->Id() << Id();
+ // in Struktur nicht ändern ???
 }
 
 
 void Rechnung::deleteLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
-{
- exec sql begin declare section;
- int RNGID=Id();
- int LFRSID=lfrs.Id();
-/* int INSTANZ=lfrs.Instanz(); */
- exec sql end declare section;
+{Transaction tr;
  
- Transaction tr;
- 
- exec sql delete from rechnungentry 
- 	where lfrsid=:LFRSID and rngid=:RNGID; 
-
- exec sql update lieferschein set rngid=null where lfrsid= :LFRSID;
- SQLerror::test(__FILELINE__);
-
+ Query("delete from rechnungentry where lfrsid=? and rngid=?")
+ 	<< lfrs.Id() << Id(); 
+ Query("update lieferschein set rngid=null where lfrsid=?")
+ 	<< lfrs.Id();
  tr.commit();
  
 }
@@ -277,29 +249,15 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
 
 
 void Rechnung::setzeWaehrung(const cP_Waehrung &w) throw(SQLerror)
-{  waehrung=w;
- exec sql begin declare section;
- int RNGID;
- int WAEHRUNG;
- exec sql end declare section;
-
- RNGID=Id();
- WAEHRUNG=w->Id();
- exec sql update rechnung set waehrung=:WAEHRUNG where rngid=:RNGID;
- SQLerror::test(__FILELINE__);
+{  Query("update rechnung set waehrung=? where rngid=?")
+   	<< w->Id() << Id();
+   waehrung=w;
 }
 
 void Rechnung::setze_Rabatt(rabatt_t r) throw(SQLerror)
-{  rabatt=r;
- exec sql begin declare section;
- int RNGID;
- float RABATT;
- exec sql end declare section;
-
- RNGID=Id();
- RABATT=r.as_float();
- exec sql update rechnung set rabatt=:RABATT where rngid=:RNGID;
- SQLerror::test(__FILELINE__);
+{  Query("update rechnung set rabatt=? where rngid=?")
+	<< Id() << r;
+   rabatt=r;
 }
 
 // nur Warenwert, ohne MwSt., ggf. rabattiert
@@ -341,81 +299,34 @@ Rechnung::geldbetrag_t Rechnung::Betrag(bool brutto) const throw(SQLerror)
 
 
 void RechnungBase::setEingezogen(int refnr, bool bezahlt) throw(SQLerror)
-{
- exec sql begin declare section;
- int RNGID;
- int REFNR;
- bool BEZAHLT=bezahlt;
- exec sql end declare section;
-
- Transaction tr;
-
- RNGID = rngid;
- REFNR = refnr;
-
- exec sql update rechnung set bezahlt=:BEZAHLT, einzug_refnr= :REFNR
-	where rngid= :RNGID;
- SQLerror::test(__FILELINE__);
-
- tr.commit();
+{Query("update rechnung set bezahlt=?, einzug_refnr=? where rngid=?")
+ 	<< bezahlt << refnr << rngid;
+   // member nicht ändern?
 }
 
-
 void Rechnung::setBezahlt(bool _bezahlt) throw(SQLerror)
-{
- exec sql begin declare section;
- int RNGID=rngid;
- bool BEZAHLT=_bezahlt;
- exec sql end declare section;
-
- Transaction tr;
-
- exec sql update rechnung set bezahlt=:BEZAHLT where rngid= :RNGID;
- SQLerror::test(__FILELINE__);
-
- tr.commit();
-
+{Query("update rechnung set bezahlt=? where rngid=?")
+ 	<< _bezahlt << rngid;
  bezahlt=_bezahlt;
 }
 
-
-
 const std::string Rechnung::Notiz() const throw(SQLerror)
 {
-// ManuProC::Trace _t(ManuProC::Tracer::Rechnung, __FUNCTION__,str());
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,str());
  if(notiz_valid) return notiz;
 
- exec sql begin declare section;
- int RNGID = Id();
- char *NOTIZ=0;
- exec sql end declare section;
-
- exec sql select coalesce(notiz,'') into :NOTIZ from 
-	rechnung where rngid= :RNGID;
- SQLerror::test(__FILELINE__);
-
- notiz=NOTIZ;
- ECPGfree_auto_mem();
+ Query("select notiz from rechnung where rngid=?")
+ 	<< Id()
+ 	>> FetchIStream::MapNull(notiz);
  notiz_valid=true;
  return notiz;
 }
 
 void Rechnung::Notiz(const std::string n) throw(SQLerror)
 {
-// ManuProC::Trace _t(ManuProC::Tracer::Rechnung, __FUNCTION__,str());
- exec sql begin declare section;
- int RNGID = Id();
- char *NOTIZ;
- exec sql end declare section;
-
- NOTIZ = (char*)n.c_str();
-
- Transaction tr;
-
- exec sql update rechnung set notiz=:NOTIZ where rngid= :RNGID;
- SQLerror::test(__FILELINE__);
-
- tr.commit();
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,str(),n);
+ Query("update rechnung set notiz=? where rngid=?")
+ 	<< Query::NullIf(notiz) << Id();
  notiz=n;
 }
 
