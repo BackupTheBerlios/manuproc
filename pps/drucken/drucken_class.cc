@@ -1198,15 +1198,12 @@ void LR_Abstraktion::page_header(std::ostream &os)
          telart=TEL_FAX; // Im Moment werden alle Telefonnummern angezeigt
      os << kunde_an->LaTeX_an(Typ()==Lieferschein,telart)<<"\n\n";
 #elif MABELLA_EXTENSIONS
-     if(Typ()==Rechnung && !kunde_an->isInGrp(KundengruppeID::Rechnungsadresse))
+     if( (Typ()==Rechnung && !kunde_an->isInGrp(KundengruppeID::Rechnungsadresse)) ||
+         (Typ()==Auftrag && kunde_an->AB_an_rngadresse())
+	)
        os << kunde_rng->LaTeX_an(Typ()==Lieferschein,telart,"1\\textwidth")<<"\n\n";
      else  
        os << kunde_an->LaTeX_an(Typ()==Lieferschein,telart,"1\\textwidth")<<"\n\n";
-
-     if(Typ()==Auftrag && kunde_an->AB_an_rngadresse())
-       os << kunde_rng->LaTeX_an(Typ()==Lieferschein,telart,"1\\textwidth")<<"\n\n";
-     else  
-       os << kunde_an->LaTeX_an(Typ()==Lieferschein,telart,"1\\textwidth")<<"\n\n";       
        
 #endif     
 
