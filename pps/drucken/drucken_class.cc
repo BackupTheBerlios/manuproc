@@ -310,10 +310,12 @@ catch(SQLerror &e) { cout << e; return; }
  if(kunde_an->land()->Auslaender())
    if(!kunde_an->land()->EU())
         {os << "~\\\\";
-	os << mld->MLT(MultiL_Dict::TXT_EU_PREFERENZ);
-	os << "\\\\\n"
-	"~\\\\\nWuppertal, ";
-	if(mld->getSprId()==1) os << "den ";
+	if(kunde_an->land()->LKZ()=="IL")
+	  os << mld->MLT(MultiL_Dict::TXT_EU_WARE_ISRAEL);
+	else
+	  os << mld->MLT(MultiL_Dict::TXT_EU_PREFERENZ);
+	os << "\\\\\n";
+	os << "~\\\\\nWuppertal, "<<mld->MLT(MultiL_Dict::TXT_DEN);
 	}
   Gtk2TeX::Footer(os);
 }

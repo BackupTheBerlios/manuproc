@@ -79,6 +79,8 @@ public:
 		PRINTF_ZAHLUNG6=64,		
 		TXT_MADEINGER=65,
 		PRINTF_ZAHLUNG7=66,
+		TXT_EU_WARE_ISRAEL=67,
+		TXT_DEN=68,
 	     } LangTXT;
 
  MultiL_Dict(int sprache, int default_spr=1);
