@@ -1,6 +1,6 @@
 SUBDIRS=artikelbox eingabe tree_simplest MVC
 
-noinst_PROGRAMS=Handles
+EXTRA_PROGRAMS=Handles
 
 Handles_SOURCES=Handles.cc
 

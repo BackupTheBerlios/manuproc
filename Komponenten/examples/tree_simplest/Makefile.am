@@ -2,7 +2,7 @@
 # using glademm V0.6.2_cvs
 #
 # newer (non customized) versions of this file go to Makefile.am_new
-noinst_PROGRAMS = tree
+EXTRA_PROGRAMS = tree
 
 BUILT_SOURCES=$(LINKS)
 

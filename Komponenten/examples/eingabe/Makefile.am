@@ -1,13 +1,11 @@
-# $Id: Makefile.am,v 1.2 2001/06/21 09:56:40 christof Exp $
-CXXFLAGS=@CXXFLAGS@ -I$(top_srcdir)/src @GNOMEMM_CFLAGS@ \
-	@COMMONGTK_INCLUDES@ @COMMONXX_INCLUDES@
+# $Id: Makefile.am,v 1.3 2003/03/18 15:42:49 christof Exp $
+CXXFLAGS=@CXXFLAGS@ @GNOMEMM_CFLAGS@ @KOMPONENTEN2_INCLUDES@ 
 
-eingabe_LDADD = @LIBS@ $(top_srcdir)/src/libKomponenten.a \
-	@COMMONGTK_LIBS@ @COMMONXX_LIBS@ @GNOMEMM_LIBS@
+eingabe_LDADD = @LIBS@ @KOMPONENTEN2_LIBS@ @GNOMEMM_LIBS@
 
-LDFLAGS= @LDFLAGS@ @COMMONXX_LDFLAGS@ @COMMONGTK_LDFLAGS@
+LDFLAGS= @LDFLAGS@ @KOMPONENTEN2_LDFLAGS@
 
-noinst_PROGRAMS = eingabe
+EXTRA_PROGRAMS = eingabe
 
 eingabe_SOURCES = eingabe.cc window1.cc window1_glade.cc
 
