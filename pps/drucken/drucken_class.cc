@@ -184,16 +184,19 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 
     if(kunde_an->land()->Auslaender())
          {if(zeilen_passen_noch<(passende_zeilen+2)) {  os << "\\newpage\n";++page_counter; page_header(os);}
+          cH_Kunde kunde_von(Kunde::eigene_id);
+	  os << "\\\\\\\\"<<mld->MLT(TXT_BANKVERB) <<": ";
+	  os << mld->MLT(TXT_KONTO) << " " << ulltos(kunde_von->getKtnr()) << ", ";
+	  os << "BLZ " << itos(kunde_von->getblz()) << ", ";	  
+	  os << mld->MLT(TXT_BANK) << " " << kunde_von->getbank();
 	  os << "~\\\\S.W.I.F.T.: WELA DE D1 VEL - IBANDE61334500000000240044\\\\\n";
-	  os << "BTN / HSC-Code / Num\\'{e}ro de Douane : 58063210\\\\\n";
+	  os << "BTN / HSC-Code / Num\\'{e}ro de Douane / Nomenclatura combinata : 58063210\\\\\n";
 	 }
 
 
   if(kunde_an->Auslaender())
-    { os << "~\\\\[.5cm]\\footnotesize- gewebte Bänder aus Chemiefasern mit gewebtem Rand\\\\\n"
-      "- woven ribbons from synthetic fibres with woven edge\\\\\n"
-      "- Rubans tiss\\'{e}s de fibres synth\\'{e}tiques avec bordures tiss\\'{e}es\\\\\n"
-      "\\bigskip Made in Germany\n";
+    { os << "~\\\\\\footnotesize - "<<mld->MLT(TXT_WARE_ZOLL)<<"\\\\\n";
+      os << "\\bigskip Made in Germany\n";
 
    try{u.r->setGewicht();}
 
@@ -211,15 +214,17 @@ catch(SQLerror &e) { cout << e; return; }
 
 #else
      cH_Kunde kunde_von(Kunde::default_id);
-#ifdef PETIG_EXTENSIONS // Ja ein Hack    
+     
+#warning // Ja ein Hack    
      if (kunde_an->Id()==629)
         os <<"\n\n\\footnotesize Stadtsparkasse Wuppertal, BLZ 330 500 00, Konto 406 728\\\\\n";
      else
-#endif
         os <<"\n\n\\footnotesize "<< kunde_von->getBank()<<"\\\\\n";
+
      os << "Zahlung: "<< string2TeX(getZahlungsart()->Bezeichnung())<<"\\\\\n";
      os <<"Die Lieferung erfolgt zu den Einheitsbedingungen der deutschen Textilindustrie.\\\\\n";
      os <<"Gerichtsstand ist Wuppertal.\\\\\n";
+
 #endif
 
    }
@@ -240,7 +245,7 @@ catch(SQLerror &e) { cout << e; return; }
     zeilen_passen_noch-=8;
     os << "\\bigskip\n";
     if(kunde_an->get_lieferung_frei_haus()) 
-      os << "\\\\Die Lieferung erfolgt frei Haus\\\\\n";
+      os << "\\\\" << mld->MLT(TXT_LIEF_FREI) <<"\\\\\n";
     os << "\\\\Die Liefertermine bitte den einzelnen Positionen entnehmen\\\\\n";
 
    }
@@ -439,7 +444,12 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
 #endif
        	lfrsid_drucken=false;
     }
-    else os << "~\\\\[-1ex]\n";
+    else 
+#ifdef MABELLA_EXTENSIONS
+    os << "~\\\\[-2ex]\n";
+#else    
+    os << "~\\\\[-1ex]\n";
+#endif
 
 #ifdef MABELLA_EXTENSIONS    
     if(aufid_drucken)
@@ -512,7 +522,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
 #warning Schätzwert: Zeilen fuer Summe benötigt   
 
 #ifdef MABELLA_EXTENSIONS
-     if (zeilen_passen_noch<5)
+     if (zeilen_passen_noch<4)
 #else
      if (zeilen_passen_noch<8)
 #endif     
@@ -1123,16 +1133,22 @@ void LR_Abstraktion::page_header(std::ostream &os)
     }
 
 #ifdef MABELLA_EXTENSIONS
+   os <<"\\hfill " << mld->MLT(TXT_SEITE) << " \\thepage\\\\\n";
    os << "\\large "<<typString(gutschrift())<<" ";
    os.width(6);os.fill('0');
    os <<RngNr()<<"\\normalsize ~" << mld->MLT(TXT_VOM)<<" " <<getDatum();
 
+   if(Typ()==Auftrag)
+     os <<"\\hfill "<<mld->MLT(TXT_DANKE_AUFTR)<<"\\normalsize\\\\\n ";
+   else
+     os <<"~\\\\\n";
+
    if(!Rueckstand())
-   if(Typ()==Auftrag) auftrag_von(os,class Auftrag(AuftragBase(
+   if(Typ()==Auftrag) {auftrag_von(os,class Auftrag(AuftragBase(
    				ppsInstanzID::Kundenauftraege,u.a->Id())),true);
-   
-   os <<"\\\\~ \\hfill "<<mld->MLT(TXT_DANKE_AUFTR)<<"\\normalsize ";
-   os <<"\\hfill Seite \\thepage\\\\\n";
+   		      }
+   		      
+   if(Typ()==Auftrag) os << "\\\\\n";
    
    os << "Ihre Kundennummer: ";
    os.width(5);os.fill('0');
@@ -1177,16 +1193,19 @@ void LR_Abstraktion::page_header(std::ostream &os)
 void LR_Abstraktion::lieferung_an(std::ostream &os, unsigned int lfrs_id, 
 			const ManuProC::Datum& datum,const std::string& sKunde)
 { --zeilen_passen_noch;
-//  os << "\\begin{flushleft}\n";
-//#ifdef PETIG_EXTENSIONS
-  os << "~\\\\[2ex]""\n";  // ohne ~ gibt's  Error: There's no line here to end.
+
+#ifdef MABELLA_EXTENSIONS
+  os << "~\\\\[-2ex]""\n";  
+#else
+  os << "~\\\\[2ex]""\n";  
+#endif  
+
   --zeilen_passen_noch;  
-//#endif  
+
   os << "Unsere Lieferung "<<lfrs_id;
   os << " am "<<datum;
   if(!sKunde.empty())  os << " an "<< string2TeX(sKunde);
   os << "\\\\[-2ex]\n";
-//  os << "\\end{flushleft}\n";
 }
 
 #ifdef MABELLA_EXTENSIONS
@@ -1201,13 +1220,13 @@ void LR_Abstraktion::auftrag_von(std::ostream &os, const class Auftrag &a,
     }
     
   if(a.getYourAufNr() != a.getBemerkung())
-    {os <<" \\small{(";
+    {os <<" \\small{";
       if(!a.getYourAufNr().empty()) os << "Ihre Auf.Nr. "<<a.getYourAufNr()
       			<< (a.getBemerkung().empty() ? ")}" : "; ");
-      if(!a.getBemerkung().empty()) os << "  "<<a.getBemerkung()<<")}";
+      if(!a.getBemerkung().empty()) os << "  "<<a.getBemerkung()<<"}";
     }
   os << "\\normalsize";
-  if(! only_braces) os << "\\\\[-2ex]\n";
+  if(! only_braces) os << "\\\\[-3ex]\n";
   
 }
 #endif
