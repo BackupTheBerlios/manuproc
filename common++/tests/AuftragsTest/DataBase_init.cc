@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.23 2004/02/27 10:34:15 christof Exp $
+// $Id: DataBase_init.cc,v 1.24 2004/06/11 13:49:33 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -41,10 +41,18 @@ DataBase_init::DataBase_init()
    L.rein_ins_lager(ARTIKEL_GRANULAT_KLAR,50,false);
    L.rein_ins_lager(ARTIKEL_GRANULAT_GELB,100,false);
 #elif defined MABELLA_TEST
-   Lager L(FERTIGWLAGER); 
-   L.rein_ins_lager(ARTIKEL_TRIO,5,false); 
+   FertigWarenLager_initialisieren();
 #endif
 }
+
+#ifdef MABELLA_TEST
+void DataBase_init::FertigWarenLager_initialisieren()
+{
+   Lager L(FERTIGWLAGER); 
+//   L.rein_ins_lager(ARTIKEL_TRIO,5,false); 
+}
+#endif
+
 
 #ifdef PETIG_EXTENSIONS
 

@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.46 2004/02/27 11:52:12 christof Exp $
+// $Id: steuerprogramm.hh,v 1.47 2004/06/11 13:49:33 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -100,9 +100,9 @@
 #define ARTIKEL_TRIO ArtikelBase(38389)
 #define ARTIKEL_ZWEI ArtikelBase(38391)
 
-#define KUNDENINSTANZ (ppsInstanz::ID(1))
-#define FERTIGWLAGER (ppsInstanz::ID(2))
-#define EINKAUF (ppsInstanz::ID(3))
+#define KUNDENINSTANZ (ppsInstanzID::Kundenauftraege)
+#define FERTIGWLAGER (ppsInstanzID::Fertigwarenlager)
+#define EINKAUF (ppsInstanzID::Einkauf)
 
 #define KUNDE 11302
 #define KUNDE2 20104

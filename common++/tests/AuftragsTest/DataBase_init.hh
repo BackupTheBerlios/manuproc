@@ -1,4 +1,4 @@
-// $Id: DataBase_init.hh,v 1.7 2004/02/16 08:46:20 christof Exp $
+// $Id: DataBase_init.hh,v 1.8 2004/06/11 13:49:33 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -73,6 +73,10 @@ class DataBase_init
     void RohwarenLager_initalisieren();
     void RohwarenLager_initalisieren_execute(const ArtikelBase &artikel, 
        const LagerPlatz& LP,int kartons,int kg_pro_karton,int reste,int kg_reste);
+#endif
+
+#ifdef MABELLA_TEST
+   void FertigWarenLager_initialisieren();
 #endif
 
   public:
