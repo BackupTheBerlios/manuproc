@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.45 2004/02/03 12:25:38 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.46 2004/02/03 13:06:06 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -72,80 +72,100 @@ void LieferscheinEntry::showZusatzInfos() const
    std::cerr << '\n';
 }
 
-void LieferscheinEntry::changeMenge(int stueck, mengen_t menge, const Lieferschein &ls, bool ein_auftrag) throw(SQLerror)
+
+void LieferscheinEntry::changeStatus(AufStatVal new_status, 
+		const Lieferschein &ls, bool ein_auftrag) throw(SQLerror)
 { ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
-	NV("stueck",stueck),NV("menge",menge),NV("ein_auftrag",ein_auftrag));
+	NV("new_status",new_status),
+	NV("status",status),NV("ein_auftrag",ein_auftrag));
+
+  AuftragBase::mengen_t abmenge=Abschreibmenge(stueck,menge);
+
+  if(status==CLOSED || status==STORNO) return; // not changable any more
+
+  if(status>=new_status) return; // nothing changed or down changed
+
+
+  if(new_status==OPEN || new_status==STORNO)
+   {
+    if (ein_auftrag)
+    {  assert(NurEinKind(VZusatz));
+       if(VZusatz[0].aeb.valid()) // => Keine Zusatzinfos
+       {  AufEintrag AE(VZusatz[0].aeb);
+          // verhindern dass negative Menge auftritt
+          assert (!(abmenge<0 && -abmenge>AE.getGeliefert()));
+          AE.ProduziertNG(abmenge,*this);
+       }
+    }
+    else 
+     {
+       AuftragBase::mengen_t abmenge2=abmenge;
+       if(abmenge>0) 
+       {
+        // was ist mit 0ern im Einkauf, diese werden auch bei Überproduktion nicht
+        // direkt erledigt - allerdings beim Einlagern ??? CP
+        SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Artikel_Planung_id
+        			(instanz->Id(),ls.getKunde()->Id(),artikel,AuftragBase::handplan_auftrag_id));
+        SelectedFullAufList auftraglist(psel);
+
+
+        for (SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
+       	        !!abmenge2 && i!=auftraglist.aufidliste.end(); ++i)
+        {  AuftragBase::mengen_t abmenge3=AuftragBase::min(abmenge2,i->getRestStk());
+           if (!abmenge3) continue;
+             
+           i->ProduziertNG(abmenge3,*this);
+           addZusatzEntry(*i,abmenge3);
+
+           abmenge2-=abmenge3;
+           if (!abmenge2) break;
+        }
+        if(abmenge2>0)
+           // da ist noch ein Rest geblieben, setzt ZusatzInfo
+        {  AufEintragBase neuerAEB;
+           if (instanz!=ppsInstanzID::Kundenauftraege) 
+              neuerAEB=AufEintrag::unbestellteMengeProduzieren(Instanz(),artikel,
+              		abmenge2,true,AufEintragBase(),*this);
+           addZusatzEntry(neuerAEB,abmenge2);
+        }
+       }
+       else
+       {//showZusatzInfos();
+        zusaetze_t VZ=getZusatzInfos();
+  #warning in dieser Reihenfolge Menge ermitteln aber umgekehrt abschreiben,
+  //	damit der Erste eventuelle Lagerbestände reservieren kann!
+        for(LieferscheinEntry::zusaetze_t::reverse_iterator i=VZ.rbegin();i!=VZ.rend();++i)
+        {
+          AuftragBase::mengen_t actualmenge=abmenge2;
+          if(i->menge < actualmenge.abs()) actualmenge = -i->menge;
+          ManuProC::Trace(trace_channel,__FILELINE__,
+          	NV("abmenge2",abmenge2),NV("actualmenge",actualmenge),
+          	NV("i->menge",i->menge));
+          if (!actualmenge) continue;
+          
+          if(i->aeb.valid()) 
+             AufEintrag(i->aeb).ProduziertNG(actualmenge,*this);
+          if(!(i->menge + actualmenge)) deleteZusatzEntry(i->aeb);
+          else updateZusatzEntry(i->aeb,i->menge + actualmenge);
+          abmenge2-=actualmenge;
+          if(!abmenge2) break;
+        }
+       }
+     }
+
+  } // END OF if(new_status==OPEN || new_status==STORNO)
+
+
+}
+
+
+void LieferscheinEntry::changeMenge(int stueck, mengen_t menge) throw(SQLerror)
+{ ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
+	NV("stueck",stueck),NV("menge",menge));
   if(stueck==Stueck() && menge==Menge()) return ; //nichts geändert
 
   Transaction tr;
   Query::Execute("lock table lieferscheinentry in exclusive mode");
-
-  AuftragBase::mengen_t abmenge=Abschreibmenge(stueck,menge);
-
-  if (ein_auftrag)
-  {  assert(NurEinKind(VZusatz));
-     if(VZusatz[0].aeb.valid()) // => Keine Zusatzinfos
-     {  AufEintrag AE(VZusatz[0].aeb);
-        // verhindern dass negative Menge auftritt
-        assert (!(abmenge<0 && -abmenge>AE.getGeliefert()));
-        AE.ProduziertNG(abmenge,*this);
-     }
-  }
-  else 
-   {
-     AuftragBase::mengen_t abmenge2=abmenge;
-     if(abmenge>0) 
-     {
-      // was ist mit 0ern im Einkauf, diese werden auch bei Überproduktion nicht
-      // direkt erledigt - allerdings beim Einlagern ??? CP
-      SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Artikel_Planung_id
-      			(instanz->Id(),ls.getKunde()->Id(),artikel,AuftragBase::handplan_auftrag_id));
-      SelectedFullAufList auftraglist(psel);
-
-
-      for (SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
-     	        !!abmenge2 && i!=auftraglist.aufidliste.end(); ++i)
-      {  AuftragBase::mengen_t abmenge3=AuftragBase::min(abmenge2,i->getRestStk());
-         if (!abmenge3) continue;
-           
-         i->ProduziertNG(abmenge3,*this);
-         addZusatzEntry(*i,abmenge3);
-
-         abmenge2-=abmenge3;
-         if (!abmenge2) break;
-      }
-      if(abmenge2>0)
-         // da ist noch ein Rest geblieben, setzt ZusatzInfo
-      {  AufEintragBase neuerAEB;
-         if (instanz!=ppsInstanzID::Kundenauftraege) 
-            neuerAEB=AufEintrag::unbestellteMengeProduzieren(Instanz(),artikel,
-            		abmenge2,true,AufEintragBase(),*this);
-         addZusatzEntry(neuerAEB,abmenge2);
-      }
-     }
-     else
-     {//showZusatzInfos();
-      zusaetze_t VZ=getZusatzInfos();
-#warning in dieser Reihenfolge Menge ermitteln aber umgekehrt abschreiben,
-//	damit der Erste eventuelle Lagerbestände reservieren kann!
-      for(LieferscheinEntry::zusaetze_t::reverse_iterator i=VZ.rbegin();i!=VZ.rend();++i)
-      {
-        AuftragBase::mengen_t actualmenge=abmenge2;
-        if(i->menge < actualmenge.abs()) actualmenge = -i->menge;
-        ManuProC::Trace(trace_channel,__FILELINE__,
-        	NV("abmenge2",abmenge2),NV("actualmenge",actualmenge),
-        	NV("i->menge",i->menge));
-        if (!actualmenge) continue;
-        
-        if(i->aeb.valid()) 
-           AufEintrag(i->aeb).ProduziertNG(actualmenge,*this);
-        if(!(i->menge + actualmenge)) deleteZusatzEntry(i->aeb);
-        else updateZusatzEntry(i->aeb,i->menge + actualmenge);
-        abmenge2-=actualmenge;
-        if(!abmenge2) break;
-      }
-     }
-   }
 
   updateLieferscheinMenge(stueck,menge);
 
@@ -295,7 +315,7 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
 
 void LieferscheinEntry::deleteEntry(LieferscheinEntry &lse) throw(SQLerror)
 {
- lse.changeMenge(0,0,Lieferschein(),false);
+ lse.changeMenge(0,0);
  deleteMe(lse);
 }
 

@@ -20,6 +20,8 @@
 #include <Misc/Transaction.h>
 #include <Misc/TraceNV.h>
 
+const unsigned int FertigWarenLager::default_lagerid=1;
+
 std::pair<Zeitpunkt_new,int> FertigWarenLager::letzteInventur()
 {
  
