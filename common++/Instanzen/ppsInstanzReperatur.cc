@@ -71,7 +71,7 @@ bool ppsInstanzReparatur::KK_teste_summen_fuer(const AufEintragBase aeb,const Ar
      // Und deren Dispo-Eltern
      AuftragBase::mengen_t DispoMenge=0;
      std::list<AufEintragZu::st_reflist> D=AufEintragZu(i->AEB).get_Referenz_list_dispo(false);
-cout << "\tDispo: "<<D.size()<<'\n';
+std::cout << "\tDispo: "<<D.size()<<'\n';
      for(std::list<AufEintragZu::st_reflist>::const_iterator j=D.begin();j!=D.end();++j)
       { assert(j->AEB.Id()==AuftragBase::dispo_auftrag_id);
         DispoMenge += j->Menge;
@@ -80,11 +80,11 @@ cout << "\tDispo: "<<D.size()<<'\n';
      PlanMenge += DispoAE.getRestStk() - DispoMenge;
    }
   }
-cout << "AUSGABE: "<<aeb<<'\t'<< ElternMenge <<" = "<< AE0.getStueck()
+std::cout << "AUSGABE: "<<aeb<<'\t'<< ElternMenge <<" = "<< AE0.getStueck()
 <<" + "<< PlanMenge<<'\t';
  if(ElternMenge != AE0.getStueck() + PlanMenge )
   {
-cout << "\tFehler";
+std::cout << "\tFehler";
 /*
    if(analyse_only) analyse("Von Eltern benötigte Menge (EM="+ElternMenge.String()+") stimmt nicht mit \n"
       " offener Menge (OM="+AE0.getStueck().Stringa()+") und"
@@ -93,7 +93,7 @@ cout << "\tFehler";
    else assert(!"nicht implementiertn");
 */
   }
-cout << "\n";
+std::cout << "\n";
 
   // und nun rekursiv
   std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_list_ungeplant();
