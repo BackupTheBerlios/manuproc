@@ -50,7 +50,7 @@ static ostream *testlog;
 
 static void vergleichen(Check &C, Check::was_checken w, const std::string &zusatz, 
         const std::string &name, bool mit_reparatur_programm)
-{   testlog << int(C) << ' ' << zusatz << ' ' << name << '\n';
+{   testlog << int(w) << ' ' << zusatz << ' ' << name << '\n';
     bool erfolgreich=C.teste(w,zusatz,mit_reparatur_programm);
     if(!erfolgreich) 
     { cout << name << " fehlgeschlagen\n"; exit(fehler()); }
