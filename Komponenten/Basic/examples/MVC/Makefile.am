@@ -2,7 +2,7 @@
 # using glademm V1.1.0d_cvs
 #
 # newer (non customized) versions of this file go to Makefile.am_new
-bin_PROGRAMS = mvc
+EXTRA_PROGRAMS = mvc
 
 mvc_SOURCES = \
 	mvc.cc\

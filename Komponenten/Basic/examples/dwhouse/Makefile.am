@@ -2,7 +2,7 @@
 # using glademm V0.5_11f_cvs
 #
 # newer (non customized) versions of this file go to Makefile.am_new
-noinst_PROGRAMS = main
+EXTRA_PROGRAMS = main
 
 main_SOURCES = \
 	MyNode.cc \

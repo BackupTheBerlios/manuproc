@@ -2,7 +2,7 @@
 # using glademm V1.1.2a_cvs
 #
 # newer (non customized) versions of this file go to Makefile.am_new
-bin_PROGRAMS = newtree
+EXTRA_PROGRAMS = newtree
 
 newtree_SOURCES = \
 	newtree.cc\
