@@ -150,7 +150,8 @@ int main(int argc,char *argv[])
                     if(planmenge)
                      {
                        AuftragBase ab(Planauftrag.Instanz(),AuftragBase::plan_auftrag_id);
-                       AufEintrag(Planauftrag).Planen(getuid(),planmenge,ab,AE1.getLieferdatum(),true);
+#warning ungetetstet
+//                       AufEintrag(Planauftrag).Planen(getuid(),planmenge,true,AE1.getLieferdatum(),true);
                      }
                     ok=true;
                     break;
@@ -159,7 +160,7 @@ int main(int argc,char *argv[])
                       AufEintrag AE2(AEB2);
                  AufEintrag AE1(AEB1);
                  AuftragBase::mengen_t M=AufEintragZu(AEB1).getMenge(AEB2); 
-                 AuftragBase::mengen_t mt=AE2.updateStkDiff__(getuid(),menge-M,true,&Problems);
+                 AuftragBase::mengen_t mt=AE2.updateStkDiff__(getuid(),menge-M,true,AufEintragBase::r_Standard);
                  ok=AufEintragZu(AEB1).setMenge(AEB2,menge); 
 //cout <<"shell: "<< mt<<' '<<AE2.getStueck()<<' '<<menge<<'\t'<<ok<<'\n';
 //                 ok=true;
