@@ -1,4 +1,4 @@
-/* $Id: Verfuegbarkeit.cc,v 1.14 2004/03/02 11:44:11 christof Exp $ */
+/* $Id: Verfuegbarkeit.cc,v 1.15 2004/03/02 11:45:33 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,7 +19,6 @@
 
 #include <Auftrag/AufEintrag.h>
 #include <Auftrag/Verfuegbarkeit.h>
-//#include <Auftrag/AufEintrag_loops.h>
 #include <Misc/relops.h>
 #include <Misc/TraceNV.h>
 
@@ -77,7 +76,6 @@ AuftragBase::mengen_t verf_recurse::operator()(const ArtikelBase &art,
    AuftragBase::mengen_t offset=lastoffs;
    lastoffs-=rl.Menge;
    if (lastoffs<0) lastoffs=0;
-//   if (offset>=m) return 0;
    
    AufEintrag ae(rl.AEB);
    if (m+offset>ae.getStueck()) m=ae.getStueck()-offset;
@@ -260,9 +258,6 @@ void Verfuegbarkeit::wozu_benoetigt(const AufEintrag &ae, map_t &result,
    }
    
    if (!!menge)
-//       && ae.Id()!=AuftragBase::dispo_id
-//       && (ae.Id()!=AuftragBase::auffuellen_id || !ae.Instanz()->LagerInstanz())
-//       )
    {  // Rekursion (Priority)
       mengen_t rest=
          distribute_parents(ae,menge,benoe_recurse(offset,result,ae));
