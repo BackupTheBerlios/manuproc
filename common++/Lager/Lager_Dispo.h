@@ -16,32 +16,30 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _PRODLAGER_HH_
-#define _PRODLAGER_HH_
-#include <Aux/Datum.h>
-//#include <Artikel/ArtikelBase.h>
-#include <Auftrag/AufEintragBase.h>
 #include <Aux/ppsInstanz.h>
+#include <Artikel/ArtikelBase.h>
+#include <Aux/fixedpoint.h>
 
-// soll umbenannt werden in Lager_Vormerkungen
-class ProdLager {
-
-      AufEintragBase AEB;
-
-      void check_artikel_ist_lagerartikel();
-      static AuftragBase::mengen_t artikel_auf_lager(const ArtikelBase& artikel);
-      static std::string artikel_lagername(const ArtikelBase& artikel);
-//      int Lieferzeit_in_Tagen(); 
+class Lager_Dispo 
+{
+  public:
+      typedef fixedpoint<0> mengen_t;
+  private:
+      cH_ppsInstanz instanz;
+      ArtikelBase artikel;
+      mengen_t max_menge,min_menge,optimale_menge;
+      void setMengen();
 
    public:
-      ProdLager(const AufEintragBase&);
+      Lager_Dispo(cH_ppsInstanz i,ArtikelBase a) ;
 
-      // Das macht ein Auftrag:
-      void vormerken_oder_bestellen();
-      // Das macht das einlagern:
-      void artikel_vormerken(AuftragBase::mengen_t menge);
-      // Das macht das herausholen:
-      void artikel_ausliefern(AuftragBase::mengen_t menge);
+      void setMaxMenge(mengen_t m) {max_menge=m; setMengen();}
+      void setMinMenge(mengen_t m) {min_menge=m; setMengen();}
+      void setOptimaleMenge(mengen_t m) {optimale_menge=m; setMengen();}
+
+      cH_ppsInstanz Instanz() const {return instanz;}
+      ArtikelBase Artikel() const {return artikel;}
+      mengen_t MaxMenge() const {return max_menge;}    
+      mengen_t MinMenge() const {return min_menge;}    
+      mengen_t OptimaleMenge() const {return optimale_menge;}    
 };
-
-#endif

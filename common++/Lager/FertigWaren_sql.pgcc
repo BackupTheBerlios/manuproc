@@ -1,0 +1,78 @@
+// $Id: FertigWaren_sql.pgcc,v 1.1 2002/03/20 07:46:26 christof Exp $
+/*  pps: ManuProC's production planning system
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include "FertigWaren.h"
+#include <Aux/Transaction.h>
+#include "FertigWarenLager.h"
+
+void FertigWaren::Buchen(int pid,e_buchen buchen)
+{
+  exec sql begin declare section;
+    char ACTION[2]={ Aktion(), 0 };
+    int ARTIKEL=Artikel().Id();
+    int STK=Stk();
+    int PID=pid;
+    char TIME[32];
+  exec sql end declare section;
+
+ Transaction tr;
+
+  if     (buchen==Rein) STK= abs(STK);
+  else if(buchen==Raus) STK=-abs(STK);
+  exec sql insert into fw_lager_buchung 
+      (artikelid,menge,datum,aktion,pid)
+      values (:ARTIKEL,:STK,now(),:ACTION,:PID);
+  SQLerror::test("FertigWaren::Einlagern");
+
+  exec sql select now() into :TIME;
+  SQLerror::test("FertigWaren::Buchen: get time");
+  zeit = Zeitpunkt_new(TIME);
+  stk=STK;
+
+ tr.commit();
+}
+
+void FertigWaren::Inventur(int pid)
+{
+  Transaction tr;
+  exec sql lock table auftragentry in exclusive mode;
+  SQLerror::test(__FILELINE__);
+  int alte_menge = FertigWarenLager(Artikel()).Bestand();
+  exec sql begin declare section;
+    char ACTION[2]={ eInventur, 0 };
+    int ARTIKEL=Artikel().Id();
+    int STK=Stk()-alte_menge;
+    int PID=pid;
+    int BESTAND=Stk();
+    char TIME[32];
+  exec sql end declare section;
+
+  exec sql insert into fw_lager_buchung 
+      (artikelid,menge,datum,aktion,pid,bestand)
+      values (:ARTIKEL,:STK,now(),:ACTION,:PID,:BESTAND);
+  SQLerror::test("FertigWaren::Inventur");
+
+  exec sql select now() into :TIME;
+  SQLerror::test("FertigWaren::Inventur: get time");
+  zeit = Zeitpunkt_new(TIME);
+  stk=STK;
+
+ tr.commit();
+}
+

@@ -1,0 +1,64 @@
+/*  pps: ManuProC's production planning system
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include "Lager_Dispo.h"
+#include <Aux/SQLerror.h>
+exec sql include sqlca;
+
+
+Lager_Dispo::Lager_Dispo(cH_ppsInstanz i,ArtikelBase a)
+:  instanz(i), artikel(a), max_menge(0),min_menge(0),optimale_menge(0)
+{
+  assert(instanz->LagerInstanz());
+  exec sql begin declare section;
+   int INSTANZ=instanz->Id();
+   int ARTIKEL=artikel.Id();
+   double MAX=0,MIN=0,OPT=0;
+  exec sql end declare section;
+  exec sql select max_menge, min_menge,optimale_menge into :MAX,:MIN,:OPT
+      from prod_lager_dispo where (lagerinstanz,artikelid) 
+      =(:INSTANZ,:ARTIKEL);
+  SQLerror::test(__FILELINE__,100);
+  max_menge=MAX;
+  min_menge=MIN;
+  optimale_menge=OPT;
+}
+
+void Lager_Dispo::setMengen()
+{
+  exec sql begin declare section;
+   int INSTANZ=instanz->Id();
+   int ARTIKEL=artikel.Id();
+   double MAX=MaxMenge();
+   double MIN=MinMenge();
+   double OPT=OptimaleMenge();
+  exec sql end declare section;
+  exec sql update prod_lager_dispo set 
+      max_menge=:MAX, min_menge=:MIN ,optimale_menge=:OPT 
+      from prod_lager_dispo where 
+      (lagerinstanz,artikelid) = (:INSTANZ,:ARTIKEL);
+  SQLerror::test(__FILELINE__,100);
+  if (sqlca.sqlcode)
+   {
+     exec sql insert into prod_lager_dispo  
+      (lagerinstanz,artikelid,max_menge,min_menge,optimale_menge) 
+      values
+      (:INSTANZ,:ARTIKEL,:MAX,:MIN,:OPT);
+     SQLerror::test(__FILELINE__);
+   }
+}

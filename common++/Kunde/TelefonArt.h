@@ -1,12 +1,13 @@
+// $Id: TelefonArt.h,v 1.1 2002/03/20 07:46:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
+ *  This program is distributed in the hope that it will be useful,  
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
@@ -17,11 +18,11 @@
  */
 
 
-#ifndef PRODSTATUS
-#define PRODSTATUS
+#ifndef _TELART_
+#define _TELART_
+     
+typedef enum {TEL_NONE=0,TEL_TEL='T',TEL_FAX='F',TEL_MOB='M',
+        TEL_E_MAIL='E',TEL_HOMEPAGE='W'} TelArt;
 
-namespace ProdStatus
-{
-  typedef enum {VORGEMERKT=1, AUSGELIEFERT, STORNO} ProdStatVal;
-}
 #endif
+        

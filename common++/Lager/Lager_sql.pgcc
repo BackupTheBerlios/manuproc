@@ -28,9 +28,10 @@ exec sql include sqlca;
 
 
 
-void Lager::Jumbo_Einlagern(JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string& user
+void Lager::Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string& user
    ,const Zeitpunkt_new *zeit)
 {
+  jumbo.setLagerPosition_nodb(position);
   exec sql begin declare section;
     int CODE=jumbo.Code()/10;
     int STATUS;
@@ -81,10 +82,10 @@ void Lager::Jumbo_Einlagern(JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string
   if(!*DSTAMP)
       throw SQLerror("JumboRolle::buchen:\tEinlagern\tInkonsistenz");
 
-  jumbo.setInsLager(Zeitpunkt_new(DSTAMP));
+  jumbo.setInsLager_nodb(Zeitpunkt_new(DSTAMP));
   if(jumbo.getStatus()==JumboRolle::ImLager)
       typ=Umraeumen;
-  jumbo.setStatus(JumboRolle::Jumbo_Status(STATUS));
+  jumbo.setStatus_nodb(JumboRolle::Jumbo_Status(STATUS));
   Jumbo_Log(jumbo,typ,user,zeit);
 }
 
@@ -120,8 +121,8 @@ void Lager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
   if(!*DSTAMP) 
      throw SQLerror("JumboRolle::buchen: Auslagern Inkonsistenz");
 
-  jumbo.setVerarbDatum(Zeitpunkt_new(DSTAMP));
-  jumbo.setStatus(JumboRolle::Jumbo_Status(STATUS));
+  jumbo.setVerarbDatum_nodb(Zeitpunkt_new(DSTAMP));
+  jumbo.setStatus_nodb(JumboRolle::Jumbo_Status(STATUS));
   Jumbo_Log(jumbo,typ,user,zeit);
 }
 
@@ -140,7 +141,13 @@ void Lager::Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string
   exec sql  insert into lager_bewegung 
       (code,action,name,lagerplatz,zeit) 
       values (:CODE,:ACTION,:NAME,:POSITION, :ZEIT);  
-  abschreiben(jumbo.Artikel(),jumbo.Meter(),RLNone,typ);
+  ///////////////////////////////////////////////////////////////
+  // Jetzt die Lagerbewegung mit den offenen Aufträgen verrechen.
+  // Einlagern wird durch BarcoNG geregelt.
+  if(typ==Auslagern || typ==InventurMinus )
+   {
+     raus_aus_lager(jumbo.Artikel(),jumbo.Meter());
+   }
 } 
 
 std::vector<int> Lager::Jumbo_Inhalt(const LagerPlatz position) const
@@ -278,8 +285,9 @@ bool Lager::RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force,bool is
 }
 
 
-bool Lager::RL_Einlagern(st_rohlager& rohlager,std::string &os,bool force)
+bool Lager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager,std::string &os,bool force)
 {
+  rohlager.setPosition(position);
   if(instanz!=ppsInstanz::INST_ROHLAGER)
      assert(!"Lager::RL_Einlagern: Kein gültiges Lager\n");
 
@@ -403,10 +411,14 @@ void Lager::RL_Log(const st_rohlager& rohlager,RL_LogTyp typ,const std::string& 
   else assert(!"Lager::RL_Log: Falscher Typ\n");
   SQLerror::test(__FILELINE__);
   ///////////////////////////////////////////////////////////////
-  // Jetzt die Lagerbewegung mit den offenen Aufträgen verrechen
-  AuftragBase::mengen_t menge = rohlager.kartons*rohlager.kg_pro_karton 
-                                 + rohlager.reste_kg;
-  abschreiben(rohlager.artikel,menge,typ,None);
+  // Jetzt die Lagerbewegung mit den offenen Aufträgen verrechen.
+  // Einlagern wird durch Lieferscheine geregelt.
+  if(typ==RLEntnehmen)
+   {
+     AuftragBase::mengen_t menge = rohlager.kartons*rohlager.kg_pro_karton 
+                                    + rohlager.reste_kg;
+     raus_aus_lager(rohlager.artikel,menge);
+   }
 }
 
 

@@ -1,0 +1,58 @@
+// $Id: Anrede_sql.pgcc,v 1.1 2002/03/20 07:46:26 christof Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <Kunde/Anrede.h>
+#include <Aux/Transaction.h>
+exec sql include sqlca;
+
+cH_Anrede::cache_t cH_Anrede::cache;
+
+/* why this?
+   we need to mark our default_object as static 
+   so it doesn't get freed when the last handle to it is destroyed, 
+   this is not a memory leak, the object is destroyed on program exit */
+Anrede cH_Anrede::default_object; 
+bool cH_Anrede::default_object_ref=cH_Anrede::default_object.is_static(true);
+
+cH_Anrede::cH_Anrede(Anrede::ID id)
+{
+ cH_Anrede *cached(cache.lookup(id));
+ if (cached) *this=*cached;
+ else
+  {
+    *this=cH_Anrede(new Anrede(id));
+    cache.Register(id,*this);
+  }
+}
+
+Anrede::Anrede(ID _id) throw(SQLerror) 
+: id(_id)
+{  
+   if(_id == none_id) return;   
+   exec sql begin declare section;
+     int  ID=id;
+     char NAME[41];
+   exec sql end declare section;
+
+   exec sql select briefanrede into :NAME from ku_briefanr
+      where branr = :ID;
+   SQLerror::test(__FILELINE__);
+   name=NAME;
+}
+
