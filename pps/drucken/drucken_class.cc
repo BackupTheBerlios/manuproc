@@ -480,15 +480,13 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
 	   
 #ifdef MABELLA_EXTENSIONS
 	   {cH_Kunde chk(kunden_id);
- 	    if(chk->land()->LKZ() == "I" || chk->land()->LKZ()=="IL" ||
-		kunden_id==22954)
+ 	    if(chk->land()->LKZ() == "I" || chk->land()->LKZ()=="IL")
+//		kunden_id==22954)
              if (!!(*j).Rabatt()) rabatt_bool=true;
 
 #warning provisory HACK, must be made soon
-//	     if(kunden_id==22954)
-//               rabatt_bool=true;
-
-
+	     if(kunden_id==22954)
+               rabatt_bool=true;
 	   }
 #else
            if (!!(*j).Rabatt()) rabatt_bool=true;
