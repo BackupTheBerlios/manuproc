@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.32 2002/12/09 11:22:28 thoma Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.33 2002/12/10 12:28:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -34,7 +34,7 @@ exec sql include sqlca;
 
 void AufEintragBase::setVerarbeitung(const cH_Prozess p) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
  assert (Instanz()==ppsInstanzID::Kundenauftraege);
  exec sql begin declare section;
   int AUFTRAGID=Id();
@@ -65,7 +65,7 @@ void AufEintragBase::setVerarbeitung(const cH_Prozess p) const throw(SQLerror)
 
 bool AufEintragBase::deleteAuftragEntry() const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
  // Kundenaufträge DÜRFEN NICHT gelöscht werden !!!
  assert (InstanzID()!=ppsInstanzID::Kundenauftraege) ;
 
@@ -96,7 +96,7 @@ bool AufEintragBase::deleteAuftragEntry() const throw(SQLerror)
 
 void AufEintragBase::setLetztePlanungFuer(cH_ppsInstanz planinstanz) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Instanz=",planinstanz);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Instanz=",planinstanz);
 //cout << "Instanz: "<<planinstanz<<'\n';
  assert (Instanz()==ppsInstanzID::Kundenauftraege);
 
@@ -129,7 +129,7 @@ void AufEintragBase::setLetztePlanungFuer(cH_ppsInstanz planinstanz) const throw
 
 void AufEintragBase::setMaxPlanInstanz(int anzahl_maxplaninstanzen) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
    "Anzahl=",anzahl_maxplaninstanzen);
  exec sql begin declare section;
   int AUFTRAGID=Id();
@@ -151,7 +151,7 @@ void AufEintragBase::setMaxPlanInstanz(int anzahl_maxplaninstanzen) const throw(
 
 void AufEintragBase::setLetzteLieferung(const ManuProC::Datum &datum) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,datum);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,datum);
  exec sql begin declare section;
  int AUFTRAGID = auftragid;
  int ZEILENNR = zeilennr;  
@@ -169,7 +169,7 @@ void AufEintragBase::setLetzteLieferung(const ManuProC::Datum &datum) const thro
 
 AuftragBase::mengen_t AufEintragBase::updateStkDiffBase__(int uid,const mengen_t &menge) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"AEB=",*this,"Menge=",menge);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AEB=",*this,"Menge=",menge);
 
  exec sql begin declare section;
  int AUFTRAGID = Id();

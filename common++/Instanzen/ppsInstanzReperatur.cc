@@ -110,13 +110,13 @@ void ppsInstanzReparatur::MengenReparatur(const int uid,const AufEintrag &AE,Auf
 
 bool ppsInstanzReparatur::ReparaturD_0_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
   return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::plan_auftrag_id,false,Dungeplant);
 }
 
 bool ppsInstanzReparatur::ReparaturE_2_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
   if(LagerInstanz()) {/*cout << "Sinnlos für LagerInstanz\n"; */return true;}
   else
      return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::dispo_auftrag_id,true,Egeplant);
@@ -124,7 +124,7 @@ bool ppsInstanzReparatur::ReparaturE_2_ZuSumme_1(const int uid,const bool analys
 
 bool ppsInstanzReparatur::ReparaturF_2_ZuSumme_1Rest(const int uid,const bool analyse_only) const throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
   if(LagerInstanz()) {/*cout << "Sinnlos für LagerInstanz\n";*/ return true;}
   else
      return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::plan_auftrag_id,false,Fdispo);
@@ -135,7 +135,7 @@ bool ppsInstanzReparatur::Reparatur_Zuordnungen(const int uid,const bool analyse
    const AuftragBase::ID auftragid,const bool kinder,const e_zumode zumode) const throw(SQLerror)
 {
    bool alles_ok=true;
-   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
    assert(Id() != ppsInstanzID::Kundenauftraege);
    SQLFullAuftragSelector sel1er= SQLFullAuftragSelector::sel_Status(Id(),OPEN,auftragid);
    SelectedFullAufList AL1(sel1er);
@@ -249,7 +249,7 @@ bool ppsInstanzReparatur::check_F_dispo(const int uid,const bool analyse_only,co
 
 void ppsInstanzReparatur::Reparatur_0er_und_2er(const int uid,const bool analyse_only) const throw(SQLerror)
 {
-   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
    assert(Id() != ppsInstanzID::Kundenauftraege);
    SQLFullAuftragSelector sel0er= SQLFullAuftragSelector::sel_Status(Id(),OPEN,AuftragBase::ungeplante_id);
    SelectedFullAufList AL(sel0er);
@@ -302,7 +302,7 @@ struct st_table{std::string table; std::string column;
 
 void ppsInstanzReparatur::Reparatur_Konsistenz(const bool analyse_only) const throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
   if(KundenInstanz()) return; // Finger WEG
   force_eigene_KundenId(analyse_only);
   force_open_0er_und_2er(analyse_only);
@@ -311,7 +311,7 @@ void ppsInstanzReparatur::Reparatur_Konsistenz(const bool analyse_only) const th
 
 void ppsInstanzReparatur::force_2er_0er_geliefert_ist_null(const bool analyse_only) const throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
   std::vector<st_table> Vtable;
   Vtable.push_back(st_table("auftragentry","geliefert"));
   std::vector<AuftragBase::ID> Vauftragid;
@@ -323,7 +323,7 @@ void ppsInstanzReparatur::force_2er_0er_geliefert_ist_null(const bool analyse_on
 
 void ppsInstanzReparatur::force_open_0er_und_2er(const bool analyse_only) const throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
   std::vector<st_table> Vtable;
   Vtable.push_back(st_table("auftragentry","status"));
   Vtable.push_back(st_table("auftrag","stat"));
@@ -338,7 +338,7 @@ void ppsInstanzReparatur::force_execute(const std::vector<st_table> &Vtable,
           const int Wert,const std::string &was,
           const bool analyse_only) const throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
   for(std::vector<st_table>::const_iterator i=Vtable.begin();i!=Vtable.end();++i)
    {
      std::string com="update "+i->table+" set "+i->column+"="+itos(Wert)+
@@ -363,7 +363,7 @@ void ppsInstanzReparatur::force_execute(const std::vector<st_table> &Vtable,
 
 void ppsInstanzReparatur::force_eigene_KundenId(const bool analyse_only) const throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
   if(KundenInstanz()) return; // Finger WEG
   if(!ExterneBestellung())  //Wirklich ALLE Aufträge haben die eigene KundenID
    {
@@ -396,7 +396,7 @@ void ppsInstanzReparatur::force_eigene_KundenId(const bool analyse_only) const t
 
 void ppsInstanzReparatur::ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
   assert(LagerInstanz());
   std::vector<LagerInhalt> LI=getLagerInhalt(); 
   vormerkungen_subrahieren(uid,LI,analyse_only);
@@ -405,7 +405,7 @@ void ppsInstanzReparatur::ReparaturLager(const int uid,const bool analyse_only) 
 void ppsInstanzReparatur::vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const
 {
 //std::cout << "Anzahl der Artikel im Lager = "<<LI.size()<<'\n';
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
   for(std::vector<LagerInhalt>::const_iterator i=LI.begin();i!=LI.end();++i)
    {
      bool set_dispo_to_zero=false;
@@ -469,7 +469,7 @@ void ppsInstanzReparatur::vormerkungen_subrahieren(int uid,const  std::vector<La
 #include <Aux/Trace.h>
 void ppsInstanzReparatur::DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const AuftragBase::mengen_t &menge) const
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
    assert(EigeneLagerKlasseImplementiert());
 std::cout << "Mengenänderung im Lager "<<Name()<<'\t'<<menge<<'\n';
    if(menge>=0)
@@ -480,7 +480,7 @@ std::cout << "Mengenänderung im Lager "<<Name()<<'\t'<<menge<<'\n';
 
 std::vector<LagerInhalt> ppsInstanzReparatur::getLagerInhalt() const
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
   std::vector<LagerInhalt> LI;
 #if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
   if(Id() == ppsInstanzID::Rohwarenlager)  LI=RohwarenLager().LagerInhalt();

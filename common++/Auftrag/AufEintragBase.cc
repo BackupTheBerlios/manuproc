@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.31 2002/11/26 14:50:51 thoma Exp $
+// $Id: AufEintragBase.cc,v 1.32 2002/12/10 12:28:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -60,7 +60,7 @@ std::string AufEintragBase::str() const
 
 void AufEintragBase::calculateProzessInstanz()
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
   assert (Instanz()==ppsInstanzID::Kundenauftraege);
   AuftragsBaum AB(*this,true);
   int anz=0;
@@ -75,7 +75,7 @@ void AufEintragBase::calculateProzessInstanz()
 
 void AufEintragBase::PlanenDispo(int uid,const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,str(),
    "Artikel=",artikel,"Menge=",menge,"Datum=",datum);
 
    AuftragBase dispoAB(Instanz(),dispo_auftrag_id);
@@ -99,7 +99,7 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
                         ArtikelBase artikel,AufStatVal status,int uid,
                         bool dispoplanung)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,str(),
    "Artikel=",artikel,
    "Menge=",menge,"Status=",status,"DispoPlanung=",dispoplanung);
 
@@ -141,7 +141,7 @@ void AufEintragBase::vormerken_oder_bestellen(int uid,const AuftragBase::mengen_
             std::vector<AufEintrag> dispo_auftrag,
             AuftragBase::st_tryUpdateEntry st_bool)  const throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Vormerkmenge=",vormerkmenge,
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Vormerkmenge=",vormerkmenge,
       "Bestellmenge=",bestellmenge);
   assert(vormerkmenge<=bestellmenge);
 
@@ -185,7 +185,7 @@ void AufEintragBase::artikel_vormerken_oder_schnappen(bool schnappen,AuftragBase
       const ArtikelBase &artikel,int uid,ManuProC::Auftrag::Action reason,
       std::vector<AufEintrag> dispo_auftrag) const
 {
-   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Schnappen=",schnappen,"Menge=",menge,
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Schnappen=",schnappen,"Menge=",menge,
       "Artikel=",artikel,
       "Reason=",reason,"SizeOfDispoAufträgen=",dispo_auftrag.size());
 

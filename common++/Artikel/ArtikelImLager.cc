@@ -1,4 +1,4 @@
-/* $Id: ArtikelImLager.cc,v 1.1 2002/11/22 15:58:20 christof Exp $ */
+/* $Id: ArtikelImLager.cc,v 1.2 2002/12/10 12:28:50 thoma Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -26,7 +26,7 @@ ArtikelImLager::ArtikelImLager(const cH_ppsInstanz &instanz,const ArtikelBase &a
    const Petig::Datum &datum) throw(SQLerror)
 : menge_dispo_auftraege(0),menge_plan_auftraege(0)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
      "Instanz=",instanz,"Artikel=",artikel);
 
   SelectedFullAufList auftraglist=SelectedFullAufList(SQLFullAuftragSelector::

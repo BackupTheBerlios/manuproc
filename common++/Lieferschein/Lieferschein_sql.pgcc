@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.25 2002/12/02 13:14:03 thoma Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.26 2002/12/10 12:28:51 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,7 +25,7 @@ exec sql include sqlca;
 Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,int lid) throw(SQLerror)
 : LieferscheinBase(_instanz,lid), kunde(Kunde::default_id)
 {
-ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,_instanz,"LieferscheinId=",lid); 
+ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,"LieferscheinId=",lid); 
 try{
  exec sql begin declare section;
   int INSTANZ=Instanz()->Id();
@@ -100,7 +100,7 @@ Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,cH_Kunde k,int jahr) th
  	,paeckchen(0),pakete(0),dpdliefnr(-1) 
 #endif
 {
-ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,_instanz,"Kunde=",k,"Jahr=",jahr); 
+ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,"Kunde=",k,"Jahr=",jahr); 
 
  exec sql begin declare section;
   int INSTANZ=_instanz->Id();

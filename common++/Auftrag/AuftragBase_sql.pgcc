@@ -33,7 +33,7 @@ exec sql include sqlca;
 AuftragBase::AuftragBase(cH_ppsInstanz _instanz, ID aufid,Kunde::ID kid) throw(SQLerror)
 : instanz(_instanz),auftragid(aufid)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
  exec sql begin declare section;
    int KID=kid;
    int AID=auftragid;
@@ -48,7 +48,7 @@ AuftragBase::AuftragBase(cH_ppsInstanz _instanz, ID aufid,Kunde::ID kid) throw(S
 
 bool AuftragBase::Exists() const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
  exec sql begin declare section;
   int AUFTRAGID=Id();
   int INSTANZ=InstanzID();
@@ -63,7 +63,7 @@ bool AuftragBase::Exists() const throw(SQLerror)
 
 void AuftragBase::create_if_not_exists(AufStatVal status,Kunde::ID kunde) const
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"Status=",status,"Kunde=",kunde);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Status=",status,"Kunde=",kunde);
   if(Exists()) return;
   exec sql begin declare section;
    int AUFTRAGID=Id();
@@ -79,7 +79,7 @@ void AuftragBase::create_if_not_exists(AufStatVal status,Kunde::ID kunde) const
 
 void AuftragBase::setStatusAuftragBase(AufStatVal st) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"Status=",st);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Status=",st);
  exec sql begin declare section;
   int AUFTRAGID=Id();
   int INSTANZ=InstanzID();
@@ -94,7 +94,7 @@ void AuftragBase::setStatusAuftragBase(AufStatVal st) const throw(SQLerror)
 
 void AuftragBase::setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
  exec sql begin declare section;
   int AUFTRAGID=Id();
   int INSTANZ=InstanzID();
@@ -114,7 +114,7 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
                              int& znr,int &newznr,mengen_t& menge,
                              AufStatVal status) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
          "Artikel=",artikel,
          "LieferDatum=",lieferdatum,"ZNr=",znr,"Status=",status);
  exec sql begin declare section;
@@ -161,7 +161,7 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
   AufStatVal status,int uid,const AufEintragBase& altAEB,
   st_tryUpdateEntry st_bool) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"Artikel=",artikel,
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Artikel=",artikel,
          "Menge=",bestellt,"AltAEB=",altAEB,
          "LieferDatum=",lieferdatum,
          "Status=",status,"ForceNew=",st_bool.force_new,

@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.20 2002/11/29 15:49:56 thoma Exp $ */
+/* $Id: Lieferschein.cc,v 1.21 2002/12/10 12:28:51 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -44,7 +44,7 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
    // Wenn man einn Lieferschein schriebe, ohne daß diese Instanz 
    // selber produzierte, würde doppelt produziert werden.
    assert(Instanz()->Lieferschein());
-   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
            "Anzahl="+itos(anzahl),"Menge=",mengeneinheit,"Palette="+itos(palette));                     
    Transaction tr;
    SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Artikel_Planung_id
@@ -106,7 +106,7 @@ void Lieferschein::push_back(AufEintrag &aufeintrag,
    // Wenn man einn Lieferschein schriebe, ohne daß diese Instanz 
    // selber produzierte, würde doppelt produziert werden.
    assert(Instanz()->Lieferschein());
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"AufEintrag="+aufeintrag.str(),
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AufEintrag="+aufeintrag.str(),
            "Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
            "Anzahl="+itos(anzahl),"Menge=",menge,"Palette="+itos(palette));                     
  LieferscheinEntry::create(*this, aufeintrag ,artikel, anzahl,menge,palette);

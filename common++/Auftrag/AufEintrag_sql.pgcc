@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.33 2002/12/09 11:22:28 thoma Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.34 2002/12/10 12:28:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -46,7 +46,7 @@ exec sql include sqlca;
 void AufEintrag::abschreiben(mengen_t menge,
     ManuProcEntity<>::ID lfrsid) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge=",menge,"Lfrsid=",lfrsid);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Menge=",menge,"Lfrsid=",lfrsid);
 
  exec sql begin declare section;
   int AUFID=Id();
@@ -123,7 +123,7 @@ void AufEintrag::abschreiben(mengen_t menge,
 
 void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Status=",newstatus,"Force=",force);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Status=",newstatus,"Force=",force);
  if(newstatus == STORNO) force=true;
  if(newstatus == STORNO && getGeliefert()!=mengen_t(0))  return;
  if(entrystatus == CLOSED && !force ) return; // nichts geht mehr
@@ -182,7 +182,7 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
 
 void AufEintrag::setInstanzen(const AufStatVal newstatus,const int uid,const Petig::Datum &lieferdate,const mengen_t &Menge,const int myznr,const int yourznr)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Status=",newstatus,"Menge=",Menge,"MyZNr=",myznr,"YourZNr=",yourznr);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Status=",newstatus,"Menge=",Menge,"MyZNr=",myznr,"YourZNr=",yourznr);
  std::list<AufEintragZu::st_reflist> KindListe = AufEintragZu(*this).get_Referenz_list(*this,true);
  for(std::list<AufEintragZu::st_reflist>::const_iterator i=KindListe.begin();i!=KindListe.end();++i)
   {
@@ -235,7 +235,7 @@ void AufEintrag::setInstanzen(const AufStatVal newstatus,const int uid,const Pet
 
 AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool instanzen,ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge=",menge,"Instanzen(bool)=",instanzen,"Reason=",reason);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Menge=",menge,"Instanzen(bool)=",instanzen,"Reason=",reason);
  if(reason==ManuProC::Auftrag::r_None) assert(!instanzen);
  if(menge==mengen_t(0))  return menge;
  if(auftragstatus==OPEN || auftragstatus==UNCOMMITED)
@@ -260,7 +260,7 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
 
 void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"OldMenge=",oldmenge,
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"OldMenge=",oldmenge,
    "Reason=",reason);
  std::list<AufEintragZu::st_reflist> KindListeU = AufEintragZu(*this).get_Referenz_list_ungeplant();
  try{
@@ -339,7 +339,7 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,ManuProC::Auft
 
 void AufEintrag::updatePreis(const Preis &pr) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
  exec sql begin declare section;
  int AUFTRAGID = auftragid;
  int ZEILENNR = zeilennr;
@@ -359,7 +359,7 @@ void AufEintrag::updatePreis(const Preis &pr) throw(SQLerror)
 
 void AufEintrag::updateRabatt(rabatt_t rb) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
  exec sql begin declare section;
  int AUFTRAGID = auftragid;
  int INSTANZ=instanz->Id();
@@ -377,7 +377,7 @@ void AufEintrag::updateRabatt(rabatt_t rb) throw(SQLerror)
 
 void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
    "Datum=",ld);
  exec sql begin declare section;
  int AUFTRAGID = auftragid;
@@ -422,7 +422,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerro
   
 int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool dispoplanung) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"NewMenge=",newmenge,"NewDatum=",newld,"dispoplanung(bool)=",dispoplanung);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"NewMenge=",newmenge,"NewDatum=",newld,"dispoplanung(bool)=",dispoplanung);
  if(entrystatus==CLOSED) return none_znr;
 
  mengen_t BESTELLT_OLD=bestellt-newmenge;
@@ -475,7 +475,7 @@ AufEintrag::AufEintrag(const AufEintragBase &aebb) throw (SQLerror,NoAEB_Error)
     artikel(0),
     prozess(Prozess::default_id)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,aebb);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,aebb);
  try{
   SelectedFullAufList aufids((SQLFullAuftragSelector)
     (SQLFullAuftragSelector::sel_AufidZnr(aebb)));
@@ -489,7 +489,7 @@ AufEintrag::AufEintrag(const AufEintragBase &aebb) throw (SQLerror,NoAEB_Error)
 
 void AufEintrag::moveInstanz(int uid,const AuftragBase &newAuftrag) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"NewAuftrag=",newAuftrag);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"NewAuftrag=",newAuftrag);
  AufEintragBase oldAEB = *this;
  auftragid=newAuftrag.Id(); 
  instanz=newAuftrag.Instanz();
@@ -554,7 +554,7 @@ void AufEintrag::moveInstanz(int uid,const AuftragBase &newAuftrag) throw(SQLerr
 
 cH_Lieferschein AufEintrag::getLieferschein() const
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
   exec sql begin declare section;
    int LFRSID=0,LFRZNR=0;
    int AUFID=Id();

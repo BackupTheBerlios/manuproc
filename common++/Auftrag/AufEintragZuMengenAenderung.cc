@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.cc,v 1.2 2002/11/29 07:17:22 thoma Exp $
+// $Id: AufEintragZuMengenAenderung.cc,v 1.3 2002/12/10 12:28:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -28,7 +28,7 @@ void AufEintragZuMengenAenderung::change_parent(const int uid,
                                                 const AufEintragBase &new_parent,
                                                 const AuftragBase::mengen_t &menge) throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
       "Old_AEB=",old_parent,"New_AEB=",new_parent,"Menge=",menge);
   std::list<AufEintragZu::st_reflist> K=AufEintragZu(old_parent).get_Referenz_list(old_parent,true);
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=K.begin();i!=K.end();++i)
@@ -42,7 +42,7 @@ void AufEintragZuMengenAenderung::change_parent(const int uid,
 void AufEintragZuMengenAenderung::increase_parents__reduce_assingments(const int uid,
                      const AufEintragBase &child_aeb,const AuftragBase::mengen_t &menge) throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"AEB=",child_aeb,"Menge=",menge);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AEB=",child_aeb,"Menge=",menge);
   std::list<AufEintragZu::st_reflist> L=AufEintragZu(child_aeb).get_Referenz_list(child_aeb);
   AuftragBase::mengen_t M=menge;
 

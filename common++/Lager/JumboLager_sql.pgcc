@@ -32,7 +32,7 @@ exec sql include sqlca;
 void JumboLager::Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jumbo_LogTyp typ,
    const int uid,const std::string& user,const Zeitpunkt_new *zeit)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
   Transaction tr;
   Zeitpunkt_new zeit_local_storage;
   exec sql begin declare section;
@@ -96,7 +96,7 @@ void JumboLager::Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jum
 void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
    const int uid,const std::string& user,const Zeitpunkt_new *zeit)
 {  
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
   Transaction tr;
   Zeitpunkt_new zeit_local_storage;
   exec sql begin declare section;
@@ -151,7 +151,7 @@ void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
 
 void JumboLager::Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const int uid,const std::string& user,const Zeitpunkt_new *zeit)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
   exec sql begin declare section;
    int CODE=jumbo.Code()/10;
    char ACTION=typ;
@@ -169,7 +169,7 @@ void JumboLager::Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const int ui
 
 std::vector<class LagerInhalt> JumboLager::LagerInhalt_(const ArtikelBase& artikel) const
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
   exec sql begin declare section;
     int ID,ROLLEN,RESTROLLEN,METER,RESTMETER;
     char QUERY[1024];

@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.cc,v 1.11 2002/12/05 14:54:18 thoma Exp $
+// $Id: ppsInstanzProduziert.cc,v 1.12 2002/12/10 12:28:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,7 +32,7 @@
 
 void ppsInstanz::Planen(ManuProC::st_produziert &P) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
    "Instanz=",*this,"Artikel=",P.artikel,
    "Menge=",P.menge,"LfrsId="+itos(P.lfrsid));
  assert(Id()!=ppsInstanzID::None) ; 
@@ -61,7 +61,7 @@ void ppsInstanz::Planen(ManuProC::st_produziert &P) const throw(SQLerror)
 
 void ppsInstanz::Produziert(ManuProC::st_produziert &P,ManuProC::Auftrag::Action reason) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
    "Instanz=",*this,"Artikel=",P.artikel,
    "Menge=",P.menge,"LfrsId="+itos(P.lfrsid));
  assert(Id()!=ppsInstanzID::None) ; 
@@ -123,7 +123,7 @@ void ppsInstanz::Produziert(ManuProC::st_produziert &P,ManuProC::Auftrag::Action
 
 void ppsInstanz::Lager_abschreiben(ManuProC::st_produziert &P) const 
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
    "Instanz=",*this,"Artikel=",P.artikel,
    "Menge=",P.menge,"LfrsId="+itos(P.lfrsid));
 
@@ -145,7 +145,7 @@ void ppsInstanz::Lager_abschreiben(ManuProC::st_produziert &P) const
 
 void ppsInstanz::rekursion(ManuProC::st_produziert &P) const 
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
    "Instanz="+Name(),"Artikel=",P.artikel,
    "Menge=",P.menge,"LfrsId="+itos(P.lfrsid));
  ArtikelStamm as(P.artikel);
@@ -199,7 +199,7 @@ void ppsInstanz::rekursion(ManuProC::st_produziert &P) const
 
 AuftragBase::mengen_t ManuProC::st_produziert::abschreiben_oder_reduzieren(ppsInstanz::ID instanz,int id,AuftragBase::mengen_t abmenge,bool planen_und_abschreiben_von_ungeplaneten)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
    "Instanz=",instanz,"AuftragID=",id,
    "Menge=",abmenge);
 
@@ -271,7 +271,7 @@ AuftragBase::mengen_t ManuProC::st_produziert::abschreiben_oder_reduzieren(ppsIn
 
 void ManuProC::st_produziert::Reduce_DispoEltern(const AufEintragBase &aeb,AuftragBase::mengen_t menge)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"AEB=",aeb,"Menge=",menge);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AEB=",aeb,"Menge=",menge);
   std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_list(aeb,false);
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
    {
@@ -295,7 +295,7 @@ void ManuProC::st_produziert::Reduce_DispoEltern(const AufEintragBase &aeb,Auftr
 
 void ManuProC::st_produziert::Reduce_Zuordnung_And_2er_Parent(const AufEintragBase &aeb,AuftragBase::mengen_t menge)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"AEB=",aeb,
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AEB=",aeb,
    "Menge=",menge);
  std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_list_dispo(false);
  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
@@ -309,7 +309,7 @@ void ManuProC::st_produziert::Reduce_Zuordnung_And_2er_Parent(const AufEintragBa
 
 void ManuProC::st_produziert::Reduce_Zuordnung_Add_Parent(const AufEintragBase &aeb,AuftragBase::mengen_t menge)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"AEB=",aeb,
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AEB=",aeb,
    "Menge=",menge);
  std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_list_ungeplant(false);
  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)

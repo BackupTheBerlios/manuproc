@@ -43,7 +43,7 @@ AuftragBase::mengen_t RohwarenLager::st_rohlager::Menge_fuer_Auftrag() const
 
 bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,const int uid,std::string &os,bool force,bool ist_leer)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
   Transaction tr;
   exec sql begin declare section;
    int KARTONS;
@@ -136,7 +136,7 @@ bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,const int uid,std::string 
 
 bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager,const int uid,std::string &os,bool force)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
   Transaction tr;
   rohlager.setPosition(position);
 
@@ -261,7 +261,7 @@ void RohwarenLager::RL_Log(const st_rohlager& rohlager,RL_LogTyp typ,const int u
 
 RohwarenLager::st_rohlager RohwarenLager::RL_Inhalt(const LagerPlatz position) const
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
   exec sql begin declare section;
    int KARTONS, KG_PER_KARTON, RESTE, RESTE_KG, MATERIAL;
    char POSITION[5];
@@ -289,7 +289,7 @@ RohwarenLager::st_rohlager RohwarenLager::RL_Inhalt(const LagerPlatz position) c
 
 std::vector<class LagerInhalt> RohwarenLager::LagerInhalt_(const ArtikelBase& artikel) const
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
   exec sql begin declare section;
    int KG, RESTE_KG, MATERIAL,KARTONS,RESTKARTONS;
    char QUERY[1024];

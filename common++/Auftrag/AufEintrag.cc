@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.16 2002/12/02 13:14:03 thoma Exp $
+// $Id: AufEintrag.cc,v 1.17 2002/12/10 12:28:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -76,7 +76,7 @@ const Preis AufEintrag::GPreis() const
 
 const Preis AufEintrag::EPreis(bool brutto) const
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
  if(brutto) return preis;
  else
  return preis.Gesamtpreis(preis.PreisMenge().as_int(),0,rabatt);
@@ -85,7 +85,7 @@ const Preis AufEintrag::EPreis(bool brutto) const
 
 void AufEintrag::setLetztePlanungFuer(cH_ppsInstanz planinstanz) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
   AufEintragBase::setLetztePlanungFuer(planinstanz);
   letztePlanInstanz=planinstanz->Id();
 }
@@ -104,7 +104,7 @@ void AufEintrag::setVerarbeitung(const cH_Prozess p)
 
 void AufEintrag::setLetzteLieferung(const ManuProC::Datum &datum) throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
  AufEintragBase::setLetzteLieferung(datum);
  letzte_lieferung=datum;
 }
@@ -123,7 +123,7 @@ bool AufEintrag::allesOK() const
 
 std::string AufEintrag::Planung() const
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
   int tiefe = ArtikelBaum(ArtId()).Tiefe();
   return itos(maxPlanInstanz)+"/"+itos(tiefe);  
 }
@@ -131,7 +131,7 @@ std::string AufEintrag::Planung() const
 
 void AufEintrag::move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"To=",AEB,"Menge=",menge,"Reason=",reason);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"To=",AEB,"Menge=",menge,"Reason=",reason);
   Transaction tr;
 
   if(reason==ManuProC::Auftrag::r_Produziert || 
@@ -151,7 +151,7 @@ void AufEintrag::move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,
 
 AufEintragBase AufEintrag::getFirstKundenAuftrag() const
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
  std::vector<AufEintragBase> V=AufEintragZu(*this).getKundenAuftragV();
  if(V.empty()) return *this;
  else return *(V.begin());
@@ -161,7 +161,7 @@ AufEintragBase AufEintrag::getFirstKundenAuftrag() const
 
 void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,ManuProC::Auftrag::Action reason)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge=",menge,"Reason=",reason);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Menge=",menge,"Reason=",reason);
  std::list<AufEintragZu::st_reflist> K=AufEintragZu(*this).get_Referenz_list(*this,true);
  for (std::list<AufEintragZu::st_reflist>::const_iterator i=K.begin();i!=K.end();++i)
   {
@@ -212,7 +212,7 @@ void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,M
 void AufEintrag::Produziert(mengen_t menge,
    ManuProcEntity<>::ID lfrsid) throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge=",menge);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Menge=",menge);
   Kunde::ID kunde=Auftrag(*this).getKundennr();
   ManuProC::st_produziert sp(kunde,*this,menge,getuid(),lfrsid);
   Instanz()->Produziert(sp,ManuProC::Auftrag::r_Produziert);
@@ -225,7 +225,7 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
 {
    Transaction tr;
    if(verplanter_aeb) *verplanter_aeb=*this;
-   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge=",menge,"Reason=",reason,"Zielauftrag=",zielauftrag);
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Menge=",menge,"Reason=",reason,"Zielauftrag=",zielauftrag);
    assert(Id()==AuftragBase::ungeplante_id);
    assert(Instanz()->LagerInstanz() || entrystatus==OPEN);
    assert(Instanz()->LagerInstanz() || auftragstatus==OPEN);

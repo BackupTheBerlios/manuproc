@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.18 2002/11/25 15:21:52 thoma Exp $
+// $Id: Lager.cc,v 1.19 2002/12/10 12:28:51 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -39,7 +39,7 @@ Lager::Lager(cH_ppsInstanz instanz)
 
 void LagerBase::rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
      "Lager=",*this,"Artikel=",artikel,"Menge=",menge);
   assert(menge>=0);
   try{
@@ -62,7 +62,7 @@ void LagerBase::rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::men
 
 void LagerBase::raus_aus_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const 
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
      "Artikel=",artikel,"Menge=",menge);
   assert(menge>=0);
   try{
@@ -80,7 +80,7 @@ void LagerBase::menge_neu_verplanen(int uid,
               const ArtikelBase& artikel,AuftragBase::mengen_t menge,
               const ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Instanz=",*this,
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Instanz=",*this,
    "Artikel=",artikel,"Menge=",menge,
      "Reason=",reason);
 

@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.15 2002/12/10 10:04:46 christof Exp $
+// $Id: AuftragBase.cc,v 1.16 2002/12/10 12:28:50 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -52,7 +52,7 @@ FetchIStream& operator>>(FetchIStream& is,AuftragBase::mengen_t &menge)
 
 void AuftragBase::BaumAnlegen(const AufEintrag& AE,int uid,bool setInstanzAuftraege) const
 {
-   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
       "Artikel=",AE.Artikel(),
       "Status=",AE.getEntryStatus(),"LieferDatum=",AE.getLieferdatum(),
       "Menge=",AE.getStueck(),"setInstanzAuftrag=",setInstanzAuftraege);
@@ -75,7 +75,7 @@ void AuftragBase::BaumAnlegen(const AufEintrag& AE,int uid,bool setInstanzAuftra
 */
 void AuftragBase::InstanzAuftraegeAnlegen(const AufEintrag& AE,mengen_t menge,int uid,bool automatisch_geplant) const
 {
-   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
       "Artikel=",AE.Artikel(),
       "Status=",AE.getEntryStatus(),"LieferDatum=",AE.getLieferdatum(),
       "Menge=",menge);
@@ -138,7 +138,7 @@ bool AuftragBase::editierbar() const
 
 void AuftragBase::dispo_auftrag_aendern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,const mengen_t &menge)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
      "Artikel=",artikel,"Menge=",menge);
    AuftragBase da(instanz,AuftragBase::dispo_auftrag_id);
    int znr=-1,newznr=-1;
@@ -160,7 +160,7 @@ void AuftragBase::dispo_auftrag_aendern(const int uid,cH_ppsInstanz instanz,cons
 void AuftragBase::menge_neu_verplanen(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
          const mengen_t &menge,const ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Instanz=",instanz,
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Instanz=",instanz,
    "Artikel=",artikel,"Menge=",menge,
      "Reason=",reason);
 

@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.4 2002/12/09 11:22:28 thoma Exp $
+// $Id: AufEintragZu.cc,v 1.5 2002/12/10 12:28:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -29,7 +29,7 @@
 
 std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_id(const AuftragBase::ID id,bool kinder) const throw(SQLerror)
 {
-   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"Id=",id,"Kinder=",kinder);
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Id=",id,"Kinder=",kinder);
    std::list<st_reflist> L=get_Referenz_list(*this,kinder);
    std::list<st_reflist> N=select_Id(id,L);
    if(N.empty() && kinder) // Für die Reparatur; ein Pfeil könnte ins nichts zeigen ...
@@ -51,7 +51,7 @@ std::list<AufEintragZu::st_reflist> AufEintragZu::select_Id(const AuftragBase::I
 
 std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_geplant(bool kinder) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"Kinder=",kinder);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Kinder=",kinder);
 
  if(Instanz()->LagerInstanz())
      return get_Referenz_list_id(AuftragBase::plan_auftrag_id,kinder);
@@ -84,7 +84,7 @@ std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_geplant(bool
 
 std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_listFull(bool kinder,bool nur_ende) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"Kinder=",kinder,"NurEnde=",nur_ende);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Kinder=",kinder,"NurEnde=",nur_ende);
  std::list<st_reflist> tv=get_Referenz_list(*this,kinder);
  std::list<st_reflist> vaeb;
  std::list<st_reflist> tvxx;
@@ -107,7 +107,7 @@ reloop:
 
 std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_for_geplant(bool kinder) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"Kinder=",kinder);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Kinder=",kinder);
   // Ungeplante Referenz Aufträge
   std::list<st_reflist> URA=get_Referenz_list(*this,false);
  //NEU
@@ -128,7 +128,7 @@ std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_for_geplant(
 
 AuftragBase::mengen_t AufEintragZu::verteileMenge(std::list<st_reflist> L, mengen_t menge,bool add)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"Menge=",menge,"Add=",add);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Menge=",menge,"Add=",add);
   for(std::list<st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
    {
      if(menge==AuftragBase::mengen_t(0)) return menge;
@@ -146,7 +146,7 @@ AuftragBase::mengen_t AufEintragZu::verteileMenge(std::list<st_reflist> L, menge
 
 std::vector<AufEintragBase> AufEintragZu::getKundenAuftragV() const
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
   std::vector<AufEintragBase> V;
   std::list<AufEintragZu::st_reflist> L=AufEintragZu(*this).get_Referenz_listFull(false);
   for (std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)

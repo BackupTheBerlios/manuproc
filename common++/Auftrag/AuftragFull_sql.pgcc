@@ -34,7 +34,7 @@ AufEintragBase AuftragFull::push_back(AuftragBase::mengen_t bestellt,
                AufStatVal status,int uid,
                Preis preis, fixedpoint<2> rabatt,const cH_PreisListe &preisliste) throw (SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
   AufEintragBase newAEB=Auftrag::push_back(bestellt,lieferdatum,artid,status,uid,true,preis,rabatt,preisliste);
   eintragliste.push_back(AufEintrag(newAEB,
       bestellt,artid,lieferdatum,getStatus(),getKundennr(),getYourAufNr(),
@@ -45,7 +45,7 @@ AufEintragBase AuftragFull::push_back(AuftragBase::mengen_t bestellt,
 
 void AuftragFull::deleteEintrag(int zeilennr, int idx) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
  Auftrag::deleteEintrag(zeilennr);
  iterator i = begin()+idx;
  eintragliste.erase(i);    
@@ -54,7 +54,7 @@ void AuftragFull::deleteEintrag(int zeilennr, int idx) throw(SQLerror)
 AuftragFull::AuftragFull(const AuftragBase& auftrag,bool with_storno) throw(SQLerror)
 	: Auftrag(auftrag)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
  SelectedFullAufList aufids((SQLFullAuftragSelector)
  			(SQLFullAuftragSelector::sel_Aufid(auftrag,with_storno)));
  for(SelectedFullAufList::iterator i = aufids.aufidliste.begin();
@@ -70,13 +70,13 @@ AuftragFull::AuftragFull(const AuftragBase& auftrag,bool with_storno) throw(SQLe
 AuftragFull::AuftragFull(Anlegen instanz, long kundennr) throw(SQLerror)
 	: Auftrag(instanz, kundennr)
 {  
-ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
 // braucht nicht geladen zu werden
 }
 
 int AuftragFull::get_index_by_znr(int znr)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
   int c=0;
   for (AufEintragList::const_iterator i=eintragliste.begin();i!=eintragliste.end();++i,++c)
      { if((*i).getZnr()==znr) return c;}
@@ -86,7 +86,7 @@ int AuftragFull::get_index_by_znr(int znr)
 
 void AuftragFull::setStatusAuftragFull(AufStatVal status,int uid) throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
   Auftrag::setStatusAuftrag_(status);
   for (AufEintragList::iterator i=eintragliste.begin();i!=eintragliste.end();++i)
     i->setStatus(status,uid);
@@ -95,7 +95,7 @@ void AuftragFull::setStatusAuftragFull(AufStatVal status,int uid) throw(SQLerror
 bool AuftragFull::existsEntry(const ArtikelBase::ID art, AufStatVal stat)
 throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
  exec sql begin declare section;
  int AUFID=Id();
  int INSTANZ=Instanz();
