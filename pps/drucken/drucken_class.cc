@@ -1308,9 +1308,10 @@ void LR_Abstraktion::page_header(std::ostream &os)
    else os << "~\\\\\n";
 
 //   if(!Rueckstand())
-   if(Typ()==Auftrag) {auftrag_von(os,class Auftrag(AuftragBase(
+   if(Typ()==Auftrag) 
+		{auftrag_von(os,class Auftrag(AuftragBase(
    				ppsInstanzID::Kundenauftraege,u.a->Id())),true);
-   		      }
+   		}
 
    
    os << "~\\\\\n"<<mld->MLT(MultiL_Dict::TXT_IHREKDNR)<<": ";

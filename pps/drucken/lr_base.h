@@ -51,7 +51,7 @@ public:
    typ Typ() const {return t;}
 protected:
 
-   LR_Base(typ _t) : rueckstand(false), t(_t)  {}
+   LR_Base(typ _t) : rueckstand(false), t(_t), gut(false)  {}
    bool gutschrift() const { return gut; }
 };
 
