@@ -31,6 +31,7 @@ PreisListeFull::PreisListeFull(ID id, bool art_in_list,
  int PRLSNR=id;
  float PREIS[100];
  int PREISMENGE[100];
+ int MINDMENGE[100];
  char *QU;
  exec sql end declare section;
  std::string qu;
@@ -39,13 +40,13 @@ PreisListeFull::PreisListeFull(ID id, bool art_in_list,
  std::string plid=itos(PRLSNR);
 
  if(art_in_list)
-   {qu=std::string("select artikelid,preis,preismenge from artikelpreise p"
+   {qu=std::string("select artikelid,preis,preismenge,mindestmenge from artikelpreise p"
  	" join artikelstamm s on (p.artikelid=s.id and "
 	" s.warengruppe="+itos(at.Id())+") where  kundennr = ")+plid;
    }
  else
    {
-    qu=std::string("select id,coalesce(preis_alt,0),0 from artikelstamm s "
+    qu=std::string("select id,coalesce(preis_alt,0),0,1 from artikelstamm s "
 	" left join preis_change_journal c on "
 	" (c.artikelid=s.id and c.prlsnr=")+plid;
     qu+=std::string(" and preis_alt is not null and cast(preis_neu as float) = 0.0)"
@@ -65,13 +66,15 @@ PreisListeFull::PreisListeFull(ID id, bool art_in_list,
 
  while(1)
    {
-    exec sql fetch 100 in PRLS into :ARTIKELID, :PREIS, :PREISMENGE;
+    exec sql fetch 100 in PRLS into :ARTIKELID, :PREIS, :PREISMENGE,
+		:MINDMENGE;
     SQLerror::test(__FILELINE__":PreisListeFull: fetch from artikelpreise",100);    
     
     int j=sqlca.sqlerrd[2];    
     for(int i=0; i<j; i++)
       {
-        preise[ARTIKELID[i]]=Preis(PREIS[i],getWaehrung(),PREISMENGE[i]);
+        preise[UniqPreis(ARTIKELID[i],MINDMENGE[i])]=
+		Preis(PREIS[i],getWaehrung(),PREISMENGE[i]);
       }
     if(j<100) break;  
    }

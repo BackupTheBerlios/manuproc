@@ -1,4 +1,4 @@
-// $Id: PreisListeFull.h,v 1.14 2003/03/31 15:38:17 jacek Exp $
+// $Id: PreisListeFull.h,v 1.15 2003/07/30 16:58:10 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -32,14 +32,17 @@ class Artikelpreis;
 
 class PreisListeFull : public PreisListe
 {
+public:
+ typedef std::pair<ArtikelBase::ID,int> UniqPreis; // Artikel mit Mindestmenge
+ 
 private:
- std::map<ArtikelBase::ID,Preis> preise;
+ std::map<UniqPreis,Preis > preise;
  
 public:
   PreisListeFull(ID id, bool art_in_list=true, 
   		ArtikelTyp at=ArtikelTyp::default_ID) throw(SQLerror);
   PreisListeFull() {}
-  const std::map<ArtikelBase::ID,Preis> &Preise() const { return preise; }
+  const std::map<UniqPreis,Preis > &Preise() const { return preise; }
 };
 
 
