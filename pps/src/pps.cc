@@ -81,7 +81,7 @@ weiter:
    catch(SQLerror &e) {meldung->Show(e); goto weiter;}
 
  catch(ManuProC::Datumsfehler &df)
-   {cout << df;}
+   {std::cout << df;}
   
  delete auftragmain;
  ManuProC::dbdisconnect_nt(Conn->Dbase());

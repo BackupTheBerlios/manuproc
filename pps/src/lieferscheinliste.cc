@@ -147,7 +147,7 @@ void lieferscheinliste::fill_tree()
      if((*i)->RngNr()!=ManuProcEntity<>::none_id) R = Rechnung((*i)->RngNr());
 //   cH_Lieferschein L(instanz,(*i)->Id());
 //   cH_LieferscheinVoll LV(instanz,(*i)->Id());
-     for (vector<LieferscheinEntryBase>::const_iterator j=LL.begin((*i)->Id());
+     for (std::vector<LieferscheinEntryBase>::const_iterator j=LL.begin((*i)->Id());
      		j!=LL.end((*i)->Id()); ++j)
 //	{if(artbase.Id()!=ArtikelBase::none_id) 
 		// man muﬂ noch LieferscheinVoll um Bedingungen erg‰nzen um

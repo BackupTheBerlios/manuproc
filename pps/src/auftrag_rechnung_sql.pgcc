@@ -87,11 +87,11 @@ void auftrag_rechnung::set_rtree_offen_content(Kunde::ID kunde)
  std::string qu;
 /*
 #ifdef MABELLA_EXTENSIONS
- qu = string("select lfrsid from lieferschein l ")+
+ qu = std::string("select lfrsid from lieferschein l ")+
    	"where l.kundennr= "+itos(kunde)+" and l.rngid is null and l.instanz="+
 	itos(instanz->Id());
 #else
-  qu = string("select lfrsid from ")+
+  qu = std::string("select lfrsid from ")+
    "lieferschein l join kunden k using (kundennr)"+
    "where k.rechnung_an="+itos(kunde)+" and l.rngid is null and l.instanz="+
 	itos(instanz->Id());

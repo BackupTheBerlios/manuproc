@@ -574,7 +574,7 @@ void auftrag_lieferschein::on_daten_leaf_selected(cH_RowDataBase d)
  if(dt->istZusatzinfo()) button_zeile_modifizieren->set_sensitive(false);
  else                    button_zeile_modifizieren->set_sensitive(true);
  fill_input(AE,dt->get_LieferscheinEntry());
- }catch(std::exception &e) {cerr << e.what()<<'\n';}
+ }catch(std::exception &e) {std::cerr << e.what()<<'\n';}
 }
 
 void auftrag_lieferschein::on_daten_unselect_row(int row, int col, GdkEvent* b)

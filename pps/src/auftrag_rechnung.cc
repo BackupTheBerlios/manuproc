@@ -170,7 +170,7 @@ void auftrag_rechnung::redisplay()
    }
  else 
    {
-cout <<rechnung.rngArt()<<'\n';
+std::cout <<rechnung.rngArt()<<'\n';
      assert(!"Never get here\n");
    }
 }
@@ -392,7 +392,7 @@ void auftrag_rechnung::Preis_setzen()
      RE.setzePreis(Preis(p,rechnung.getWaehrung(),RE.getPreis().PreisMenge()));
    }  
   redisplay();
- }catch(std::exception &e) {cerr << e.what()<<'\n';}
+ }catch(std::exception &e) {std::cerr << e.what()<<'\n';}
 }
 
 void auftrag_rechnung::Preis_ergaenzen()

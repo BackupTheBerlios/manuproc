@@ -501,7 +501,7 @@ void auftrag_main::on_button_faerben_clicked()
       cH_ppsInstanz I(ppsInstanzID::Faerberei);
       dt->get_AufEintrag().setLetztePlanungFuer(I);
       dt->redisplayLetzePlanInstanz(maintree_s);
-  } catch (TreeBase::SelectionError &e) {cerr << e.what()<<'\n';}
+  } catch (TreeBase::SelectionError &e) {std::cerr << e.what()<<'\n';}
 #endif  
 }
 
@@ -795,7 +795,7 @@ bool operator==(cH_RowDataBase rdb, const show_maching_compare &comp)
   try{
       const Data_auftrag &dt=dynamic_cast<const Data_auftrag&>(*rdb);
       if(dt.get_AufEintrag().getFirstKundenAuftrag()==comp.AE)  return true ;
-   }catch(...){cerr << "Fehler\n";}
+   }catch(...){std::cerr << "Fehler\n";}
   return false;
 }
 
@@ -1034,7 +1034,7 @@ std::ostream &operator<<(std::ostream &o, const ArtikelMengeSumme &ams)
 }
 
 std::string auftrag_main::FirstRow(gpointer user_data, int deep,
-        deque<guint> seq)
+        std::deque<guint> seq)
 {
  std::string ret;
 

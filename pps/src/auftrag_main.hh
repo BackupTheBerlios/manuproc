@@ -69,7 +69,7 @@ private:
               return *this;
             }
            };
-   typedef pair<st_index,st_mengen> artmeng;
+   typedef std::pair<st_index,st_mengen> artmeng;
 
  std::vector<cH_Prozess> prozlist;
         
@@ -136,7 +136,7 @@ private:
          
         void on_button_faerben_clicked(); 
 
-	static std::string FirstRow(gpointer user_data, int deep, deque<guint> seq);
+	static std::string FirstRow(gpointer user_data, int deep, std::deque<guint> seq);
 
 public:
   // Spaltenbezeichnungen
