@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.10 2002/11/28 13:21:23 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.11 2002/11/28 17:09:42 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -47,10 +47,7 @@ public:
 class SimpleTreeStore : public SigC::Object, public SimpleTreeModel_Proxy
 {public:
 	// einen neuen Ast erzeugen, deep ist die Spalte, v der Wert dieser Spalte
-	typedef TreeRow *(*NewNode_fp)
- 		(guint deep, const cH_EntryValue &v, guint child_s_deep, 
- 		 cH_RowDataBase child_s_data, bool expand, 
- 		 const TreeRow &suminit);
+	typedef Handle<TreeRow> (*NewNode_fp)(const Handle<const TreeRow> &suminit);
 
 private:
 	NewNode_fp node_creation;
@@ -78,20 +75,26 @@ friend class SimpleTree;
 	void on_title_changed(guint idx);
 	
 	void redisplay();
+	void InitColumns(Gtk::TreeRow &node, guint deep, const cH_EntryValue &ev, const cH_RowDataBase &v);
 	void insertLine(Gtk::TreeModel::Children parent,const cH_RowDataBase &d, std::deque<guint> q,guint deep);
+	Gtk::TreeRow CopyTree(Gtk::TreeRow src, Gtk::TreeModel::Children dest);
 	
 	void on_line_appended(cH_RowDataBase);
+	void on_line_removed(cH_RowDataBase);
 public:
 	struct ModelColumns : public Gtk::TreeModelColumnRecord
 	{  std::vector<Gtk::TreeModelColumn<Glib::ustring> > cols;
 	   // since we would also need to 
 	   Gtk::TreeModelColumn<Handle<TreeRow> > row;
-	   // if we're a node this is not 'our' data
-//	   Gtk::TreeModelColumn<cH_RowDataBase> row; // once leafdata
-//	   Gtk::TreeModelColumn<cH_EntryValue> node_val;
+	   // our first printing column
 	   Gtk::TreeModelColumn<guint> deep;
 	   // childrens_deep=0 -> Leaf
-//	   Gtk::TreeModelColumn<guint> childrens_deep;
+	   Gtk::TreeModelColumn<guint> childrens_deep;
+	   // the node's value (at deep)
+	   Gtk::TreeModelColumn<cH_EntryValue> value;
+
+	   // if we're a node this is not 'our' data
+	   Gtk::TreeModelColumn<cH_RowDataBase> leafdata;
 	   
 	   ModelColumns(int cols);
 	};

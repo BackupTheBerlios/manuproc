@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.8 2002/11/28 13:21:23 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.9 2002/11/28 17:09:42 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -138,9 +138,9 @@ SimpleTreeStore::ModelColumns::ModelColumns(int _cols)
    for (int i=0; i<_cols; ++i)
    {  cols.push_back(Gtk::TreeModelColumn<Glib::ustring>());
       add(cols.back());
-//      assert(c.index()==i);
    }
    add(row);
+   add(deep);
 }
 
 // CellItem ^= TreeRow
@@ -207,15 +207,15 @@ void SimpleTreeStore::on_line_appended(cH_RowDataBase row)
 
 namespace {
 class CompareValue
-{	Gtk::TreeModelColumn<Handle<TreeRow> > row;
+{	Gtk::TreeModelColumn<cH_EntryValue> value;
 public:
-	CompareValue(Gtk::TreeModelColumn<Handle<TreeRow> > &v)
-		: row(v) {}
+	CompareValue(Gtk::TreeModelColumn<cH_EntryValue> &v)
+		: value(v) {}
 	bool operator()(const Gtk::TreeStore::iterator &a, const cH_EntryValue &b)
-	{  return *static_cast<Handle<TreeRow> >((*a)[row])->Value() < *b;
+	{  return *static_cast<cH_EntryValue>((*a)[value]) < *b;
 	}
 	bool operator()(const cH_EntryValue &a, const Gtk::TreeStore::iterator &b)
-	{  return *a < *static_cast<Handle<TreeRow> >((*b)[row])->Value();
+	{  return *a < *static_cast<cH_EntryValue>((*b)[value]);
 	}
 };
 }
@@ -242,23 +242,22 @@ recurse:
  if (!MehrAlsEinKind(selseq))
  {  std::pair<Gtk::TreeStore::iterator,Gtk::TreeStore::iterator> range 
  		= std::equal_range(current_iter,apiend,ev,
- 				CompareValue(m_columns.row));
+ 				CompareValue(m_columns.value));
     current_iter=range.first;	// lower_bound
     upper_b=range.second;	// upper_bound
  }
  else
     current_iter=std::lower_bound(current_iter,apiend,ev,
- 				CompareValue(m_columns.row));
+ 				CompareValue(m_columns.value));
 
  if(current_iter!=apiend) // dann einfuegen
-   {// eigentlich nur ein gecastetes current_iter
-    Handle<TreeRow> current_row=(*current_iter)[m_columns.row];
-    //----------------- gleicher Wert ------------------
-    if ((ev) == current_row->Value())
+   {//----------------- gleicher Wert ------------------
+    if ((ev) == (*current_iter)[m_columns.value])
      { 
-      if (MehrAlsEinKind(selseq)) // wenn Blatt noch nicht erreicht
+      if (MehrAlsEinKind(selseq)) // ???? wenn Blatt noch nicht erreicht ???
+      				// SimpleTree2: Summen stehen mit drin ...
       // eine neue Node erzeugen(?)
-      {  cH_RowDataBase v2=current_row->LeafData();
+      {  cH_RowDataBase v2=(*current_iter)[m_columns.leafdata];
          guint child_s_deep=deep;
 
 	do 
@@ -266,62 +265,108 @@ recurse:
 	 ++child_s_deep;
 	 
 	 // darum muss sich eine andere Node kümmern
-         if (child_s_deep==current_row->Children_s_Deep())
-         {  current_row->cumulate(v);
-            // insertIntoTCL((&*current_iter),tree,v,selseq,child_s_deep);
-            // return;
+         if (child_s_deep==(*current_iter)[m_columns.childrens_deep])
+         {weiter_unten_einhaengen:
+            if (!!(*current_iter)[m_columns.row])
+               (*current_iter)[m_columns.row]->cumulate(v);
             // goto ist schneller als (end?)rekursion !!!
             parent=current_iter->children();
             deep=child_s_deep;
             goto recurse;
+            // insertLine(current_iter->children(),v,selseq,child_s_deep);
+            // return;
          }
          
         } while (MehrAlsEinKind(selseq) 
 			&& v->Value(selseq.front(),ValueData())
 				==v2->Value(selseq.front(),ValueData()));
          
-	 // vor current_iter einfügen
-#if 0	 
-         TreeRow *newnode=NewNode(deep, ev, child_s_deep, v2, child_s_deep < showdeep, *current_row);
-	 tree.initDepth(newnode,deep);
-	 
-	 current_row->getTCL_API()->reparent(*parent,*newnode->getTCL_API());
-	 current_row->ValueDeep(v2->Value(selseq.front(),ValueData()),child_s_deep);
-	 tree.initDepth(current_row,child_s_deep);
-
-	 // das neue Blatt einsortieren
-	 newnode->cumulate(v);
-         // insertIntoTCL(newnode->getTCL_API(),tree,v,selseq,child_s_deep);
-         parent=newnode->getTCL_API();
-#endif         
-         deep=child_s_deep;
-         goto recurse;
+	 // mitten in current_iter einfügen 
+	 // (current_iter wandert nach unten rechts)
+         // (man könnte dies auch aufbrechen nennen)
+         current_iter= MoveTree (current_iter,deep,child_s_deep,ev);
+         goto weiter_unten_einhaengen;
       }
       else // Blatt erreicht
       {  // als letztes der Gleichen an parent anhängen
          // upper_b steht schon richtig (s.o.)
-#if 0
-         TreeRow *newleaf=NewLeaf(deep,ev,v);
-	 newleaf->initTCL(parent, upper_b, tree);
-#endif	 
+         Gtk::TreeRow newnode = *(m_refTreeStore->insert(upper_b));
+         InitColumns(newnode,deep,ev,v);
       }
       return;
      }
      else // --------------- kleinerer Wert (davor Einfügen) ----------
-	{
-#if 0	
-	  TreeRow *newleaf=NewLeaf(deep,ev,v);
-	 newleaf->initTCL(parent,current_iter,tree);
-	 tree.initDepth(newleaf,deep);
-#endif	 
+	{  Gtk::TreeRow newnode = *(m_refTreeStore->insert(current_iter));
+           InitColumns(newnode,deep,ev,v);
 	}
    }
  else //----------------- am Ende der Liste: anhängen ---------------------
-   {   
-#if 0   
-   TreeRow *newleaf=NewLeaf(deep,ev,v);
-	    newleaf->initTCL(parent,tree); 
-	 tree.initDepth(newleaf,deep);
-#endif	 
+   {  Gtk::TreeRow newnode = *(m_refTreeStore->append(parent));
+      InitColumns(newnode,deep,ev,v);
     }
 }                                
+
+// former initTCL, initDepth
+void SimpleTreeStore::InitColumns(Gtk::TreeRow &node, guint deep,
+	const cH_EntryValue &ev, const cH_RowDataBase &v)
+{  node[m_columns.row]= Handle<TreeRow>();
+   node[m_columns.value]= ev;
+   node[m_columns.leafdata]= v;
+   node[m_columns.deep]=deep;
+   node[m_columns.childrens_deep]=0;
+   for (guint i=deep;i<Cols();++i)
+      node[m_columns.cols[i]]=v->Value(currseq[i],ValueData())->StrVal();
+}
+
+Gtk::TreeRow SimpleTreeStore::CopyTree(Gtk::TreeRow src, Gtk::TreeModel::Children dest)
+{  Gtk::TreeRow newrow = *(m_refTreeStore->append(dest));
+
+// isn't there an easier way to copy _all_ columns?   
+   newrow[m_columns.row]= src[m_columns.row];
+   newrow[m_columns.value]= src[m_columns.value];
+   newrow[m_columns.leafdata]= src[m_columns.leafdata];
+   newrow[m_columns.deep]= src[m_columns.deep];
+   newrow[m_columns.childrens_deep]= src[m_columns.childrens_deep];
+   for (guint i=0;i<m_columns.cols.size();++i)
+      newrow[m_columns.cols[i]]= src[m_columns.cols[i]];
+      
+   for (Gtk::TreeStore::iterator i=src.children().begin();
+   		i!=src.children().end();++i)
+      CopyTree(*i,newrow.children());
+   return newrow;
+}
+
+// deep    childs_deep   childrens_deep
+// -+ newnode
+//  |      +  oldnode2                        leafdata
+//  |                    + old2 children
+//  + (oldnode=current_iter)
+//                       + old children
+
+Gtk::TreeStore::iterator SimpleTreeStore::MoveTree(
+	Gtk::TreeStore::iterator current_iter,
+	guint deep,guint child_s_deep,guint value_index)
+{  Gtk::TreeStore::iterator new_iter= m_refTreeStore->insert(current_iter);
+   Gtk::TreeRow newnode = *new_iter;
+   Gtk::TreeRow oldnode = *current_iter;
+   Gtk::TreeRow oldnode2 = CopyTree(oldnode, newnode.children());
+   
+   // initialize the sum
+   newnode[m_columns.row]= (*node_creation)(oldnode[m_columns.row]);
+   newnode[m_columns.leafdata]= oldnode[m_columns.leafdata];
+   newnode[m_columns.childrens_deep]= child_s_deep;
+   newnode[m_columns.deep]= deep;
+   newnode[m_columns.value]= oldnode[m_columns.value];
+   for (guint i=deep;i<child_s_deep;++i)
+      newnode[m_columns.cols[i]]=oldnode[m_columns.cols[i]];
+   // aufklappen wenn child_s_deep < showdeep
+
+   for (guint i=child_s_deep;i<Cols();++i) oldnode2[m_columns.cols[i]]="";
+   oldnode2[m_columns.deep]=child_s_deep;
+   oldnode2[m_columns.value]= 
+   	static_cast<cH_RowDataBase>(oldnode2[m_columns.leafdata])
+   		->Value(value_index,ValueData());
+
+   m_refTreeStore->remove(current_iter);
+   return new_iter;
+}
