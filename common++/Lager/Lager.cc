@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.19 2002/12/10 12:28:51 thoma Exp $
+// $Id: Lager.cc,v 1.20 2002/12/17 22:40:14 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -42,7 +42,7 @@ void LagerBase::rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::men
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
      "Lager=",*this,"Artikel=",artikel,"Menge=",menge);
   assert(menge>=0);
-  try{
+
      Transaction tr;
      AuftragBase::dispo_auftrag_aendern(uid,*this,artikel,menge);
      AuftragBase::menge_neu_verplanen(uid,*this,artikel,menge,ManuProC::Auftrag::r_Produziert);     
@@ -56,8 +56,7 @@ void LagerBase::rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::men
 
 
      tr.commit();
-   } catch(SQLerror &e)
-     { std::cout << e <<'\n';}
+
 }
 
 void LagerBase::raus_aus_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const 
@@ -65,13 +64,12 @@ void LagerBase::raus_aus_lager(const ArtikelBase &artikel,const AuftragBase::men
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
      "Artikel=",artikel,"Menge=",menge);
   assert(menge>=0);
-  try{
+
     assert((*this)->ProduziertSelbst());
 
      ManuProC::st_produziert sp(artikel,menge,uid);
      (*this)->Lager_abschreiben(sp);
 
-   } catch(SQLerror &e) { std::cout << e <<'\n';}
 }
 
 

@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.cc,v 1.14 2002/12/17 13:55:32 thoma Exp $
+// $Id: ppsInstanzProduziert.cc,v 1.15 2002/12/17 22:40:14 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -82,14 +82,14 @@ void ppsInstanz::Produziert(ManuProC::st_produziert &P,ManuProC::Auftrag::Action
    if(P.menge>=0)
     {
       AuftragBase::mengen_t restmenge=P.abschreiben_oder_reduzieren(Id(),
-                  AuftragBase::PlanId_for(Id()),P.menge);
+                  AuftragBase::PlanId_for(Id()),P.menge,ProduziertSelbst());
 
 //cout << Name()<<'\t'<<P.menge<<' '<<restmenge<<'\n';
       if(restmenge>0)
        {
           AuftragBase::mengen_t restmenge2=
              P.abschreiben_oder_reduzieren(Id(),
-                     AuftragBase::ungeplante_id,restmenge);
+                     AuftragBase::ungeplante_id,restmenge,ProduziertSelbst());
 
 //cout << '\t'<<Name()<<' '<<Id()<<'\t'<<P.menge<<' '<<restmenge<<' '<<restmenge2<<'\n';
             if(restmenge2>0 && reason==ManuProC::Auftrag::r_Produziert)
@@ -107,7 +107,7 @@ void ppsInstanz::Produziert(ManuProC::st_produziert &P,ManuProC::Auftrag::Action
    else //entspricht: if(menge<0)
     {
       AuftragBase::mengen_t restmenge=P.abschreiben_oder_reduzieren
-                                    (Id(),AuftragBase::plan_auftrag_id,P.menge);
+              (Id(),AuftragBase::plan_auftrag_id,P.menge,true);
       if(restmenge<0) 
        {
          // da bin ich mal gespannt wann das hier fehlschlägt MAT 2.10.02
@@ -132,11 +132,11 @@ void ppsInstanz::Lager_abschreiben(ManuProC::st_produziert &P) const
   assert(LagerInstanz()||PlanungsInstanz());
   Transaction tr;
   AuftragBase::mengen_t restmenge=P.abschreiben_oder_reduzieren(Id(),
-                                       AuftragBase::plan_auftrag_id,P.menge);
+                    AuftragBase::plan_auftrag_id,P.menge,true);
   if(restmenge>0)
    {
      AuftragBase::mengen_t restmenge2=P.abschreiben_oder_reduzieren(Id(),
-                  AuftragBase::dispo_auftrag_id,restmenge);
+                  AuftragBase::dispo_auftrag_id,restmenge,true);
      if(restmenge2!=AuftragBase::mengen_t(0) && !PlanungsInstanz()) 
          P.fehler(*this,P.Mehr_produziert_als_moeglich,
                AuftragBase::dispo_auftrag_id,P.menge,restmenge2) ;
@@ -197,7 +197,8 @@ AuftragBase::mengen_t ManuProC::st_produziert::abschreiben_oder_reduzieren(ppsIn
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
    "Instanz=",instanz,"AuftragID=",id,"AEB=",AE,
-   "Menge=",abmenge);
+   "Menge=",abmenge,"flag=",planen_und_abschreiben_von_ungeplaneten,
+   "Zeile:",__LINE__);
 
   assert(id==AuftragBase::handplan_auftrag_id || id==AuftragBase::dispo_auftrag_id ||
          id==AuftragBase::plan_auftrag_id     || id==AuftragBase::ungeplante_id);
@@ -345,7 +346,8 @@ return;
   if(geplante_menge1<freie_menge2)
    {
 //cout << "Do something\n";
-     abschreiben_oder_reduzieren(instanz,AuftragBase::dispo_auftrag_id,freie_menge2-geplante_menge1);
+     abschreiben_oder_reduzieren(instanz,AuftragBase::dispo_auftrag_id,
+     			freie_menge2-geplante_menge1,true);
    }
 }
 
