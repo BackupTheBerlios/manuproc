@@ -11,6 +11,8 @@ delete from auftrag ;
 delete from prod_changejournal;
 delete from auftragentry ;
 delete from auftragsentryzuordnung;
+delete from lieferschein ;
+delete from lieferscheinentry;
 END
 
 

@@ -16,6 +16,8 @@ CREATE TABLE "prod_instanz" (
 	"produziert_selbst" boolean,
 	"prod_dauer_tage" integer,
 	"einlagern_in" numeric(2,0),
+	"automatisch_einlagern" boolean,
+	"typ" character(1),
 	Constraint "prod_instanz_pkey" Primary Key ("insid")
 );
 
@@ -25,13 +27,12 @@ CREATE TABLE "prod_instanz" (
 
 
 COPY "prod_instanz" FROM stdin;
-20	Gieﬂerei	\N	6	\N	\N	\N	5	\N
-5	Schraubenzieherlager	10	50	\N	\N	\N	\N	\N
-1	Kundenauftr‰ge	\N	1	t	\N	\N	\N	\N
-2	Versand	\N	2	\N	\N	\N	1	\N
-30	Rohwarenlager	35	52	\N	\N	\N	\N	\N
-10	Werkstatt	\N	4	\N	\N	\N	1	\N
-11	Packerei	\N	5	\N	\N	\N	1	\N
-21	Schmelze	\N	7	\N	\N	t	10	\N
-35	Einkauf	\N	60	t	\N	t	30	30
+20	Gieﬂerei	\N	6	\N	\N	\N	5	\N	\N	P
+1	Kundenauftr‰ge	\N	1	t	\N	\N	\N	\N	\N	P
+10	Werkstatt	\N	4	\N	\N	\N	1	\N	\N	P
+11	Packerei	\N	5	\N	\N	\N	1	\N	\N	P
+21	Schmelze	\N	7	\N	\N	t	10	\N	\N	P
+35	Einkauf	\N	60	t	\N	t	30	30	t	P
+5	Schraubenzieherlager	10	50	\N	\N	\N	\N	\N	\N	L
+30	Rohwarenlager	35	52	\N	\N	\N	\N	\N	\N	L
 \.
