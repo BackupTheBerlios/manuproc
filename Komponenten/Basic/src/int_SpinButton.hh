@@ -1,4 +1,4 @@
-// $Id: int_SpinButton.hh,v 1.3 2002/12/03 09:10:44 christof Exp $
+// $Id: int_SpinButton.hh,v 1.4 2003/03/24 07:58:05 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -23,6 +23,10 @@
 
 #include <gtkmm/spinbutton.h>
 #include <BaseObjects/Model.h>
+
+class int_SpinButtonConnection
+{
+};
 
 class int_SpinButton : public Gtk::SpinButton
 {	typedef int T;
