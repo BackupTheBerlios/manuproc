@@ -41,7 +41,7 @@ bool ents_flag=false;
 
 MultiL_Dict *mld;
 
-void LR_Abstraktion::calc_all(cH_Kunde k)
+void LR_Abstraktion::calc_all(cH_Kunde k,bool mwst)
 {
  nettobetrag = betrag;
 
@@ -63,7 +63,7 @@ void LR_Abstraktion::calc_all(cH_Kunde k)
  
  
  
- if(k->MwSt()) 
+ if(mwst) 
    mwstbetrag = entsbetrag * MWSTSATZ;
  else mwstbetrag=0;
  
@@ -631,7 +631,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
        drucken_betrag(os,mld->MLT(MultiL_Dict::TXT_SUMME),betrag);
      }
      
-  calc_all(kunde_rng);     
+  calc_all(kunde_rng,cH_Kunde(KdNr())->MwSt());     
      
 //     os << zur_preisspalte << "Endsumme & "<< FormatiereTeX(betrag) <<"\\\\""\n";
 //     --zeilen_passen_noch;
@@ -689,7 +689,8 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
    
  if (preise_addieren)
  { cH_Kunde kunde_an(KdNr());
-   if(kunde_rng->MwSt())   
+//   if(kunde_rng->MwSt())   
+   if(kunde_an->MwSt())   
    { os << zur_preisspalte.substr(0,zur_preisspalte.size()-1) << "\\multicolumn{2}{r}{+ "<<MWSTPROZ<<"\\% "
 		<< mld->MLT(MultiL_Dict::MWST) <<"}& "<< FormatiereTeX(mwstbetrag) <<"\\\\"
      	"\\cline{"<<preisspalte<<"-"<<preisspalte<<"}\n";  

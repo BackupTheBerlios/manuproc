@@ -357,7 +357,7 @@ private:
 
    void drucken_betrag(std::ostream &os, const std::string &text, fixedpoint<2> betrag);
 
-   void calc_all(cH_Kunde k);
+   void calc_all(cH_Kunde k,bool mwst);
 public:
    void drucken(std::ostream &os,bool kopie,const cH_ppsInstanz& instanz);
 };
