@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnungEntry_sql.pgcc,v 1.6 2003/01/08 09:46:58 christof Exp $ */
+/* $Id: ProvAbrechnungEntry_sql.pgcc,v 1.7 2003/04/02 16:25:03 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -68,37 +68,23 @@ void ProvAbrechnungEntry::newAbrechnungEntries(
  int ABRNR=_abrnr;
  int VERKNR=_verknr;
  int RNGID=rng.Id();
- int ZEILENNR;
  float PROVSATZ;
  int KUNDENNR;
  exec sql end declare section;
- std::vector<int> rng_zeilen;
 
  Transaction tr;
 
  KUNDENNR=rng.KdNr();
-
- std::string qu="select zeilennr from rechnungentry where rngid="+itos(RNGID);
- Query Q(qu);
- SQLerror::test(__FILELINE__,100);
- if(sqlca.sqlcode==100) return;
-
- if(!Q.good()) throw SQLerror(__FILELINE__);
- Q.FetchArray(rng_zeilen);
 
  exec sql select provsatz1 into :PROVSATZ from prov_verkaeufer
 	where verknr=:VERKNR and kundennr=:KUNDENNR;
  SQLerror::test(__FILELINE__);
 
 
- for(std::vector<int>::const_iterator i=rng_zeilen.begin();
-			i!=rng_zeilen.end();++i)
-   {
-    ZEILENNR=(*i);
-    exec sql insert into prov_entry (provnr,verknr,rngid,zeilennr,provsatz)
-	values (:ABRNR,:VERKNR,:RNGID,:ZEILENNR,:PROVSATZ);
-    SQLerror::test(__FILELINE__);
-   }
+ exec sql insert into prov_entry (provnr,verknr,rngid,zeilennr,provsatz)
+	(select :ABRNR,:VERKNR,rngid,zeilennr,:PROVSATZ
+ 	 from rechnungentry where rngid=:RNGID);
+ SQLerror::test(__FILELINE__,100);
 
  tr.commit();
 

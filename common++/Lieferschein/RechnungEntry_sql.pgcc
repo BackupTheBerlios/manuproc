@@ -22,10 +22,10 @@
 #include <Auftrag/AufEintrag.h>
 exec sql include sqlca;
 
+std::map<int,struct RechnungEntryBase::rng_payoff> RechnungEntryBase::rgdata;
 
 RechnungEntry::RechnungEntry(const RechnungEntryBase& rechnung)
-throw(SQLerror)	:RechnungEntryBase(rechnung),
-bezahlt(false),bezahlt_valid(false), kunde(Kunde::none_id)
+throw(SQLerror)	:RechnungEntryBase(rechnung)
 {
  exec sql begin declare section;
    int ARTIKELID, STUECK, LFRSID, LFRSZN;
@@ -41,7 +41,7 @@ bezahlt(false),bezahlt_valid(false), kunde(Kunde::none_id)
  INSTANZ=ppsInstanzID::Kundenauftraege;
  INVALID_REFAUFTRAGID=AuftragBase::invalid_id;
 
- exec sql select ry.artikelid, coalesce(ry.menge,0), coalesce(abs(ry.preis),0),
+ exec sql select ry.artikelid, coalesce(ry.menge,0), coalesce(ry.preis,0),
       coalesce(ry.stueck,1), coalesce(ry.preismenge,1), coalesce(ry.rabatt,0),
       coalesce(li.geliefertam,li.datum,date('today')), 
       coalesce(ry.lfrsid,0), coalesce(ry.lfrszeile,0),
@@ -103,63 +103,46 @@ void RechnungEntry::setzePreis(const Preis &p) throw (SQLerror)
 
 
 
-const ManuProC::Datum RechnungEntry::RgDatum() const throw(SQLerror)
+void RechnungEntryBase::setRgPayOff(int _rngid) throw(SQLerror)
 {
- if(rgdatum.valid()) return rgdatum;
-
  exec sql begin declare section;
- int RNGID=Id();
+ int RNGID=_rngid;
  char *DATUM=0;
+ bool BEZAHLT;
+ int KUNDENNR;
  exec sql end declare section;
 
- exec sql select datum into :DATUM from rechnung where rngid=:RNGID;
+ exec sql select datum,coalesce(bezahlt,false),kundennr into 
+	:DATUM,:BEZAHLT,:KUNDENNR 
+	from rechnung where rngid=:RNGID;
  SQLerror::test(__FILELINE__);
 
- rgdatum=ManuProC::Datum(DATUM);
+ rgdata[RNGID]=rng_payoff(DATUM,BEZAHLT,KUNDENNR);
 
  ECPGfree_auto_mem();
+}
 
- return rgdatum;
+const ManuProC::Datum RechnungEntry::RgDatum() const throw(SQLerror)
+{
+ if(rgdata[rngid].valid==true) return rgdata[rngid].rgdatum;
+ setRgPayOff(rngid);
+ return rgdata[rngid].rgdatum;
 }
 
 
 const bool RechnungEntry::Bezahlt() const throw(SQLerror)
 {
- if(bezahlt_valid) return bezahlt;
-
- exec sql begin declare section;
- int RNGID=Id();
- bool BEZAHLT;
- exec sql end declare section;
-
- exec sql select bezahlt into :BEZAHLT from rechnung where rngid=:RNGID;
- SQLerror::test(__FILELINE__);
-
-
- bezahlt=BEZAHLT;
- bezahlt_valid=true;
-
- return bezahlt;
+ if(rgdata[rngid].valid==true) return rgdata[rngid].bezahlt;
+ setRgPayOff(rngid);
+ return rgdata[rngid].bezahlt;
 }
 
 
 cH_Kunde RechnungEntry::Kunde() const
 {
- if(kunde->Id() != Kunde::none_id) return kunde;
-
- exec sql begin declare section;
- int RNGID=Id();
- int KUNDENNR;
- exec sql end declare section;
-
- exec sql select kundennr into :KUNDENNR from rechnung where rngid=:RNGID;
- SQLerror::test(__FILELINE__);
-
-
- kunde=cH_Kunde(KUNDENNR);
-
- return kunde;
-
+ if(rgdata[rngid].valid==true) return rgdata[rngid].kunde;
+ setRgPayOff(rngid);
+ return rgdata[rngid].kunde;
 }
 
 

@@ -1,4 +1,4 @@
-/* $Id: RechnungEntry.h,v 1.18 2003/01/08 09:46:57 christof Exp $ */
+/* $Id: RechnungEntry.h,v 1.19 2003/04/02 16:25:03 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -29,6 +29,10 @@
 #include"RechnungBase.h"
 #include"LieferscheinEntry.h"
 #include <BaseObjects/ManuProcEintrag.h>
+#include <map>
+
+
+
 
 class RechnungEntryBase : public RechnungBase
 {
@@ -37,9 +41,23 @@ public:
   typedef RechnungBase::geldbetrag_t geldbetrag_t;
   typedef RechnungBase::mengen_t mengen_t;
   static const int none_znr=ManuProcEintrag::none_znr;
+
 protected:
  int zeilennr;
  
+ struct rng_payoff {
+ 	bool valid;
+ 	ManuProC::Datum rgdatum;
+ 	bool bezahlt;
+ 	cH_Kunde kunde;
+ 	rng_payoff(const ManuProC::Datum d, bool b, cH_Kunde k)
+ 		:valid(true),rgdatum(d),bezahlt(b),kunde(k) {}
+ 	rng_payoff():valid(false),bezahlt(false),kunde(Kunde::none_id){}
+ 	};
+
+  static std::map<int,struct rng_payoff> rgdata;
+  static void setRgPayOff(int _rngid) throw(SQLerror);
+  
 public:
 	RechnungEntryBase() : zeilennr(none_znr) {}
 	RechnungEntryBase(const RechnungBase &rb, int z)
@@ -59,11 +77,8 @@ class RechnungEntry : public RechnungEntryBase
  Preis preis;
  rabatt_t rabatt;
  ManuProC::Datum lieferdatum;
- mutable ManuProC::Datum rgdatum; 
  LieferscheinEntryBase lfrs;
  AuftragBase auftrag;
- mutable bool bezahlt, bezahlt_valid;
- mutable cH_Kunde kunde;
 // LieferscheinBase::ID lfrsid;
 // int lieferzeile;
  
@@ -74,9 +89,7 @@ public:
                         ManuProC::Datum ld, const LieferscheinEntryBase ls,
                         const AuftragBase &ab)
   		: RechnungEntryBase(l,z),artikel(a),stueck(s),menge(m),preis(p),
-                        rabatt(r),lieferdatum(ld),lfrs(ls),auftrag(ab),
-                        bezahlt(false),bezahlt_valid(false),
-                        kunde(Kunde::none_id)
+                        rabatt(r),lieferdatum(ld),lfrs(ls),auftrag(ab)
                 {};
 
  mengen_t Menge() const { return menge; }
@@ -106,10 +119,13 @@ public:
  ManuProC::Datum LieferDatum() const {return lieferdatum; }
  const ManuProC::Datum RgDatum() const throw(SQLerror);
  const bool Bezahlt() const throw(SQLerror);
+ cH_Kunde Kunde() const;  
  const int AuftragId() const { return auftrag.Id();}
  const Preis GPreis() const { return preis.Gesamtpreis(stueck,menge.as_float(),rabatt); }
- cH_Kunde Kunde() const; 
+
  
 };
+
+
 
 #endif
