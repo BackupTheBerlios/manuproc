@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.12 2002/04/29 10:09:57 christof Exp $
+# $Id: configure.in,v 1.13 2002/04/29 10:16:58 christof Exp $
 
 AC_INIT(src/SQLerror.h)
 AC_CONFIG_AUX_DIR(.)
@@ -34,6 +34,6 @@ then
  fi
 fi
 
-AM_CONDITIONAL(DATABASE, test \! -z "$ECPG" )
+AM_CONDITIONAL(DATABASE, test \! -z "$ECPG_INCLUDES" )
 
 AC_OUTPUT(Makefile src/Makefile examples/Makefile)
