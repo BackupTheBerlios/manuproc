@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=incoming bills
+Name[de]=Eingangsrechnungen
+Comment[de]=bezahlte und unbezahlte Rechnungen
+Exec=eingangsrechnungen
+Icon=eingangsrechnungen.png
+Terminal=0
+Type=Application
+Encoding=ISO-8859-1
