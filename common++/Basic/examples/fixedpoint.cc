@@ -1,4 +1,4 @@
-// $Id: fixedpoint.cc,v 1.11 2002/06/24 07:35:40 christof Exp $
+// $Id: fixedpoint.cc,v 1.12 2002/10/31 10:23:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,7 +28,7 @@ int main()
    fixedpoint<> a(4.60),b(3.2),c(4.599),d("4.599");
    std::cout << "a="<<a << " b="<<b<< " c="<<c<< " d="<<d<< '\n';
    std::cout << "a/7=" << a/7 << " b=a/7=" << (b=a/7) << '\n';
-   std::cout << "float(b)="<< float(b) << '\n';
+   std::cout << "b.as_float()="<< b.as_float() << '\n';
    std::cout << "a+b=" << a+b << '\n';
    
    // Formatiere
@@ -53,7 +53,7 @@ int main()
       fixedpoint<5> b=25;
       
       std::cout << a*b << '=' << b*a << '\n';
-      a*=b;
+      a*=b.as_float();
       std::cout << a.Scaled() << '/' << a << '\n';
    }   
    
