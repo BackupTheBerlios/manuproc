@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.14 2002/12/05 14:20:22 christof Exp $
+// $Id: SimpleTree.cc,v 1.15 2002/12/05 17:51:35 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,8 +25,14 @@ SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
 {  set_model(sts.m_refTreeStore);
 
    for (unsigned int i=0;i<Cols();++i)
-   {  append_column("",sts.m_columns.cols[i]);
-      get_column(i)->signal_clicked().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_title_clicked),i));
+   {  Gtk::CellRendererText *crt = Gtk::manage(new Gtk::CellRendererText());
+      append_column("", *crt);
+      Gtk::TreeViewColumn* pColumn = get_column(i);
+      if (pColumn)
+      {  pColumn->signal_clicked().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_title_clicked),i));
+         pColumn->add_attribute(crt->property_text(),sts.m_columns.cols[i]);
+         pColumn->add_attribute(crt->property_background_gdk(),sts.m_columns.background);
+      }
    }
    set_headers_clickable();
    

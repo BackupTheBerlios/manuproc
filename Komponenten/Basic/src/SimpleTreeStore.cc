@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.19 2002/12/05 14:20:22 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.20 2002/12/05 17:51:35 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -16,6 +16,15 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
+// property_is_expanded
+// property_is_expander
+// property_xalign
+// 
+// property_text
+// property_background (text)
+// property_background_gdk (text)
+// property_editable
 
 #include <SimpleTreeStore.h>
 #ifdef MANUPROC_WITH_DATABASE
@@ -114,6 +123,9 @@ void SimpleTreeStore::set_remember(const std::string &program, const std::string
    }
 }
 
+static const unsigned col1=0xffff,col0=0xcfff;
+
+
 SimpleTreeStore::SimpleTreeStore(int max_col)
 	: node_creation(0), columns(max_col), max_column(max_col),
 	  showdeep(0), gp(0), 
@@ -123,6 +135,19 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
    defaultSequence();
    getModel().signal_title_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_title_changed));
    getModel().signal_redraw_needed().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
+  vec_hide_cols.resize(Cols());
+  for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
+    (*i) = true;
+  Gdk::Color c;
+  c.set_rgb(col1,col1,col1); colors.push_back(c); // white
+  c.set_rgb(col1,col0,col0); colors.push_back(c); // red
+  c.set_rgb(col1,col1,col0); colors.push_back(c); // yellow
+  c.set_rgb(col0,col1,col0); colors.push_back(c); // green
+  c.set_rgb(col0,col1,col1); colors.push_back(c); // cyan
+  c.set_rgb(col0,col0,col1); colors.push_back(c); // blue
+  c.set_rgb(col1,col0,col1); colors.push_back(c); // magenta
+  c.set_rgb(col0,col0,col0); colors.push_back(c); // dark grey
+  assert(colors.size()==num_colors);
 }
 
 class TreeModelColumn_C : public Gtk::TreeModelColumnBase
@@ -144,6 +169,7 @@ SimpleTreeStore::ModelColumns::ModelColumns(int _cols)
    add(childrens_deep);
    add(value);
    add(leafdata);
+   add(background);
 }
 
 void SimpleTreeStore::on_title_changed(guint idx)
@@ -157,11 +183,10 @@ const std::string SimpleTreeStore::getColTitle(guint idx) const
 
 void SimpleTreeStore::defaultSequence()
 {  currseq.clear();
-   for(guint i=0; i<MaxCol(); ++i) 
-      if (ColumnVisible(i))
-         currseq.push_back(i);
+   for(guint i=0; i<MaxCol(); ++i) currseq.push_back(i);
 }
 
+#warning: auffüllen Standard, aktuelle
 void SimpleTreeStore::fillSequence(sequence_t &seq) const
 {  for(guint i=0; i<MaxCol(); ++i) 
       if (ColumnVisible(i) && std::find(seq.begin(),seq.end(),i)==seq.end())
@@ -329,6 +354,7 @@ void SimpleTreeStore::InitColumns(Gtk::TreeRow &node, guint deep,
    node[m_columns.value]= ev;
    node[m_columns.leafdata]= v;
    node[m_columns.deep]=deep;
+   node[m_columns.background]= colors[deep%num_colors];
    node[m_columns.childrens_deep]=0;
    for (guint i=deep;i<Cols();++i)
    {  node[m_columns.cols[i]]=v->Value(currseq[i],ValueData())->getStrVal();
@@ -343,6 +369,7 @@ Gtk::TreeRow SimpleTreeStore::CopyTree(Gtk::TreeRow src, Gtk::TreeModel::Childre
    newrow[m_columns.value]= static_cast<cH_EntryValue>(src[m_columns.value]);
    newrow[m_columns.leafdata]= static_cast<cH_RowDataBase>(src[m_columns.leafdata]);
    newrow[m_columns.deep]= static_cast<guint>(src[m_columns.deep]);
+   newrow[m_columns.background]= static_cast<Gdk::Color>(src[m_columns.background]);
    newrow[m_columns.childrens_deep]= static_cast<guint>(src[m_columns.childrens_deep]);
    for (guint i=0;i<m_columns.cols.size();++i)
       newrow[m_columns.cols[i]]= static_cast<Glib::ustring>(src[m_columns.cols[i]]);
@@ -383,6 +410,7 @@ Gtk::TreeStore::iterator SimpleTreeStore::MoveTree(
    newnode[m_columns.leafdata]= static_cast<cH_RowDataBase>(oldnode[m_columns.leafdata]);
    newnode[m_columns.childrens_deep]= child_s_deep;
    newnode[m_columns.deep]= deep;
+   newnode[m_columns.background]= colors[deep%num_colors];
    newnode[m_columns.value]= static_cast<cH_EntryValue>(oldnode[m_columns.value]);
    for (guint i=deep;i<child_s_deep;++i)
       newnode[m_columns.cols[i]]= static_cast<Glib::ustring>(oldnode[m_columns.cols[i]]);
@@ -392,6 +420,7 @@ Gtk::TreeStore::iterator SimpleTreeStore::MoveTree(
    for (guint i=deep;i<child_s_deep;++i) 
       oldnode2[m_columns.cols[i]]= "";
    oldnode2[m_columns.deep]= child_s_deep;
+   oldnode2[m_columns.background]= colors[child_s_deep%num_colors];
    oldnode2[m_columns.value]= 
    	static_cast<cH_RowDataBase>(oldnode2[m_columns.leafdata])
    		->Value(value_index,ValueData());

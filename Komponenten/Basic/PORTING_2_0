@@ -1,0 +1,18 @@
+=================== Nodeklassen ==============================
+
+- TCListNode -> TreeRow (Ableitung von Nodeklassen)
+
+- ctor von Nodes: alle alten Argumente weg
+	(da TreeRow nun leer ist)
+	einziges Argument ist nun "const Handle<const TreeRow> &suminit"
+	Vorsicht: kann 0 Handle sein
+	
+	"if (suminit.Leaf()) cumulate(child_s_data);"
+	entfällt, da unmöglich (wird von SimpleTree erledigt)
+
+- die Signatur von create ist nun:
+	"static Handle<TreeRow> create(const Handle<const TreeRow> &suminit)"
+
+- neue Funktion erforderlich "virtual void deduct(const cH_RowDataBase &rd)"
+	Gegenteil von cumulate()
+
