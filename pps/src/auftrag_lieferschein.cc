@@ -110,6 +110,10 @@ void auftrag_lieferschein::display(int lfrsid)
  spinbutton_brutto->set_value(lieferschein->GewichtBrutto().as_float());
  spinbutton_netto->set_value(lieferschein->GewichtNetto().as_float());
 #endif
+ gint pos=0;
+ lief_notiz->insert_text(lieferschein->Notiz().c_str(),
+				lieferschein->Notiz().size(),&pos);
+ liefnotiz_save->set_sensitive(false);
 }
 
 void auftrag_lieferschein::display2(int kdnr)
@@ -728,8 +732,12 @@ std::string Data_Lieferdaten::FormatiereMenge(ArtikelBase artikel, int stueck, L
 
 void auftrag_lieferschein::on_liefnotiz_changed()
 {  
+ liefnotiz_save->set_sensitive(true); 
 }
 
 void auftrag_lieferschein::on_liefnotiz_save_clicked()
 {  
+ if(lieferschein) 
+   lieferschein->Notiz(lief_notiz->get_chars(0,lief_notiz->get_length()));
+ liefnotiz_save->set_sensitive(false);
 }
