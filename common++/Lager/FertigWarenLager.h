@@ -1,4 +1,4 @@
-// $Id: FertigWarenLager.h,v 1.17 2004/01/20 10:33:46 christof Exp $
+// $Id: FertigWarenLager.h,v 1.18 2004/01/20 15:25:09 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -85,7 +85,7 @@ public:
 #endif
 
    FertigWarenLager(FertigWarenLager &l) :
-   		LagerBase((LagerBase)l),
+   		LagerBase(l),
    		fw(l.fw), lagerid(l.lagerid)
    	{}
    		

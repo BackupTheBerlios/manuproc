@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.25 2004/01/20 09:57:49 jacek Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.26 2004/01/20 15:25:09 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -141,7 +141,7 @@ public:
     
     sel_Kunde_Status_Lager(ppsInstanz::ID i, Kunde::ID k, AufStatVal s, 
     			const FertigWarenLager &l) 
-    : kundennr(k), instanz(i), stat(s), lager(l)
+    : kundennr(k), instanz(i), stat(s), lager(l.Id())
     {}
   };
  SQLFullAuftragSelector(const sel_Kunde_Status_Lager &selstr); 
