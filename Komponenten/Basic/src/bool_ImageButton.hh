@@ -1,4 +1,4 @@
-// $Id: bool_ImageButton.hh,v 1.5 2003/04/07 14:16:38 christof Exp $
+// $Id: bool_ImageButton.hh,v 1.6 2004/07/15 08:28:38 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -32,6 +32,9 @@ public:
 	{	Glib::RefPtr<Gdk::Pixbuf> off,on;
 		Gtk::Widget *eventbox;
 		SigC::Connection toggleconn;
+		// tooltips
+		Gtk::Tooltips *tips;
+		std::string tip_off,tip_on;
 
 		void model2widget();
 		void widget2model() {}
@@ -40,10 +43,18 @@ public:
 		
 		bool toggle(GdkEventButton *ev);
 	public:
-		Connection(const Model_ref<T> &m) : this_t(m), eventbox(0) { }
+		Connection(const Model_ref<T> &m) 
+			: this_t(m), eventbox(), tips() { }
 		void set_widget(widget_t *w, Widget *eventbox=0);
 		void set_images(const Glib::RefPtr<Gdk::Pixbuf> &off,
 				const Glib::RefPtr<Gdk::Pixbuf> &on);
+		void set_tooltips(Gtk::Tooltips *_tips,
+			const std::string &off,const std::string &on)
+		{  tips=_tips;
+		   set_tooltips(off,on);
+		}
+		// perhaps not overly useful, unless you want to _change_ them ...
+		void set_tooltips(const std::string &off,const std::string &on);
 	};
 private:
 	Connection conn;
@@ -53,6 +64,10 @@ public:
 	bool_ImageButton(const Model_ref<T> &model, 
 		const Glib::RefPtr<Gdk::Pixbuf> &off,
 		const Glib::RefPtr<Gdk::Pixbuf> &on);
+	void set_tooltips(Gtk::Tooltips *_tips,
+			const std::string &off,const std::string &on)
+	{  conn.set_tooltips(_tips,off,on);
+	}
 };
 
 #endif
