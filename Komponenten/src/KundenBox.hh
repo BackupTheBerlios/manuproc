@@ -44,6 +44,8 @@ class KundenBox : public KundenBox_glade
 
 	Kunde::ID id;
 	Transaction tr,tr2;
+   bool einschraenkung_b;
+
 public:
 	KundenBox();
 	Kunde::ID get_value() const 
@@ -52,6 +54,8 @@ public:
 	{  set_value(cH_Kunde(i)); }
 	void set_value(const cH_Kunde &k);
 	void reset();
+
+   void Einschraenken_b(bool an);
 	
 	SigC::Signal0<void> activate;
 };

@@ -79,16 +79,25 @@ void KundenBox::Name_search(gboolean *_continue, GtkSCContext newsearch)
 {  exec sql begin declare section;
    char name[80];
    int nummer;
+   char query[1024];
    exec sql end declare section;
    
    try
-   {  switch(newsearch)
+   {  
+     std::string squery;
+     switch(newsearch)
       {  case GTK_SEARCH_OPEN:
-            snprintf(name,sizeof name,"%s%%",kundenname->get_text().c_str());
             tr2.open();
-      	    exec sql declare kubo_name cursor for
-      	    	select firma,kundennr from kunden where firma like :name 
-      	    	order by firma;
+             if(einschraenkung_b)
+               squery = "select DISTINCT k.firma, e.extartbezid from 
+                  extbezschema e join kunden k on (e.extartbezid=k.kundennr)
+                  where k.firma like '"+kundenname->get_text()+"%'";
+             else
+               squery = "select firma,kundennr from kunden where firma like '"+
+                  kundenname->get_text() +"%' order by firma";             
+             strncpy(query,squery.c_str(),sizeof(query));
+             exec sql prepare kubo_name_ from :query;
+      	    exec sql declare kubo_name cursor for kubo_name_;
       	    exec sql open kubo_name;
       	    SQLerror::test(__FILELINE__);
       	    // fall through
@@ -137,4 +146,9 @@ void KundenBox::reset()
 {  kundennr->reset();
    kundenname->reset();
    id=Kunde::default_id;
+}
+
+void KundenBox::Einschraenken_b(bool an)
+{  
+   einschraenkung_b=an;   
 }

@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.11 2001/10/23 08:56:40 christof Exp $
+// $Id: ArtikelBox.cc,v 1.12 2001/11/12 09:51:01 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -159,6 +159,7 @@ void ArtikelBox::loadArtikel(unsigned int l) throw(SQLerror)
  try {
   while (v.size()<schema->size(signifikanz[l])) 
      v.push_back(cH_EntryValueIntString(""));
+  
   cH_ArtikelBezeichnung bez(signifikanz[l],v,schema);
   artikel=*bez;
   set_value(artikel);
