@@ -1,4 +1,4 @@
-// $Id: Zuordnung_zeigen.cc,v 1.4 2003/05/26 15:33:03 christof Exp $
+// $Id: Zuordnung_zeigen.cc,v 1.5 2003/06/24 07:02:41 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -28,7 +28,11 @@ static void show(const AufEintrag &ae)
 {  std::cout << ae << ": " << ae.getStueck();
    if (!!ae.getGeliefert()) std::cout << '(' << ae.getGeliefert() << ')';
    std::cout << ' ' << cH_ArtikelBezeichnung(ae.Artikel())->Bezeichnung()
-      << ' ' << ae.getLieferdatum() << '\n';
+      << ' ' << ae.getLieferdatum();
+   if (ae.getCombinedStatus()==UNCOMMITED) std::cout << " UNCOMMITTED";
+   else if (ae.getCombinedStatus()==CLOSE) std::cout << " CLOSED";
+   else if (ae.getCombinedStatus()==STORNO) std::cout << " STORNO";
+   std::cout << '\n';
 }
 
 static void show(const AufEintragBase &ae, bool kinder, int indent=0)

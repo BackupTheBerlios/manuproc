@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.49 2003/06/23 11:45:07 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.50 2003/06/24 07:02:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -165,7 +165,10 @@ public:
  int getZnr() const { return zeilennr;}
  int getAuftragid() const {return auftragid;}
  ppsInstanz::ID getAuftragInstanz() const {return instanz->Id();}
+ // vermutlich ist getCombinedStatus() eher das gewollte ...
  AufStatVal getEntryStatus() const { return entrystatus;}
+ // Resultierender Status (mit Auftrag)
+ AufStatVal getCombinedStatus() const { return entrystatus!=OPEN?entrystatus:auftragstatus;}
  const std::string getEntryStatusStr() const;
  int getLastEditDateUID() const { return lasteditdate_uid;}
  const ManuProC::Datum LastEditDate() const { return lasteditdate; }
