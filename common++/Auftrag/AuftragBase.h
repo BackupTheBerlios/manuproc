@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.54 2003/09/02 12:10:52 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.55 2003/11/29 12:13:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -93,7 +93,9 @@ class AuftragBase
 
    // Varianten für negative Zahlen??? kommt häufiger vor?
    static mengen_t min(const mengen_t &x,const mengen_t &y);
-   static mengen_t max(const mengen_t &x,const mengen_t &y);
+   { mengen_t m; if(x<=y) m=x; else m=y; if(m<0) m=0; return m;}
+   static mengen_t max(const mengen_t &x,const mengen_t &y)
+   { if(x>=y) return x; return y; }
 
    static const UniqueValue::value_t trace_channel;
    static bool tolerate_inconsistency;

@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.46 2003/09/12 13:03:39 jacek Exp $
+// $Id: AuftragBase.cc,v 1.47 2003/11/29 12:13:55 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -57,12 +57,6 @@ const AuftragBase::ID AuftragBase::PlanId_for(const cH_ppsInstanz &instanz)
   if(instanz->LagerInstanz()) return AuftragBase::plan_auftrag_id;
   return AuftragBase::handplan_auftrag_id;
 }
-
-AuftragBase::mengen_t AuftragBase::min(const mengen_t &x,const mengen_t &y)
-{ mengen_t m; if(x<=y) m=x; else m=y; if(m<0) m=0; return m;}
-//{ if(x<=y) return x; return y; }
-AuftragBase::mengen_t AuftragBase::max(const mengen_t &x,const mengen_t &y)
-{ if(x>=y) return x; return y; }
 
 bool AuftragBase::editierbar() const
 {

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.h,v 1.5 2003/08/12 16:16:25 christof Exp $ */
+/* $Id: AufEintrag_loops.h,v 1.6 2003/11/29 12:13:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -45,6 +45,10 @@ bool distribute_children_rev(const AufEintragBase &startAEB,
 // take care that every child article is present, else call remainder callback
 // perhaps this should be the default ...
 void distribute_children_artbaum(const AufEintragBase &startAEB,
+ 		AuftragBase::mengen_t menge,
+ 		const ArtikelBase &article, 
+ 		const distribute_children_cb &callee);
+void distribute_children_rev_artbaum(const AufEintragBase &startAEB,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, 
  		const distribute_children_cb &callee);

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.75 2003/09/17 09:07:07 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.76 2003/11/29 12:13:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -136,10 +136,10 @@ public:
    };
 
  AufEintrag() 
-   : bestellt(0), geliefert(0), artikel(0ul), entrystatus((AufStatVal)UNCOMMITED),
-   	letztePlanInstanz(ppsInstanzID::None),maxPlanInstanz(0), rabatt(0),
-   	provsatz(-1),kdnr(0), disponr(0), auftragstatus((AufStatVal)UNCOMMITED),
-   	dispoentrynr(0),prozess(Prozess::default_id)
+   : bestellt(), geliefert(), artikel(), entrystatus((AufStatVal)UNCOMMITED),
+   	letztePlanInstanz(ppsInstanzID::None),maxPlanInstanz(), rabatt(),
+   	provsatz(-1),kdnr(), disponr(), auftragstatus((AufStatVal)UNCOMMITED),
+   	dispoentrynr(),prozess(Prozess::default_id)
  {}
  
  // Dieser ctor ist für AuftragFull::push_back
@@ -271,7 +271,7 @@ private:
 public:
  AufEintragBase getFirstKundenAuftrag() const;
 
- ArtikelBase::ID ArtId() const {return artikel.Id();}
+ __deprecated ArtikelBase::ID ArtId() const {return artikel.Id();}
  ArtikelBase Artikel() const {return artikel;}
 
  static AufEintragBase default_opfer(cH_ppsInstanz i,mengen_t menge,const ArtikelBase &aeb);
