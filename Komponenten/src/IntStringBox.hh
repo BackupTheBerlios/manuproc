@@ -1,4 +1,4 @@
-// $Id: IntStringBox.hh,v 1.7 2003/03/17 17:09:08 christof Exp $
+// $Id: IntStringBox.hh,v 1.8 2003/09/30 15:59:19 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -52,7 +52,7 @@ protected:
 
 public:
 	IntStringBox(ManuProcEntity<>::ID __none_id=ManuProcEntity<>::none_id);
-	// das findet aber nicht unbedingt meine Zustimmung, schlieﬂlich soll
+	// das findet aber nicht unbedingt meine Zustimmung, schlie√ülich soll
 	// das eine _Int_String Box sein ...
    void setLabel(const std::string &nr,const std::string &name,const std::string& namez="");
    void setLabel(long int nr);
@@ -66,11 +66,19 @@ public:
    void string2_info_only(bool b);
    void clear(){reset();}
    void reset();
+   void setExpandStr2(bool expand);
+   void setExpandStr1(bool expand);
+
 
    void Einschraenken(bool an);
    void Einschraenkung(const std::string &e, bool an=true);
+   void Join(const std::string j);
 	
+private:
 	SigC::Signal0<void> activate;
 	SigC::Signal0<void> reset_signal;
+public:
+	SigC::Signal0<void> &signal_activate() { return activate; }
+	SigC::Signal0<void> &signal_reset_signal() { return activate; }
 };
 #endif

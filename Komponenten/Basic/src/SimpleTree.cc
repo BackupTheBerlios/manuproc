@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.17 2002/12/19 07:47:44 christof Exp $
+// $Id: SimpleTree.cc,v 1.18 2003/09/30 15:59:19 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,6 +19,7 @@
 
 #include <SimpleTree.hh>
 #include <Misc/itos.h>
+
 
 SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
 	: SimpleTreeStore_Proxy(maxcol)
@@ -71,7 +72,8 @@ void SimpleTree_Basic::on_title_changed(guint nr)
 
 void SimpleTree_Basic::on_selection_changed()
 {  Gtk::TreeModel::iterator sel=get_selection()->get_selected();
-   if (!sel) ; // unselect
+   if (!sel) // unselect
+     _leaf_unselected();
    else
    {  Gtk::TreeRow row=*sel;
       if (!row[getStore().m_columns.childrens_deep])

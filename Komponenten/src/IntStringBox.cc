@@ -1,4 +1,4 @@
-// $Id: IntStringBox.cc,v 1.6 2003/05/19 13:11:13 christof Exp $
+// $Id: IntStringBox.cc,v 1.7 2003/09/30 15:59:19 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
  *  1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -98,11 +98,13 @@ gint IntStringBox::try_grab_focus(GtkWidget *w,gpointer gp)
 }
 
 IntStringBox::IntStringBox(ManuProcEntity<>::ID __none_id) 
-: id(__none_id), _none_id_(__none_id),  tr("",false), tr2("",false), tr3("",false),
+: id(__none_id),tr("",false), tr2("",false), 
+tr3("",false),
 #ifdef MABELLA_EXTENSIONS
   eingeschraenkt(false),
 #endif   
-  string_2_info_only(false)
+  string_2_info_only(false),
+  _none_id_(__none_id)
 {
  show_string2(false);
  // redirect our grab_focus
@@ -142,5 +144,24 @@ void IntStringBox::Einschraenkung(const std::string &e, bool an)
  eingeschraenkt=an;
  einschraenkung=e;
 }
+
+void IntStringBox::Join(const std::string j)
+{
+ joinstring=j;
+}
+  
+
+void IntStringBox::setExpandStr2(bool expand)
+{
+ sc2_string->set_autoexpand(expand);
+ sc2_string->set_enable_tab(true);  
+}
+ 
+void IntStringBox::setExpandStr1(bool expand)
+{
+ sc1_string->set_autoexpand(expand);
+ sc1_string->set_enable_tab(true);  
+}
+
 
 

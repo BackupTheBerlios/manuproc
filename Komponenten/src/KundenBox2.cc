@@ -1,4 +1,4 @@
-// $Id: KundenBox2.cc,v 1.2 2002/07/05 12:36:56 christof Exp $
+// $Id: KundenBox2.cc,v 1.3 2003/09/30 15:59:19 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -45,3 +45,13 @@ Kunde::ID KundenBox2::get_value() const
   return IntStringBox::get_value();
 }
 
+void KundenBox2::EinschraenkenKdGr(Kundengruppe::ID kgrid)
+{
+ if(kgrid!=KundengruppeID::None)
+   {Join(" join ku_gruppen_map kg on (kg.kundennr="+_tabelle_+
+        ".kundennr and kg.grpnr="+itos(kgrid)+") ");
+   }
+ else
+   {Join("");
+   }
+}
