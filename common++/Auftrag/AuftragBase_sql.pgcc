@@ -123,7 +123,7 @@ void AuftragBase::InstanzAuftraegeAnlegen(const ArtikelBase& artikel,
       const AufStatVal status, const long menge) const
 {
    ArtikelBaum AB(artikel);
-cout <<"Instanzen: " <<AB.size()<<'\n';
+//cout <<"Instanzen: " <<AB.size()<<'\n';
    for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
     {
       AuftragBase neuAuftrag(ArtikelStamm(i->rohartikel).BestellenBei(),0);
@@ -207,7 +207,8 @@ cout << "Neu\n";
 cout << "Alt\t"<<znr<<' '<<altZnr<<' '<<neuznr<<' '
 <<AufEintragBase2(instanz,auftragid,znr).ZNr()<<'\n';
     try{
-      AufEintragZu(XAEB).setMenge(menge+bestellt,*this,znr);
+//      AufEintragZu(XAEB).setMenge(menge+bestellt,*this,znr);
+      AufEintragZu(XAEB).setMengeDiff(menge,*this,znr);
      } catch(SQLerror)
      { AufEintragZu(XAEB).AuftragsEntryZuordnung(bestellt,*this,znr);
      }

@@ -1,4 +1,4 @@
-// $Id: Einheiten.pgcc,v 1.6 2001/10/23 08:45:18 christof Exp $
+// $Id: Einheiten.pgcc,v 1.7 2001/12/23 21:42:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,27 +29,32 @@ Einheit::Einheit(const ArtikelBase &ab) throw(SQLerror)
 
 // aus StueckEinheit, MengenEinheit erzeugen
 Einheit::operator std::string() const
-{  if (einh==EINH_METER) return "m";
-   if (einh==EINH_KG) return "kg";
-   if (einh==EINH_FDKM) return "Fd*km";
-   if (einh==EINH_STUECK) return "St.";
+{  if (einh==Meter) return "m";
+   if (einh==kg) return "kg";
+   if (einh==Fdkm) return "Fd*km";
+   if (einh==Stueck) return "St.";
+   if (einh==DM) return "DM";
+   if (einh==Euro) return "Euro";
    return "";
 }
 
 std::string Einheit::TeX() const
-{  if (einh==EINH_FDKM) return "Fd$\\times$km";
+{  if (einh==Fdkm) return "Fd$\\times$km";
+   if (einh==Euro) return "\\euro{}";
    return std::string(*this);
 }
 
 std::string Einheit::StueckEinheit() const
-{  if (einh==EINH_FDKM) return "Fd";
-   if (einh==EINH_STUECK) return "St.";
+{  if (einh==Fdkm) return "Fd";
+   if (einh==Stueck) return "St.";
    return "";
 }
 
 std::string Einheit::MengenEinheit() const
-{  if (einh==EINH_METER) return "m";
-   if (einh==EINH_KG) return "kg";
-   if (einh==EINH_FDKM) return "km";
+{  if (einh==Meter) return "m";
+   if (einh==kg) return "kg";
+   if (einh==Fdkm) return "km";
+   if (einh==DM) return "DM";
+   if (einh==Euro) return "Euro";
    return "";
 }

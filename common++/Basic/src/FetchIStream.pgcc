@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.4 2001/12/04 08:42:10 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.5 2001/12/23 21:42:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,9 @@
 #include <Aux/SQLerror.h>
 exec sql include sqlca;
 #include <Aux/itos.h>
+
+#define GARNIX
+// für ECPG 7.1
 
 // ecpg intcoming descriptor has to be FetchIStream
 
@@ -108,7 +111,7 @@ FetchIStream &FetchIStream::operator>>(bool &b)
 Query::Query(const std::string &command)
 : cursor(std::string("Query")+itos(reinterpret_cast<int>(this))), eof(false)
 {  exec sql begin declare section;
-   char *COMMAND=const_cast<char*>(command.c_str());
+   char *COMMAND=const_cast<char*>(command.c_str(GARNIX));
    exec sql end declare section;
    
 //   exec sql allocate descriptor X;

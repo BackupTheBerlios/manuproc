@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.18 2001/12/19 11:02:08 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.19 2001/12/23 21:42:15 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -42,7 +42,10 @@
 class AufEintragBase : public AufEintragBase2
 {
 // int Id() const; //Use ArtId()
+public:
 
+ typedef long mengen_t;
+ 
 protected: 
  ArtikelBase artikel;
 
@@ -94,13 +97,15 @@ public:
  AufEintragBase(const AufEintragBase2 &aebb) throw (SQLerror);
 	
  void updateDispoENr(int dinr) throw(SQLerror);
- void updateStk(long stk) throw(SQLerror);
+ void updateStk(long stk,bool instanz) throw(SQLerror);
+ void updateStkInstanz(long neu_stk,long alt_stk) throw(SQLerror);
  void updateLieferdatum(const Petig::Datum &ld) throw(SQLerror);	
  void updateLieferdatum(const Kalenderwoche &K) {updateLieferdatum(Petig::Datum(K));}	
+ void updateLieferdatumInstanz(const Petig::Datum &ld) throw(SQLerror);	
  void updatePreis(const Preis &pr) throw(SQLerror);
  void updateRabatt(int rb) throw(SQLerror);
  void setStatus(AufStatVal st) throw(SQLerror);		
- void setStatusInstanz(AufStatVal status,double part,int myznr=-1,int yourznr=-1);
+ void setInstanzen(AufStatVal status,Petig::Datum lieferdate,mengen_t part,int myznr=-1,int yourznr=-1);
  void split(int newmenge, const Petig::Datum &newld) throw(SQLerror);
 // void setPlanMeter(long gm) { geplante_menge=gm; }
  

@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung.h,v 1.2 2001/12/19 11:02:08 christof Exp $
+// $Id: AuftragsEntryZuordnung.h,v 1.3 2001/12/23 21:42:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -61,7 +61,9 @@ public:
                                 const AuftragBase& neuAuftrag,const int neuZnr,
                                 const int oldZnr=0);
     // Menge eines alten Eintrags ändern:
+private:
     void setMenge(const long menge,const AuftragBase& neuAuftrag,const int neuZnr);
+public:
     bool setMengeDiff(const long menge,const AuftragBase& neuAuftrag,const int neuZnr);
     // Zuordnung ändern:
     bool setKindZnr(const AuftragBase& neuAuftrag,const int neuZnr);

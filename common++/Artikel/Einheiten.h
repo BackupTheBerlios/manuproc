@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.4 2001/11/19 12:49:24 christof Exp $
+// $Id: Einheiten.h,v 1.5 2001/12/23 21:42:15 christof Exp $
 
 // diese Datei ... sollte vielleicht demnaechst aus einer Datenbanktabelle
 // erzeugt werden? Tabelle: Einheiten
@@ -29,7 +29,7 @@
 
 class Einheit
 {public:
-	enum Einheiten { Stueck, Meter, kg, Fdkm };
+	enum Einheiten { Stueck, Meter, kg, Fdkm, DM, Euro };
 	typedef enum Einheiten ID;
 	static const ID default_id=Stueck;
 

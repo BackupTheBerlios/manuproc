@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.pgcc,v 1.10 2001/12/19 11:02:08 christof Exp $
+// $Id: ArtikelBaum.pgcc,v 1.11 2001/12/23 21:42:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -261,7 +261,7 @@ void ArtikelBaum::reduceChildren(const AufEintragBase& AEB,
 //cout << AEB.Instanz()<<' '<<AEB.ZNr()<<'\t'
 //<<oldAEB.Instanz()<<' '<<oldAEB.ZNr()<<'\t'<<menge<<'\n';
 
-  const_cast<AufEintragBase&>(AEB).updateStk(AEB.getStueck()-menge);
+  const_cast<AufEintragBase&>(AEB).updateStk(AEB.getStueck()-menge,false);
   AufEintragZu(oldAEB).setMengeDiff(-menge,AEB,AEB.ZNr());
   std::list<AufEintragZu::st_reflist> L=AufEintragZu(AEB).get_Referenz_list(AEB,true);
 //cout << '\t'<<L.size()<<'\n';

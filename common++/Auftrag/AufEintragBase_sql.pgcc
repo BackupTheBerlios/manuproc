@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.15 2001/12/19 11:02:08 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.16 2001/12/23 21:42:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -47,6 +47,9 @@ void AufEintragBase::setStatus(AufStatVal _status) throw(SQLerror)
  if(_status == OPEN && entrystatus != UNCOMMITED) return; // nur UNCOMMITED->OPEN
 
  Transaction tr; 
+ exec sql lock auftragentry in exclusive mode;
+ SQLerror::test("setStatus: lock table auftragentry");
+  
  
  exec sql update auftragentry set status= :STATUS
 	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR 
@@ -57,7 +60,7 @@ void AufEintragBase::setStatus(AufStatVal _status) throw(SQLerror)
     setStatusAuftragBase(_status);
 
  // Status für die Instanzen setzen
- setStatusInstanz(_status,-1);
+ setInstanzen(_status,getLieferdatum(),getStueck());
 
  if(_status==OPEN)
   {try 
@@ -93,65 +96,84 @@ void AufEintragBase::setStatus(AufStatVal _status) throw(SQLerror)
  tr.commit(); 
 }
 
-void AufEintragBase::setStatusInstanz(AufStatVal status,double part,int myznr,int yourznr)
+void AufEintragBase::setInstanzen(AufStatVal status,Petig::Datum lieferdate,mengen_t Menge,int myznr,int yourznr)
 {
  std::list<AufEintragZu::st_reflist> KindListe = AufEintragZu(*this).get_Referenz_list(*this,true);
  for(std::list<AufEintragZu::st_reflist>::const_iterator i=KindListe.begin();i!=KindListe.end();++i)
   {
+    ArtikelBaum::menge_t f=ArtikelBaum(artikel).Faktor(i->AB);
+    mengen_t M=Menge*f;    
 cout << "setStatusInstanz: Ich bin  : "<<Instanz()<<' '<<Id()<<' '<<ZNr()<<'\t';
 cout << " Kinde ist: "<<i->AEB2.Instanz()<<' '<<i->AEB2.Id()<<' '<<i->AEB2.ZNr()<<'\n';
    AufEintragBase AEB(i->AEB2);
-   if(part==-1) part=i->Menge/double(AEB.getStueck());
-cout << "DEBUG 0\n";
-cout << i->Menge<<' '<<AEB.getStueck()<<'\n';
    // AufEintrag splitten und Anlegen in der Zuordnungsliste
    int znr=0,newznr=0; long menge=0;
-   if(!i->AEB2.existEntry(i->AB,AEB.getLieferdatum(),znr,newznr,menge,status))
+   if(!i->AEB2.existEntry(i->AB,lieferdate,znr,newznr,menge,status))
      {
 cout << "DEBUG 2\n";
-      menge=part*AEB.getStueck()+.5;  //+0.5 zum Runden
-cout << menge<<' '<<part<<' '<<AEB.getStueck()<<'\n';
-      znr=AEB.insertNewEntry(menge,AEB.getLieferdatum(),i->AB,
-                         status,Preis(),0,false);
+      znr=AEB.insertNewEntry(M,lieferdate,i->AB,status,Preis(),0,false);
       if(Instanz()==ppsInstanz::INST_KNDAUF) 
             AufEintragZu(*this).setKindZnr(AEB,znr);
       else 
          {
-            AufEintragZu(*this).AuftragsEntryZuordnung(i->Menge,AEB,znr,myznr);
-            AufEintragZu(*this).setMenge((1-part)*AEB.getStueck(),AEB,AEB.ZNr());
-//            AufEintragZu(*this).setMenge((1-part)*i->Menge,AEB,AEB.ZNr());
+            AufEintragZu(*this).AuftragsEntryZuordnung(M,AEB,znr,myznr);
+//            AufEintragZu(*this).setMenge(i->Menge-M,AEB,AEB.ZNr());
+            AufEintragZu(*this).setMengeDiff(-M,AEB,AEB.ZNr());
          }
 cout << "DEBUG 3\n";
      }
    else
      {
 //cout << "existEntry :"<<myznr<<' '<<yourznr<<' '<<znr<<' '<<newznr<<'\n';
-      AufEintragBase(class AufEintragBase2(AEB,znr)).updateStk(menge+part*AEB.getStueck()+0.5);
+      AufEintragBase(class AufEintragBase2(AEB,znr)).updateStk(menge+M,false);
       if(Instanz()==ppsInstanz::INST_KNDAUF) 
             AufEintragZu(*this).setKindZnr(AEB,znr);
       else 
          {
 //cout<<"Reduce:   "<<Id()<<' '<<ZNr()<<'\t'<<AEB.Id()<<' '<<AEB.ZNr()<<'\t'<<i->Menge<<'\n';
-            AufEintragZu(*this).setMengeDiff(-i->Menge,AEB,AEB.ZNr());
+            AufEintragZu(*this).setMengeDiff(-M,AEB,AEB.ZNr());
 //cout<<"Increase: "<<Id()<<' '<<myznr<<'\t'<<AEB.Id()<<' '<<znr<<'\n';
-            if(!AufEintragZu(class AufEintragBase2(*this,myznr)).setMengeDiff(-i->Menge,AEB,znr))
-                AufEintragZu(class AufEintragBase2(*this,myznr)).AuftragsEntryZuordnung(i->Menge,AEB,znr);
+            if(!AufEintragZu(class AufEintragBase2(*this,myznr)).setMengeDiff(M,AEB,znr))
+                AufEintragZu(class AufEintragBase2(*this,myznr)).AuftragsEntryZuordnung(M,AEB,znr);
          }
      }
-   AEB.updateStk((1-part)*AEB.getStueck());
-   AufEintragBase(i->AEB2).setStatusInstanz(status,part,znr,newznr);
+   AEB.updateStk(AEB.getStueck()-M,false);
+   AufEintragBase(i->AEB2).setInstanzen(status,lieferdate,M,znr,newznr);
   }
 }
 
 
-void AufEintragBase::updateStk(long stk) throw(SQLerror)
+void AufEintragBase::updateStk(long stk,bool instanz) throw(SQLerror)
 {
- if(status==OPEN)
+ if(status==OPEN || status==UNCOMMITED)
   {
+   Transaction tr;
+   exec sql lock auftragentry in exclusive mode;
+   SQLerror::test("updateStk: lock table auftragentry");
+
    AufEintragBase2::updateStk(stk,stk-bestellt,artikel,status);
+   if(instanz) updateStkInstanz(stk,bestellt);
    bestellt=stk;
+   tr.close();
   }
 }
+
+void AufEintragBase::updateStkInstanz(long neu_stk,long alt_stk) throw(SQLerror)
+{
+  std::list<AufEintragZu::st_reflist> KindListe = AufEintragZu(*this).get_Referenz_list(*this,true);
+  for(std::list<AufEintragZu::st_reflist>::const_iterator i=KindListe.begin();i!=KindListe.end();++i)
+   {
+     AufEintragBase AEB(i->AEB2);
+     ArtikelBaum::menge_t faktor = ArtikelBaum(ArtId()).Faktor(i->AB);
+//cout << i->AEB2.Instanz()<<' '<<i->AEB2.ZNr()<<'\t';
+//cout << i->Menge<<' '<<AEB.getStueck()<<' '<<getStueck()*faktor<<' '<<alt_stk*faktor<<' '<<neu_stk*faktor<<' '<<'\n';
+     long neue_menge=long(neu_stk*faktor+0.5);
+     long alte_menge=long(alt_stk*faktor+0.5);
+     AEB.updateStk(AEB.getStueck()+neue_menge-alte_menge,true);
+     AufEintragZu(*this).setMengeDiff(-long(i->Menge-neu_stk*faktor+.5),i->AEB2,i->AEB2.ZNr());
+   }
+}
+
 
 void AufEintragBase::updatePreis(const Preis &pr) throw(SQLerror)
 {exec sql begin declare section;
@@ -197,13 +219,18 @@ void AufEintragBase::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
  exec sql end declare section;
 
  Transaction tr;
-
+ exec sql lock auftragentry in exclusive mode;
+ SQLerror::test("updateLieferdatum: lock table auftragentry");
+  
  ld.write_postgres(LIEFERDATUM,sizeof LIEFERDATUM);
  
  exec sql update auftragentry set lieferdate= :LIEFERDATUM
  	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR
    and instanz=:INSTANZ;
  SQLerror::test("updateLiefDatum: update lieferdate in auftragentry");
+
+ //update Lieferdatum für Instanzen
+ setInstanzen(status,ld,getStueck());
 
  if(status==OPEN)
   {
@@ -263,7 +290,12 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
  // what if two people split concurrently seperate lines - second will fail
  exec sql lock auftragentry in exclusive mode;
  SQLerror::test("split: lock table auftragentry");
-   
+
+ insertNewEntry(newmenge,newld,artikel,status,preis,rabatt,true);
+ updateStk(bestellt-newmenge,true);
+#warning WAS IST MIT DER GELIEFERTEN MENGE
+ 
+/*   
  exec sql select (max(zeilennr))+1 into :ZEILENNR from auftragentry
 	where auftragid= :AUFTRAGID and instanz =:INSTANZ;
  SQLerror::test("split: select max(zeielnnr) auftragentry");
@@ -276,12 +308,15 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
 		:STATUS, :PREIS, :RABATT/100.0,
 		:PREISMENGE, :WAEHRUNG);
  SQLerror::test("split: insert into auftragentry");
-
+*/
+/*
  exec sql update auftragentry set bestellt= :BESTELLT_OLD,
 	geliefert= :GELIEFERT_OLD
 	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR_OLD
    and instanz=:INSTANZ;
  SQLerror::test("split: update auftragentry");
+*/
+
 
  if(STATUS==OPEN)
    {
