@@ -1,4 +1,4 @@
-/* $Id: KettenGarn_CP.cc,v 1.22 2004/07/06 14:27:33 christof Exp $ */
+/* $Id: KettenGarn_CP.cc,v 1.23 2004/07/06 15:42:03 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,184 +27,20 @@
 static const UniqueValue::value_t trace_channel=ManuProC::Tracer::channels.get();
 static ManuProC::Tracer::Environment trace_channel_e("DEBUG_KETTEN",trace_channel);
                   
-#if 0
-struct KG_compare
-{  bool operator()(const KettenGarn_CP &a,const KettenGarn_CP &b)
-   {  return a.index<b.index || (a.index==b.index
-   	  && (a.zeile<b.zeile));
-   }
-};
-
-struct intermediate_data : KettenGarn_CP
-{  // Fadenliste::const_iterator source; ?
-   unsigned min_max_fd;
-};
-
-std::vector<KettenGarn_CP> KettenGarn_CP::Load(ArtikelGang const &ag, unsigned laenge)
-{  Fadenliste fdl;
-   typedef std::vector<intermediate_data> vec_t;
-   vec_t result;
-   try {
-   Webangaben wa(ag.art);
-   wa.Load();
-   fdl.Load(wa);
-   }
-   catch (SQLerror &e)
-   {  return std::vector<KettenGarn_CP>();
-   }
-
-   // ermitteln!
-//   unsigned new_scheibe=20;
-   for (Fadenliste::const_iterator i=fdl.begin(); i!=fdl.end(); ++i)
-   {  intermediate_data x;
-      if (i->kettscheibe<1) continue;
-      
-      const Fd_Kettscheibe &ks=fdl.Kettscheibe(i->kettscheibe);
-      unsigned max_fadenzahl=ks.max_fadenzahl;
-      if (ag.gaenge==ks.ausn_gaenge && ks.ausn_maxfd) 
-         max_fadenzahl=ks.ausn_maxfd;
-      else if (ag.gaenge==ks.ausn_gaenge2 && ks.ausn_maxfd2) 
-         max_fadenzahl=ks.ausn_maxfd2;
-      
-      x.index=i->kettscheibe*2;
-      x.zeile=i->zeilennummer;
-      x.kettenzahl=ag.gaenge;
-      x.faeden=i->anzahl;
-      if (ag.gaenge==i->ausn_gaenge && i->ausn_faeden) 
-      	 x.faeden=i->ausn_faeden;
-      x.art=i->material;
-      x.laenge=laenge;
-      if (ks.verlaengern) 
-      {  if (x.laenge<10000) x.laenge+=100; // 3040/35/420 v. 15.1.04
-         else if (x.laenge<=12000 || cH_ArtikelBezeichnung(i->material)->Komponente(0).substr(0,10)=="Poly verst")
-            x.laenge+=200; // 3040/35/420 v. 15.1.04
-         else 
-            x.laenge+=500;
-      }
-      // 2do: wiederholungen 
-      x.wiederholungen=1;
-      for (Fadenliste::const_repiterator r=fdl.repbegin();r!=fdl.repend();++r)
-      {  if (r->start==r->end && r->start==i->zeilennummer)
-         {  // Sonderfall: Einzelwiederholung
-            x.faeden*=r->anzahl;
-         }
-         else if (r->start<=i->zeilennummer && i->zeilennummer<=r->end)
-         {  x.wiederholungen*=r->anzahl;
-         }
-      }
-      x.min_max_fd=max_fadenzahl;
-      // in gleich große Portionen teilen
-      if (max_fadenzahl && x.faeden>max_fadenzahl) // && !(x.kettenzahl&1))
-      {  unsigned ketten=(x.faeden*x.kettenzahl+max_fadenzahl-1)/max_fadenzahl;
-         unsigned klein=x.faeden*x.kettenzahl/ketten;
-         unsigned anz_klein=(klein+1)*ketten-x.faeden*x.kettenzahl;
-         if (anz_klein!=ketten)
-         {  x.faeden=klein+1;
-            x.kettenzahl=ketten-anz_klein;
-            result.push_back(x);
-            x.index++;
-         }
-         x.faeden=klein;
-         x.kettenzahl=anz_klein;
-      }
-      result.push_back(x);
-   }
-   // sortieren?
-   std::sort(result.begin(),result.end(),KG_compare());
-   // zusammenfassen?
-   for (vec_t::iterator i=result.begin();i!=result.end();)
-   {  vec_t::iterator b=i+1;
-      if (b==result.end()) break;
-      if (i->index==b->index && i->art==b->art && i->kettenzahl==b->kettenzahl
-      		&& i->laenge==b->laenge && i->wiederholungen==b->wiederholungen)
-      {  i->faeden+=b->faeden;
-         if (b->min_max_fd<i->min_max_fd) i->min_max_fd=b->min_max_fd;
-         i=result.erase(b);
-      }
-      else ++i;
-   }
-   for (vec_t::iterator i=result.begin();i!=result.end();)
-   {  vec_t::iterator ks_end=i;
-      unsigned min_max_fd=i->min_max_fd;
-      unsigned anz_fd=0;
-      while (ks_end!=result.end() && ks_end->index==i->index)
-      {  if (ks_end->min_max_fd<min_max_fd) min_max_fd=ks_end->min_max_fd;
-         anz_fd+=ks_end->faeden*ks_end->wiederholungen;
-         assert(ks_end->kettenzahl==i->kettenzahl);
-         ++ks_end;
-      }
-      ManuProC::Trace(trace_channel,"",NV("min_max_fd",min_max_fd),
-      		NV("anz_fd",anz_fd));
-      unsigned alte_kettenzahl=i->kettenzahl;
-      unsigned neue_kettenzahl=alte_kettenzahl;
-      // be a little fuzzy (+1)
-      // weg?
-      if ((2*anz_fd == min_max_fd+1 || 3*anz_fd == min_max_fd+1) && ks_end-i==1)
-      {  neue_kettenzahl=(anz_fd*alte_kettenzahl+min_max_fd-1)/(min_max_fd+1);
-      }
-      else if (2*anz_fd <= min_max_fd && ks_end-i==1)
-      {  neue_kettenzahl=(anz_fd*alte_kettenzahl+min_max_fd-1)/min_max_fd;
-         if (!(ag.gaenge&1) && (neue_kettenzahl&1)
-         	// Sonderfall: Falls es _genau_ auf eine Kette passt nur eine
-         	&& (neue_kettenzahl>1 || min_max_fd!=alte_kettenzahl*anz_fd))
-         {  ManuProC::Trace(trace_channel,"",NV("neue_kettenzahl(Zwischenw.)",neue_kettenzahl));
-            ++neue_kettenzahl;
-         }
-      }
-      // aus 6 mach 4 (weg?)
-      else if (ks_end-i==1 && alte_kettenzahl==6 && anz_fd+anz_fd/2<=min_max_fd)
-         neue_kettenzahl=4;
-      // aus 8 mach 6 :-O (weg?)
-      else if (ks_end-i==1 && alte_kettenzahl==8 && (anz_fd*4/3)==min_max_fd)
-         neue_kettenzahl=6;
-      ManuProC::Trace(trace_channel,"",NV("neue_kettenzahl",neue_kettenzahl));
-      if (neue_kettenzahl!=alte_kettenzahl) // geht es auf?
-      {  for (vec_t::iterator j=i;j!=ks_end;++j)
-            if ((alte_kettenzahl*j->faeden) % neue_kettenzahl) 
-               neue_kettenzahl=alte_kettenzahl;
-      }
-      if (neue_kettenzahl!=alte_kettenzahl) // dann kombinieren?
-      {  for (vec_t::iterator j=i;j!=ks_end;++j)
-         {  j->kettenzahl=neue_kettenzahl;
-            j->faeden=(alte_kettenzahl*j->faeden)/ neue_kettenzahl;
-         }
-      }
-      i=ks_end;
-   }
-   std::vector<KettenGarn_CP> real_result;
-   real_result.reserve(result.size());
-   for (vec_t::const_iterator i=result.begin();i!=result.end();++i)
-      real_result.push_back(*i);
-   return real_result;
-}
-
-bool KettenGarn::operator==(const KettenGarn_CP &b) const throw()
-	{  return Index()==b.Index() && 
-	          Artikel()==b.Artikel() &&
-	          Faeden()==b.Faeden() &&
-	          Kettenzahl()==b.Kettenzahl() &&
-	          Laenge()==b.Laenge() ;}
-bool KettenGarn::operator<(const KettenGarn_CP &b) const throw()
-	{  return (Index()<b.Index()) || 
-	          (Index()==b.Index() && Artikel()<b.Artikel() );}
-#endif
-
-#if 1
-
 namespace {
 struct map_index_t
-{	ArtikelGang ag,ag2;
+{	std::vector<ArtikelGang> agv;
         unsigned scheibe;
         
-        map_index_t(const ArtikelGang &a, unsigned s) : ag(a), scheibe(s) {}
-        map_index_t(const ArtikelGang &a, const ArtikelGang &b, unsigned s) 
-          : ag(a), ag2(b), scheibe(s) {}
+        map_index_t(const ArtikelGang &a, unsigned s) : scheibe(s) 
+        {  agv.push_back(a);
+        }
         bool operator==(const map_index_t &b) const
-        {  return ag==b.ag && ag==b.ag2 && scheibe==b.scheibe; }
+        {  return scheibe==b.scheibe && agv==b.agv; }
         bool operator<(const map_index_t &b) const
-        {  return ag<b.ag ||
-              (ag==b.ag && ag2<b.ag2) ||
-              (ag==b.ag && ag2==b.ag2 && scheibe<b.scheibe); 
+        {  if (agv.size()!=b.agv.size()) return agv.size()<b.agv.size();
+           if (agv!=b.agv) return agv<b.agv;
+           return scheibe<b.scheibe;
         }
         const map_index_t &operator++()
         {  ++scheibe;
@@ -213,10 +49,20 @@ struct map_index_t
 };
 }
 
+static void GleicheFaedenZusammenfassen(Kettscheibe &x)
+{  for (std::vector<KS_Garn>::iterator j=x.faeden.begin();j!=x.faeden.end();)
+      {  std::vector<KS_Garn>::iterator b=j+1;
+         if (b==x.faeden.end()) break;
+         if (j->material==b->material && j->wiederholungen==b->wiederholungen)
+         {  j->faeden+=b->faeden;
+            j=x.faeden.erase(b);
+         }
+         else ++j;
+      }
+}
+
 std::vector<Kettscheibe> Kettscheibe::Load(const std::vector<ArtikelGang> &ag, unsigned laenge)
-{  typedef std::vector<Kettscheibe> vec_t;
-   vec_t result;
-   typedef std::map<map_index_t,Kettscheibe> map_t;
+{  typedef std::map<map_index_t,Kettscheibe> map_t;
    map_t intermed;
    try {
    
@@ -282,6 +128,7 @@ std::vector<Kettscheibe> Kettscheibe::Load(const std::vector<ArtikelGang> &ag, u
          {  if (r->start<=j->zeile && j->zeile<=r->end)
             {  x.fadenzahl+=(r->anzahl-1)*j->wiederholungen*j->faeden;
                j->wiederholungen*=r->anzahl;
+               x.wiederholungen.push_back(*r);
             }
          }
       }
@@ -290,17 +137,7 @@ std::vector<Kettscheibe> Kettscheibe::Load(const std::vector<ArtikelGang> &ag, u
   
    // gleiche aufeinanderfolgende Fäden zusammenfassen
    for (map_t::iterator i=intermed.begin();i!=intermed.end();++i)
-   {  Kettscheibe &x=i->second;
-      for (std::vector<KS_Garn>::iterator j=x.faeden.begin();j!=x.faeden.end();)
-      {  std::vector<KS_Garn>::iterator b=j+1;
-         if (b==x.faeden.end()) break;
-         if (j->material==b->material && j->wiederholungen==b->wiederholungen)
-         {  j->faeden+=b->faeden;
-            j=x.faeden.erase(b);
-         }
-         else ++j;
-      }
-   }
+      GleicheFaedenZusammenfassen(i->second);
    // Polyesterketten etwas weniger verlängern
    for (map_t::iterator i=intermed.begin();i!=intermed.end();++i)
    {  Kettscheibe &x=i->second;
@@ -343,6 +180,36 @@ reloop:
             goto reloop;
          }
       }
+      if (x.max_fadenzahl && 2*x.fadenzahl<=x.max_fadenzahl)
+      {  map_t::iterator j=i;
+         bool prefer_same_index=false;
+         do
+         {  prefer_same_index=!prefer_same_index;
+           for (++j;j!=intermed.end();++j)
+           {  Kettscheibe &y=j->second;
+              // gleichartige kombinieren
+              // zuerst gleichen index probieren
+              if (x.max_fadenzahl==y.max_fadenzahl
+                  && (!prefer_same_index || x.index==y.index)
+                  && x.fadenzahl+y.fadenzahl<=x.max_fadenzahl
+                  && x.laenge==y.laenge && x.kettenzahl==y.kettenzahl
+                  && x.wiederholungen.empty() && y.wiederholungen.empty())
+              {  map_index_t newidx(i->first);
+                 std::copy(y.artikel.begin(),y.artikel.end(),back_inserter(newidx.agv));
+                 // hopefully i+j outlive the modifications to intermed
+                 Kettscheibe &z=insert_between(intermed,newidx);
+                 z=x;
+                 z.fadenzahl+=y.fadenzahl;
+                 std::copy(y.faeden.begin(),y.faeden.end(),back_inserter(z.faeden));
+                 std::copy(y.artikel.begin(),y.artikel.end(),back_inserter(z.artikel));
+                 GleicheFaedenZusammenfassen(z);
+                 intermed.erase(j);
+                 intermed.erase(i);
+                 goto reloop;
+              }
+           }
+         } while (prefer_same_index);
+      }
    }
    // aufteilen
    for (map_t::iterator i=intermed.begin();i!=intermed.end();++i)
@@ -365,17 +232,13 @@ reloop:
       }
    }
    
+   std::vector<Kettscheibe> result;
    for (map_t::const_iterator i=intermed.begin();i!=intermed.end();++i)
    {  if (i->second.index) result.push_back(i->second);
    }
-   std::vector<Kettscheibe> real_result;
-   real_result.reserve(result.size());
-   for (vec_t::const_iterator i=result.begin();i!=result.end();++i)
-      real_result.push_back(*i);
-   return real_result;
+   return result;
   }
   catch (SQLerror &e)
   {  return std::vector<Kettscheibe>();
   }
 }
-#endif
