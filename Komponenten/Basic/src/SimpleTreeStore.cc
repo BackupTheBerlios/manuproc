@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.30 2003/10/20 07:39:22 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.31 2003/10/20 07:41:30 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -173,6 +173,7 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
    getModel().signal_redraw_needed().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
    getModel().signal_line_appended().connect(SigC::slot(*this,&SimpleTreeStore::on_line_appended));
    getModel().signal_line_to_remove().connect(SigC::slot(*this,&SimpleTreeStore::on_line_removed));
+   signal_save.connect(SigC::slot(*this,&SimpleTreeStore::save_remembered1));
   vec_hide_cols.resize(Cols());
   for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
     (*i) = true;
@@ -728,8 +729,8 @@ void SimpleTreeStoreNode::swap(SimpleTreeStoreNode &b)
 {  std::swap(children,b.children);
    std::swap(row,b.row);
    std::swap(leafdata,b.leafdata);
-   std::swap(expanded,b.expanded);
-   std::swap(expanding_column,b.expanding_column);
+//   std::swap(expanded,b.expanded);
+//   std::swap(expanding_column,b.expanding_column);
    std::swap(parent,b.parent);
    std::swap(deep,b.deep);
    std::swap(childrens_deep,b.childrens_deep);

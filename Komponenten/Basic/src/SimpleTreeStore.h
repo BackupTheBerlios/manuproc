@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.31 2003/10/20 07:39:22 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.32 2003/10/20 07:41:30 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,6 +30,7 @@
 #include <list>
 #include <utility>
 #include <map>
+#include <BaseObjects/Model.h>
 
 // for easily accessing model methods
 class SimpleTreeModel_Proxy
@@ -59,8 +60,8 @@ struct SimpleTreeStoreNode
 	map_t children;
 	Handle<TreeRow> row; // die Datenstruktur hinter nodes
 	cH_RowDataBase leafdata; // die Datenstruktur hinter leaves
-	bool expanded;
-	int expanding_column;
+//	bool expanded;
+//	int expanding_column; = childrens_deep
 	SimpleTreeStoreNode *parent;
 	unsigned deep,childrens_deep;
 	// REMEMBER to change swap implementation if you add things here!
@@ -84,14 +85,6 @@ struct SimpleTreeStoreNode
 namespace std { // sigh
 void swap(SimpleTreeStoreNode &a,SimpleTreeStoreNode &b);
 };
-
-#if 0
-struct SimpleTreeModel_Class : public Glib::Class
-{public:
-	const Glib::Class& init();
-	static void class_init_function(void* g_class, void* class_data);
-};
-#endif
 
 class SimpleTreeStore : public Glib::Object, public Gtk::TreeModel, public SimpleTreeModel_Proxy
 {public:
@@ -124,13 +117,13 @@ private:
 
 	guint columns;
 	guint max_column;
-	guint showdeep;
+	guint showdeep;  // nicht hier benötigt
 	std::vector<bool> vec_hide_cols; // index is index
 	gpointer gp;
 
 	bool auffuellen_bool:1; 
-	bool expandieren_bool:1; 
-	bool color_bool:1; // or in Widget?, kann in SimpleTree, muss dann aber mitgespeichert werden
+	bool expandieren_bool:1;
+	bool color_bool; // or in Widget?, kann in SimpleTree, muss dann aber mitgespeichert werden
 
 	std::string mem_prog,mem_inst;
 	
@@ -142,6 +135,8 @@ private:
 
 	SigC::Signal1<void,guint> title_changed;
 	SigC::Signal0<void> spaltenzahl_geaendert;
+	SigC::Signal1<void,gpointer> signal_save;
+	void save_remembered1(gpointer) { save_remembered(); }
 	void on_title_changed(guint idx);
 	
 	SigC::Signal0<void> needs_redisplay;
@@ -246,6 +241,8 @@ public:
 	unsigned IndexFromColumn(unsigned c) const
 	{  return currseq[c]; }
 	
+	
+	
 	bool ColumnVisible(unsigned idx) const
 	{  return vec_hide_cols.at(idx); }
 	void set_tree_column_visibility(unsigned index,bool visible);
@@ -256,6 +253,12 @@ public:
 	
 	// all lines have changed - redisplay is needed!
 	SigC::Signal0<void> &signal_redisplay() {  return needs_redisplay; }
+	
+	// these are accessors for SimpleTreeStates
+	Model_ref<guint> ShowDeep() { return Model_ref<guint>(showdeep,signal_save); }
+	Model_ref<bool> ShowColor() { return Model_ref<guint>(color_bool,signal_save); }
+	
+	unsigned visible_size() { return currseq.size(); }
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.18 2003/10/20 07:39:22 christof Exp $
+// $Id: SimpleTree.hh,v 1.19 2003/10/20 07:41:30 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,14 +25,15 @@
 
 class SimpleTreeStore_Proxy
 {protected:
-	SimpleTreeStore *ptr;
 	Glib::RefPtr<SimpleTreeStore> sts;
 public:
 	typedef SimpleTreeStore::sequence_t sequence_t;
 	typedef SimpleTreeStore::const_iterator const_iterator;
 
 	SimpleTreeStore_Proxy(unsigned int max_cols) : 
-		ptr(new SimpleTreeStore(max_cols)), sts(ptr) {}
+		sts(new SimpleTreeStore(max_cols)) 
+	{ sts->reference(); // the ptr ctor seems to not take a reference
+	}
 
 	void set_remember(const std::string &program, const std::string &instance) {  sts->set_remember(program,instance); }
 	guint Cols() const  { return sts->Cols();}
@@ -41,9 +42,9 @@ public:
 	void setDataVec(const std::vector<cH_RowDataBase> &d) {  sts->getModel().setDataVec(d); }
 	void setTitles(const std::vector<std::string>& T) {  sts->getModel().setTitles(T); }
 	const Glib::RefPtr<SimpleTreeStore> &getStore() { return sts; }
-	const Glib::RefPtr<Gtk::TreeModel> getTreeModel() { return Glib::RefPtr<Gtk::TreeModel>(ptr); }
+	const Glib::RefPtr<Gtk::TreeModel> getTreeModel() { return Glib::RefPtr<Gtk::TreeModel>(sts); }
 	SimpleTreeModel &getModel() { return sts->getModel(); }
-	const Glib::RefPtr<const SimpleTreeStore> getStore() const { return Glib::RefPtr<const SimpleTreeStore>(ptr); }
+	const Glib::RefPtr<const SimpleTreeStore> getStore() const { return Glib::RefPtr<const SimpleTreeStore>(sts); }
 	const std::string getColTitle(guint idx) const { return sts->getColTitle(idx); }
 	void set_NewNode(SimpleTreeStore::NewNode_fp n) { sts->set_NewNode(n); }
 
