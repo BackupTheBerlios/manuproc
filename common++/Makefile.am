@@ -22,6 +22,7 @@ libcommon___a_LIBADD= \
 		Artikel/Preis.o \
 		Artikel/Prozess_sql.o \
 		Artikel/Prozesspreis.o \
+		Artikel/ArtikelEAN_sql.o \
 		Auftrag/AufEintragBase_sql.o \
 		Auftrag/AufEintragBase.o \
 		Auftrag/AufEintrag.o \
@@ -75,7 +76,12 @@ libcommon___a_LIBADD= \
 		Instanzen/Produktionsdauer.o \
 		Instanzen/Produziert.o \
 		Instanzen/ppsInstanz_sql.o \
+      Ketten/ArtikelGang.o \
+      Ketten/ArtikelGang_sql.o \
 		Ketten/Kette.o \
+		Ketten/KettenGarn.o \
+		Ketten/Kettscheibe.o \
+		Ketten/Kettscheibe_sql.o \
 		Ketten/KettplanKette.o \
 		Ketten/KettplanKette2.o \
 		Ketten/KpK_get_artikel.o \

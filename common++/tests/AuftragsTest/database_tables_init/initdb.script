@@ -21,6 +21,7 @@ for i in \
    auftragsentryzuordnung \
    einheiten \
    extbezschema \
+   global_settings \
    ketten \
    ketten_kettid_seq \
    kunden \

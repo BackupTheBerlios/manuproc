@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.14 2002/06/20 06:29:52 christof Exp $
+# $Id: Makefile.am,v 1.15 2002/09/02 13:04:03 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -20,12 +20,14 @@ BUILT_SOURCES=$(BUILT_SOURCES_P)
 BUILT_SOURCES_P=ArtikelBaum_sql.cc ArtikelBezeichnung.cc \
 	Misc.cc Aufmachung_sql.cc Prozesspreis.cc \
 	Prozess_sql.cc ArtikelTyp.cc Einheiten.cc ArtikelStamm.cc \
-	Artikelpreis_sql.cc ArtikelDispo_sql.cc
+	Artikelpreis_sql.cc ArtikelDispo_sql.cc \
+	ArtikelEAN_sql.cc
 
 include_HEADERS=ArtikelBase.h ArtikelBaum.h ArtikelBezeichnung.h \
 	Artikelpreis.h Aufmachung.h Misc.h Preis.h Prozess.h Prozesspreis.h \
 	Einheiten.h ArtikelTyp.h ArtikelStamm.h \
-	ArtikelMengeSumme.h ArtikelDispo.h
+	ArtikelMengeSumme.h ArtikelDispo.h \
+	ArtikelEAN.h
 
 CLEANFILES= *~ *.pct *.prot $(BUILT_SOURCES_P) *_p.cc
 

@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.10 2002/07/15 15:37:53 christof Exp $
+// $Id: steuerprogramm.cc,v 1.11 2002/09/02 13:04:04 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -155,7 +155,6 @@ void auftragstests(e_mode mode)
       AufEintrag(AEB).abschreiben(120);
       C.teste(Check::Kunden_Ueberlieferung);
       cout << "Kunde Überlieferung\n";
-
       break;
      }
     case ZweiAuftraege:
@@ -187,22 +186,27 @@ void auftragstests(e_mode mode)
 
        AufEintrag(AEB).setStatus(CLOSED,UID);
        C.teste(Check::ZweiterAuftrag_frueheresDatum_closed);
-       cout << "Statussänderung (Closed) beendet\n\n";
+       cout << "Statussänderung(2) (Closed) beendet\n\n";
 
 
-      Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
-      int weberei_znr=1;
-      AufEintrag AEP(AufEintragBase(ppsInstanzID::Weberei,AuftragBase::ungeplante_id,weberei_znr));
-      assert(AEP.getStueck()==AEP.getRestStk());
-      AEP.Planen(UID,7000,true,PA,PLANDATUM5);
-      C.teste(Check::Planen_WebereiD);
-      cout << "Planen der Weberei beendet\n\n";
+       Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
+       int weberei_znr=1;
+       AufEintrag AEP(AufEintragBase(ppsInstanzID::Weberei,AuftragBase::ungeplante_id,weberei_znr));
+       assert(AEP.getStueck()==AEP.getRestStk());
+       AEP.Planen(UID,7000,true,PA,PLANDATUM5);
+       C.teste(Check::Planen_WebereiD);
+       cout << "Planen der Weberei beendet\n\n";
 
+       AE.setStatus(CLOSED,UID);
+       C.teste(Check::ErsterAuftrag_frueheresDatum_closed);
+       cout << "Statussänderung(1) (Closed) beendet\n\n";
        
       break;
      }    
     case JumboLager:
-     { LagerPlatz LP(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ);
+     { 
+#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
+       LagerPlatz LP(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ);
        LagerPlatz LP2(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ+1);
        KettplanKette KK=KettplanKette(Kette(MASCHIENE,SCHAERDATUM));
        vector<JumboRolle> JR=JumboRolle::create(KK);
@@ -238,6 +242,7 @@ void auftragstests(e_mode mode)
        JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,"TEST",&zp1);
        C.teste(Check::Jumbo_doppelt);
        break;
+#endif
      }
     case None: assert(!"Never get here\n");
    }

@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.20 2002/07/15 15:37:53 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.21 2002/09/02 13:04:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -50,7 +50,7 @@ void AufEintrag::abschreiben(mengen_t menge,
   int AUFZNR=ZNr();
   int INSTANZ=InstanzID();
   int STATUS=getEntryStatus();
-  int GELIEFERT=(int)menge+getGeliefert();
+  int GELIEFERT=(int)(menge+getGeliefert());
  exec sql end declare section;
 //if(Id()==2) ECPGdebug(1,stdout);
 
@@ -60,6 +60,10 @@ void AufEintrag::abschreiben(mengen_t menge,
     throw(SQLerror(__FILELINE__,-1,"Auftragszeile ist nicht offen sondern "+itos(STATUS)));
  if(menge<0 && getEntryStatus()==(AufStatVal)UNCOMMITED) 
     throw(SQLerror(__FILELINE__,-1,"Auftragszeile ist nicht bestätigt"));
+ if (menge<0 && -menge>getGeliefert()) 
+ {  menge=-getGeliefert(); GELIEFERT=0; }
+
+ if (!menge) return;
 
  AufStatVal oldstatus=getEntryStatus();
 
@@ -72,11 +76,16 @@ void AufEintrag::abschreiben(mengen_t menge,
  exec sql update auftragentry set geliefert= :GELIEFERT, status= :STATUS
    where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFID,:AUFZNR);
  SQLerror::test(__FILELINE__);
- 
+
+// TODO: Jacek, das muss später rein!
 #ifdef PETIG_EXTENSIONS
-  if(Instanz()==ppsInstanzID::Kundenauftraege)
-   {
-      Produziert(class ArtikelStamm(artikel).BestellenBei(),artikel,menge,getuid()).NichtSelbst();
+  if(Instanz()==ppsInstanzID::Kundenauftraege && menge>0)
+   { static bool tested=false; // nur einmal testen
+     assert(tested || cH_ppsInstanz(ppsInstanzID::Kundenauftraege)->ProduziertSelbst());
+     if (!tested) tested=true;
+     // das ist noch nicht für negative Produktion ausgereift ... oder? 
+     // zumindest ist es noch nicht getestet ... MAT
+     Produziert(class ArtikelStamm(artikel).BestellenBei(),artikel,menge,getuid()).NichtSelbst();
    }
 #endif
 
@@ -117,8 +126,8 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
  SQLerror::test("setStatus: lock table auftragentry");
 
  if(newstatus == CLOSED || newstatus == STORNO)
-     updateStkDiffInstanz__(uid,-getRestStk(),false/*0,0*/);    
-  
+     updateStkDiffInstanz__(uid,-getRestStk(),r_Closed/*0,0*/);    
+
  std::string sqlcommand = "update auftragentry set status="+itos(newstatus);
  if(uid) sqlcommand+=", lasteditdate = now(), lastedit_uid="+itos(uid);
  sqlcommand +=" where (instanz,auftragid,zeilennr)=("+itos(Instanz()->Id())
@@ -128,6 +137,7 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
  SQLerror::test("setStatus: update auftragentry");
  AufStatVal oldentrystatus=entrystatus;
  entrystatus=newstatus;
+
 
  if(newstatus==OPEN && auftragstatus==UNCOMMITED)
     setStatusAuftragBase(newstatus);
@@ -144,6 +154,8 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
     else 
       InstanzAuftraegeAnlegen(artikel,ZNr(),lieferdatum,newstatus,uid,bestellt);
    }
+
+
  if(newstatus==OPEN)
    {
     pps_ChJournalEntry::newChange(
@@ -171,7 +183,7 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,int uid,Petig::Datum lieferda
  std::list<AufEintragZu::st_reflist> KindListe = AufEintragZu(*this).get_Referenz_list(*this,true);
  for(std::list<AufEintragZu::st_reflist>::const_iterator i=KindListe.begin();i!=KindListe.end();++i)
   {
-   ArtikelBaum::menge_t f=ArtikelBaum(artikel).Faktor(i->Art);
+//   ArtikelBaum::menge_t f=ArtikelBaum(artikel).Faktor(i->Art);
    mengen_t Mauftrag=AufEintrag(i->AEB).getRestStk();
    mengen_t Mzuordnung=i->Menge;
    AufEintrag AE(i->AEB);
@@ -186,7 +198,7 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,int uid,Petig::Datum lieferda
       else 
          {
             AufEintragZu(*this).Neu(neuAEB,Mzuordnung,myznr);
-            mengen_t mtt=AufEintragZu(*this).setMengeDiff__(AE,-Mzuordnung);
+            AufEintragZu(*this).setMengeDiff__(AE,-Mzuordnung);
          }
      }
    else
@@ -200,10 +212,10 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,int uid,Petig::Datum lieferda
          {
             mengen_t mts=AufEintragZu(*this).setMengeDiff__(AE,-Mzuordnung);
             assert(mts==-Mzuordnung);
-             AufEintragZu(class AufEintragBase(*this,myznr)).Neu(AEBZ,Mzuordnung); // 'Neu' versucht erst ein 'update'
+            AufEintragZu(class AufEintragBase(*this,myznr)).Neu(AEBZ,Mzuordnung); // 'Neu' versucht erst ein 'update'
          }
      }
-   mengen_t mt=AE.updateStkDiff__(uid,-Mauftrag,false,false); // macht auch das Lager
+   AE.updateStkDiff__(uid,-Mauftrag,false,r_Standard); // macht auch das Lager
    if(auftragstatus==UNCOMMITED && newstatus==OPEN ) 
       AE.setStatusAuftragBase(newstatus);
 
@@ -218,7 +230,7 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,int uid,Petig::Datum lieferda
 }
 
 
-AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool instanzen,bool produziert
+AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool instanzen,e_reduce_reason reason
 /*   void (*callback)(void *,st_problems),void* argument*/) throw(SQLerror)
 {
  if(menge==mengen_t(0))  return menge;
@@ -233,7 +245,7 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
 //ECPGdebug(false,0);
 
    if(instanzen)
-      updateStkDiffInstanz__(uid,mt,produziert/*,callback,argument*/);
+      updateStkDiffInstanz__(uid,mt,reason/*,callback,argument*/);
 
    bestellt+=menge;
 
@@ -244,41 +256,44 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
 }
 
 
-void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,bool produziert /*void (*callback)(void *,st_problems),void* argument*/) throw(SQLerror)
+void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,e_reduce_reason reason /*void (*callback)(void *,st_problems),void* argument*/) throw(SQLerror)
 {
-  std::list<AufEintragZu::st_reflist> KindListeU = AufEintragZu(*this).get_Referenz_list_ungeplant();
+ std::list<AufEintragZu::st_reflist> KindListeU = AufEintragZu(*this).get_Referenz_list_ungeplant();
+// std::list<AufEintragZu::st_reflist> KindListeG = AufEintragZu(*this).get_Referenz_list(*this,true);
  try{
   std::vector<ArtikelBase> VA;
   std::list<AufEintragZu::st_reflist> ZU;
-  for(std::list<AufEintragZu::st_reflist>::iterator i=KindListeU.begin();i!=KindListeU.end();++i)
-   {
-     // Nach dem Planen kann es zu einem Auftrag mehrere Kindaufträge 
-     // mit demselben Artikel geben, nur bei EINEM darf die Menge geändert
-     // werden
-     std::vector<ArtikelBase>::iterator j=std::find(VA.begin(),VA.end(),i->Art);
-     if(j!=VA.end()) continue; // Artikel schon bekannt
-     // Nur wenn es keinen mit einer Menge!=null gibt diesen erhöhen.
-     std::list<AufEintragZu::st_reflist>::iterator e=i;
-     if(i->Menge!=mengen_t(0) || (ZU.empty() && KindListeU.end()==++e) )
-      {                                         
-        VA.push_back(i->Art);
-        ZU.push_back(*i);
-      }
-   }
+  if(reason==r_Standard || reason==r_Closed) ZU=KindListeU;
+  else
+   for(std::list<AufEintragZu::st_reflist>::iterator i=KindListeU.begin();i!=KindListeU.end();++i)
+    {
+      // Nach dem Planen kann es zu einem Auftrag mehrere Kindaufträge 
+      // mit demselben Artikel geben, nur bei EINEM darf die Menge geändert
+      // werden
+      std::vector<ArtikelBase>::iterator j=std::find(VA.begin(),VA.end(),i->Art);
+      if(j!=VA.end()) continue; // Artikel schon bekannt
+      // Nur wenn es keinen mit einer Menge!=null gibt diesen erhöhen.
+      std::list<AufEintragZu::st_reflist>::iterator e=i;
+      if(i->Menge!=mengen_t(0) || (ZU.empty() && KindListeU.end()==++e) )
+       {                                         
+         VA.push_back(i->Art);
+         ZU.push_back(*i);
+       }
+     }
 
   for(std::list<AufEintragZu::st_reflist>::iterator i=ZU.begin();i!=ZU.end();++i)
    {
      ArtikelBaum::faktor_t faktor = ArtikelBaum(ArtId()).Faktor(i->Art);
      AuftragBase::mengen_t menge=faktor*oldmenge;
      AufEintrag AE(i->AEB);
-     mengen_t mt=AE.updateStkDiff__(uid,menge,true,produziert/*,callback,argument*/);
+     mengen_t mt=AE.updateStkDiff__(uid,menge,true,reason/*,callback,argument*/);
      AufEintragZu(*this).setMengeDiff__(i->AEB,menge);
 
      if(mt!=mengen_t(menge)) // es konnte nicht alles bei ungeplanten reduziert werden
       {
         AuftragBase::mengen_t restmenge=mt-menge;
         assert(restmenge>AuftragBase::mengen_t(0));
-        i->AEB.move_menge_to_dispo_zuordnung_or_lager(restmenge,i->Art,uid,produziert);
+        AE.move_menge_to_dispo_zuordnung_or_lager(restmenge,uid,reason);
       }
     }
 
@@ -306,18 +321,26 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,bool produzier
            if(M>restmenge) M=restmenge;
            AufEintragZu(j->AEB).Neu(i->AEB,-M);
            j->AEB.updateStkDiffBase__(uid,-M);
+//cout << *this<<'\t'<<i->AEB<<'\t'<<j->AEB<<'\t'<<M<<'\n';
          }
         AufEintragZu(*this).Neu(i->AEB,M);
         updateStkDiffBase__(uid,-M);
         restmenge-=M;
+
+//        if(reason==r_Closed || reason==r_Standard)
+//            verplante_menge_freigeben_nach_abbestellung(KindListeG,i->Menge,uid);
+
         if(restmenge==mengen_t(0)) break;
       }
    }  
-
+/*
+try{
+cH_ppsInstanz _I_(ppsInstanzID::Weberei);
+AufEintragBase _aeb_(_I_,2,1);
+cout <<"D"<< AufEintrag(_aeb_).getStueck()<<'\n';
+}catch(std::exception &e){}
+*/
 }
-
-
-
 
 void AufEintrag::updatePreis(const Preis &pr) throw(SQLerror)
 {exec sql begin declare section;
@@ -414,7 +437,7 @@ int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool 
  SQLerror::test("split: lock table auftragentry");
 
 
- mengen_t mt=updateStkDiff__(uid,-newmenge,true,false/*,callback,argument*/);
+ mengen_t mt=updateStkDiff__(uid,-newmenge,true,r_Standard/*,callback,argument*/);
  assert(mt==-newmenge);
 
  int ZEILENNR;
@@ -497,8 +520,6 @@ int AufEintrag::Planen(int uid,mengen_t menge,bool reduce_old,const AuftragBase 
        }
       else
        {
-cout << *this<<' '<<getRestStk()<<' '<<'\t'<<menge<<'\t';
-cout << AufEintragBase(zielauftrag,znr)<<'\n';         
        }
     }
 

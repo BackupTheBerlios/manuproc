@@ -6,15 +6,17 @@ noinst_LIBRARIES=libKetten.a
 
 includedir=@includedir@/Ketten
 
-libKetten_a_SOURCES=Kette.cc KettplanKette.cc \
-		$(BUILT_SOURCES)
+libKetten_a_SOURCES=Kette.cc KettplanKette.cc Kettscheibe.cc ArtikelGang.cc \
+		$(BUILT_SOURCES) KettenGarn.cc
 	
 libKetten.a: $(libKetten_a_OBJECTS) $(libKetten_a_DEPENDENCIES)
 	touch $@
 
-BUILT_SOURCES=KettplanKette2.cc KpK_get_artikel.cc
+BUILT_SOURCES=KettplanKette2.cc KpK_get_artikel.cc \
+   ArtikelGang_sql.cc Kettscheibe_sql.cc
 
-include_HEADERS=ArtikelGang.h Kette.h KettplanKette.h Maschtyp.h
+include_HEADERS=ArtikelGang.h Kette.h KettplanKette.h Maschtyp.h \
+   Kettscheibe.h
 
 CLEANFILES= *~ *.pct *.prot $(BUILT_SOURCES)
 

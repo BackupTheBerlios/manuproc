@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.12 2002/07/15 15:37:52 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.13 2002/09/02 13:04:03 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,6 +40,8 @@
 #include <Aux/itos.h>
 //#include <Lieferschein/Lieferschein.h>
 class cH_Lieferschein;
+#include <Auftrag/AufEintragZu.h>
+
 
 class AufEintrag : public AufEintragBase
 {
@@ -123,11 +125,14 @@ public:
 
 	
  void updateDispoENr(int dinr) throw(SQLerror);
- mengen_t updateStkDiff__(int uid,mengen_t menge,bool instanzen,bool produziert
+ mengen_t updateStkDiff__(int uid,mengen_t menge,bool instanzen,e_reduce_reason reason
           /* void (*callback)(void *,st_problems)=0,void* argument=0*/) throw(SQLerror);
 private:
  void move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,bool reduce_old) throw(std::exception);
- void updateStkDiffInstanz__(int uid,mengen_t menge,bool produziert/*void (*callback)(void *,st_problems),void* argument*/) throw(SQLerror);
+ void updateStkDiffInstanz__(int uid,mengen_t menge,e_reduce_reason reason/*void (*callback)(void *,st_problems),void* argument*/) throw(SQLerror);
+// void verplante_menge_freigeben_nach_abbestellung(const std::list<AufEintragZu::st_reflist> &K,mengen_t menge,int uid);
+ void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,e_reduce_reason reason);
+
 public:
  void updateLieferdatum(const ManuProC::Datum &ld,int uid) throw(SQLerror);	
  void updateLieferdatum(const Kalenderwoche &K,int uid) {updateLieferdatum(ManuProC::Datum(K),uid);}	

@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.17 2002/07/15 15:37:53 christof Exp $ */
+/* $Id: Rechnung.h,v 1.18 2002/09/02 13:04:04 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -47,7 +47,7 @@ private:
 
 public:
         
- Rechnung(int rid) throw(SQLerror);
+ Rechnung(ID rid) throw(SQLerror);
  Rechnung(const cH_Kunde k,int jahr=0) throw(SQLerror);
  Rechnung() : RechnungBase(none_id), kunde(Kunde::none_id), 
               rngart(RART_NONE), zahlziel(ManuProC::Datum::today()),

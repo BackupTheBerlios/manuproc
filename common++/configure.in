@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.21 2002/07/15 15:37:52 christof Exp $
+# $Id: configure.in,v 1.22 2002/09/02 13:04:03 christof Exp $
 
 AC_INIT(Artikel/ArtikelBase.h)
 
@@ -71,7 +71,7 @@ if test "$mabella_exts" != "no" ; then
 	DEFAULT_DB=mabelladb
 	case `hostname -f` in
 		*.mabella.de)
-			DEFAULT_DBHOST=mabella ;;
+			DEFAULT_DBHOST=udo ;;
 	esac
 else
 	AC_MSG_RESULT([disabled])

@@ -1,4 +1,4 @@
-// $Id: AufEintragZu_sql.pgcc,v 1.6 2002/07/05 12:35:01 christof Exp $
+// $Id: AufEintragZu_sql.pgcc,v 1.7 2002/09/02 13:04:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -207,6 +207,7 @@ std::list<AufEintragBase> AufEintragZu::get_AufEintragList_from_Artikel
 void AufEintragZu::Neu(const AufEintragBase& neuAEB,
                        const mengen_t menge,const int oldZnr)
 {
+//ECPGdebug(true,stdout);
  exec sql begin declare section;
   int db_aaid=AEB.Id();
   int db_ains=AEB.InstanzID();
@@ -227,6 +228,7 @@ void AufEintragZu::Neu(const AufEintragBase& neuAEB,
    (:db_ains,:db_aaid,:db_aznr, :db_menge, :db_nins,:db_naid,:db_nznr);
  SQLerror::test(__FILELINE__);
  }
+//ECPGdebug(false,0);
 }
 
 #include <Aux/itos.h>

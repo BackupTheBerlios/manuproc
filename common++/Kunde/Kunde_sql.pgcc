@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.20 2002/06/20 06:29:53 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.21 2002/09/02 13:04:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -56,6 +56,8 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    int ANZFIRMA,ANZWEISS;
    bool FREIHAUS;
    bool AKTIV;
+   bool PREISAUTO;
+   bool SHOWEAN;
    exec sql end declare section;
    ILLEGALLANDID=LandesListe::none_id;
   
@@ -63,7 +65,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
  
    WAEHRUNGID = WaehrungID::EUR;
 
-   exec sql select coalesce(gruppennr,0), firma,coalesce(sortname,''),
+   exec sql select coalesce(gruppennr,0), firma,coalesce(sortname,firma),
     coalesce(extartbezid,1),
 	 coalesce(strasse,''),
     coalesce(postanwvor,''),coalesce(postanwnach,''),
@@ -89,7 +91,8 @@ Kunde::Kunde(ID _id) throw(SQLerror)
     coalesce(gegenkonto,0),coalesce(unsere_kundennr,''),
 	coalesce(betreuer,0),coalesce(anz_firmenpapier,1),
 	coalesce(anz_weissespapier,1),coalesce(lieferung_frei_haus,'f'),
-	coalesce(aktiv,true)
+	coalesce(aktiv,true), coalesce(preisauto,true),
+	coalesce(showean,false)
    	into :GRUPPENID ,:NAME, :SORTNAME, :BEZSCHEMA, :STRASSE, :POSTANWVOR, :POSTANWNACH,
            :HSNR, :PLZ, :POSTFACH,
            :POSTFACHPLZ, :ORT, :KTONR, :BLZ, :BANKNAME, :BANKINDEX, :RNG_AN,
@@ -99,7 +102,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
 	   :RABATT,:ZEILENRABATT,:ZAHLUNGSART, :VEREIN, 
 	   :NOTIZ,:STAND, :LANDESID, :WAEHRUNGID, :ENTSORGUNG, :VERKNR,
       :LIEFERANTENKONTO,:GEGENKONTO,:UNSERE_KUNDENNR,:BETREUER,
-      :ANZFIRMA,:ANZWEISS,:FREIHAUS,:AKTIV
+      :ANZFIRMA,:ANZWEISS,:FREIHAUS,:AKTIV,:PREISAUTO,:SHOWEAN
    	from kunden k left join banken b using(bankindex)
    	where kundennr= :ID;
 
@@ -162,6 +165,8 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    betreuer=BETREUER==0 ? Person::none_id : BETREUER;
    prlist_valid=false;
    isaktiv=AKTIV;
+   preisautomatik=PREISAUTO;
+   showean=SHOWEAN;
 }
 
 const cH_Kunde Kunde::newKunde(const Kunde::ID kid, const std::string &firma) throw(SQLerror)
@@ -429,6 +434,7 @@ cout << i<<'\t'<<e<<'\t'<<(e&(1<<i))<<'\n';
      else if (i==B_Notiz      ) query += "notiz  = '"+notiz()+"',";
      else if (i==B_Entsorgung ) query += "entsorgung  = "+btos(entsorgung())+",";
      else if (i==B_Verknr     ) query += "verknr  = "+itos(verkaeufer.verknr)+",";
+     else if (i==B_Betreuer     ) query += "betreuer  = "+itos(betreuer)+",";
      else if (i==B_AnzAusFirmenPapier) query += "anz_firmenpapier  = "+itos(anzahl_ausdruck_firmenpapier())+",";
      else if (i==B_AnzAusWeissesPapier) query += "anz_weissespapier  = "+itos(anzahl_ausdruck_weissespapier())+",";
      else if (i==B_lieferung_frei_haus) query += "lieferung_frei_haus  = "+btos(get_lieferung_frei_haus())+",";
@@ -567,6 +573,59 @@ void Kunde::setAktiv(bool _aktiv) throw(SQLerror)
 
  isaktiv=_aktiv;
  
+ tr.commit();
+}
+
+void Kunde::setBetreuer(const Person::ID pid) throw(SQLerror)
+{
+ exec sql begin declare section;
+ unsigned int KUNDENNR = entityid;
+ int  BETREUER =pid;
+ exec sql end declare section;
+
+ Transaction tr;
+
+ exec sql update kunden set betreuer = :BETREUER where kundennr = :KUNDENNR;
+ SQLerror::test(__FILELINE__);
+
+ betreuer=pid;
+ 
+ tr.commit();
+}
+
+void Kunde::Preisautomatik(bool pa) throw(SQLerror)
+{
+ exec sql begin declare section;
+ unsigned int KUNDENNR = entityid;
+ bool  PREISAUTO =pa;
+ exec sql end declare section;
+
+ Transaction tr;
+
+ exec sql update kunden set preisauto = :PREISAUTO where kundennr = :KUNDENNR;
+ SQLerror::test(__FILELINE__);
+
+ preisautomatik=pa; 
+
+ tr.commit();
+}
+
+
+
+void Kunde::showEAN(bool ea) throw(SQLerror)
+{
+ exec sql begin declare section;
+ unsigned int KUNDENNR = entityid;
+ bool  SHOWEAN =ea;
+ exec sql end declare section;
+
+ Transaction tr;
+
+ exec sql update kunden set showean = :SHOWEAN where kundennr = :KUNDENNR;
+ SQLerror::test(__FILELINE__);
+
+ showean=ea; 
+
  tr.commit();
 }
 

@@ -139,11 +139,13 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  int ZAHLART;
  int NONE_ID;
  char *NOTIZ=0;
+ int INVALID_ENTITY;
  exec sql end declare section;
+ INVALID_ENTITY=ManuProcEntity::none_id;
 
  NONE_ID=Zahlungsart::none_id;
 
- exec sql select coalesce(kundennr,0), date(coalesce(datum,now())), 
+ exec sql select coalesce(kundennr,:INVALID_ENTITY), date(coalesce(datum,now())), 
  		stat, coalesce(youraufnr,''), coalesce(bemerkung,''),
 		 coalesce(waehrung,2),coalesce(rabatt,0),
 		zahlungsziel, coalesce(zahlart,:NONE_ID),

@@ -1,4 +1,4 @@
-/* $Id: ManuProcEintrag.h,v 1.2 2002/07/08 08:10:29 christof Exp $ */
+/* $Id: ManuProcEintrag.h,v 1.4 2002/09/02 13:04:03 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -19,6 +19,10 @@
  */
 
 
+#ifndef MANU_PROC_EINTRAG
+#define MANU_PROC_EINTRAG
+
+#include <BaseObjects/ManuProcVorgang.h>
 
 
 class ManuProcEintrag : public ManuProcVorgang
@@ -27,8 +31,10 @@ private:
  int zeilennr;
  
 public:
- ManuProcEintrag() : zeilennr(0) {}
- ID Zeilennr() const = 0;
-
+ static const ID none_znr = 0;
+ ManuProcEintrag() : zeilennr(none_znr) {}
+ ID Zeilennr() const {return zeilennr;}
+ // none_znr soll in -1 geändert werden
 };
 
+#endif

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.33 2002/07/15 15:37:52 christof Exp $
+// $Id: AufEintragBase.h,v 1.34 2002/09/02 13:04:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,20 +25,23 @@
 #include <Auftrag/AuftragBase.h>
 #include <Auftrag/auftrag_status.h>
 //#include <list>
-#include<BaseObjects/ManuProcEntity.h>
+#include<BaseObjects/ManuProcEintrag.h>
 class cH_Kunde;
-
 
 class AufEintragBase : public AuftragBase
 {
 public: 
   typedef AuftragBase::mengen_t mengen_t;
-  static const int none_znr=0;
+  static const int none_znr=ManuProcEintrag::none_znr;
+  enum e_reduce_reason{r_Standard,r_Produziert,r_Closed};
+
 protected:
  int zeilennr;
-  
+
 private:
+
  void updateStk(mengen_t newstk,mengen_t diff,const ArtikelBase& artikel,AufStatVal status) const throw(SQLerror);
+
 
 public:
  AufEintragBase() : zeilennr(none_znr) {}
@@ -83,8 +86,6 @@ public:
  int split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum, 
                          ArtikelBase artikel,AufStatVal status,
                          int uid,bool dispoplanung);
-
- void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,ArtikelBase artikel,int uid,bool produziert);
 
 
  bool operator<(const AufEintragBase& b) const 

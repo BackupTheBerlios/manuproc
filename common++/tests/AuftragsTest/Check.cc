@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.8 2002/07/15 15:37:53 christof Exp $
+// $Id: Check.cc,v 1.9 2002/09/02 13:04:04 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -85,6 +85,7 @@ void Check::vergleich(e_check check)
      case ZweiterAuftrag_frueheresDatum_abschreiben : zusatz="_zwei_auftraege_datum_abschreiben"; break;
      case ZweiterAuftrag_frueheresDatum_closed : zusatz="_zwei_auftraege_datum_closed"; break;
      case Planen_WebereiD : zusatz="_zwei_auftraege_weberei_planen"; break;
+     case ErsterAuftrag_frueheresDatum_closed :  zusatz="_erster_auftrag_closed"; break;
 
      case Bandlager_auslagern : assert(!"absolet"); zusatz="_bandlager_raus"; break;
      case Planen_Faerberei : assert(!"absolet"); zusatz="_planen_faerberei"; break;

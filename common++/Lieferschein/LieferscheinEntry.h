@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.12 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.13 2002/09/02 13:04:04 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,15 +26,19 @@
 #include<Auftrag/AufEintragBase.h>
 #include"LieferscheinBase.h"
 #include <Aux/fixedpoint.h>
+#include <BaseObjects/ManuProcEintrag.h>
 
 class LieferscheinEntryBase : public LieferscheinBase
-{protected:
+{
+public: 
+   static const int none_znr = ManuProcEintrag::none_znr;
+ protected:
 	int zeilennr;
 
 	LieferscheinEntryBase(const LieferscheinBase &lsb)
-	: LieferscheinBase(lsb), zeilennr(0) {}
+	: LieferscheinBase(lsb), zeilennr(none_znr) {}
 public:
-	LieferscheinEntryBase() : zeilennr(0) {}
+	LieferscheinEntryBase() : zeilennr(none_znr) {}
 	LieferscheinEntryBase(const LieferscheinBase &lsb, int znr)
 	: LieferscheinBase(lsb), zeilennr(znr) {}
 	// unschön, da Ints ...
@@ -88,9 +92,8 @@ public:
  const ArtikelBase::ID ArtikelID() const { return artikel.Id(); }
  const ArtikelBase Artikel() const { return artikel; }
  const AuftragBase RefAuftrag() const { return refauftrag; }
- int AufId() const { return refauftrag.Id();} 
  int AufZeile() const { return refauftrag.ZNr();} 
- AufEintragBase getAufEintragBase() const {return AufEintragBase(Instanz(),AufId(),AufZeile());}
+ AufEintragBase getAufEintragBase() const {return AufEintragBase(RefAuftrag(),AufZeile());}
  bool ZusatzInfo() const { return zusatzinfo; }
 
  void setPalette(int p) throw(SQLerror);

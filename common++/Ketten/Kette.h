@@ -1,4 +1,4 @@
-/* $Id: Kette.h,v 1.7 2002/06/27 07:42:50 christof Exp $ */
+/* $Id: Kette.h,v 1.8 2002/09/02 13:04:03 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -53,7 +53,7 @@ public:
 	{  return maschine==b.maschine && schaerdatum==b.schaerdatum; }
 	const Kette &operator=(const char *barconame);
 	
-        bool Valid() const;
+   bool Valid() const;
 
 	friend std::ostream& operator<<(std::ostream &o,const Kette &k);
 

@@ -1,4 +1,4 @@
-/* $Id: Adresse_sql.pgcc,v 1.3 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: Adresse_sql.pgcc,v 1.4 2002/09/02 13:04:03 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -43,21 +43,22 @@ Adresse::Adresse(int kdnr) throw(SQLerror)
    bool RNG_AN_POSTFACH;
    char LANDNAME[41];
    char POSTFACHNAME[41];
-   char ISOCODE[4];
+//   char ISOCODE[4];
 
    int IIDNR, IPOSTANWVOR, ISTRASSE, IPOSTANWNACH, IHSNR, IPLZ,
       IPOSTFACH, IPOSTFPLZ, IORT, IRNG_AN_POSTFACH;
-   int ILANDNAME,IPOSTFACHNAME;
+
    exec sql end declare section;
 
    exec sql SELECT firma, postanwvor, strasse, hsnr, postanwnach,
-         	plz, ort, postfach, postfplz, rng_an_postfach, idnr 
+         	plz, ort, postfach, postfplz, rng_an_postfach, idnr,
+		coalesce(l.name,'')
 	into :FIRMA, :POSTANWVOR:IPOSTANWVOR, :STRASSE:ISTRASSE,
    		:HSNR:IHSNR, :POSTANWNACH:IPOSTANWNACH, :_PLZ:IPLZ,
    		:ORT:IORT, :POSTFACH:IPOSTFACH, 
    		:POSTFPLZ:IPOSTFPLZ, :RNG_AN_POSTFACH:IRNG_AN_POSTFACH,
-   		:IDNR:IIDNR
-   	FROM kunden
+   		:IDNR:IIDNR, :LANDNAME
+   	FROM kunden left join ku_landname on (landid=id)
    	WHERE kundennr= :KUNDENNR;
    SQLerror::test(__FILELINE__" select from kunden");
    
@@ -70,23 +71,8 @@ Adresse::Adresse(int kdnr) throw(SQLerror)
    if (IPLZ) _PLZ[0]=0;
    if (IPOSTFPLZ) POSTFPLZ[0]=0;
    if (IPOSTFACH) POSTFACH[0]=0;
-   if (!IIDNR && IDNR[0])
-    { int i;
-      for (i=0;i<3 && isalpha(IDNR[i]);i++) 
-         ISOCODE[i]=tolower((unsigned char)IDNR[i]);
-      ISOCODE[i]=0;
 
-/*      exec sql SELECT landname, postfachname 
-      	into :LANDNAME :ILANDNAME, :POSTFACHNAME :IPOSTFACHNAME
-      	FROM AUSLAND  where isocode= :ISOCODE;
-      SQLerror::test(__FILELINE__"SELECT DIRECT FROM AUSLAND",100);
-      if(sqlca.sqlcode) IPOSTFACHNAME=ILANDNAME=-1;
-*/
-    }
-   else 
-     IPOSTFACHNAME=ILANDNAME=-1;
-   if (IPOSTFACHNAME) strncpy0(POSTFACHNAME,"Postfach",sizeof POSTFACHNAME);
-   if (ILANDNAME) LANDNAME[0]=0;
+   strncpy0(POSTFACHNAME,"Postfach",sizeof POSTFACHNAME);
    
    kundennr=KUNDENNR;
    strcpyx(IDnr,IDNR);

@@ -1,4 +1,4 @@
-// $Id: Artikelpreis_sql.pgcc,v 1.8 2002/06/20 06:29:52 christof Exp $
+// $Id: Artikelpreis_sql.pgcc,v 1.9 2002/09/02 13:04:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,6 +25,10 @@
 #include <Artikel/Prozesspreis.h>
 #include <Aux/Transaction.h>
 exec sql include sqlca;
+
+#include <unistd.h>
+#include <sys/types.h>
+
 
 namespace // index_t and payload_t should not be globally visible
 {
@@ -84,8 +88,8 @@ Artikelpreis::Artikelpreis(const cH_Kunde &k,const ArtikelBase &a)
 	: errechnet(false), gefunden(false), gefunden_in(ManuProcEntity::none_id)
 {  Artikelpreis ap;
 
-   for (std::list<pair<int,PreisListe::ID> >::const_reverse_iterator i=k->Preislisten().rbegin();
-   	i!=k->Preislisten().rend();++i)
+   for (std::list<pair<int,PreisListe::ID> >::const_iterator i=k->Preislisten().begin();
+   	i!=k->Preislisten().end();++i)
    {  ap=Artikelpreis(i->second,a);
       if (ap.Gefunden()) { *this=ap; return; }
    }
@@ -112,6 +116,7 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
  int PREISMENGE;
  int PRLSID;
  int WAEHRUNG;
+ int UID;
  exec sql end declare section;
 
  Transaction tr;
@@ -122,6 +127,13 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
  PRLSID=liste;
  WAEHRUNG=p.getWaehrung()->Id();
  
+ UID=int(getuid());
+
+ exec sql insert into preis_change_journal (artikelid,prlsnr,zeitpunkt,
+		preis_alt,preis_neu,uid) values
+		(:ARTIKELID,:PRLSID,now(),null,:PREIS,:UID);
+ SQLerror::test(__FILELINE__);	
+
  exec sql insert into artikelpreise 
  	(artikelid,kundennr,preis,preismenge,waehrung) values
  	(:ARTIKELID,:PRLSID,:PREIS,:PREISMENGE,:WAEHRUNG);
@@ -138,19 +150,44 @@ void Artikelpreis::changePreis(const Preis &p) throw(SQLerror)
  exec sql begin declare section;
  int ARTIKELID=artikel;
  float PREIS=p.Wert();
+ float PREIS_ALT;
  int PREISMENGE=p.PreisMenge();
  int PRLSID=gefunden_in;
  int WAEHRUNG=p.getWaehrung()->Id();
+ int UID;
  exec sql end declare section;
 
  if(gefunden_in == PreisListe::none_id) return;
 
+ UID=int(getuid());
+
  Transaction tr;
+
+ exec sql select preis into :PREIS_ALT from artikelpreise where
+	artikelid=:ARTIKELID and kundennr=:PRLSID;
+ SQLerror::test(__FILELINE__);	
+
+ exec sql insert into preis_change_journal (select
+	artikelid, :PRLSID, now(), preis, :PREIS, :UID from
+	artikelpreise where kundennr=:PRLSID and artikelid in 
+	(select a.id from artbez_3_1 a join artbez_3_1 b	
+	on (	a.artikel=b.artikel and 
+		a.breite=b.breite and 
+		a.aufmachung=b.aufmachung
+		and b.id=:ARTIKELID)
+	));
+ SQLerror::test(__FILELINE__);	
  
  exec sql update artikelpreise set
  	preis=:PREIS,preismenge=:PREISMENGE,
 	waehrung =:WAEHRUNG
-	where (artikelid,kundennr)=(:ARTIKELID,:PRLSID);
+	where kundennr=:PRLSID and artikelid in 
+	(select a.id from artbez_3_1 a join artbez_3_1 b	
+	on (	a.artikel=b.artikel and 
+		a.breite=b.breite and 
+		a.aufmachung=b.aufmachung
+		and b.id=:ARTIKELID)
+	);
  SQLerror::test(__FILELINE__);	
  
  tr.commit();
@@ -162,10 +199,29 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a) throw
  exec sql begin declare section;
   int ARTIKELID=a.Id();
   int PRLSID=liste;
+  float PREIS;
+  int UID;
  exec sql end declare section;
+
+ UID=int(getuid());
+
+ Transaction tr;
+
+ exec sql select preis into :PREIS from artikelpreise where
+	artikelid=:ARTIKELID and kundennr=:PRLSID;
+ SQLerror::test(__FILELINE__);	
+
+ exec sql insert into preis_change_journal (artikelid,prlsnr,zeitpunkt,
+		preis_alt,preis_neu,uid) values
+		(:ARTIKELID,:PRLSID,now(),:PREIS,0.0,:UID);
+ SQLerror::test(__FILELINE__);	
+	
  exec sql delete from artikelpreise 
 	where kundennr=:PRLSID and artikelid=:ARTIKELID;
  SQLerror::test(__FILELINE__);	
+
+ tr.commit();
+ 
 }
 
 };

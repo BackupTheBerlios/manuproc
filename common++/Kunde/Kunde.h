@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.22 2002/06/27 07:42:50 christof Exp $
+// $Id: Kunde.h,v 1.23 2002/09/02 13:04:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -90,6 +90,7 @@ public:
     int kalkulation;
     fixedpoint<2> rabatt;
     bool zeilenrabatt:1;
+
 //    int skontofrist; 
 
     std::string verein; 
@@ -120,6 +121,8 @@ private:
         bool rechnungsadresse:1;
         bool entsorg:1;
         mutable bool isaktiv:1;
+        mutable bool preisautomatik:1;
+        bool showean:1;
         
 	Adresse adresse;
 	Bankverbindung bankverb;
@@ -205,7 +208,11 @@ public:
         bool entsorgung() const { return entsorg; }
         bool Rng_an_postfach() const {return rng_an_postfach;}
         bool Auslaender() const { return adresse.land->Auslaender(); }
-
+	bool Preisautomatik() const { return preisautomatik;}
+	void Preisautomatik(bool pa) throw(SQLerror);
+	bool showEAN() const { return showean;}
+	void showEAN(bool pa) throw(SQLerror);	
+	
 
         // Personen
         struct st_ansprech{cH_Person Person;std::string position;std::string notiz;
@@ -220,6 +227,7 @@ public:
         std::list<cH_Telefon> getTelefon() const;
         std::string get_first_telefon(const TelArt& art) const;
         Person::ID getBetreuer() const { return betreuer;}
+        void setBetreuer(const Person::ID) throw(SQLerror);
 
   private:
         enum B_UPDATE_BITS_ADRESSE{B_Gruppennr,B_Sortname,B_Idnr,B_Firma,
@@ -236,7 +244,7 @@ public:
            B_Preisliste,B_Notiz,B_Entsorgung,B_Verknr,B_Kalkulation,
            B_Stand,B_KP_Position,B_KP_Notiz,
            B_AnzAusFirmenPapier,B_AnzAusWeissesPapier,
-           B_lieferung_frei_haus,B_MaxAnzS};
+           B_lieferung_frei_haus,B_MaxAnzS,B_Betreuer};
  public: 
          enum UpdateBitsAdresse {FGruppennr=1<<B_Gruppennr,
            FSortname=1<<B_Sortname,FIdnr=1<<B_Idnr,FFirma=1<<B_Firma,
@@ -264,7 +272,8 @@ public:
             FKP_Notiz=1<<B_KP_Notiz,
             FAnzAusFirmenPapier=1<<B_AnzAusFirmenPapier,
             FAnzAusWeissesPapier=1<<B_AnzAusWeissesPapier,
-            Flieferung_frei_haus=1<<B_lieferung_frei_haus};
+            Flieferung_frei_haus=1<<B_lieferung_frei_haus,
+            FBetreuer=1<<B_Betreuer};
             
 
         void update_e(UpdateBitsAdresse e);

@@ -1,4 +1,4 @@
-/* $Id: ArtikelBase.h,v 1.6 2002/05/09 12:45:59 christof Exp $ */
+/* $Id: ArtikelBase.h,v 1.7 2002/09/02 13:04:03 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,7 +28,7 @@ class ArtikelBase
 public:
 	typedef unsigned long ID;
    static const ID none_id=0;
-private:
+protected:
 	ID artikelid;
 
 public:

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.26 2002/07/15 15:37:52 christof Exp $
+// $Id: AufEintragBase.cc,v 1.27 2002/09/02 13:04:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -132,43 +132,3 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
  return znr;
 }
 
-#include <Lager/Lager.h>
-#include <Lager/Lager_Vormerkungen.h>
-
-void AufEintragBase::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,ArtikelBase artikel,int uid,bool produziert)
-{
- std::list<AufEintragZu::st_reflist> K=AufEintragZu(*this).get_Referenz_list(*this,true);
- for (std::list<AufEintragZu::st_reflist>::const_iterator i=K.begin();i!=K.end();++i)
-  {
-    if(i->AEB.Id()==AuftragBase::ungeplante_id) continue;
-    AufEintrag GeplanterAE(i->AEB);
-    AuftragBase::mengen_t M;
-    if(GeplanterAE.getRestStk()>=menge)  M=menge;
-    else M=GeplanterAE.getRestStk();
-    
-    AufEintragZu(*this).setMengeDiff__(i->AEB,-M);
-
-    if(Instanz()->LagerInstanz())
-     {
-      mengen_t mt=i->AEB.updateStkDiffBase__(uid,-M);
-
-      H_Lager L(Instanz());
-      L->dispo_auftrag_aendern(artikel,M);
-      Lager_Vormerkungen::freigegeben_menge_neu_verplanen(Instanz(),artikel,M,uid,produziert);
-
-      assert(mt==mengen_t(-M));
-     }
-    else
-     {
-       std::list<AufEintragZu::st_reflist> E=AufEintragZu(i->AEB).get_Referenz_list(i->AEB);
-       for (std::list<AufEintragZu::st_reflist>::const_iterator j=E.begin();j!=E.end();++j)
-        {
-         if(j->AEB.Id()!=AuftragBase::dispo_auftrag_id) continue;
-         AufEintragZu(j->AEB).setMengeDiff__(i->AEB,M);
-         j->AEB.updateStkDiffBase__(uid,M);
-        }
-     }
-    menge-=M;
-    if(menge==AuftragBase::mengen_t(0)) return;
-  }
-}

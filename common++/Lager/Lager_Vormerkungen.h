@@ -1,4 +1,4 @@
-/* $Id: Lager_Vormerkungen.h,v 1.18 2002/07/11 07:07:42 malte Exp $ */
+/* $Id: Lager_Vormerkungen.h,v 1.19 2002/07/18 16:12:23 malte Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -42,7 +42,7 @@ class Lager_Vormerkungen : AufEintrag
       Lager_Vormerkungen(const AufEintrag&);
 
  
-        void move_menge_from_dispo_to_plan2(int uid,AufEintragBase dispo_aeb,mengen_t menge);
+//      void move_menge_from_dispo_to_plan2(int uid,AufEintragBase dispo_aeb,mengen_t menge);
       // verfügbare Menge für einen Artikel bestimmen
       static AuftragBase::mengen_t artikel_auf_lager(const ArtikelBase artikel,cH_ppsInstanz instanz,const Petig::Datum &datum,int auftragsid)
          { std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > d;
@@ -53,7 +53,7 @@ class Lager_Vormerkungen : AufEintrag
       void vormerken_oder_bestellen(int uid,AuftragBase::mengen_t vormerkmenge,AuftragBase::mengen_t bestellmenge);
 
       // Das macht das einlagern:
-      static void freigegeben_menge_neu_verplanen(cH_ppsInstanz instanz,const ArtikelBase& artikel,AuftragBase::mengen_t menge,int uid,bool produziert);
+      static void freigegeben_menge_neu_verplanen(cH_ppsInstanz instanz,const ArtikelBase& artikel,AuftragBase::mengen_t menge,int uid,AufEintragBase::e_reduce_reason reason);
  private:
 //      void reduziere_ungeplant(int uid,AuftragBase::mengen_t menge);
       // vorgemerkt wird ein 2er Artikel

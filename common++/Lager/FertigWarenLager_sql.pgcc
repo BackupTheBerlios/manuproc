@@ -66,8 +66,8 @@ int FertigWarenLager::Bestand(ManuProC::Datum date)
 
   pair<Zeitpunkt_new,int> inventur=letzteInventur();
 
-  exec sql lock table auftragentry in exclusive mode;
-  SQLerror::test(__FILELINE__); 
+//  exec sql lock table auftragentry in exclusive mode;
+//  SQLerror::test(__FILELINE__); 
 
   inventur.first.write(PostgresTimestamp(MINZEIT,sizeof MINZEIT));
   date.write_postgres(MAXZEIT,sizeof MAXZEIT);

@@ -1,4 +1,4 @@
-/* $Id: RohwarenLager.h,v 1.4 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: RohwarenLager.h,v 1.5 2002/09/02 13:04:04 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -52,10 +52,13 @@ class RohwarenLager : public Lager
       st_rohlager RL_Inhalt(const LagerPlatz position) const;
       // force legt fest, ob ein bestehender Inhalt überschrieben weren soll
       // defautmäßig wird nur dann eingelagert, wenn die Lagerposition leer ist.
+      // Damit die 2er Aufträge in 'auftragsentry' aktuell bleiben müßte
+      // beim Einlagern für den Rückgabewert 'true' noch 'rein_ins_lager()' 
+      // aufgerufen werden, aber das machen momentan die Lieferscheine.
+      // beim Auslagern wird 'auftragsentry' durch 'RL_Log()' verwaltet.
+      // aufgerufen werden
       bool RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager,std::string &os,bool force=false);
       bool RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force=false,bool ist_leer=false);
-//      virtual std::vector<class LagerInhalt> LagerInhalt();
-//      virtual class LagerInhalt LagerInhalt(const ArtikelBase& artikel);
 };
 
 #endif

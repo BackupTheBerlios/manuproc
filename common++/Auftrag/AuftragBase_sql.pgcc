@@ -264,7 +264,8 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
 
   if(!dispoplanung)
    {    
-     AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
+     if(altAEB.valid())
+        AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
 //cout << AufEintragBase(*this,znr)<<'\t'<<altemenge<<'+'<<auftragbestellmenge<<'\t'
 //<<bestellt<<' '<<lagermenge<<'\n';
      Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,
@@ -273,7 +274,8 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
    }
   else 
    {
-     AufEintragZu(class AufEintragBase(*this,znr)).Neu(altAEB,bestellt);
+     if(altAEB.valid())
+        AufEintragZu(class AufEintragBase(*this,znr)).Neu(altAEB,bestellt);
    }
 
   tr.commit();

@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.29 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.30 2002/09/02 13:04:03 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -29,6 +29,7 @@ class AufEintrag;
 #include <Kunde/Kunde.h>
 // hier sollten noch viel mehr Funktionen aus Auftrag rein !!!
 class AufEintragBase;
+#include <BaseObjects/ManuProcEntity.h>
 
 class AuftragBase
 {
@@ -39,7 +40,9 @@ class AuftragBase
    static const int handplan_auftrag_id =  20000; // gemeint sind alle Aufträge, die NICHT 0,1,2 sind
    static const int dispo_auftrag_id =  2;
    static const int plan_auftrag_id  =  1;
-   static const int invalid_id       = -1;
+   static const int invalid_id       = ManuProcEntity::none_id ;
+   // warum umbenennen?
+   static const int none_id       = ManuProcEntity::none_id ;
    static const int ungeplante_id    =  0;
 
    static const int PlanId_for(const cH_ppsInstanz &instanz);

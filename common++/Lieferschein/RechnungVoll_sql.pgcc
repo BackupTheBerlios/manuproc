@@ -1,4 +1,4 @@
-/* $Id: RechnungVoll_sql.pgcc,v 1.10 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: RechnungVoll_sql.pgcc,v 1.11 2002/09/02 13:04:04 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,6 +25,7 @@ exec sql include sqlca;
 RechnungVoll::RechnungVoll(int rid) throw(SQLerror)
 : Rechnung(rid)
 {
+ if(rid==none_id) return;
  exec sql begin declare section;
   int ARTIKELID, STUECK, ZEILE;
   int LFRSID,LIEFERZEILE;
@@ -41,7 +42,7 @@ RechnungVoll::RechnungVoll(int rid) throw(SQLerror)
  qu=qu+", coalesce(ry.stueck,0), coalesce(ry.menge,0), "
    	"coalesce(ry.rabatt,0.0), ry.lfrsid, ry.lfrszeile," 
         "coalesce(ry.preismenge,1), l.geliefertam, abs(ry.preis),"
-	"coalesce(refauftragid,-1)"
+	"coalesce(refauftragid,"+itos(ManuProcEntity::none_id)+")"
 	"   from (rechnungentry ry "
    	" left join lieferschein l on ("+itos(INSTANZ)+",ry.lfrsid) ="
 	"(l.instanz,l.lfrsid))"

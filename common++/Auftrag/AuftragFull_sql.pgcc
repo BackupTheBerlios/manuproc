@@ -83,3 +83,27 @@ void AuftragFull::setStatusAuftragFull(AufStatVal status,int uid) throw(SQLerror
     i->setStatus(status,uid);
 }
 
+bool AuftragFull::existsEntry(const ArtikelBase::ID art, AufStatVal stat,
+        		ManuProC::Datum lieferdatum) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFID=Id();
+ int INSTANZ=Instanz();
+ int ARTIKELID=art;
+ int STATUS=stat;
+ char LIEFDATUM[21]; 
+ int BESTELLT;
+ exec sql end declare section;
+
+ lieferdatum.write_postgres(LIEFDATUM,sizeof LIEFDATUM);
+ 
+ exec sql select bestellt into :BESTELLT from auftragentry where
+ 	auftragid=:AUFID and instanz=:INSTANZ and 
+ 	lieferdate=:LIEFDATUM and artikelid=:ARTIKELID and
+	status=:STATUS;
+ SQLerror::test(__FILELINE__,100);
+ 
+ return (sqlca.sqlcode!=100);
+}
+
+

@@ -1,4 +1,4 @@
-/* $Id: EntryValueEmptyInt.h,v 1.7 2002/08/31 07:45:40 christof Exp $ */
+/* $Id: EntryValueEmptyInt.h,v 1.8 2002/09/02 13:04:03 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *

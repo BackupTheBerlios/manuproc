@@ -1,4 +1,4 @@
-/* $Id: RechnungEntry.h,v 1.11 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: RechnungEntry.h,v 1.12 2002/09/02 13:04:04 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,6 +28,7 @@
 #include<Artikel/Preis.h>
 #include"RechnungBase.h"
 #include"LieferscheinEntry.h"
+#include <BaseObjects/ManuProcEintrag.h>
 
 class RechnungEntryBase : public RechnungBase
 {
@@ -35,11 +36,12 @@ public:
   typedef RechnungBase::rabatt_t rabatt_t;
   typedef RechnungBase::geldbetrag_t geldbetrag_t;
   typedef RechnungBase::mengen_t mengen_t;
+  static const int none_znr=ManuProcEintrag::none_znr;
 protected:
  int zeilennr;
  
 public:
-	RechnungEntryBase() : zeilennr(0) {}
+	RechnungEntryBase() : zeilennr(none_znr) {}
 	RechnungEntryBase(const RechnungBase &rb, int z)
 	: RechnungBase(rb), zeilennr(z) {}
 

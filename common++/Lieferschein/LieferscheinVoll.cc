@@ -1,4 +1,4 @@
-/* $Id: LieferscheinVoll.cc,v 1.7 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: LieferscheinVoll.cc,v 1.8 2002/09/02 13:04:04 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,6 +22,7 @@
 #include<Aux/SQLerror.h>
 #include<Aux/Transaction.h>
 #include<Aux/FetchIStream.h>
+#include <BaseObjects/ManuProcEintrag.h>
 
 void LieferscheinVoll::deleteRow(const LieferscheinEntry &le)
 {
@@ -40,8 +41,8 @@ LieferscheinVoll::LieferscheinVoll(const cH_ppsInstanz& _instanz,int lid,bool au
  std::string qstr =
   "select ly.artikelid, ly.zeile, coalesce(ly.stueck,0), "
   " coalesce(ly.menge,0), coalesce(ly.palette,0), coalesce(youraufnr,''),"
-  "coalesce(ly.zusatzinfo,'f'), coalesce(ly.refauftragid,0),"
-  " coalesce(ly.refzeilennr,0)"
+  "coalesce(ly.zusatzinfo,'f'), coalesce(ly.refauftragid,"+itos(ManuProcEntity::none_id)+"),"
+  " coalesce(ly.refzeilennr,"+itos(ManuProcEintrag::none_znr)+")"
   " from lieferscheinentry ly "
   " left join auftrag a on (ly.refauftragid,ly.instanz) = (a.auftragid,a.instanz)"
   " where (ly.instanz,ly.lfrsid) = ("+itos(Instanz())+","+itos(Id())+") order by "+

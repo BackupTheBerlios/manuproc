@@ -1,4 +1,4 @@
-// $Id: KettplanKette.h,v 1.9 2002/06/27 07:42:50 christof Exp $
+// $Id: KettplanKette.h,v 1.10 2002/09/02 13:04:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -71,7 +71,7 @@ public:
 
 	static KettplanKette create(const Kette &k,const std::vector <ArtikelGang> &artikel, 
 		int kettlaenge, int stuecklaenge, int planmaschine=0);
-private:
+//private: Ketteneingabe braucht das
         void push_back(const ArtikelGang& artikel) const;
 public:
 	
@@ -107,9 +107,9 @@ public:
         int get_aktual_Index(const ArtikelGang& artikel) const;
         
 // warum hier ? CP
-        void save_Garn(const ArtikelGang& artikel, const KettenGarn& garn) const;
-        void delete_Garn(const ArtikelGang& artikel, const KettenGarn& garn) const;
-        std::vector<KettenGarn> load_Garn(const ArtikelGang& artikel) const;
+//        void save_Garn(const ArtikelGang& artikel, const KettenGarn& garn) const;
+//        void delete_Garn(const ArtikelGang& artikel, const KettenGarn& garn) const;
+//        std::vector<KettenGarn> load_Garn(const ArtikelGang& artikel) const;
 
 public:
 	void UnCache(int what) const

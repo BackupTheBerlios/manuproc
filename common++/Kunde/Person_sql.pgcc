@@ -1,4 +1,4 @@
-// $Id: Person_sql.pgcc,v 1.13 2002/06/27 07:42:50 christof Exp $
+// $Id: Person_sql.pgcc,v 1.14 2002/09/02 13:04:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -70,8 +70,10 @@ int Person::createPerson(std::string s)
   std::string q="insert into ku_person (persnr,name) "
       " values ("+itos(id)+",'')";
   Query::Execute(q);
+  SQLerror::test(__FILELINE__);
   return id;
 }
+
 /*
 void Person::update() throw(SQLerror)
 {

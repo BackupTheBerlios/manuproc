@@ -1,4 +1,4 @@
-/* $Id: JumboRolle.h,v 1.8 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: JumboRolle.h,v 1.9 2002/09/02 13:04:04 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,10 +18,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: JumboRolle.h,v 1.8 2002/07/05 12:35:01 christof Exp $
+// $Id: JumboRolle.h,v 1.9 2002/09/02 13:04:04 christof Exp $
 
 #ifndef _JUMBOROLLE_HH
 #  define _JUMBOROLLE_HH
+
+
+//#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
 
 
 #include<Aux/SQLerror.h>
@@ -108,4 +111,5 @@ public:
  static int Pruefziffer_anhaengen(int nummer);
 };
 
+//#endif
 #endif

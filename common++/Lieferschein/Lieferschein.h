@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.15 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: Lieferschein.h,v 1.16 2002/09/02 13:04:04 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -49,7 +49,7 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  		
  	Lieferschein() : LieferscheinBase(),
  			lsdatum(ManuProC::Datum::today()),
- 			kunde(Kunde::none_id),rngid(0),
+ 			kunde(Kunde::none_id),rngid(ManuProcEntity::none_id),
  			geliefertam(ManuProC::Datum::today())
 #ifdef MABELLA_EXTENSIONS
  			,dpdliefnr(0) ,
@@ -100,6 +100,9 @@ class Lieferschein : public LieferscheinBase, public HandleContent
 // 	{push_back(class AufEintrag(auftragentry),artikel,anzahl,menge,palette);}
  // DB: Menge verteilt auf mehrere Aufträge abschreiben
  void push_back(const ArtikelBase &artikel, int anzahl, mengen_t menge, int palette);
+
+ // Rechnungsnummer von Lieferscheinen ohne Entrys auf '0' setzen
+ static void aufraumen() throw(SQLerror);
 };
 
 class cH_Lieferschein : public Handle<const Lieferschein>

@@ -1,4 +1,4 @@
-/* $Id: RechnungBase.h,v 1.5 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: RechnungBase.h,v 1.6 2002/09/02 13:04:04 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,23 +24,28 @@
 #include <Aux/SQLerror.h>
 #include <Artikel/Preis.h>
 #include <Lieferschein/LieferscheinBase.h>
+#include <BaseObjects/ManuProcEntity.h>
 
-class RechnungBase
+// ableiten von ManuProcEntity wg. HandleCOntent nicht möglich :-( MAT
+class RechnungBase // : ManuProcEntity
 {
  protected:
   	int rngid;	
-	static const int _illegal=-1;
+//	static const int _illegal=none_id;
  public:
-	typedef int ID;
-	static const ID none_id=_illegal;
+	typedef ManuProcEntity::ID ID;
+	static const ID none_id=ManuProcEntity::none_id;
 	typedef Preis::rabatt_t rabatt_t; // in Prozent
 	typedef Preis::geldbetrag_t geldbetrag_t;
 	typedef LieferscheinBase::mengen_t mengen_t;
 	
 	RechnungBase() : rngid(none_id) {}
-	RechnungBase(int rid) : rngid(rid) {}
+	RechnungBase(ID rid) : rngid(rid) {}
 
 	ID Id() const {return rngid;}
+
+   // sobald von ManuProcEntity abgeleitet die folgende Zeile löschen MAT
+   bool Valid() const {return ManuProcEntity::Valid(rngid);}
 	
 	void setEingezogen(int refnr) throw(SQLerror);
 };

@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.h,v 1.5 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: KettenGarn.h,v 1.6 2002/09/02 13:04:03 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,43 +20,56 @@
 #ifndef KETTENGARN_HH
 #define KETTENGARN_HH
 #include <Artikel/ArtikelBezeichnung.h>
+#include <Ketten/Kettscheibe.h>
 
 class KettenGarn {
+
         int index;
         int zeile;
         int kettenzahl;
-	int faeden;
-	ArtikelBase art;
+     	  int faeden;
+	     ArtikelBase art;
         int laenge;
-
+        int kombiniert;
+        std::string wiederholung;
 public:
 	typedef ArtikelBase::ID ID;
 
 	KettenGarn() 
-	        : index(0),zeile(0),kettenzahl(0),faeden(0), art(0),laenge(0) {}
-	KettenGarn(int i,int z,int k,int f,ArtikelBase id,int l) 
-	        : index(i), zeile(z),kettenzahl(k),faeden(f), art(id),laenge(l) {}
+	        : index(0),zeile(0),kettenzahl(0),faeden(0), art(0),laenge(0),
+	         kombiniert(Kettscheibe::nicht_kombinierte_kette) {}
+	KettenGarn(int i,int z,int k,int f,ArtikelBase id,int l,int k2,std::string w) 
+	        : index(i), zeile(z),kettenzahl(k),faeden(f), art(id),laenge(l),
+	          kombiniert(k2),wiederholung(w) {}
 	bool operator==(const KettenGarn &b) const throw()
 	{  return Index()==b.Index() && 
 	          Artikel()==b.Artikel() &&
 	          Faeden()==b.Faeden() &&
 	          Kettenzahl()==b.Kettenzahl() &&
 	          Laenge()==b.Laenge() ;}
-
+	bool operator<(const KettenGarn &b) const throw()
+	{  return (Index()<b.Index()) || 
+	          (Index()==b.Index() && Artikel()<=b.Artikel() );}
+	          
 // this is for convenience only	
 	const cH_ArtikelBezeichnung Bezeichnung(const cH_ExtBezSchema &h) const throw()
 	{  return cH_ArtikelBezeichnung(art,h); }
 
-        void set_Index(int i) {index=i;}
-        int Index() const {return index;}
-        ArtikelBase Artikel() const {return art;}
-        bool Valid() const {if(Id()&&kettenzahl&&faeden) return true; return false;}
+   void set_Index(int i) {index=i;}
+   int Index() const {return index;}
+   ArtikelBase Artikel() const {return art;}
+   bool Valid() const {if(Id()&&kettenzahl&&faeden) return true; return false;}
+
 
 	const ID &Id() const {  return art.Id(); }
 	int Zeile() const throw() {  return zeile; }
 	int Faeden() const throw() {  return faeden; }
-        int Kettenzahl() const throw() { return kettenzahl;}
-        int Laenge() const throw() { return laenge;}
+   int Kettenzahl() const throw() { return kettenzahl;}
+   int Laenge() const throw() { return laenge;}
+   int Kombiniert() const {return kombiniert;}
+   std::string Wiederholung() const {return wiederholung;}
+
+   void setWiederholung(const ArtikelGang &AG,std::string s)  throw(SQLerror);
 };
 
 //extern std::ostream& operator<<(std::ostream &o,const ArtikelGang &ag);

@@ -1,4 +1,4 @@
-// $Id: Lager_Vormerkungen.cc,v 1.52 2002/07/11 07:07:40 malte Exp $
+// $Id: Lager_Vormerkungen.cc,v 1.53 2002/07/18 16:12:22 malte Exp $
 /*  libcommonc++: ManuProC's main OO library Copyright (C) 2002 Adolf Petig
  *  GmbH & Co. KG written by Jacek Jakubowski, Christof Petig, Malte Thoma
  *
@@ -151,7 +151,7 @@ void Lager_Vormerkungen::reduce_old_plan_auftrag(int uid,AufEintragBase aeb,meng
       if(j->Menge >= M) m=M;
       else              m=j->Menge;
       AufEintragZu(j->AEB).setMengeDiff__(aeb,-m);
-      AufEintrag(j->AEB).updateStkDiff__(uid,m,true,true);
+      AufEintrag(j->AEB).updateStkDiff__(uid,m,true,AufEintragBase::r_Produziert);
       M-=m;
       if(M==AuftragBase::mengen_t(0)) break;
     }         
@@ -174,7 +174,7 @@ int ProdLager::Lieferzeit_in_Tagen()
 
 
 void Lager_Vormerkungen::freigegeben_menge_neu_verplanen(cH_ppsInstanz instanz,
-               const ArtikelBase& artikel,AuftragBase::mengen_t menge,int uid,bool produziert)
+               const ArtikelBase& artikel,AuftragBase::mengen_t menge,int uid,AufEintragBase::e_reduce_reason reason)
 {
 //cout << "Lager für Artikel: "<<cH_ArtikelBezeichnung(artikel)->Bezeichnung()
 //<<"\tMenge: "<<menge<<'\n';
@@ -195,7 +195,9 @@ void Lager_Vormerkungen::freigegeben_menge_neu_verplanen(cH_ppsInstanz instanz,
      menge-=M;
      std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > dummy;
      Lager_Vormerkungen(*i).artikel_vormerken_oder_schnappen(false,M,i->Artikel(),uid,dummy,true);
-     if(!produziert) i->updateStkDiffInstanz__(uid,-M,produziert/*,0,0*/);
+     if(reason==AufEintragBase::r_Standard ||
+        reason==AufEintragBase::r_Closed) 
+            i->updateStkDiffInstanz__(uid,-M,reason/*,0,0*/);
      if(menge==AuftragBase::mengen_t(0)) return;
    }
 //if(auftraglist.empty()) cout << "Kein Auftrag zum neuverplanen\n";
@@ -264,6 +266,7 @@ void Lager_Vormerkungen::move_menge_from_dispo_to_plan(int uid,AufEintragBase di
 return;
 }
 
+/*
 void Lager_Vormerkungen::move_menge_from_dispo_to_plan2(int uid,AufEintragBase dispo_aeb,mengen_t menge)
 {
   assert(Id()==AuftragBase::ungeplante_id);
@@ -273,15 +276,10 @@ void Lager_Vormerkungen::move_menge_from_dispo_to_plan2(int uid,AufEintragBase d
 //  assert(K.size()==1);
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=K.begin();i!=K.end();++i)
    {
-/*
-     assert(//i->AEB.Id()!=AuftragBase::ungeplante_id &&
-            i->AEB.Id()!=AuftragBase::dispo_auftrag_id &&
-            i->AEB.Id()!=AuftragBase::plan_auftrag_id);
-*/
 //cout << "\t"<<*this<<'\t'<<i->AEB<<'\t'<<menge<<'\n';
      AufEintragZu(*this).Neu(i->AEB,menge); // Neu macht auch update
      AufEintragZu(dispo_aeb).Neu(i->AEB,-menge); // Neu macht auch update
    }
 return;
 }
-
+*/

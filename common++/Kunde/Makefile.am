@@ -7,7 +7,9 @@ noinst_LIBRARIES=libKunde.a
 includedir=@includedir@/Kunde
 
 libKunde_a_SOURCES=$(BUILT_SOURCES) Kunde.cc Person.cc KontaktListe.cc \
-		Adresse.cc Telefon.cc Zahlungsart.cc
+		Telefon.cc Zahlungsart.cc
+
+#Adresse.cc  - das gibt es doch schon in Adresse_sql.cc
 
 libKunde.a: $(libKunde_a_OBJECTS) $(libKunde_a_DEPENDENCIES)
 	touch $@

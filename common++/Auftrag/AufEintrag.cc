@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.8 2002/07/15 15:37:52 christof Exp $
+// $Id: AufEintrag.cc,v 1.9 2002/09/02 13:04:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -157,10 +157,10 @@ void AufEintrag::move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,
   Transaction tr;
   if(reduce_old)
    {
-     mengen_t mt1=updateStkDiff__(uid,-menge,false,true);
+     mengen_t mt1=updateStkDiff__(uid,-menge,false,r_Produziert);
      assert(-menge==mt1);
    }
-  mengen_t mt2=AufEintrag(AEB).updateStkDiff__(uid,+menge,false,true);
+  mengen_t mt2=AufEintrag(AEB).updateStkDiff__(uid,+menge,false,r_Produziert);
   assert(menge==mt2);
   AufEintragZu(*this).Neu(AEB,menge); 
   tr.commit();
@@ -187,4 +187,80 @@ AufEintragBase AufEintrag::getFirstKundenAuftrag() const
  else return *(V.begin());
 }
 
+/*
+void AufEintrag::verplante_menge_freigeben_nach_abbestellung(const std::list<AufEintragZu::st_reflist> &K,mengen_t menge,int uid)
+{
+assert(!"XXXXX");
+ int znr=-1,dummy;
+ mengen_t mdummy;
+ AuftragBase ab(Instanz(),dispo_auftrag_id);
+ if (!ab.existEntry(Artikel(),getLieferdatum(),znr,dummy,mdummy,getEntryStatus()))  
+   znr = ab.insertNewEntry(0,getLieferdatum(),Artikel(),getEntryStatus(),uid,false); 
+ 
+ AufEintragBase newAEB(ab,znr);
+ newAEB.updateStkDiffBase__(uid,menge);
+
+ for (std::list<AufEintragZu::st_reflist>::const_iterator i=K.begin();i!=K.end();++i)
+  {
+//cout << "\n\n\nLLL:\t"<<'\t'<<newAEB<<'\t'<<i->AEB<<'\t'<<i->Menge<<'\n';
+    AufEintragZu(newAEB).Neu(i->AEB,i->Menge);
+
+  }
+}
+*/
+
+#include <Lager/Lager.h>
+#include <Lager/Lager_Vormerkungen.h>
+
+void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,e_reduce_reason reason)
+{
+ std::list<AufEintragZu::st_reflist> K=AufEintragZu(*this).get_Referenz_list(*this,true);
+ for (std::list<AufEintragZu::st_reflist>::const_iterator i=K.begin();i!=K.end();++i)
+  {
+    if(i->AEB.Id()==AuftragBase::ungeplante_id) continue;
+    AufEintrag GeplanterAE(i->AEB);
+    AuftragBase::mengen_t M;
+    if(GeplanterAE.getRestStk()>=menge)  M=menge;
+    else M=GeplanterAE.getRestStk();
+    
+    AufEintragZu(*this).setMengeDiff__(i->AEB,-M);
+
+    if(Instanz()->LagerInstanz())
+     {
+      mengen_t mt=i->AEB.updateStkDiffBase__(uid,-M);
+
+      H_Lager L(Instanz());
+      L->dispo_auftrag_aendern(Artikel(),M);
+      Lager_Vormerkungen::freigegeben_menge_neu_verplanen(Instanz(),Artikel(),M,uid,reason);
+
+      assert(mt==mengen_t(-M));
+     }
+    else
+     {
+      std::list<AufEintragZu::st_reflist> E=AufEintragZu(i->AEB).get_Referenz_list_dispo(false);
+      if(E.empty())
+       {
+         AuftragBase ab(Instanz(),dispo_auftrag_id);
+         int znr = ab.insertNewEntry(0,getLieferdatum(),Artikel(),getEntryStatus(),uid,false); 
+         E.push_back(AufEintragZu::st_reflist(AufEintragBase(ab,znr),Artikel(),0));
+       }
+      AufEintragBase aep_dispo;
+      for (std::list<AufEintragZu::st_reflist>::const_iterator j=E.begin();j!=E.end();++j)
+        {
+         AufEintragZu(j->AEB).Neu(i->AEB,M); // versucht erst ein 'update'
+         j->AEB.updateStkDiffBase__(uid,M);
+         if(j->AEB.Id()==dispo_auftrag_id) aep_dispo=j->AEB;
+        }
+      std::list<AufEintragZu::st_reflist> R=AufEintragZu(*this).get_Referenz_list(*this,true);
+      for(std::list<AufEintragZu::st_reflist>::const_iterator j=R.begin();j!=R.end();++j)
+       {
+cout << aep_dispo<<'\t'<<j->AEB<<'\t'<<reason<<'\n';
+         if(reason==r_Closed && j->AEB.Id()==ungeplante_id)
+            AufEintragZu(aep_dispo).Neu(j->AEB,j->Menge);
+       }
+     }
+    menge-=M;
+    if(menge==AuftragBase::mengen_t(0)) return;
+  }
+}
 

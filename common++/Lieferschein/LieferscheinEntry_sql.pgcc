@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry_sql.pgcc,v 1.16 2002/06/20 06:29:53 christof Exp $ */
+/* $Id: LieferscheinEntry_sql.pgcc,v 1.17 2002/09/02 13:04:04 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -39,10 +39,13 @@ LieferscheinEntry::LieferscheinEntry(const LieferscheinEntryBase &lsbase)
  long ARTIKELID;
  bool ZUSATZINFO;
  int PALETTE;
+ int INVALID_REFAUFTRAGID,INVALID_ZEILENNUMMER;
  exec sql end declare section;
+ INVALID_REFAUFTRAGID=AuftragBase::none_id;
+ INVALID_ZEILENNUMMER=AufEintragBase::none_znr;
  
- exec sql select artikelid, coalesce(refauftragid,0), 
-	 	coalesce(refzeilennr,0), stueck, coalesce(menge,0),
+ exec sql select artikelid, coalesce(refauftragid,:INVALID_REFAUFTRAGID), 
+	 	coalesce(refzeilennr,:INVALID_ZEILENNUMMER), stueck, coalesce(menge,0),
 	 	coalesce(palette,0), coalesce(zusatzinfo,'f')
 	into :ARTIKELID, :REFAUFTRAGID, :REFZEILENNR, :STUECK, :MENGE,
 		:PALETTE, :ZUSATZINFO
@@ -111,9 +114,9 @@ LieferscheinEntry::LieferscheinEntry(const LieferscheinBase &lsb,
 void LieferscheinEntry::deleteEntry(const LieferscheinEntry &lse) throw(SQLerror)
 {
  exec sql begin declare section;
- int INSTANZ=lse.Instanz();
- int LFRSID=lse.Id();
- int ZEILE=lse.Zeile();
+  int INSTANZ=lse.Instanz();
+  int LFRSID=lse.Id();
+  int ZEILE=lse.Zeile();
  exec sql end declare section;
 
  Transaction tr;
@@ -124,16 +127,12 @@ void LieferscheinEntry::deleteEntry(const LieferscheinEntry &lse) throw(SQLerror
 		(instanz,lfrsid,zeile) = (:INSTANZ,:LFRSID,:ZEILE);
  SQLerror::test(__FILELINE__":deleteEntry: delete from lieferscheinentry");
  
- if (lse.AufId() || lse.AufZeile())
+ if (lse.RefAuftrag().Id()!=AuftragBase::none_id 
+ 	|| lse.AufZeile()!=AufEintragBase::none_znr)
  {  AuftragBase::mengen_t geliefert=lse.Anzahl();
     if (lse.Menge()) geliefert *= lse.Menge();
-    
-    AufEintragBase AEB(lse.Instanz(),lse.AufId(),lse.AufZeile());
-    AufEintrag(AEB).abschreiben(-geliefert,LFRSID);
+    AufEintrag(lse.getAufEintragBase()).abschreiben(-geliefert,LFRSID);
  }
 
  tr.commit();
 }
-
-
-
