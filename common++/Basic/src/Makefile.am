@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.7 2001/12/04 11:24:00 christof Exp $
+# $Id: Makefile.am,v 1.8 2001/12/27 09:44:42 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -40,7 +40,7 @@ CLEANFILES= *~ $(BUILT_SOURCES)
 # create compatibility links
 
 Aux ostream:
-	-ln -s . $@
+	-ln -sf . $@
 
 install-data-hook:
 	-cd $(includedir) ; ln -sf . Aux

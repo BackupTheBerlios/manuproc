@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.2 2001/06/21 13:17:44 christof Exp $
+# $Id: Makefile.am,v 1.3 2001/12/27 09:45:58 christof Exp $
 CXXFLAGS=@CXXFLAGS@ @COMMONGTK_INCLUDES@ @COMMONXX_INCLUDES@  
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
@@ -27,6 +27,6 @@ SimpleTree.hh: treebase.h
 	ln -sf treebase.h SimpleTree.hh
 
 install-data-hook:
-	cd $(includedir) ; ln -s treebase.h SimpleTree.hh
+	cd $(includedir) ; ln -sf treebase.h SimpleTree.hh
 
 CLEANFILES= *~ $(BUILT_SOURCES)
