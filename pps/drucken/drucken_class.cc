@@ -550,7 +550,8 @@ std::cout << "table ends\n";
 
 #ifdef MABELLA_EXTENSIONS    
     if(aufid_drucken && aufid_mem!=AuftragBase::none_id)
-    {   AuftragBase ab(ppsInstanzID::Kundenauftraege, aufid_mem);
+    { //  AuftragBase ab(ppsInstanzID::Kundenauftraege, aufid_mem);
+        AuftragBase ab(instanz->Id(), aufid_mem);
     	class Auftrag a(ab);
        	auftrag_von(os,a);
        	aufid_drucken=false;
@@ -1472,7 +1473,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
 //   if(!Rueckstand())
    if(Typ()==Auftrag) 
 		{auftrag_von(os,class Auftrag(AuftragBase(
-   				ppsInstanzID::Kundenauftraege,u.a->Id())),true);
+   				instanz->Id(),u.a->Id())),true);
    		}
 
    

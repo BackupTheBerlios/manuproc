@@ -950,7 +950,7 @@ void auftrag_bearbeiten::on_aufbemerkung_activate()
 void auftrag_bearbeiten::on_button_preview_clicked()
 {  if (!auftrag) return;
    std::string art="Auftrag";
-   if(instanz!=ppsInstanzID::Kundenauftraege) art="Extern";
+   if(instanz->ExterneBestellung()) art="Extern";
 
    std::string optionen;
    if(checkbutton_ean_drucken->get_active()) optionen =" --ean ";
@@ -965,7 +965,7 @@ gint auftrag_bearbeiten::on_button_drucken_clicked(GdkEventButton *ev)
    if (!auftrag) return false;
 
    std::string art="Auftrag";
-   if(instanz!=ppsInstanzID::Kundenauftraege) art="Extern";
+   if(instanz->ExterneBestellung()) art="Extern";
 
    std::string optionen;
    if(checkbutton_ean_drucken->get_active()) optionen =" --ean ";
