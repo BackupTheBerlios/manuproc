@@ -21,11 +21,11 @@
 #include <Lager/Lager.h>
 #include <Lager/JumboLager.h>
 #include <Lager/RohwarenLager.h>
-#include <Misc/SQLerror.h>
+//#include <Misc/SQLerror.h>
 #include <Misc/Trace.h>
-#include <sqlca.h>
-#include <Auftrag/AufEintragZuMengenAenderung.h>
-#include <Misc/Transaction.h>
+//#include <sqlca.h>
+//#include <Auftrag/AufEintragZuMengenAenderung.h>
+//#include <Misc/Transaction.h>
 #include <Misc/relops.h>
 #include <unistd.h>
 
@@ -851,5 +851,8 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
 }
 
 bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
-{
+{  if (ae.Id()==AuftragBase::dispo_auftrag_id || 
+	ae.Id()==AuftragBase::dispo_auftrag_id)
+   {
+   }
 }
