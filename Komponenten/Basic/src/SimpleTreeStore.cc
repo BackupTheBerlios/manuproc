@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.33 2003/10/23 10:36:59 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.34 2003/10/23 12:56:25 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -158,7 +158,8 @@ class MyTreeModel_Class : public Glib::Class
 static MyTreeModel_Class myclass;
 
 void SimpleTreeStore::on_visibly_changed(bvector_iterator it)
-{  if (!*it) // Spalte versteckt
+{ if (it!=bvector_iterator())
+  {if (!*it) // Spalte versteckt
    {  for (sequence_t::iterator i=currseq.begin();i!=currseq.end();++i)
       {  if (!ColumnVisible(*i))
          {  i=currseq.erase(i);
@@ -168,6 +169,7 @@ void SimpleTreeStore::on_visibly_changed(bvector_iterator it)
    else // Spalte hinzugekommen
    {  fillSequence();
    }
+  }
    setSequence(currseq);
 }
 
@@ -180,6 +182,9 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
 	  color_bool(), m_columns(max_col)
 {  
 //m_refTreeStore=Gtk::TreeStore::create(m_columns);
+  vec_hide_cols.resize(Cols());
+  for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
+    (*i) = true;
    defaultSequence();
    getModel().signal_title_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_title_changed));
    getModel().signal_redraw_needed().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
@@ -187,9 +192,6 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
    getModel().signal_line_to_remove().connect(SigC::slot(*this,&SimpleTreeStore::on_line_removed));
    signal_save.connect(SigC::slot(*this,&SimpleTreeStore::save_remembered1));
    signal_visibly_changed.connect(SigC::slot(*this,&SimpleTreeStore::on_visibly_changed));
-  vec_hide_cols.resize(Cols());
-  for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
-    (*i) = true;
   Gdk::Color c;
   c.set_rgb(col1,col1,col1); colors.push_back(c); // white
   c.set_rgb(col1,col0,col0); colors.push_back(c); // red
