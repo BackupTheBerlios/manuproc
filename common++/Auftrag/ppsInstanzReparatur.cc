@@ -204,7 +204,7 @@ void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,cons
 void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,const cH_ppsInstanz &x,const cH_ppsInstanz &y) const
 {analyse(s,AE,x->Name(),y->Name());}
 
-static void Zuordnung_erniedrigen(AufEintrag &ae,
+void ppsInstanzReparatur::Zuordnung_erniedrigen(AufEintrag &ae,
 	AufEintragZu::list_t &eltern,AuftragBase::mengen_t &m,
 	AuftragBase::ID typ)
 {  for (AufEintragZu::list_t::iterator i=eltern.begin();i!=eltern.end();++i)
@@ -213,6 +213,19 @@ static void Zuordnung_erniedrigen(AufEintrag &ae,
       AuftragBase::mengen_t M=AuftragBase::min(m,i->Menge);
       if (!M) continue;
       AufEintragZu(i->AEB).setMengeDiff__(ae,-M);
+      i->Menge-=M;
+      m-=M;
+      if (!m) break;
+   }
+}
+
+void ppsInstanzReparatur::KinderErniedrigen(AufEintrag &ae,
+	AufEintragZu::list_t &kinder,AuftragBase::mengen_t m,unsigned uid)
+{  AufEintrag::ArtikelInternAbbestellen_cb aia(ae,uid,ManuProC::Auftrag::r_Reparatur);
+   for (AufEintragZu::list_t::iterator i=kinder.begin();i!=kinder.end();++i)
+   {  AuftragBase::mengen_t M=AuftragBase::min(m,i->Menge);
+      if (!M) continue;
+      M=aia(ArtikelBase(),i->AEB,M);
       i->Menge-=M;
       m-=M;
       if (!m) break;
@@ -307,7 +320,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
    }
    // Sum zu klein: abbestellen (falls 0er, bei 1er 2er erzeugen)
    else if (menge<ae.getRestStk() && !ae.Instanz()->ProduziertSelbst())
-   {  analyse("weniger offen als nun v.o. benötigt",ae,menge,ae.getStueck());
+   {  analyse("mehr offen als nun v.o. benötigt",ae,menge,ae.getStueck());
       alles_ok=false;
       if (!analyse_only)
       {if (ae.Id()==AuftragBase::ungeplante_id)
@@ -316,7 +329,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
        else
          // 2er erhöhen
          AuftragBase(ae.Instanz(),AuftragBase::dispo_auftrag_id).
-              BestellmengeAendern(menge-ae.getRestStk(),ae.getLieferdatum(),
+              BestellmengeAendern(ae.getRestStk()-menge,ae.getLieferdatum(),
               		ae.Artikel(),OPEN,uid,ae);
       }
    }
@@ -375,6 +388,8 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
       {  AuftragBase::mengen_t menge;
          bool artikel_passt_nicht=false;
          ManuProC::Trace(AuftragBase::trace_channel,"-Artikel-",i->first/*,i->second.size()*/);
+         cH_ppsInstanz bestellinstanz=next!=ppsInstanzID::None?next
+                          :ppsInstanz::getBestellInstanz(i->first);
          for (AufEintragZu::list_t::iterator j=i->second.begin();j!=i->second.end();)
          {  if (next!=ppsInstanzID::None && j->AEB.Instanz()!=next)
             {  analyse("Instanz passt nicht",ae,j->AEB,j->Menge);
@@ -391,8 +406,7 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
                   goto weg1;
                }
                // Artikel ist schon mal richtig ...
-               cH_ppsInstanz bi=ppsInstanz::getBestellInstanz(i->first);
-               if (j->AEB.Instanz()!=bi && !bi->PlanungsInstanz())
+               if (j->AEB.Instanz()!=bestellinstanz && !bestellinstanz->PlanungsInstanz())
                {  analyse("Kindartikel bei falscher Instanz",ae,j->AEB,j->Menge);
                   goto weg1;
                }
@@ -425,22 +439,19 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
             alles_ok=false;
             if (!analyse_only)
             {  if (menge<richtigeMenge) // Sum zu klein: nachbestellen
-               {  ae.ArtikelInternNachbestellen(uid,richtigeMenge-menge,
-               		ManuProC::Auftrag::r_Reparatur);
+               {  AufEintrag::ArtikelInternNachbestellen(bestellinstanz,
+                                richtigeMenge-menge,newdate,i->first,uid,ae);
                }
-               else // Sum zu gross: abbestellen (falls 0er, bei 1er 2er erzeugen)
-               {  if (ae.Instanz()==ppsInstanzID::Kundenauftraege)
-                  {  ae.ArtikelInternAbbestellen(uid,menge-richtigeMenge,
-               		ManuProC::Auftrag::r_Reparatur);
+               else // Sum zu gross: abbestellen (falls 0er, ...
+               {  if (ae.Instanz()==ppsInstanzID::Kundenauftraege
+               		|| ae.Id()==AuftragBase::ungeplante_id)
+                  {  KinderErniedrigen(ae,i->second,menge-richtigeMenge,uid);
                   }
-                  else if (ae.Id()==AuftragBase::ungeplante_id)
-                     ae.MengeAendern(uid,richtigeMenge-menge,true,
-                     	  AufEintragBase(),ManuProC::Auftrag::r_Reparatur);
-                  else
+                  else // bei 1er 2er erzeugen/-höhen)
                   {  assert(ae.Id()>=AuftragBase::handplan_auftrag_id);
                      AuftragBase(make_value(Instanz()),AuftragBase::dispo_auftrag_id)
-                     	.BestellmengeAendern(menge-richtigeMenge,newdate,
-                     		ae.Artikel(),OPEN,uid,ae);
+                     	.BestellmengeAendern((menge-richtigeMenge)/ab.Faktor(i->first).as_float(),
+                     		newdate,ae.Artikel(),OPEN,uid,ae);
                   }
                }
             }
@@ -519,7 +530,7 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
       if (!analyse_only) 
          Query("update auftrag set kundennr=? "
 		"where (instanz,auftragid) = (?,?)")
-		<< ae.getStueck() << static_cast<AuftragBase&>(ae);
+		<< Kunde::eigene_id << static_cast<AuftragBase&>(ae);
       ae.kdnr=Kunde::eigene_id;
    }
    

@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.33 2003/05/22 09:20:37 jacek Exp $
+// $Id: Kunde.cc,v 1.34 2003/05/26 13:43:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -297,5 +297,6 @@ void Kunde::AB_an_rngadresse(bool b) throw(SQLerror)
  
 }
 
-
-
+#if !defined(__GNUC__) || __GNUC__ > 2
+const Kunde::ID Kunde::eigene_id;
+#endif

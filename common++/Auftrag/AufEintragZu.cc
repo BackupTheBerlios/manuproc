@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.13 2003/03/13 08:19:54 christof Exp $
+// $Id: AufEintragZu.cc,v 1.14 2003/05/26 13:43:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -251,7 +251,8 @@ void AufEintragZu::Neu(const AufEintragBase& neuAEB,const mengen_t menge)
 
  // erst erhöhen versuchen 
  try{ mengen_t mt=setMengeDiff__(neuAEB,menge); 
-      assert(menge==mt);
+      if (!AufEintragBase::tolerate_inconsistency)
+         assert(menge==mt);
     }
  catch (SQLerror &e) // anlegen
  {  Query("insert into auftragsentryzuordnung "

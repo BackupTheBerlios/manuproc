@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.51 2003/05/23 11:19:33 christof Exp $
+// $Id: AufEintrag.cc,v 1.52 2003/05/26 13:43:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -634,24 +634,7 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
  return menge;
 }
 
-namespace {
-class ArtikelInternAbbestellen_cb
-{	unsigned uid;
-	ManuProC::Auftrag::Action reason;
-	const AufEintrag &mythis;
-
-public:
-	ArtikelInternAbbestellen_cb(const AufEintrag &_mythis, unsigned _uid, ManuProC::Auftrag::Action _reason)
-		: uid(_uid), reason(_reason), mythis(_mythis)
-	{}
-	AuftragBase::mengen_t operator()(const ArtikelBase &,
- 		const AufEintragBase &,AuftragBase::mengen_t) const;
- 	// ignore remainder
- 	void operator()(const ArtikelBase &,AuftragBase::mengen_t) const {}
-};
-}
-
-AuftragBase::mengen_t ArtikelInternAbbestellen_cb::operator()
+AuftragBase::mengen_t AufEintrag::ArtikelInternAbbestellen_cb::operator()
 	(const ArtikelBase &i,
  		const AufEintragBase &j,AuftragBase::mengen_t M) const
 {  AufEintrag AE(j);

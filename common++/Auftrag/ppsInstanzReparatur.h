@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReparatur.h,v 1.8 2003/05/23 11:19:33 christof Exp $
+// $Id: ppsInstanzReparatur.h,v 1.9 2003/05/26 13:43:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -49,6 +49,14 @@ class ppsInstanzReparatur : public cH_ppsInstanz
       void analyse(const std::string &s,const AufEintrag &AE,const ABmt &x,const ABmt &y=0) const;
       void analyse(const std::string &s,const AufEintrag &AE,const ArtikelBase &x,const ArtikelBase &y=ArtikelBase()) const;
       void analyse(const std::string &s,const AufEintrag &AE,const cH_ppsInstanz &x,const cH_ppsInstanz &y) const;
+      
+      static void Zuordnung_erniedrigen(AufEintrag &ae,
+	AufEintragZu::list_t &eltern,AuftragBase::mengen_t &m,
+	AuftragBase::ID typ);
+      static void KinderErniedrigen(AufEintrag &ae,
+	AufEintragZu::list_t &kinder,AuftragBase::mengen_t m,
+	unsigned uid);
+
  public:
       // Einlesen des Lagerinhalts und Anpassen der 2er unter Berücksichtigung der 1er
       void ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror);

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.42 2003/05/22 13:54:25 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.43 2003/05/26 13:43:27 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -130,6 +130,23 @@ private:
  void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const ArtikelBase artikel,int uid,ManuProC::Auftrag::Action reason);
  // wurde von ProduziertNG abgelöst
  __deprecated void WurdeProduziert(mengen_t menge,const AufEintragBase &ElternAEB);
+
+ class ArtikelInternAbbestellen_cb
+ {	unsigned uid;
+	ManuProC::Auftrag::Action reason;
+	const AufEintrag &mythis;
+
+  public:
+	ArtikelInternAbbestellen_cb(const AufEintrag &_mythis, unsigned _uid, ManuProC::Auftrag::Action _reason)
+		: uid(_uid), reason(_reason), mythis(_mythis)
+	{}
+	// das 1. Argument wird nicht verwendet
+	AuftragBase::mengen_t operator()(const ArtikelBase &,
+ 		const AufEintragBase &,AuftragBase::mengen_t) const;
+ 	// ignore remainder
+ 	void operator()(const ArtikelBase &,AuftragBase::mengen_t) const {}
+ };
+
 
 public:
  void updateLieferdatum(const ManuProC::Datum &ld,int uid) throw(SQLerror);	

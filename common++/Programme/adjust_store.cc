@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.32 2003/05/22 12:50:48 christof Exp $
+// $Id: adjust_store.cc,v 1.33 2003/05/26 13:43:27 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -63,6 +63,7 @@ bool check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktio
       if (aktion=="*" || aktion=="C")
        RI.Reparatur_0er_und_2er(K,analyse_only);
       if (aktion=="*" || aktion=="X")
+      {AuftragBase::tolerate_inconsistency=true;
        for(SelectedFullAufList::iterator i = K.begin();i!=K.end(); ++i)
        {  AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(*i,
        			AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
@@ -71,6 +72,7 @@ bool check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktio
        	  alles_ok&=RI.Lokal(*i,analyse_only);
        	  alles_ok&=RI.Kinder(*i,kinder,analyse_only);
        }
+      }
     }
     else usage(pname);
    return alles_ok;
