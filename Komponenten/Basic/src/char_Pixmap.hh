@@ -1,4 +1,4 @@
-// $Id: char_Pixmap.hh,v 1.3 2002/12/11 18:01:56 christof Exp $
+// $Id: char_Pixmap.hh,v 1.4 2003/03/07 08:20:31 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -23,6 +23,8 @@
 
 #include <gtkmm/image.h>
 #include <BaseObjects/Model.h>
+
+// an Image which's content might be changed via the xpm data model
 
 class char_Pixmap : public Gtk::Image
 {	typedef const char * const * T;
