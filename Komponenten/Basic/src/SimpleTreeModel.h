@@ -1,4 +1,4 @@
-// $Id: SimpleTreeModel.h,v 1.8 2002/12/11 11:47:48 christof Exp $
+// $Id: SimpleTreeModel.h,v 1.9 2002/12/11 15:40:43 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -38,13 +38,19 @@ private:
 	SigC::Signal1<void,cH_RowDataBase> line_appended;
 	SigC::Signal1<void,cH_RowDataBase> line_to_remove;
 	SigC::Signal0<void> redraw_needed;
-	SigC::Signal2<void,cH_RowDataBase,guint> value_changed;
+//	SigC::Signal2<void,cH_RowDataBase,cH_RowDataBase> value_changed;
 	SigC::Signal1<void,guint> title_changed;
 public:
 	void append_line(const cH_RowDataBase &row);
 	void remove_line(const cH_RowDataBase &row);
-	SigC::Signal2<void,cH_RowDataBase,guint> &signal_value_changed()
-	{  return value_changed; }
+	void clear();
+	
+	void setDataVec(const datavec_t &d);
+	const datavec_t &getDataVec() const
+	{  return datavec; }
+	void setTitles(const std::vector<std::string>& T);
+	const std::string getColTitle(guint idx) const;
+
 	SigC::Signal1<void,cH_RowDataBase> &signal_line_appended()
 	{  return line_appended; }
 	SigC::Signal1<void,cH_RowDataBase> &signal_line_to_remove()
@@ -53,13 +59,11 @@ public:
 	{  return title_changed; }
 	SigC::Signal0<void> &signal_redraw_needed()
 	{  return redraw_needed; }
-	void clear();
-	
-	void setDataVec(const datavec_t &d);
-	const datavec_t &getDataVec() const
-	{  return datavec; }
-	void setTitles(const std::vector<std::string>& T);
-	const std::string getColTitle(guint idx) const;
+
+	void about_to_change(const cH_RowDataBase &row)
+	{  signal_line_to_remove()(row); }
+	void has_changed(const cH_RowDataBase &row)
+	{  signal_line_appended()(row); }
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.23 2002/12/11 14:18:26 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.24 2002/12/11 15:40:43 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -138,7 +138,6 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
    getModel().signal_redraw_needed().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
    getModel().signal_line_appended().connect(SigC::slot(*this,&SimpleTreeStore::on_line_appended));
    getModel().signal_line_to_remove().connect(SigC::slot(*this,&SimpleTreeStore::on_line_removed));
-   getModel().signal_value_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_value_changed));
   vec_hide_cols.resize(Cols());
   for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
     (*i) = true;
@@ -457,8 +456,9 @@ void SimpleTreeStore::on_line_removed(cH_RowDataBase r)
 {  std::list<Gtk::TreeStore::iterator> l=find_row(r);
    if (l.begin()!=l.end())
    {  ManuProC::Trace(trace_channel,__FUNCTION__,"depth=",l.size());
-      for (std::list<Gtk::TreeStore::iterator>::const_iterator i=l.rbegin();
-      		i!=l.rend();++i)
+      for (std::list<Gtk::TreeStore::iterator>::const_reverse_iterator i=l.rbegin();
+      		i!=const_cast<const std::list<Gtk::TreeStore::iterator>&>(l).rend();
+      		++i)
       {  Handle<TreeRow> htr=(**i)[m_columns.row];
          if (htr)
          {  htr->deduct(r);
@@ -471,15 +471,8 @@ void SimpleTreeStore::on_line_removed(cH_RowDataBase r)
    }
 }
 
-void SimpleTreeStore::on_value_changed(cH_RowDataBase r,guint idx)
-{  std::list<Gtk::TreeStore::iterator> l=find_row(r);
-   if (l.begin()!=l.end())
-   {  ManuProC::Trace(trace_channel,__FUNCTION__,l.size());
-   }
-}
-
 // optimize indicates we could binary search by value (possible optimization)
-// this is impossible, if a value has changed ...
+// this is impossible, if a value has already changed ...
 
 bool SimpleTreeStore::find_row(Gtk::TreeModel::Children parent, const cH_RowDataBase &r,bool optimize,std::list<Gtk::TreeStore::iterator> &result)
 {  for (iterator i= parent.begin(); i!=parent.end(); ++i)
