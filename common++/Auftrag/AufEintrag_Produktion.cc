@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.40 2004/04/08 15:13:17 jacek Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.41 2004/04/20 11:09:37 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -36,6 +36,7 @@
 #include <Misc/relops.h>
 #include <Auftrag/sqlAuftragSelector.h>
 #include <Auftrag/selFullAufEntry.h>
+
 
 #ifdef MABELLA_EXTENSIONS
 

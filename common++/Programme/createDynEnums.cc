@@ -1,4 +1,4 @@
-// $Id: createDynEnums.cc,v 1.18 2004/04/08 15:13:17 jacek Exp $
+// $Id: createDynEnums.cc,v 1.19 2004/04/20 11:09:01 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynEnums.cc,v 1.18 2004/04/08 15:13:17 jacek Exp $
+// $Id: createDynEnums.cc,v 1.19 2004/04/20 11:09:01 jacek Exp $
+
 
 #include <Misc/dbconnect.h>
 #include <Misc/FetchIStream.h>
