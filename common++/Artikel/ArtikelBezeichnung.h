@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.2 2001/07/05 09:23:02 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.3 2001/07/09 14:13:38 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -47,10 +47,10 @@ private:
 
 public:
 // deprecated
- ArtikelBezeichnung(const ArtikelBase &artikel,const cH_ExtBezSchema &schema) throw(SQLerror);
+ ArtikelBezeichnung(const ArtikelBase &artikel,const cH_ExtBezSchema &schema) throw();
 // use this one 
  ArtikelBezeichnung(const ArtikelBase &artikel,
- 	const ExtBezSchema::ID schema=ExtBezSchema::default_id) throw(SQLerror);
+ 	const ExtBezSchema::ID schema=ExtBezSchema::default_id) throw();
  ArtikelBezeichnung(const ArtikelBase &artikel,ExtBezSchema::ID id,dont_throw dummy) throw();
  ArtikelBezeichnung(const ArtikelBase &artikel,dont_throw dummy) throw()
         : schema(1)

@@ -40,7 +40,7 @@ class MyRow
  int seqnr;
  bool toshow;
  int auftragid;
- string youraufnr;
+ std::string youraufnr;
  int zeilennr;
  friend class MainTree;
 
@@ -48,9 +48,9 @@ public:
 
 void insertAufEintrag(const AufEintrag &entry, deque<int> &seq, int deep=0);
 vector<string> &getColEntries(int seqdeep);
-const string getColText() const;
-const string &getStkSumText() const;
-const string Description(const cH_ExtBezSchema &s) const;
+const std::string getColText() const;
+const std::string &getStkSumText() const;
+const std::string Description(const cH_ExtBezSchema &s) const;
 
 const ArtikelBase::ID getArtID() const 
 { return artbase.Id();
@@ -75,9 +75,9 @@ EntryValue getValue() { return value; }
 int getAuftragid() { return auftragid;}
 int getZeilennr() { return zeilennr;}
 bool Leaf() { return leaf; }
-void drucken(FILE *f,vector<int>&len,const vector<int>&maxlen);
-string const ProzessText() const {return prozess->getTyp()+" "+prozess->getText();}
-void setText(int col, const string s)
+void drucken(FILE *f,std::vector<int>&len,const std::vector<int>&maxlen);
+std::string const ProzessText() const {return prozess->getTyp()+" "+prozess->getText();}
+void setText(int col, const std::string s)
 	{tclistrow->relabel(col,s);}
 
 };

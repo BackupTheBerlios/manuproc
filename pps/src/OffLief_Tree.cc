@@ -65,49 +65,38 @@ void OffLief_TCList::showOffLief()
  thaw();
 }
 
-
-TCListNode *OffLief_TCList::NewNode(guint _seqnr,const cH_RowDataBase &v, guint deep)
+/*
+TCListNode *OffLief_TCList::NewNode(guint deep,const cH_EntryValue &v, bool expand)
 {
- return new OffLief_Node(_seqnr,v,deep);
+ return new OffLief_Node(deep,v,expand);
 }
-
-TCListLeaf *OffLief_TCList::NewLeaf(guint _seqnr,const cH_RowDataBase &v, guint deep)
-{
- return new OffLief_Leaf(_seqnr,v,deep);
-}
-
+*/
 // OffLief_TCList end
 
 
 
 // OffLief_Node begin
-#include<Aux/Ausgabe_neu.h>
 
-OffLief_Node::OffLief_Node(int _seqnr, const cH_RowDataBase &v, int deep) 
- : TCListNode(_seqnr,v,deep)
+/*
+OffLief_Node::OffLief_Node(guint deep, const cH_EntryValue &v, bool expand) 
+ : TCListNode(deep,v,expand)
 {}
+*/
 
 // OffLief_Node end
+#include<Aux/Ausgabe_neu.h>
+#include <Aux/EntryValueIntString.h>
 
-// OffLief_Leaf begin
-
-// OffLief_Leaf end
-
-
-// OffLief_RowData begin
-const cH_EntryValue OffLief_RowData::Value(int _seqnr) const
+const cH_EntryValue OffLief_RowData::Value(guint _seqnr,gpointer _gp) const
 {
  switch(_seqnr)
    {
 	case OffLief_TCList::LIEFNR_SEQ :
-		return cH_Lief_Value(Formatiere(lieferschein.Id(),0,6,"","",'0'));
+		return cH_EntryValueIntString(Formatiere(lieferschein.Id(),0,6,"","",'0'));
 	case OffLief_TCList::LIEFDATUM_SEQ :
-		return cH_Lief_Value(lieferschein.LsDatum().c_str());
+		return cH_EntryValueIntString(lieferschein.LsDatum().c_str());
 	case OffLief_TCList::LIEFKUNDE_SEQ:
-		return cH_Lief_Value(cH_Kunde(lieferschein.KdNr())->firma());
-	default : return cH_Lief_Value("-");
+		return cH_EntryValueIntString(cH_Kunde(lieferschein.KdNr())->firma());
+	default : return cH_EntryValueIntString("-");
    }
- return cH_Lief_Value("-");
 }
-
-// OffLief_RowData end

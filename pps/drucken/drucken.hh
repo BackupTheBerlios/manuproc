@@ -18,6 +18,7 @@
 
 #include <Aux/dbconnect.h>
 #include <Aux/itos.h>
+#include <Aux/ppsInstanz.h>
 #include <string>
 #include <fstream>
 #include <Kunde/Kunde.h>
@@ -28,6 +29,7 @@ class LR_drucken
       unsigned int auftragsnr;
       const string RL;
       string kopie;
+      ppsInstanz::ppsInstId instanz;
    private:
 //      const static float DM_EURO=1.95583;
       void drucken(string view_plot);
@@ -48,5 +50,5 @@ class LR_drucken
 //      unsigned int sql_artid();
 //     unsigned int sql_warengruppe(unsigned int artikel_id);
    public:
-      LR_drucken(string RL, unsigned int auftragsnr,string view_plot);
+      LR_drucken(string RL, unsigned int auftragsnr,string view_plot, ppsInstanz::ppsInstId _instanz);
 };

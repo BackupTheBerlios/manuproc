@@ -40,6 +40,8 @@ auftrag_bearbeiten *auftragbearbeiten;
 
 int main(int argc, char **argv)
 {  
+ ppsInstanz instanz;
+
  Petig::Connection conn;
  conn.setDbase("petigdb");
  int i;
@@ -58,23 +60,23 @@ int main(int argc, char **argv)
 #if defined(ENABLE_NLS)
    bindtextdomain (PACKAGE, PACKAGE_LOCALE_DIR);
    textdomain (PACKAGE);
-#endif ///* ENABLE_NLS*/   
+#endif ///* ENABLE_NLS*/
    Gnome::Main m("auftrag", "0.0", 1, argv);
+ Petig::PrintUncaughtExceptions();
 
  meldung = new MyMessage();
-
  try{ Petig::dbconnect(conn); }
   catch(SQLerror &e)
   { meldung->Show(e);
-    Petig::dbdisconnect_nt(conn.Dbase());
     return 1;
   }
-
+  
+ if (argc-optind>1) instanz=ppsInstanz::ppsInstId(atoi(argv[optind]));
+ else instanz=ppsInstanz(ppsInstanz::INST_KNDAUF);
 
   auftragmain = new auftrag_main();
 // auftrag_lieferschein *al = new auftrag_lieferschein();
 
- Petig::PrintUncaughtExceptions();
 
 weiter:
 

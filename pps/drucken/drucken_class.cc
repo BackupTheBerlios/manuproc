@@ -43,6 +43,7 @@ void LR_Abstraktion::drucken_header(ofstream &os)
    os <<    "\\parskip0pt\n"  ;
    os <<    "\\setlength{\\topsep}{0pt}\n";
    os <<    "\\setlength{\\partopsep}{0pt}\n";
+   os <<    "\\setlength{\\textheight}{27.0cm}";
    os <<    "\\pagestyle{empty}\n";
    os <<    "\n";
    os <<    "\\begin{document}\n";

@@ -35,4 +35,5 @@ AC_SUBST(GNOMEMM_LIBS)
 
 PETIG_CHECK_KOMPONENTEN
 
-AC_OUTPUT(Makefile src/Makefile  macros/Makefile drucken/Makefile)
+AC_OUTPUT(Makefile src/Makefile  macros/Makefile \
+   drucken/Makefile auftragserfassung/Makefile)

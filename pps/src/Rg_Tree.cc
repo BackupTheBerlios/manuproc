@@ -21,6 +21,7 @@
 #include"Rg_Tree.h"
 #include"MyMessage.h"
 #include<ExtBezSchema/ExtBezSchema.h>
+#include <tclistleaf.h>
 
 extern MyMessage *meldung;
 
@@ -47,15 +48,26 @@ const string Rg_TCList::getColTitle(guint col) const
   }
 }
 
-TCListNode *Rg_TCList::NewNode(guint _seqnr,const cH_RowDataBase &v, guint deep)
+/*
+TCListNode *Rg_TCList::NewNode(guint _seqnr,gpointer gp,const cH_RowDataBase &v, guint deep)
 {
- return new Rg_Node(_seqnr,v,deep);
+ return new Rg_Node(_seqnr,gp,v,deep);
 }
-
-TCListLeaf *Rg_TCList::NewLeaf(guint _seqnr,const cH_RowDataBase &v, guint deep)
+TCListLeaf *Rg_TCList::NewLeaf(guint _seqnr,gpointer gp,const cH_RowDataBase &v, guint deep)
 {
- return new Rg_Leaf(_seqnr,v,deep);
+ return new Rg_Leaf(_seqnr,gp,v,deep);
 }
+*/
+/*
+TCListNode *Rg_TCList::NewNode(guint deep,const cH_EntryValue &v, bool expand)
+{
+ return new Rg_Node(deep,v,expand);
+}
+TCListLeaf *Rg_TCList::NewLeaf(guint deep,const cH_EntryValue &v, const cH_RowDataBase &d)
+{
+ return new Rg_Leaf(deep,v,d);
+}
+*/
 
 void Rg_TCList::showRechnung(RechnungBase::ID rngid)
 {
@@ -126,85 +138,39 @@ bool Rg_TCList::deleteRngEntry()
 // Rg_Node begin
 #include<Aux/Ausgabe_neu.h>
 
-Rg_Node::Rg_Node(int _seqnr, 
-		const cH_RowDataBase &v, int deep) 
- : TCListNode(_seqnr,v,deep), sumpreis(0)
+Rg_Node::Rg_Node(guint deep,const cH_EntryValue &v, bool expand)
+ : TCListNode(deep,v,expand), sumpreis(0)
 {}
 
-void Rg_Node::cumulate(const cH_RowDataBase &rd, int seqnr) const
+void Rg_Node::cumulate(const cH_RowDataBase &rd)
 {
  sumpreis+=(dynamic_cast<const Rg_RowData &>(*rd)).preis().Wert();
 }
 
-void Rg_Node::resetSumValues(gpointer p)
+const cH_EntryValue Rg_Node::Value(guint index,gpointer gp) const
 {
- sumpreis=((Rg_Node*)p)->SumPreis();
+ return cH_EntryValueIntString(sumpreis);
 }
-
-const string Rg_Node::getSumCol(int col)
-{
- return Formatiere(sumpreis);
-}
-
-const vector<string> Rg_Node::getColEntries(int cols)
-{
- static vector<string> v;
-
- v=TCListRowData::getColEntries(cols);
-
- v[Rg_TCList::LIEFMNG_SEQ]=Formatiere(sumpreis);
-
-// cout << "getColEntries Node\n";
- return v;
-}
-
-// Rg_Node end
-
-// Rg_Leaf begin
-const vector<string> Rg_Leaf::getColEntries(int cols)
-{
- static vector<string> v;
- v=TCListRowData::getColEntries(cols);
-
- v[Rg_TCList::PREIS_SEQ]=
-	Formatiere((dynamic_cast<const Rg_RowData&>(*leafdata)).preis().Wert());
- v[Rg_TCList::GPREIS_SEQ]=
-	Formatiere((dynamic_cast<const Rg_RowData&>(*leafdata)).gpreis().Wert());
- return v;
-
-}
-
-// Rg_Leaf end
 
 // Rg_RowData begin
-const cH_EntryValue Rg_RowData::Value(int _seqnr) const
+const cH_EntryValue Rg_RowData::Value(guint _seqnr,gpointer _gp) const
 {
  switch(_seqnr)
    {
 	case Rg_TCList::LIEFNR_SEQ :
-		return cH_Rg_Value(Formatiere(rechnungentry.Lfrs_Id(),0,6,"","",'0'));
-		break;
+		return cH_EntryValueIntString(Formatiere(rechnungentry.Lfrs_Id(),0,6,"","",'0'));
 	case Rg_TCList::ARTIKEL_SEQ :
-		return cH_Rg_Value(artikelbez->Bezeichnung());
-		break;
+		return cH_EntryValueIntString(artikelbez->Bezeichnung());
 	case Rg_TCList::LIEFMNG_SEQ :
 		return cH_Rg_Value(rechnungentry.Menge());
-		break;
 	case Rg_TCList::LIEFZEILE_SEQ :
-		return cH_Rg_Value(rechnungentry.Zeile());
-		break;
+		return cH_EntryValueIntString(rechnungentry.Zeile());
 	case Rg_TCList::PREIS_SEQ :
 		return cH_Rg_Value(rechnungentry.getPreis().Wert());
-		break;
 	case Rg_TCList::GPREIS_SEQ :
 		return cH_Rg_Value(rechnungentry.GPreis().Wert());
-		break;
-	default : return cH_Rg_Value("-");
+	default : return cH_EntryValueIntString("-");
    }
- return cH_Rg_Value("-");
 }
 
 // Rg_RowData end
-
-
-

@@ -34,6 +34,7 @@
 
 #include "termsplidial.hh"
 #include <Auftrag/AuftragFull.h>
+//#include <Auftrag/AufEintragBase2.h>
 #include "aktAufEintrag.h"
 #include <Aux/SQLerror.h>
 #include <Artikel/Prozess.h>
@@ -41,6 +42,7 @@
 
 class auftrag_bearbeiten : public auftrag_bearbeiten_glade
 {   
+ ppsInstanz instanz;
  AuftragFull *auftrag;      
  aktAufEintrag *aktaufeintrag;  
  cH_Kunde kunde;
@@ -105,7 +107,8 @@ public:
  
  bool splitEntry();
 
-auftrag_bearbeiten(AuftragBase& selectedauftragbase, int zeilennr);
+//auftrag_bearbeiten(const AuftragBase& selectedauftragbase, int zeilennr);
+auftrag_bearbeiten(const AufEintragBase2& auftragbase);
 ~auftrag_bearbeiten();
 
 };

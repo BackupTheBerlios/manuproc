@@ -28,45 +28,6 @@ extern bool auftragflag;/* zeigt an ab wann auftragid in den Zeilen */
 
 extern auftrag_main *auftragmain;
 
-vector<string> &MyRow::getColEntries(int seqdeep)
-{
- static vector<string> v;
- int i=ATTRCOUNT;
- 
-  v.erase(v.begin(),v.end());
- while(i>seqdeep) {v.push_back(""); --i;}
- if(seqnr==KW_SEQ)
-   {
-    v.push_back(value.Datum().c_str());
-   }
- else 
-   if(seqnr==AUFID_SEQ)
-     {if(auftragmain->interneNamen())
-        v.push_back(Formatiere(value.getIntVal(),0,6,"","",'0')/*+"."+youraufnr*/);
-      else
-        v.push_back(youraufnr/*+"."+str*/);
-     }
- else
-   if(seqnr==PROZ_SEQ)
-     v.push_back(value.getStrProzVal());
- else
-   v.push_back(value.getStrVal());
-
-
-
- while(i>1) {v.push_back(""); --i;}
- v.push_back(Formatiere((ulong)summeter,0,0,","));
-
- if(sumstueck)
-   v.push_back(Formatiere((ulong)sumstueck,0,0,","));
- else v.push_back("");
-
- v.push_back("");
-
- return v;
-}  
-   
-
 const string MyRow::getColText() const 
 {
 
@@ -179,6 +140,7 @@ void MyRow::updateSummen()
 }
 
 
+#warning weg mit dem Code!
 void MyRow::stutzeBaum(TCList &tcliste, int deep, int showdeep)
 {
  string tmpstr;
@@ -245,9 +207,47 @@ void MyRow::drucken(FILE *f,vector<int> &len,const vector<int>&maxlen)
 const string MyRow::Description(const cH_ExtBezSchema &s) const
 {
  string str;
- cH_ArtikelBezeichnung artbez(artbase,s);
+ cH_ArtikelBezeichnung artbez(artbase,s->Id(),ArtikelBezeichnung::dont_throw());
 
  str=artbez->Bezeichnung();
  return str;   
 }
 
+#warning weg damit!
+vector<string> &MyRow::getColEntries(int seqdeep)
+{
+ static vector<string> v;
+ int i=ATTRCOUNT;
+ 
+  v.erase(v.begin(),v.end());
+ while(i>seqdeep) {v.push_back(""); --i;}
+ if(seqnr==KW_SEQ)
+   {
+    v.push_back(value.Datum().c_str());
+   }
+ else 
+   if(seqnr==AUFID_SEQ)
+     {if(auftragmain->interneNamen())
+        v.push_back(Formatiere(value.getIntVal(),0,6,"","",'0')/*+"."+youraufnr*/);
+      else
+        v.push_back(youraufnr/*+"."+str*/);
+     }
+ else
+   if(seqnr==PROZ_SEQ)
+     v.push_back(value.getStrProzVal());
+ else
+   v.push_back(value.getStrVal());
+
+
+
+ while(i>1) {v.push_back(""); --i;}
+ v.push_back(Formatiere((ulong)summeter,0,0,","));
+
+ if(sumstueck)
+   v.push_back(Formatiere((ulong)sumstueck,0,0,","));
+ else v.push_back("");
+
+ v.push_back("");
+
+ return v;
+}  

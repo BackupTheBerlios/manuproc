@@ -364,9 +364,7 @@ void ArtikelBox::Neuer_Eintrag()
    char db_query[1024];
   exec sql end declare section;
   std::string table = "artbez_"+itos(schema->Typ())+"_"+itos(schema->Id());
-  if (schema->Id()==1 || !intern_id(schema->Typ()))
-     exec sql select nextval ('artikelbezeichnun_artikelid_seq') into :db_id;
-  else db_id=intern_id(schema->Typ()) ;
+  exec sql select nextval ('artikelbezeichnun_artikelid_seq') into :db_id;
   std::string where, what;
   where = "(id,stand," ;
   what  = "("+itos(db_id)+",now(),";
@@ -386,11 +384,12 @@ void ArtikelBox::Neuer_Eintrag()
   artikel=db_id;
   pixmap->set(stock_button_apply_xpm);
 
+  new_article_inserted(db_id);
   activate();
   }catch (SQLerror &e)   {  std::cerr << e << '\n';}
 }
 
-
+#if 0
 unsigned int ArtikelBox::intern_id(int typ)
 {
   exec sql begin declare section;
@@ -414,6 +413,7 @@ unsigned int ArtikelBox::intern_id(int typ)
   else return db_id;
 
 }
+#endif
 
 void ArtikelBox::where_what(std::string& where, std::string& what)
 {

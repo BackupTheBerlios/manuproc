@@ -867,18 +867,34 @@
 	</widget>
 
 	<widget>
-	  <class>Custom</class>
-	  <name>maintree_s</name>
+	  <class>GtkScrolledWindow</class>
+	  <name>scrolledwindow_maintree_s</name>
 	  <cxx_visibility>protected</cxx_visibility>
-	  <creation_function>SimpleTree</creation_function>
-	  <int1>10</int1>
-	  <int2>0</int2>
-	  <last_modification_time>Mon, 25 Jun 2001 08:37:46 GMT</last_modification_time>
+	  <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
+	  <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
+	  <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
+	  <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
 	  <child>
 	    <padding>0</padding>
 	    <expand>True</expand>
 	    <fill>True</fill>
 	  </child>
+
+	  <widget>
+	    <class>GtkViewport</class>
+	    <name>viewport6</name>
+	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+
+	    <widget>
+	      <class>Custom</class>
+	      <name>maintree_s</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <creation_function>SimpleTree</creation_function>
+	      <int1>10</int1>
+	      <int2>8</int2>
+	      <last_modification_time>Mon, 25 Jun 2001 08:37:46 GMT</last_modification_time>
+	    </widget>
+	  </widget>
 	</widget>
 
 	<widget>

@@ -22,8 +22,8 @@
 #include "drucken_class.hh"
 
 
-LR_drucken::LR_drucken(string RL_, unsigned int auftragsnr_, string view_plot)
-: auftragsnr(auftragsnr_),RL(RL_)
+LR_drucken::LR_drucken(string RL_, unsigned int auftragsnr_, string view_plot,ppsInstanz::ppsInstId _instanz)
+: auftragsnr(auftragsnr_),RL(RL_),instanz(_instanz)
 {
  LR_drucken::drucken(view_plot);
 }
@@ -53,7 +53,7 @@ void LR_drucken::drucken(string view_plot)
       LR_Abstraktion(&l).drucken_table(os,kopie);
     }
    else if (RL=="Auftrag")  
-    { AuftragFull a((int)auftragsnr);
+    { AuftragFull a(instanz,(int)auftragsnr);
       LR_Abstraktion(&a).drucken_table(os,kopie);
     }
    else abort();

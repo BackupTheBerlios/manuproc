@@ -36,7 +36,7 @@ void auftrag_rechnung::on_rngnr_search(int *_continue, GtkSCContext newsearch)
    {
     case GTK_SEARCH_OPEN :
       {
-       string pat = rngnr->get_text() + "%";
+       std::string pat = rngnr->get_text() + "%";
        PAT = (char*)pat.c_str();
        KUNDE=lieferkunde->get_value();
        

@@ -42,7 +42,7 @@ public:
  typedef enum {LIEFZEILE_SEQ,LIEFNR_SEQ,ARTIKEL_SEQ,LIEFMNG_SEQ,PREIS_SEQ,GPREIS_SEQ} SeqNr;
 
  Rg_TCList(guint _cols, guint _attrs);
- const string getColTitle(guint seq) const;
+ const std::string getColTitle(guint seq) const;
  void fillDataVec() {}
  void showRechnung(const Rechnung::ID rngid); 
  void newRechnung(const Kunde::ID kid);
@@ -54,9 +54,8 @@ public:
  			
  bool deleteRngEntry();
 
- TCListNode *NewNode(guint _seqnr, const cH_RowDataBase &v, guint deep);
-
- TCListLeaf *NewLeaf(guint _seqnr, const cH_RowDataBase &v, guint deep);
+// TCListNode *NewNode(guint _seqnr, gpointer gp,const cH_RowDataBase &v, guint deep);
+// TCListLeaf *NewLeaf(guint _seqnr, gpointer gp,const cH_RowDataBase &v, guint deep);
 
 };
 
@@ -76,9 +75,9 @@ class Rg_RowData : public RowDataBase
   
 public:
  Rg_RowData(const RechnungEntry &le, ExtBezSchema::ID ebzid) : 
- 	rechnungentry(le), artikelbez(le.ArtikelID(),ebzid) {}
+ 	rechnungentry(le), artikelbez(le.ArtikelID(),ebzid,ArtikelBezeichnung::dont_throw()) {}
 
- const cH_EntryValue Value(int _seqnr) const;
+ const cH_EntryValue Value(guint _seqnr,gpointer _gp) const;
  const ArtikelBase::ID ArtikelID() const { return artikelbez->Id(); }
  int Zeile() const { return rechnungentry.Zeile(); }
  LieferscheinBase::ID LiefId() const { return rechnungentry.Lfrs_Id(); }
@@ -126,47 +125,26 @@ class Rg_Node : public TCListNode
  
 public:
  
- virtual void cumulate(const cH_RowDataBase &rd, int seqnr) const;
- virtual const vector<string> getColEntries(int cols);
- virtual void resetSumValues(gpointer p);
- virtual const string getSumCol(int col);
+ virtual void cumulate(const cH_RowDataBase &rd);
+ const cH_EntryValue Value(guint index,gpointer gp) const;
   
- Rg_Node::Rg_Node(int _seqnr, const cH_RowDataBase &v, int deep);
+ Rg_Node::Rg_Node(guint deep,const cH_EntryValue &v, bool expand);
  fixedpoint<2> SumPreis() const { return sumpreis; }
 
 };
 
 // Rg_Node end
 
-
-// Rg_Leaf begin
-#include<tclistleaf.h>
-
-class Rg_Leaf : public TCListLeaf
-{
- 
-public:
- 
- const vector<string> getColEntries(int cols);
-
- Rg_Leaf::Rg_Leaf(int _seqnr, const cH_RowDataBase &v,int deep) 
-		: TCListLeaf(_seqnr,v,deep) {}
-};
-// Rg_Leaf end
-
-
 // Rg_Value begin
 
-#include"Lief_Value.h"
-
-class Rg_Value: public Lief_Value
+class Rg_Value: public EntryValueIntString
 {
  fixedpoint<2> fval;
 
 public:
- Rg_Value(int v) : Lief_Value(v), fval(v) {}
- Rg_Value(const string &s) : Lief_Value(s), fval(atof(s.c_str())) {}
- Rg_Value(fixedpoint<2> f) : Lief_Value(f.String()), fval(f) {}
+ Rg_Value(int v) : EntryValueIntString(v), fval(v) {}
+ Rg_Value(const std::string &s) : EntryValueIntString(s), fval(atof(s.c_str())) {}
+ Rg_Value(fixedpoint<2> f) : EntryValueIntString(f.String()), fval(f) {}
 };
 
 class cH_Rg_Value : public cH_EntryValue
@@ -177,7 +155,7 @@ public:
  cH_Rg_Value(const EntryValueBase *r) : cH_EntryValue(r) {}
  
  cH_Rg_Value(int v) : cH_EntryValue(new Rg_Value(v)) {}
- cH_Rg_Value(const string &s) : cH_EntryValue(new Rg_Value(s)) {}
+ cH_Rg_Value(const std::string &s) : cH_EntryValue(new Rg_Value(s)) {}
  cH_Rg_Value(fixedpoint<2> f) : cH_EntryValue(new Rg_Value(f)) {}
     
 };

@@ -23,17 +23,15 @@
 
 class OffAuf_Node : public TCListNode
 {
- mutable int sumoffen;
- mutable int sumgeliefert;
+ int sumoffen;
+ int sumgeliefert;
  
 public:
  
- virtual void cumulate(const cH_RowDataBase &rd, int seqnr) const;
- virtual const vector<string> getColEntries(int cols);
- virtual void resetSumValues(gpointer p);
- virtual const string getSumCol(int col);
+ virtual void cumulate(const cH_RowDataBase &rd);
+ const cH_EntryValue Value(guint index,gpointer gp) const;
   
- OffAuf_Node::OffAuf_Node(int _seqnr, const cH_RowDataBase &v, int deep);
+ OffAuf_Node::OffAuf_Node(guint deep, const cH_EntryValue &v, bool expand);
  int SumOffen() const { return sumoffen; }
  int SumGeliefert() const { return sumgeliefert; }
 

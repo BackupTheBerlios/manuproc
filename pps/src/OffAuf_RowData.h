@@ -45,7 +45,7 @@ public:
  			int off, int gel, const Petig::Datum liefd)
   : auftrag(auf),artikel(art),offen(off),geliefert(gel),liefdatum(liefd) {}
 
- const cH_EntryValue Value(int _seqnr) const;
+ const cH_EntryValue Value(guint _seqnr,gpointer _gp) const;
  int Offen() const { return offen; }
  int Geliefert() const { return geliefert; }   	
  const ArtikelBase::ID ArtikelID() const { return artikel->Id(); }

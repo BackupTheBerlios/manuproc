@@ -36,17 +36,14 @@ public:
  typedef enum {AUFNR_SEQ=0,ARTIKEL_SEQ,LIEFDAT_SEQ,OFFMNG_SEQ,GELIEF_SEQ,} SeqNr;
 
  OffAuf_TCList(guint _cols, guint _attrs);
- const string getColTitle(guint seq) const;
+ const std::string getColTitle(guint seq) const;
  void loadOffAuf() throw(SQLerror);
  void fillDataVec() {}
  void setKdNr(Kunde::ID knr) { kundennr=knr; }
  void showOffAuf();
 
- TCListNode *NewNode(guint _seqnr, const cH_RowDataBase &v, guint deep);
-
- TCListLeaf *NewLeaf(guint _seqnr, const cH_RowDataBase &v, guint deep);
+TCListNode *NewNode(guint deep, const cH_EntryValue &v,bool expand);
 
 };
-
 
 #endif

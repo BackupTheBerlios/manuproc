@@ -1,4 +1,4 @@
-// $Id: AufEintragBase2.h,v 1.7 2001/06/22 17:45:50 cvs_malte Exp $
+// $Id: AufEintragBase2.h,v 1.8 2001/07/06 06:39:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,30 +22,30 @@
 #include<Artikel/Prozess.h>
 #include<Aux/SQLerror.h>
 #include<Aux/ppsInstanz.h>
+#include <Auftrag/AuftragBase.h>
 
 
-class AufEintragBase2
+class AufEintragBase2 : public AuftragBase
 {
 protected:
- ppsInstanz instanz;
- int auftragid;
  int zeilennr;
   
 public:
- AufEintragBase2() :instanz(ppsInstanz::INST_KNDAUF),auftragid(0), zeilennr(0) {}
+ AufEintragBase2() : zeilennr(0) {}
+ AufEintragBase2(ppsInstanz inst) 
+ 	: AuftragBase(inst), zeilennr(0) {}
  AufEintragBase2(ppsInstanz::ppsInstId inst,int a,int z) 
- 	:  instanz(inst),auftragid(a), zeilennr(z) {}
+ 	:  AuftragBase(inst,a), zeilennr(z) {}
  
  void setVerarbeitung(const cH_Prozess p) throw(SQLerror);
  inline int mapKey() const { return auftragid*10000+zeilennr; } 
 
-// deprecatetd
- int AufId() const { return auftragid; }
- 
- int Id() const { return auftragid; }
  int ZNr() const { return zeilennr; }
- ppsInstanz::ppsInstId InstId() const { return instanz.Id(); }
- 
+ bool valid() const { return AuftragBase::valid(); }
+
+// deprecatetd
+ int AufId() const { return Id(); }
+ ppsInstanz::ppsInstId InstId() const { return AuftragBase::Instanz(); }
 };
 
 #endif

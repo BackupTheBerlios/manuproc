@@ -25,7 +25,7 @@ class MyMessage : public Message
 {
 public:
  void Show(const SQLerror &e)
- {string _msg="DB-Error Code: "+itos(e.Code())+"\n";
+ {std::string _msg="DB-Error Code: "+itos(e.Code())+"\n";
   _msg+="DB-Error Message: "+e.Message()+"\n";
   _msg+="Context: "+e.Context()+"\n";
   Message::Show((char *)_msg.c_str());

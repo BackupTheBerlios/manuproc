@@ -33,6 +33,7 @@
 #include <Auftrag/selFullAufEntry.h>
 #include <Artikel/Einheiten.h>
 #include<typeinfo>
+#include <tclistleaf.h>
 
 extern MyMessage *meldung;
 
@@ -43,8 +44,12 @@ void auftrag_lieferschein::on_liefer_close()
 
 void auftrag_lieferschein::on_liefer_neu()
 {   
+ if (liefer_kunde->get_value()<1)
+ {  liefer_kunde->grab_focus();
+    return;
+ }
  lieferschein_liste->newLieferschein(liefer_kunde->get_value());
-cout << "liefID" << lieferschein_liste->getLieferschein().Id() << "\n";
+//cout << "liefID" << lieferschein_liste->getLieferschein().Id() << "\n";
  liefernr->set_text(
 	Formatiere(lieferschein_liste->getLieferschein().Id(),0,0,""));
  on_liefnr_activate();
@@ -57,14 +62,14 @@ void auftrag_lieferschein::on_lief_save()
 void auftrag_lieferschein::on_lief_preview()
 {  
    if (liefernr->get_text()=="") return;
-   string command = "auftrag_drucken Lieferschein "+liefernr->get_text()+" Preview";
+   string command = "auftrag_drucken Lieferschein "+liefernr->get_text()+" Preview "+ itos(instanz.Id());
    system(command.c_str());
 }
 
 void auftrag_lieferschein::on_lief_print()
 {  
    if (liefernr->get_text()=="") return;
-   string command = "auftrag_drucken Lieferschein "+liefernr->get_text()+" Plot";
+   string command = "auftrag_drucken Lieferschein "+liefernr->get_text()+" Plot "+ itos(instanz.Id());
    system(command.c_str()); 
 }
 
@@ -89,7 +94,7 @@ try{
  display2();
    cH_Kunde k(kdnr);
    if (artikelbox->getBezSchema()->Id()!=k->getSchema()->Id())
-   { artikelbox->setExtBezSchema(k->getSchema()); }
+   { artikelbox->setExtBezSchema(k->getSchema(ArtikelTyp::AufgemachtesBand)); }
  }
  catch(SQLerror &e) {meldung->Show(e);}
 }
@@ -114,6 +119,7 @@ try{
   } catch(SQLerror &e) {meldung->Show(e);}
 }
 
+// ist eigentlich anzahl oder?
 void auftrag_lieferschein::on_liefermenge_activate()
 {if (!offene_auftraege->selection().size()) artikelbox->grab_focus();
 #warning vielleicht Zeile übernehmen?
@@ -163,7 +169,8 @@ void auftrag_lieferschein::on_unselectrow_offauf(int row, int col, GdkEvent* b)
  clear_offauf();   
 }
 
-auftrag_lieferschein::auftrag_lieferschein()
+auftrag_lieferschein::auftrag_lieferschein(ppsInstanz _instanz)
+:instanz(_instanz)
 {
  selectedrow=NULL;
  liefernr->set_value_in_list(false,false);
@@ -194,7 +201,7 @@ void auftrag_lieferschein::on_Palette_activate()
   
      if (!auftragnr->get_text().size() && artikelbox->get_value().Id())
      {  SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Kunde_Artikel
-     		(liefer_kunde->get_value(),artikelbox->get_value().Id()));
+     		(instanz.Id(),liefer_kunde->get_value(),artikelbox->get_value().Id()));
      	SelectedFullAufList list(psel,cH_ExtBezSchema(1,ExtBezSchema::default_Typ));
      	Transaction tr;
      	int _anzahl=anzahl->get_value_as_int();
@@ -256,8 +263,8 @@ void auftrag_lieferschein::on_Palette_activate()
 	clear_offauf();
 	lieferschein_liste->clear();
 	lieferschein_liste->showLieferschein(lieferschein_liste->getLieferschein().Id());
-	liefermenge->select_region(0,liefermenge->get_text().size());
-	liefermenge->grab_focus();
+	anzahl->select_region(0,liefermenge->get_text().size());
+	anzahl->grab_focus();
        }
        catch (SQLerror &e)
         {  meldung->Show(e); 

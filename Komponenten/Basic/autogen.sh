@@ -1,6 +1,6 @@
 libtoolize --force --copy
 autoheader
-aclocal -Imacros
+aclocal -I macros
 automake --add-missing --copy --gnu
 autoconf
 ./configure $*

@@ -29,15 +29,15 @@ class AuftragBase
  	int auftragid;	
  public:
 	AuftragBase() : instanz(ppsInstanz::INST_KNDAUF), auftragid(0) {}
+	AuftragBase(ppsInstanz _instanz) throw() : instanz(_instanz.Id()), auftragid(0) {}
 	AuftragBase(ppsInstanz::ppsInstId _instanz, int aufid) throw() : instanz(_instanz), auftragid(aufid) {}
 	int Id() const {return auftragid;}
         void set_Id(int i) {auftragid = i;}
         ppsInstanz::ppsInstId Instanz() const {return instanz; }
+	bool valid() const { return auftragid!=0; }
 
         void insertNewEntry(unsigned long int bestellt, 
                 Petig::Datum lieferdatum, ArtikelBase::ID artid) throw(SQLerror);
-                
-        
 };
 
 #endif

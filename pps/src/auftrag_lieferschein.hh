@@ -26,6 +26,7 @@
 
 class auftrag_lieferschein : public auftrag_lieferschein_glade
 {   
+        ppsInstanz instanz;
         
         friend class auftrag_lieferschein_glade;
         void on_liefer_close();
@@ -61,7 +62,7 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
 	void display2(); // refresh current free list
 	
 public:
-	auftrag_lieferschein();
+	auftrag_lieferschein(ppsInstanz _instanz);
 	Kunde::ID getKdNr() { return liefer_kunde->get_value();}
 };
 

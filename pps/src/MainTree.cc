@@ -52,6 +52,7 @@ const string MainTree::getColTitle(int attr, int seq)
  return str;
 }
 
+#warning weg mit diesem Code !!!
 void MainTree::fill(SelectedFullAufList &allids, int deep=0)
 {
  vector<AufEintragBase>::iterator i = allids.aufidliste.begin();

@@ -37,9 +37,10 @@ typedef ctime_assert<(AufStatVal(auftrag_bearbeiten::aufentrystat::unbest_tigt)=
 typedef ctime_assert<(AufStatVal(auftrag_bearbeiten::aufentrystat::offen)==OPEN)>::_true failed5;
 typedef ctime_assert<(AufStatVal(auftrag_bearbeiten::aufentrystat::fertig)==CLOSED)>::_true failed6;
 
-auftrag_bearbeiten::auftrag_bearbeiten(AuftragBase& auftragbase, int znr)
+auftrag_bearbeiten::auftrag_bearbeiten(const AufEintragBase2& auftragbase)
 : kunde(Kunde::default_id)
 {
+ instanz = auftragbase.Instanz();
  splitdialog=0;
  table_auftragseintraege->hide();
  scrolledwindow_auftraege->hide();
@@ -56,10 +57,10 @@ auftrag_bearbeiten::auftrag_bearbeiten(AuftragBase& auftragbase, int znr)
  if(auftragbase.Id())
    {
     loadAuftrag(auftragbase);
-    if(znr)
+    if(auftragbase.ZNr())
       {
-       auftrag_clist->moveto(znr-1,0,.5,0);
-       auftrag_clist->row(znr-1).select();
+       auftrag_clist->moveto(auftragbase.ZNr()-1,0,.5,0);
+       auftrag_clist->row(auftragbase.ZNr()-1).select();
       }
    }
 // warum nicht mit glade?
@@ -574,13 +575,13 @@ void auftrag_bearbeiten::on_aufbemerkung_activate()
 
 void auftrag_bearbeiten::on_button_preview_clicked()
 {  if (!auftrag) return;
-   string command = "auftrag_drucken Auftrag "+itos(auftrag->Id())+" Preview";
+   string command = "auftrag_drucken Auftrag "+itos(auftrag->Id())+" Preview " + itos(instanz.Id()) ;
    system(command.c_str());
 }  
 
 void auftrag_bearbeiten::on_button_drucken_clicked()
 {
    if (!auftrag) return;
-   string command = "auftrag_drucken Auftrag "+itos(auftrag->Id())+" Plot";
+   string command = "auftrag_drucken Auftrag "+itos(auftrag->Id())+" Plot " + itos(instanz.Id());
    system(command.c_str());
 }

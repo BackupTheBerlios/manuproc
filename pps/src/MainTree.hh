@@ -28,15 +28,15 @@
 class MainTree : public TCList
 {
  int showdeep;
- vector<int> currseq;
- vector<int> tmpvec;
+ std::vector<int> currseq;
+ std::vector<int> tmpvec;
  deque<int> tmpq;
 
 public :
 
 void fill(SelectedFullAufList &allids, int deep=0);
 void updateSum();
-const string getColTitle(int attr, int seq);
+const std::string getColTitle(int attr, int seq);
 void setDefaultSeq();
 vector<int> &getCurrSeq() { return currseq; }
 
@@ -61,7 +61,7 @@ void stutzeBaum()
   {((MyRow*)(*i).get_user_data())->stutzeBaum(*this,1,showdeep); i++;}
 }
 
-void drucken(FILE *f,vector<int> &len,const vector<int>&maxlen);
+void drucken(FILE *f,std::vector<int> &len,const std::vector<int>&maxlen);
 
 private:
 

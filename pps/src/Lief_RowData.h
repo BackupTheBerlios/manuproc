@@ -38,7 +38,7 @@ public:
  Lief_RowData(const LieferscheinEntry &le, ExtBezSchema::ID ebzid) : 
  	liefentry(le), artikelbez(le.ArtikelID(),ebzid) {}
 
- const cH_EntryValue Value(int _seqnr) const;
+ const cH_EntryValue Value(guint _seqnr,gpointer _gp) const;
  int GeliefertS() const { return liefentry.Anzahl(); }	
  fixedpoint<3> GeliefertM() const { return liefentry.Menge(); }
  const ArtikelBase::ID ArtikelID() const { return artikelbez->Id(); }

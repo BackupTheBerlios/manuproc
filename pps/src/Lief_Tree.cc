@@ -1,4 +1,4 @@
-// $Id: Lief_Tree.cc,v 1.5 2001/06/08 19:38:07 cvs_christof Exp $
+// $Id: Lief_Tree.cc,v 1.10 2001/07/04 10:42:07 cvs_christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,13 +18,13 @@
  */
 
 #include"Lief_TCList.h"
-#include"Lief_Value.h"
 #include "Lief_RowData.h"
 #include"MyMessage.h"
 #include<ExtBezSchema/ExtBezSchema.h>
 #include<Aux/Transaction.h>
 #include<Aux/Ausgabe_neu.h>
 #include <Artikel/Einheiten.h>
+#include <tclistleaf.h>
 
 extern MyMessage *meldung;
 
@@ -36,7 +36,7 @@ Lief_TCList::Lief_TCList(guint _cols, guint _attrs)
 }
 
 
-const string Lief_TCList::getColTitle(guint col) const
+const std::string Lief_TCList::getColTitle(guint col) const
 {
  switch(col)
   {
@@ -49,18 +49,10 @@ const string Lief_TCList::getColTitle(guint col) const
 }
 
 
-
-
-TCListNode *Lief_TCList::NewNode(guint _seqnr,const cH_RowDataBase &v, guint deep)
+TCListNode *Lief_TCList::NewNode(guint deep, const cH_EntryValue &v, bool expand)
 {
- return new Lief_Node(_seqnr,v,deep);
+ return new Lief_Node(deep,v,expand);
 }
-
-TCListLeaf *Lief_TCList::NewLeaf(guint _seqnr,const cH_RowDataBase &v, guint deep)
-{
- return new Lief_Leaf(_seqnr,v,deep);
-}
-
 
 void Lief_TCList::showLieferschein(LieferscheinBase::ID lfrsid)
 {
@@ -77,8 +69,8 @@ void Lief_TCList::showLieferschein(LieferscheinBase::ID lfrsid)
 
  ExtBezSchema::ID ebzid=lieferschein.getSchema();
 
- vector<LieferscheinEntry>::const_iterator i=lieferschein.LsEntries().begin();
- vector<LieferscheinEntry>::const_iterator j=lieferschein.LsEntries().end();
+ std::vector<LieferscheinEntry>::const_iterator i=lieferschein.LsEntries().begin();
+ std::vector<LieferscheinEntry>::const_iterator j=lieferschein.LsEntries().end();
 
  for(;i!=j;++i)
    datavec.push_back(cH_Lief_RowData(*i,ebzid));
@@ -125,80 +117,43 @@ bool Lief_TCList::deleteLiefEntry()
  return false;
 }
 
-const cH_EntryValue Lief_RowData::Value(int _seqnr) const
+const cH_EntryValue Lief_RowData::Value(guint _seqnr,gpointer _gp) const
 {
  switch(_seqnr)
    {
 	case Lief_TCList::AUFNR_SEQ :
-		return cH_Lief_Value(Formatiere(liefentry.AufId(),0,6,"","",'0'));
-		break;
+		return cH_EntryValueIntString(Formatiere(liefentry.AufId(),0,6,"","",'0'));
 	case Lief_TCList::ARTIKEL_SEQ :
-		return cH_Lief_Value(artikelbez->Bezeichnung());
-		break;
+		return cH_EntryValueIntString(artikelbez->Bezeichnung());
 	case Lief_TCList::LIEFMNG_SEQ :
-		return cH_Lief_Value(liefentry.Menge());
-		break;
+	        {  int stueck(GeliefertS());
+	           fixedpoint<3> menge(GeliefertM());
+                   std::string a;
+                   if (stueck!=1) a=Formatiere(stueck);
+                   if (menge.Scaled()!=0)
+                   {  if (stueck!=1) a+="*";
+                      a+=Formatiere(menge)
+                        +std::string(Einheit(liefentry.ArtikelID()));
+                   }
+                   return cH_EntryValueIntString(a);
+		}
 	case Lief_TCList::LIEFZEILE_SEQ :
-		return cH_Lief_Value(liefentry.Zeile());
-		break;
-	default : return cH_Lief_Value("-");
+		return cH_EntryValueIntString(liefentry.Zeile());
+	default : return cH_EntryValueIntString("-");
    }
- return cH_Lief_Value("-");
 }
 
-const vector<string> Lief_Leaf::getColEntries(int cols)
-{
- static vector<string> v;
- v=TCListRowData::getColEntries(cols);
-
- int stueck((dynamic_cast<const Lief_RowData &>(*leafdata)).GeliefertS());
- fixedpoint<3> menge((dynamic_cast<const Lief_RowData &>(*leafdata)).GeliefertM());
- string a;
- if (stueck!=1) a=Formatiere(stueck);
- if (menge.Scaled()!=0) 
- {  if (stueck!=1) a+="*";
-    a+=Formatiere(menge)
-      +string(Einheit((dynamic_cast<const Lief_RowData &>(*leafdata)).ArtikelID()));
- }
- v[Lief_TCList::LIEFMNG_SEQ]=a;
-
-// cout << "getColEntries Leaf\n";
- return v;
-
-}
-
-Lief_Node::Lief_Node(int _seqnr, 
-		const cH_RowDataBase &v, int deep) 
- : TCListNode(_seqnr,v,deep), sumgeliefert(0)
+Lief_Node::Lief_Node(guint deep, const cH_EntryValue &v, bool expand) 
+ : TCListNode(deep,v,expand), sumgeliefert(0)
 {}
 
-
-void Lief_Node::cumulate(const cH_RowDataBase &rd, int seqnr) const
+void Lief_Node::cumulate(const cH_RowDataBase &rd)
 {fixedpoint<3> menge(dynamic_cast<const Lief_RowData &>(*rd).GeliefertM());
  if (!menge) menge=1.0;
  sumgeliefert+=float(menge)*(dynamic_cast<const Lief_RowData &>(*rd)).GeliefertS();
 }
 
-void Lief_Node::resetSumValues(gpointer p)
+const cH_EntryValue Lief_Node::Value(guint index,gpointer gp) const
 {
- sumgeliefert=((Lief_Node*)p)->SumGeliefert();
-}
-
-const string Lief_Node::getSumCol(int col)
-{
- return Formatiere(sumgeliefert);
-}
-
-
-const vector<string> Lief_Node::getColEntries(int cols)
-{
- static vector<string> v;
-
- v=TCListRowData::getColEntries(cols);
-
- v[Lief_TCList::LIEFMNG_SEQ]=Formatiere(sumgeliefert);
-
-// cout << "getColEntries Node\n";
- return v;
-
+ return cH_EntryValueIntString(sumgeliefert);
 }

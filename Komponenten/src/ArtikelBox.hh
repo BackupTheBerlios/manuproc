@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.5 2001/07/05 12:58:06 christof Exp $
+// $Id: ArtikelBox.hh,v 1.6 2001/07/09 14:14:20 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -139,8 +139,7 @@ public:
         {  return artikel; }
 	void set_value(const ArtikelBase &art) throw(SQLerror,ArtikelBoxErr);
 
-	// ich bin für activate als standard
 	SigC::Signal0<void> activate;
-	
+	SigC::Signal1<void,ArtikelBase::ID> new_article_inserted;
 };
 #endif

@@ -35,12 +35,23 @@
 #include <Gtk2TeX.h>
 #include <fstream.h>
 
+#include "auftrag_main.hh"
+#include "auftrag_bearbeiten.hh"
+#include"auftragbase.h"
+#include<Auftrag/selFullAufEntry.h>
+//#include<Auftrag/AuftragFull.h>  
+#include<Auftrag/AufEintragBase2.h>
+#include<Auftrag/auftrag_status.h> 
+#include"auftrag_lieferschein.hh"  
+#include"auftrag_rechnung.hh"
+
+
 extern AUFENTRYMAP aufentrymap;
 extern MyMessage *meldung;
 
 SelectedFullAufList *allaufids;
 extern auftrag_main *auftragmain;
-extern auftrag_bearbeiten *auftragbearbeiten;
+// extern auftrag_bearbeiten *auftragbearbeiten;
 
 
 
@@ -59,15 +70,12 @@ void auftrag_main::on_erfassen_activate()
 {   
  hide();
  try
-// {  auftragbearbeiten = new auftrag_bearbeiten(selectedaufid,selectedaufzeile);
- {  auftragbearbeiten = new auftrag_bearbeiten(*selectedauftragbase,selectedaufzeile);
+ { manage(new auftrag_bearbeiten(selected));
  } catch (SQLerror &e)
  {  cerr << e << '\n';
     show();
  } 
-// selectedaufid=selectedaufzeile=0;
- selectedaufzeile=0;
- selectedauftragbase=NULL;
+ selected=AufEintragBase2(instanz);
 }
 
 void auftrag_main::on_neuladen_activate()
@@ -127,12 +135,12 @@ void auftrag_main::on_main_drucken_activate()
 
 void auftrag_main::on_abschreiben_activate()
 {   
- manage (new auftrag_lieferschein());
+ manage (new auftrag_lieferschein(instanz));
 }
 
 void auftrag_main::on_rechnung_activate()
 {   
- manage (new auftrag_rechnung());
+ manage (new auftrag_rechnung(instanz));
 }
 
 void auftrag_main::on_main_kndbez_activate()
@@ -180,12 +188,10 @@ void auftrag_main::on_main_defaultattrbutton_clicked()
 }
 
 auftrag_main::auftrag_main()
+  : instanz(ppsInstanz::INST_KNDAUF), selected(instanz), selectedmyrow(0)
 {
+ scrolledwindow_maintree_s->hide();
  auftragmain=this;
- selectedauftragbase=NULL;
-// selectedaufid=0;
- selectedaufzeile=0;
- selectedmyrow=0;
  allaufids=0;
  interne_namen=true;
  showdeep=0;
@@ -196,9 +202,10 @@ auftrag_main::auftrag_main()
  maintree->unselect_row.connect(SigC::slot(this,&auftrag_main::onRowUnselect));
 
  set_column_titles_of_simple_tree();
+ fill_simple_tree();
 }
 
-auftrag_main::set_column_titles_of_simple_tree()
+void auftrag_main::set_column_titles_of_simple_tree()
 {
  vector<string> ct;
  ct.push_back("Kunde");
@@ -213,6 +220,34 @@ auftrag_main::set_column_titles_of_simple_tree()
  ct.push_back("offene Stück");
  maintree_s->setTitles(ct);
 }
+void auftrag_main::fill_simple_tree()
+{
+ if(!allaufids) 
+   { SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Status(instanz,(AufStatVal)OPEN);
+     if(interne_namen)
+       allaufids = new SelectedFullAufList(psel,
+			cH_ExtBezSchema(1,ExtBezSchema::default_Typ));
+     else allaufids = new SelectedFullAufList(psel);
+   }
+ vector<cH_RowDataBase> datavec;
+
+ for(vector<AufEintragBase>::iterator i = allaufids->aufidliste.begin();i!=allaufids->aufidliste.end(); ++i)
+  {
+/*
+   int auftragid    = (*i).getAuftragid() ;   
+   int artikelid    = (*i).ArtikelID();
+   int lieferwoche  = (*i).getZnr();
+   string yauftragid= (*i).getYourAufNr();
+   int verarbeitung = (*i).getProzDat();
+   int offene_meter = (*i).getRest();
+   int offene_stueck= (*i).getRestStk();
+   datavec.push_back(new Data_auftrag(auftragid,"s",artikelid,3,4,lieferwoche,yauftragid,verarbeitung,offene_meter,offene_stuck));
+*/
+   datavec.push_back(new Data_auftrag(*i,this));
+  }
+// maintree_s->Stutzen(false);
+ maintree_s->setDataVec(datavec);
+}
 
 
 
@@ -223,7 +258,7 @@ void auftrag_main::showtree()
  maintree->setShowdeep(showdeep);
 
  if(!allaufids) 
-   { SQLFullAuftragSelector psel((SQLFullAuftragSelector::sel_Status)((AufStatVal)OPEN));
+   { SQLFullAuftragSelector psel=SQLFullAuftragSelector::sel_Status(instanz,(AufStatVal)OPEN);
      if(interne_namen)
        allaufids = new SelectedFullAufList(psel,
 			cH_ExtBezSchema(1,ExtBezSchema::default_Typ));
@@ -238,13 +273,10 @@ void auftrag_main::showtree()
 
 
 void auftrag_main::onRowUnselect(int row, int col, GdkEvent* b)
-{
- if(selectedmyrow)
+{if(selectedmyrow)
    if(selectedmyrow->Leaf())
       prozlist_scombo->reset();
-// selectedaufid=selectedaufzeile=0;
- selectedaufzeile=0;
- selectedauftragbase=NULL;
+ selected=AufEintragBase2(instanz);
  selectedmyrow=0;
 }
 
@@ -252,9 +284,7 @@ void auftrag_main::onRowSelect(int row, int col, GdkEvent* b)
 {
  TCListRow *tclr=(TCListRow*)(maintree->get_row_data(row));
  selectedmyrow = (MyRow*)(*tclr).get_user_data();
-// selectedaufid = selectedmyrow->getAuftragid();
- selectedauftragbase->set_Id( selectedmyrow->getAuftragid());
- selectedaufzeile = selectedmyrow->getZeilennr();
+ selected=AufEintragBase2(instanz,selectedmyrow->getAuftragid(),selectedmyrow->getZeilennr());
  prozlist_scombo->reset();
  if(selectedmyrow->Leaf())   
    prozlist_scombo->set_text(selectedmyrow->ProzessText());
@@ -291,11 +321,8 @@ void auftrag_main::on_prozlistscombo_activate()
  if(selectedmyrow)
    if(selectedmyrow->Leaf())
      {
-      int aufid=selectedmyrow->getAuftragid();
-      int znr = selectedmyrow->getZeilennr();
-      AufEintragBase2 aufbase(selectedauftragbase->Instanz(),aufid,znr);
       int pid=atoi(prozlist_scombo->get_text().c_str());
-      AufEintrag &af=aufentrymap[aufbase.mapKey()];
+      AufEintrag &af=aufentrymap[selected.mapKey()];
       try{af.setVerarbeitung(cH_Prozess(pid));}
       catch(SQLerror &e)
         {meldung->Show(e); return;}

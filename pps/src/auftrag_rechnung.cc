@@ -29,6 +29,7 @@
 #include<Aux/itos.h>
 #include <Artikel/Artikelpreis.h>
 #include <gtk--/menu.h>
+#include <tclistleaf.h>
 
 #include"MyMessage.h"
 extern MyMessage *meldung;
@@ -41,9 +42,9 @@ void auftrag_rechnung::on_rng_close()
 void auftrag_rechnung::on_rng_neu()
 {   
  rechnung_liste->newRechnung(lieferkunde->get_value());
- rngnr->setContent(Formatiere(rechnung_liste->getRechnung().Id(),0,0,""),
+ rngnr->setContent(Formatiere(rechnung_liste->getRechnung().Id(),0,6,""),
 			rechnung_liste->getRechnung().Id());
- // waehrung setzen etc.
+ on_rngnr_activate();
 }
 
 void auftrag_rechnung::on_rng_save()
@@ -53,14 +54,14 @@ void auftrag_rechnung::on_rng_save()
 void auftrag_rechnung::on_rng_preview()
 {   
    if (rngnr->get_text()=="") return;
-   string command = "auftrag_drucken Rechnung "+rngnr->get_text()+" Preview";
+   string command = "auftrag_drucken Rechnung "+rngnr->get_text()+" Preview "+itos(instanz.Id());
    system(command.c_str());
 }
 
 void auftrag_rechnung::on_rng_print()
 {   
    if (rngnr->get_text()=="") return;
-   string command = "auftrag_drucken Rechnung "+rngnr->get_text()+" Plot";
+   string command = "auftrag_drucken Rechnung "+rngnr->get_text()+" Plot "+itos(instanz.Id());
    system(command.c_str());
 }
 
@@ -90,10 +91,17 @@ void auftrag_rechnung::on_rngdate_activate()
 
 }
 
-void auftrag_rechnung::on_rngnr_activate()
+void auftrag_rechnung::redisplay()
 {try{ 
  rechnung_liste->clear();
  rechnung_liste->showRechnung(rngnr->Content());
+ }
+ catch(SQLerror &e) {meldung->Show(e);}
+}
+
+void auftrag_rechnung::on_rngnr_activate()
+{try{
+ redisplay();
  lieferkunde->set_value(rechnung_liste->getRechnung().KdNr());   
  offene_lieferscheine->setKunde(cH_Kunde(lieferkunde->get_value()));
  offene_lieferscheine->clear();
@@ -195,6 +203,7 @@ void auftrag_rechnung::Preis_setzen()
       {  i->setzePreis(p.In(rg.getWaehrung()));
       }
    }
+   redisplay();
 }
 
 void auftrag_rechnung::Preis_ergaenzen()
@@ -207,6 +216,7 @@ void auftrag_rechnung::Preis_ergaenzen()
          }
       }
    }
+   redisplay();
 }
 
 void auftrag_rechnung::waehrung_geaendert()
@@ -217,6 +227,7 @@ void auftrag_rechnung::waehrung_geaendert()
    	 break;
    }
    // eigentlich alle Preise umrechnen .... Katastrophe
+   Preis_setzen();
 }
 
 void auftrag_rechnung::rabatt_geaendert()
@@ -226,8 +237,8 @@ void auftrag_rechnung::rabatt_geaendert()
 }
 
 
-auftrag_rechnung::auftrag_rechnung()
-: selectedrow_lief(NULL), selectedrow_rng(NULL),kunde(Kunde::none_id)
+auftrag_rechnung::auftrag_rechnung(ppsInstanz _instanz)
+: instanz(_instanz),selectedrow_lief(NULL), selectedrow_rng(NULL),kunde(Kunde::none_id)
 {
    rechnung_liste->hide();
    vbox_n_b_lieferscheine->hide();

@@ -22,7 +22,6 @@
 
 #include<treebase.h>
 #include<Lieferschein/Lieferschein.h>
-#include"Lief_Value.h"
 #include<Aux/Datum.h>
 #include<rowdata.h>
 #include<Kunde/Kunde.h>
@@ -43,15 +42,10 @@ public:
  typedef enum {LIEFNR_SEQ,LIEFDATUM_SEQ,LIEFKUNDE_SEQ} SeqNr;
 
  OffLief_TCList(guint _cols, guint _attrs);
- const string getColTitle(guint seq) const;
+ const std::string getColTitle(guint seq) const;
  void fillDataVec() {}
  void showOffLief();
  void setKunde(const cH_Kunde kd) { kunde=kd; };
- 			
- TCListNode *NewNode(guint _seqnr, const cH_RowDataBase &v, guint deep);
-
- TCListLeaf *NewLeaf(guint _seqnr, const cH_RowDataBase &v, guint deep);
-
 };
 
 
@@ -71,7 +65,7 @@ class OffLief_RowData : public RowDataBase
   
 public:
  OffLief_RowData(const Lieferschein &l) : lieferschein(l) {}
- const cH_EntryValue Value(int _seqnr) const;
+ const cH_EntryValue Value(guint _seqnr,gpointer _gp) const;
 
  LieferscheinBase::ID LiefId() const { return lieferschein.Id(); }
  const Lieferschein &Lief() const  { return lieferschein; }
@@ -104,37 +98,5 @@ public:
 
 
 // OffLief_RowData end
-
-
-
-// OffLief_Node begin
-
-#include<tclistnode.h>
-
-class OffLief_Node : public TCListNode
-{
- 
-public:
- 
- OffLief_Node::OffLief_Node(int _seqnr, const cH_RowDataBase &v, int deep);
-
-};
-
-// OffLief_Node end
-
-
-// OffLief_Leaf begin
-#include<tclistleaf.h>
-
-class OffLief_Leaf : public TCListLeaf
-{
- 
-public:
- 
- OffLief_Leaf::OffLief_Leaf(int _seqnr, const cH_RowDataBase &v,int deep) 
-		: TCListLeaf(_seqnr,v,deep) {}
-};
-// OffLief_Leaf end
-
 
 #endif

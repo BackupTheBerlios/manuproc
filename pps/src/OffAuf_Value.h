@@ -28,7 +28,7 @@ class OffAuf_Value : public EntryValueIntString
 {
 public:
  OffAuf_Value(int v) : EntryValueIntString(v) {}
- OffAuf_Value(const string &s) : EntryValueIntString(s) {}
+ OffAuf_Value(const std::string &s) : EntryValueIntString(s) {}
 
 };
 
@@ -39,7 +39,7 @@ public:
  cH_OffAuf_Value() : cH_EntryValue() {}
  cH_OffAuf_Value(const EntryValueBase *r) : cH_EntryValue(r) {}
  cH_OffAuf_Value(int v) : cH_EntryValue(new OffAuf_Value(v)) {}
- cH_OffAuf_Value(const string &s) : cH_EntryValue(new OffAuf_Value(s)) {}
+ cH_OffAuf_Value(const std::string &s) : cH_EntryValue(new OffAuf_Value(s)) {}
     
 };
 

@@ -24,6 +24,7 @@
 
 class auftrag_rechnung : public auftrag_rechnung_glade
 {   
+        ppsInstanz instanz;
         friend class auftrag_rechnung_glade;
         void on_rng_close();
         void on_rng_neu();
@@ -45,13 +46,14 @@ class auftrag_rechnung : public auftrag_rechnung_glade
         void Preis_ergaenzen();
         void waehrung_geaendert();
 	void rabatt_geaendert();
+	void redisplay();
 
  TCListRowData *selectedrow_lief;
  TCListRowData *selectedrow_rng;
  cH_Kunde kunde;
 
 public:
- auftrag_rechnung(); 
+ auftrag_rechnung(ppsInstanz _instanz); 
 
 };
 #endif
