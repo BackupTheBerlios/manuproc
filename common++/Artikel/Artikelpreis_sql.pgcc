@@ -1,4 +1,4 @@
-// $Id: Artikelpreis_sql.pgcc,v 1.17 2003/06/04 10:30:02 christof Exp $
+// $Id: Artikelpreis_sql.pgcc,v 1.18 2003/06/05 11:00:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,7 +25,7 @@
 #include <Artikel/Prozesspreis.h>
 #include <Misc/Transaction.h>
 exec sql include sqlca;
-
+#include <Misc/TraceNV.h>
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -86,15 +86,18 @@ typedef CacheStatic<index_t,payload_t> cache_t;
 static cache_t cache;
 
 Artikelpreis::Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a,
-				int bestellmenge=1)
+				int bestellmenge)
 	: errechnet(false), gefunden(false),
 	  gefunden_in(ManuProcEntity<>::none_id),mindestmenge(1)
-{  payload_t *cached=cache.lookup(index_t(liste,a.Id()));
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__, 
+	NV("Liste",liste), NV("Artikel",a), NV("Menge",bestellmenge));
+   payload_t *cached=cache.lookup(index_t(liste,a.Id()));
    if (cached) { std::pair<int,Preis> p=cached->get_preis(bestellmenge);
 		 setPreis(a.Id(),p.second,liste,
 				cached->errechnet);
 		 mindestmenge=p.first;
 	 	 gefunden=cached->gefunden;
+ 		 ManuProC::Trace(trace_channel,__FILELINE__,NV("cache",static_cast<const Preis&>(*this)));
 		}
    else
    {
@@ -135,7 +138,8 @@ Artikelpreis::Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a,
 
 	  std::pair<int,Preis> p=pyl.get_preis(bestellmenge);
 	  setPreis(a.Id(),p.second,liste,false);
-	  mindestmenge=p.first;		
+	  mindestmenge=p.first;
+	  ManuProC::Trace(trace_channel,__FILELINE__,NV("db",static_cast<const Preis&>(*this)));
 	 }
          
       cache.Register(index_t(liste,a.Id()), pyl);
@@ -388,5 +392,4 @@ FetchIStream &operator>>(FetchIStream &is,std::pair<int,float> &ag)
 {  return is >> ag.first >> ag.second;
 }
 
-
-
+const UniqueValue::value_t Artikelpreis::trace_channel=ManuProC::Tracer::channels.get();

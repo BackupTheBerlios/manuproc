@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.15 2003/01/14 16:02:30 jacek Exp $
+// $Id: Artikelpreis.h,v 1.16 2003/06/05 11:00:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,6 +24,7 @@
 #include <Kunde/Kunde.h>
 #include <Artikel/ArtikelBase.h>
 #include <Misc/FetchIStream.h>
+#include <Misc/UniqueValue.h>
 
 //namespace ArtikelMisc { class ProzessListe; };
 
@@ -47,11 +48,12 @@ class Artikelpreis : public Preis
 
 	friend FetchIStream &operator>>(FetchIStream &is,std::pair<int, float> &kg);  
 public:
+	static const UniqueValue::value_t trace_channel;
 	 		
 	const Preis &getPreis() const
 	{  return (const Preis &)*this; }
-	Artikelpreis(const cH_Kunde &k,const ArtikelBase &a, int bestellmenge);
-	Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a, int bestellmenge);
+	Artikelpreis(const cH_Kunde &k,const ArtikelBase &a, int bestellmenge=1);
+	Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a, int bestellmenge=1);
 
 	bool istErrechnet() const { return errechnet; }
 	bool Gefunden() const { return gefunden; }

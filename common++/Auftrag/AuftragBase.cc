@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.35 2003/05/26 08:47:55 christof Exp $
+// $Id: AuftragBase.cc,v 1.36 2003/06/05 11:00:01 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -79,7 +79,7 @@ bool AuftragBase::editierbar() const
 void AuftragBase::dispo_auftrag_aendern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,const mengen_t &menge,
          const ManuProC::Datum &datum,const AufEintragBase &kindAEB)
 {
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
+  ManuProC::Trace _t(trace_channel, __FUNCTION__,
      NV("Artikel",artikel),NV("Menge",menge));
    AuftragBase(instanz,AuftragBase::dispo_auftrag_id)
    	.BestellmengeAendern(menge,datum,artikel,OPEN,uid,kindAEB);
