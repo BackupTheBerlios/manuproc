@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.27 2003/03/24 10:41:19 christof Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.28 2003/03/24 12:12:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,9 +40,9 @@ FetchIStream &operator>>(FetchIStream &is, Preis &v)
 {  double p,pm;
    int w;
    int ip,ipm,iw;
-   is >> FetchIStream::WithIndicator<double>(p,ip);
-   is >> FetchIStream::WithIndicator<double>(pm,ipm);
-   is >> FetchIStream::WithIndicator<int>(w,iw);
+   is >> FetchIStream::WithIndicator(p,ip);
+   is >> FetchIStream::WithIndicator(pm,ipm);
+   is >> FetchIStream::WithIndicator(w,iw);
    if (!ip && !ipm && !iw) v=Preis(p,Waehrung::ID(w),pm);
    else v=Preis();
    return is;

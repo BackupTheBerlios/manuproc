@@ -1,4 +1,4 @@
-/* $Id: ArtikelBase.cc,v 1.2 2003/02/14 07:22:56 christof Exp $ */
+/* $Id: ArtikelBase.cc,v 1.3 2003/03/24 12:12:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,7 +24,7 @@ FetchIStream& operator>>(FetchIStream& is,ArtikelBase &AB)
 {
   int a;
   int ind;
-  is >> FetchIStream::WithIndicator<int>(a,ind);
+  is >> FetchIStream::WithIndicator(a,ind);
   if (!ind) AB=ArtikelBase(a);
   else AB=ArtikelBase();
   return is;
