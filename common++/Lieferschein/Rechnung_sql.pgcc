@@ -37,6 +37,7 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
    char ZAHLZIEL[11];
    int IZAHLZIEL;
    int WAEHRUNG;
+   float KURS;
    float RABATT;
    bool BEZAHLT;
    bool ENTSORGUNG=false;
@@ -48,9 +49,11 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
  exec sql select r.kundennr, date(r.datum), r.rngart, 
          coalesce(zahlart,-1), zahlziel, 
  			coalesce(waehrung,1), coalesce(rabatt,0), bezahlt,
-			coalesce(entsorgung,false)
+			coalesce(entsorgung,false),
+			coalesce(kurs,1)
 		into :KDNR, :DATUM, :RNGART, :ZAHLART, :ZAHLZIEL:IZAHLZIEL,
-		   :WAEHRUNG, :RABATT, :BEZAHLT, :ENTSORGUNG
+		   :WAEHRUNG, :RABATT, :BEZAHLT, :ENTSORGUNG,
+		   :KURS
  	from rechnung r where r.rngid = :RNGID ;
  #else
  exec sql select r.kundennr, date(r.datum), r.rngart, 
@@ -66,6 +69,7 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
  rngart = (RngArt)RNGART[0];
  zahlungsart = cH_Zahlungsart(ZAHLART);
  waehrung=cP_Waehrung(Waehrung::ID(WAEHRUNG));
+ kurs=KURS;
  rabatt=RABATT;
  rgdatum=ManuProC::Datum(DATUM);
  bezahlt=BEZAHLT;
@@ -125,11 +129,20 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
  bool ENTSORGUNG=krng->entsorgung();
  int VERKNR=k->VerkNr();
  int IVERKNR=0;
+ float KURS;
  exec sql end declare section;
+
+ exec sql select 1/(coalesce(eufkt,1)) into :KURS from waehrung where 
+	wid= :WAEHRUNG;
+ SQLerror::test(__FILELINE__":Rechnung: select kurs from waehrung");	
+
+ kurs=KURS;
 
  if(VERKNR==-1) IVERKNR=-1;
  exec sql update rechnung set entsorgung=:ENTSORGUNG,
-	verknr=:VERKNR:IVERKNR where
+	verknr=:VERKNR:IVERKNR,
+	kurs=:KURS
+	where
 	rngid=:RNGID;
  SQLerror::test(__FILELINE__":Rechnung: update rechnung");	
 #endif

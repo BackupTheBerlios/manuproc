@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.22 2002/12/02 14:55:25 jacek Exp $ */
+/* $Id: Rechnung.h,v 1.23 2002/12/11 12:10:13 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -41,6 +41,7 @@ private:
  ManuProC::Datum zahlziel;
  ManuProC::Datum rgdatum;
  cP_Waehrung waehrung;
+ fixedpoint<5> kurs;
  rabatt_t rabatt;
  cH_Zahlungsart zahlungsart;
  bool bezahlt;
@@ -56,7 +57,7 @@ public:
               rngart(RART_NONE), zahlziel(ManuProC::Datum::today()),
               rgdatum(ManuProC::Datum::today()),waehrung(0),
               rabatt(0),zahlungsart(Zahlungsart::none_id),bezahlt(false),
-              entsorgung(false),notiz_valid(false) {} 
+              entsorgung(false),notiz_valid(false),kurs(1) {} 
 
  const Kunde::ID KdNr() const {return kunde->Id();}
  const cH_Kunde getKunde() const { return kunde; }
