@@ -554,7 +554,9 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
 				cH_ppsInstanz(next)
                           :ppsInstanz::getBestellInstanz(i->first);
          for (AufEintragZu::list_t::iterator j=i->second.begin();j!=i->second.end();)
-         {  if (next!=ppsInstanzID::None && j->AEB.Instanz()!=next)
+         {  if (next!=ppsInstanzID::None && j->AEB.Instanz()!=next
+         	 && (j->AEB.Instanz()->alt_group_nr==ppsInstanzID::None
+         	 || j->AEB.Instanz()->alt_group_nr!=bestellinstanz->alt_group_nr))
             {  analyse("Instanz passt nicht",ae,j->AEB,j->Menge);
              weg1:
                if (!analyse_only) AufEintragZu::remove(ae,j->AEB);
@@ -569,7 +571,11 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
                   goto weg1;
                }
                // Artikel ist schon mal richtig ...
-               if (j->AEB.Instanz()!=bestellinstanz && !bestellinstanz->PlanungsInstanz())
+               if (ae.Instanz()->ExterneBestellung())
+               {  analyse("Eine ExterneBestellung-Instanz darf nicht intern bestellen",ae,j->AEB,j->Menge);
+                  goto weg1;
+               }
+               else if (j->AEB.Instanz()!=bestellinstanz && !bestellinstanz->PlanungsInstanz())
                {  analyse("Kindartikel bei falscher Instanz",ae,j->AEB,j->Menge);
                   goto weg1;
                }
@@ -658,6 +664,7 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
              && !!M 
              && ppsInstanz::getBestellInstanz(i->rohartikel)!=ppsInstanzID::None
              && ppsInstanz::getBestellInstanz(i->rohartikel)!=ppsInstanzID::Kundenauftraege
+             && !ae.Instanz()->ExterneBestellung()
 	     ) // Artikel nie bestellt
          {  alles_ok=false;
             analyse("Rohartikel fehlt völlig",ae,itos(i->rohartikel.Id()),M.String(true));

@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.29 2004/05/03 15:32:23 jacek Exp $
+// $Id: db_upgrade.cc,v 1.30 2004/05/13 09:35:17 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -197,6 +197,11 @@ int main(int argc,char *argv[])
     {
      Query("create unique index artikelgruppen_defgrp on artikelgruppen (defaultgrp)");
     }
+    
+  // Darstellung von Instanzen in pps
+  check_column("prod_instanz","overview","text");
+  // alternatives group number
+  check_column("prod_instanz","alt_group_nr","integer");
 
   ManuProC::dbdisconnect();
   return 0;
