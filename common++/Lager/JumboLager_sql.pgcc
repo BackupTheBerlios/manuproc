@@ -36,7 +36,7 @@ void JumboLager::Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jum
     int CODE=jumbo.Code()/10;
     int STATUS;
     char ACTION[2];
-    int LAGERPLATZ=jumbo.LagerPosition().IPosition();
+    int LAGERPLATZ=position.IPosition();
     bool REST;
     bool DUMMY;   
     char ZEIT[32];
@@ -112,8 +112,6 @@ void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
 
   if (jumbo.InsLagerDatum().valid() && *zeit<jumbo.InsLagerDatum()) 
      STATUS=JumboRolle::ImLager;
-  if (jumbo.getStatus()==JumboRolle::Verarbeitet)
-     Jumbo_Log(jumbo,SchonDraussen,user,zeit);
   else LAGERPLATZ=0;
   
   exec sql update rohjumbo set verarb_datum=:ZEIT, status=:STATUS,
@@ -121,7 +119,7 @@ void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
       where code= :CODE;  
   SQLerror::test("JumboRolle::buchen entnahme");
 
-#ifndef MABELLA_EXTENSIONS 
+#ifdef PETIG_EXTENSIONS 
   jumbo.setLagerPosition_nodb(LagerPlatz(ppsInstanzID::Bandlager,LAGERPLATZ));
 #endif
   jumbo.setVerarbDatum_nodb(*zeit);
@@ -154,60 +152,6 @@ void JumboLager::Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const std::s
    }
 } 
 
-
-
-/*
-std::vector<int> JumboLager::Jumbo_Inhalt(const LagerPlatz position) const
-{
-  exec sql begin declare section;
-   int CODE;
-   int POSITION=position.IPosition();
-  exec sql end declare section;
-  exec sql declare posein cursor for select code 
-      from rohjumbo where lagerplatz = :POSITION;
-  Transaction tr;
-  exec sql open posein;
-  std::vector<int> vi;
-  while(true)
-   {
-    exec sql fetch posein into :CODE;
-    SQLerror::test(__FILELINE__,100);  
-    if (sqlca.sqlcode) break;
-    vi.push_back(CODE);
-   }
-  exec sql close posein;
-  tr.close();
-  return vi;
-}
-
-std::vector<JumboLager::st_wo_ist_wieviel> JumboLager::getPosition(ArtikelBase artikel)
-{
- exec sql begin declare section; 
-   int METER,CODE,POSITION;
-   bool REST;
-   int ARTIKEL=artikel.Id();
- exec sql end declare section; 
- exec sql declare artein cursor for select lagerplatz,code,
-      coalesce(barcoist,soll_meter),rest
-      from rohjumbo where artikelid= :ARTIKEL;
-  Transaction tr;
-  exec sql open artein;
-  std::vector<st_wo_ist_wieviel> vi;
-  ppsInstanz::ID inst=ppsInstanzID::Bandlager;
-  while(true)
-   {
-    exec sql fetch posein into :POSITION,:CODE,:METER,:REST;
-    SQLerror::test(__FILELINE__,100);  
-    if (sqlca.sqlcode) break;
-    vi.push_back(st_wo_ist_wieviel(LagerPlatz(inst,POSITION),METER,REST,CODE));
-   }
-  exec sql close artein;
-  tr.close();
-  return vi;
-}
-*/
-
-
 std::vector<class LagerInhalt> JumboLager::LagerInhalt_(const ArtikelBase& artikel) const
 {
   exec sql begin declare section;
@@ -215,13 +159,6 @@ std::vector<class LagerInhalt> JumboLager::LagerInhalt_(const ArtikelBase& artik
     char QUERY[1024];
   exec sql end declare section;
 
-/*
-  std::string squery = "select coalesce(artikelid,0), count(soll_meter)," 
-         "coalesce(int4(sum((case rest when true then 0.3 else 1.0 end)*"
-         " float8 (coalesce(barcoist,soll_meter)))),0)"
-         " from rohjumbo where status="+itos(JumboRolle::ImLager)+
-         " and lagerplatz is not null";
-*/
   std::string squery = "select coalesce(artikelid,0),"
          " sum(case rest when true then 0 else 1 end),"
          " sum(case rest when true then 1 else 0 end),"

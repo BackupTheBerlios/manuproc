@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.13 2002/06/24 07:35:40 christof Exp $
+# $Id: Makefile.am,v 1.14 2002/06/24 09:15:13 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -44,7 +44,10 @@ CLEANFILES= *~ $(BUILT_SOURCES)
 # create compatibility links
 
 Misc ostream:
-	-ln -sf . $@
+	-if uname -s | fgrep -q MINGW32 ; \
+	then mkdir $@ ; cp *.h $@ ; \
+	else ln -sf . $@ ; \
+	fi
 
 install-data-hook:
 	-cd $(includedir) ; ln -sf . Misc
