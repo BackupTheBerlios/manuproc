@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.65 2002/12/12 08:18:35 christof Exp $
+dnl $Id: petig.m4,v 1.66 2002/12/12 08:20:59 christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -338,7 +338,7 @@ PETIG_CHECK_LIB(Komponenten,Komponenten,KOMPONENTEN,ManuProC_Widgets,COMMONXX,CO
 
 AC_DEFUN(PETIG_CHECK_COMMONGTK,
 [
-PETIG_CHECK_LIB(commongtk,gtk,COMMONGTK,GtkmmAddons,GTKMM)
+PETIG_CHECK_LIB(GtkmmAddons,gtk,COMMONGTK,GtkmmAddons,GTKMM)
 ])
 
 AC_DEFUN(PETIG_CHECK_COMMONGTK2,
@@ -348,7 +348,7 @@ PETIG_CHECK_LIB(GtkmmAddons,gtk2,COMMONGTK2,GtkmmAddons,GTKMM2)
 
 AC_DEFUN(PETIG_CHECK_KOMPONENTEN2,
 [
-PETIG_CHECK_LIB(Komponenten,Komponenten,KOMPONENTEN2,ManuProC_Widgets,COMMONXX,COMMONGTK2)
+PETIG_CHECK_LIB(Komponenten,Komponenten2,KOMPONENTEN2,ManuProC_Widgets,COMMONXX,COMMONGTK2)
 ])
 
 AC_DEFUN(PETIG_CHECK_BARCOLIB,
