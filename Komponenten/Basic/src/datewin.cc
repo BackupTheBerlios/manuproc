@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.12 2003/03/24 08:02:55 christof Exp $
+// $Id: datewin.cc,v 1.13 2003/04/24 10:50:12 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,7 +27,7 @@
 datewin::datewin(const std::string &inst) : block(false), instance(inst)
 {  set_value(ManuProC::Datum::today());
    jahr->signal_activate().connect(signal_activate().slot());
-   gtk_signal_connect(GTK_OBJECT(gobj()), "grab_focus",
+   gtk_signal_connect_after(GTK_OBJECT(gobj()), "grab_focus",
     		GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
    set_scrollable(false); // for now ...
 }
@@ -130,7 +130,7 @@ void datewin::setLabel(const std::string &s)
 {  set_show_tabs(!s.empty());
    set_scrollable(!s.empty());
    if (!s.empty()) datum_label->set_text(s);
-   std::cout << "datewin::setLabel("<<s<<");\n";
+//   std::cout << "datewin::setLabel("<<s<<");\n";
 }
 
 void datewin::datum_activate()
