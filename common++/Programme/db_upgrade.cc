@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.18 2003/09/19 11:32:59 jacek Exp $
+// $Id: db_upgrade.cc,v 1.19 2003/10/07 06:29:17 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -123,6 +123,16 @@ int main(int argc,char *argv[])
   // allerdings muss der Index auftragsentryzuordnung_altauftr noch
   // geaendert werden (muss prioritaet beinhalten)
   check_column("auftragsentryzuordnung","prioritaet","timestamp with time zone");
+  
+  // Vertriebsabrechnung
+  if (check_column("rechnung","kurs","numeric(10,5)"))
+  { Query("update rechnung set kurs=(select fkt from waehrung where "
+  		"waehrung.wid=rechnung.waehrung)");
+  }
+  // haben wir uns nicht dagegen entschieden?
+  // if (check_column("waehrung","eufkt","numeric(10,5)"))
+  //    Query("update  waehrung set eufkt=fkt");
+  check_column("rechnungentry","ek_preis","numeric(10,2)");
   
   ManuProC::dbdisconnect();
   return 0;
