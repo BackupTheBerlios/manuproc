@@ -874,7 +874,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
           { 
            neue_spalte(erste_spalte,os);
 #ifdef MABELLA_EXTENSIONS // Anzeigen, dass der Preis manuell eingegeben wurde
-	    if(Typ()==Auftrag && !print)
+	    if(Typ()==Auftrag && Configuration.preview_only)
 	      if(pl->Id() == PreisListe::none_id)
 	        os << "{\\color{altgray}(M) }";
 #endif

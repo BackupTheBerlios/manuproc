@@ -895,7 +895,8 @@ void auftrag_bearbeiten::on_auftrag_ok_clicked()
    auftrag = new AuftragFull(Auftrag::Anlegen(instanz->Id()),kundenbox->get_value());
  	auftrag->setBemerkung(aufbemerkung_entry->get_text());
  	auftrag->setYourAufNr(youraufnr_scombo->get_text());
-
+     auftrag->setWaehrung(bea_WWaehrung->get_enum());
+     
      auftrag->Zahlart(zahlart->get_value());
      auftrag->setRabatt(aufrabatt_spinbutton->get_value_as_float());
 
