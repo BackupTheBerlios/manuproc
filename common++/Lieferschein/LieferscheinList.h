@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList.h,v 1.14 2003/01/08 09:46:57 christof Exp $ */
+/* $Id: LieferscheinList.h,v 1.15 2003/02/03 10:49:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,6 +22,7 @@
 #include<Misc/SQLerror.h>
 #include<vector>
 #include<map>
+#include <Misc/compiler_ports.h>
 
 #ifndef LIEFERLIST
 #define LIEFERLIST
@@ -37,7 +38,6 @@ class LieferscheinList
  ManuProC::Datum bis;
  ManuProcEntity<>::ID kundenid;
  ArtikelBase::ID artikelid;
- bool zusatzinfo;
  ArtikelTyp::ID arttyp;
  bool first_komponent;
  bool hole_entries; 	// ob der join mit lieferscheinentry gewünscht
@@ -77,7 +77,7 @@ public:
  void setFromDate(const ManuProC::Datum _vom) { vom=_vom;}
  void setToDate(const ManuProC::Datum _bis) { bis=_bis;}
  void setForInstanz(cH_ppsInstanz inst) { instanz=inst;}
- void setWithZusatzinfo(bool zi) { zusatzinfo=zi;}
+ void setWithZusatzinfo(bool zi) __deprecated { }
  void setForArtikeltyp(const ArtikelTyp::ID atid) { arttyp=atid;}
  void setHoleEntries(bool he) { hole_entries=he; }
  void reset(); 
