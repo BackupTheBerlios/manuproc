@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.20 2004/01/22 17:12:32 jacek Exp $
+// $Id: Preis.h,v 1.21 2004/01/30 14:04:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -60,11 +60,11 @@ public:
 	Preis() : pfennig_cent(0), preismenge(1), waehrung(Waehrung::default_id), 
 	          short_shl(false) {}
 	
-	int Wert_i(const cP_Waehrung tp,preismenge_t pmenge=0) const throw()
+	int Wert_i(const cP_Waehrung tp,preismenge_t pmenge) const throw()
 	{  return Wert_fr(tp,pmenge).Scaled(); }
 	
-	geldbetrag_t Wert_fr(const cP_Waehrung tp,preismenge_t pmenge=0) const throw();
-	geldbetrag_t Wert(const cP_Waehrung tp,preismenge_t pmenge=0) const throw()
+	geldbetrag_t Wert_fr(const cP_Waehrung tp,preismenge_t pmenge) const throw();
+	geldbetrag_t Wert(const cP_Waehrung tp,preismenge_t pmenge) const throw()
 	{ return Wert_fr(tp,pmenge); }
 	geldbetrag_t Wert() const { return pfennig_cent; }
 	
@@ -98,7 +98,7 @@ public:
 	{  return waehrung; }
 	const std::string Typtext() const;
 
-	Preis In(cP_Waehrung w,preismenge_t stkgr=0) const
+	Preis In(cP_Waehrung w,preismenge_t stkgr) const
 	{  
 //	if (!stkgr) stkgr=preismenge;
 	   Preis ret(Wert_fr(w,stkgr),w,stkgr);
