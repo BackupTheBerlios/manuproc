@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.18 2004/10/22 15:51:57 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.19 2004/11/18 16:45:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,7 +25,7 @@
 #include <Misc/itos.h>
 
 #ifdef MPC_SQLITE
-#include <sqlite.h>
+#include <sqlite3.h>
 #include <Misc/dbconnect.h>
 
 #define ECPG_TOO_MANY_ARGUMENTS         -201
@@ -303,7 +303,7 @@ void Query::Execute() throw(SQLerror)
    char *msgbuf=0;
    int rows,cols;
    if (Query::debugging.on) std::cerr << "QUERY: " << query << '\n';
-   error=sqlite_get_table(ManuProC::db_connection, query.c_str(), 
+   error=sqlite3_get_table(ManuProC::db_connection, query.c_str(), 
    		&local_result, &rows, &cols, &msgbuf);
    SQLerror::last_code=error;
    if (Query::debugging.on) 
@@ -311,13 +311,13 @@ void Query::Execute() throw(SQLerror)
       		<< ", " << rows << 'x' << cols << '\n';
    if(error!=SQLITE_OK)
    {  std::string err=msgbuf;
-      sqlite_freemem(msgbuf);
+      sqlite3_free(msgbuf);
       throw SQLerror(query,error,err);
    }
    lines=rows;
    nfields=cols;
-   if (msgbuf) sqlite_freemem(msgbuf);
-   if (!lines) lines=sqlite_changes(ManuProC::db_connection);
+   if (msgbuf) sqlite3_free(msgbuf);
+   if (!lines) lines=sqlite3_changes(ManuProC::db_connection);
    if (!lines) SQLerror::last_code=error=100;
    result=local_result;
    eof=!lines;
@@ -355,7 +355,7 @@ Query::~Query()
       SQLerror::last_code=ECPG_TOO_FEW_ARGUMENTS;
    }
    if (result)
-   {  sqlite_free_table((char**)result);
+   {  sqlite3_free_table((char**)result);
       result=0;
    }
 }

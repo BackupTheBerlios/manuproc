@@ -1,4 +1,4 @@
-// $Id: dbconnect_shared.cc,v 1.7 2004/09/02 13:57:24 jacek Exp $
+// $Id: dbconnect_shared.cc,v 1.8 2004/11/18 16:45:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -76,32 +76,30 @@ const std::string ManuProC::Connection::Pass() const throw(AuthError)
 
 
 #ifdef MPC_SQLITE
-#include <sqlite.h>
+#include <sqlite3.h>
 #include <Misc/Global_Settings.h>
 
-struct sqlite *ManuProC::db_connection;
+struct sqlite3 *ManuProC::db_connection;
 
 void ManuProC::dbconnect(const Connection &c) throw(SQLerror)
 {  assert(!db_connection);
 
 //   char *opt(getenv("SQLOPT"));
-   char *zErrMsg = 0;
-   db_connection=sqlite_open(c.Dbase().c_str(),0,&zErrMsg);
-   // don't we have to free zErrMsg?
-   if (!db_connection) 
-   {  std::string err=zErrMsg;
-      sqlite_freemem(zErrMsg);
-      throw(SQLerror("dbconnect",-1,err));
+   int error=sqlite3_open(c.Dbase().c_str(),&db_connection);
+   if (error) 
+   {  std::string err=sqlite3_errmsg(db_connection);
+      sqlite3_close(db_connection);
+      db_connection=0;
+      throw(SQLerror("dbconnect",error,err));
    }
    // sollte nicht passieren ...
-   if (zErrMsg) sqlite_freemem(zErrMsg);
    Global_Settings::database_connected();
 }
 
 void ManuProC::dbdisconnect(const std::string &name) throw(SQLerror)
 {  Global_Settings::database_connected(false);
    assert(db_connection);
-   sqlite_close(db_connection);
+   sqlite3_close(db_connection);
    db_connection=0;
 }
 

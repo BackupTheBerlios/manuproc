@@ -1,4 +1,4 @@
-// $Id: dbconnect.h,v 1.14 2004/10/22 16:14:32 jacek Exp $
+// $Id: dbconnect.h,v 1.15 2004/11/18 16:45:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,7 +19,7 @@
 
 #include <Misc/SQLerror.h>
 #ifdef MPC_SQLITE
-struct sqlite;
+struct sqlite3;
 #endif
 
 #define POSTGRESQL_PORT	5432
@@ -40,7 +40,7 @@ public:
 };
 
 #ifdef MPC_SQLITE
-	extern sqlite *db_connection;
+	extern sqlite3 *db_connection;
 #endif
    class Connection
    {

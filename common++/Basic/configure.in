@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.35 2004/07/06 12:15:05 christof Exp $
+# $Id: configure.in,v 1.36 2004/11/18 16:45:44 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(ManuProC_Base,0.6.4, [manuproc-developer-de@berlios.de])
@@ -101,7 +101,7 @@ fi
 
 if test -z "$ECPG_INCLUDES"
 then
- AC_COMPILE_IFELSE([#include <sqlite.h>],[prefer_sqlite=1],[])
+ AC_COMPILE_IFELSE([#include <sqlite3.h>],[prefer_sqlite=1],[])
 fi
 
 if test "$prefer_sqlite" -eq 1 -a "$block_sqlite" -eq 0
@@ -109,7 +109,7 @@ then
   AC_DEFINE(MPC_SQLITE, 1, [Define to 1 if you want to use the SQLite backend])
 dnl dann brauchst du aber das !!! CP  
 #  PETIG_CHECK_POSTGRES
-  ECPG_LIBS=-lsqlite
+  ECPG_LIBS=-lsqlite3
   AC_SUBST(ECPG_LIBS)
   ECPG="/bin/touch --"
   AC_SUBST(ECPG)
@@ -119,7 +119,7 @@ dnl dann brauchst du aber das !!! CP
   ECPG_CFLAGS="$ECPG_INCLUDES"
   AC_SUBST(ECPG_CFLAGS)
   AC_SUBST(ECPG_LDFLAGS)
-  DATABASE_TYPE="_sqlite"
+  DATABASE_TYPE="_sqlite3"
    AC_MSG_CHECKING(for standard SQLite database name)
    DEFAULT_DB="$USER"
    AC_DEFINE_UNQUOTED(DEFAULT_DB, "$DEFAULT_DB" )

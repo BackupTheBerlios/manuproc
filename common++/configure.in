@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.43 2004/07/26 16:21:43 christof Exp $
+# $Id: configure.in,v 1.44 2004/11/18 16:45:44 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(libcommon++, 0.0, [manuproc-developer-de@berlios.de])
@@ -71,7 +71,7 @@ then
   AC_DEFINE(MPC_SQLITE, 1, [Define to 1 if you want to use the SQLite backend])
 dnl dann brauchst du aber das !!! CP  
 #  PETIG_CHECK_POSTGRES
-  ECPG_LIBS=-lsqlite
+  ECPG_LIBS=-lsqlite3
   AC_SUBST(ECPG_LIBS)
   ECPG="/bin/touch --"
   AC_SUBST(ECPG)
