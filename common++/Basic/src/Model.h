@@ -1,4 +1,4 @@
-/* $Id: Model.h,v 1.5 2003/05/08 09:42:17 christof Exp $ */
+/* $Id: Model.h,v 1.6 2003/07/31 08:00:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -20,6 +20,7 @@
 
 #ifndef MANUPROC_MODEL_H
 #define MANUPROC_MODEL_H
+#include <ManuProCConfig.h>
 #ifndef SIGC1_2
 #include <sigc++/basic_signal.h>
 #else
