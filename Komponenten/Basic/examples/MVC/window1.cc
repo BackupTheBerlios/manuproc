@@ -9,6 +9,8 @@
 #include "window1.hh"
 #include <ctime>
 #include <cstdlib>
+#include <iostream>
+#include <bool_properties.hh>
 
 void window1::loeschen()
 {  myint=0;
@@ -16,11 +18,13 @@ void window1::loeschen()
 }
 
 window1::window1()
-{  myint.changed.connect(SigC::slot(this,&window1::int_changed));
-   myint.changed.connect(SigC::slot(this,&window1::someth_changed));
-   mystring.changed.connect(SigC::slot(this,&window1::string_changed));
-   mystring.changed.connect(SigC::slot(this,&window1::someth_changed));
-   mybool.changed.connect(SigC::slot(this,&window1::bool_changed));
+{  myint.signal_changed().connect(SigC::slot(*this,&window1::int_changed));
+   myint.signal_changed().connect(SigC::slot(*this,&window1::someth_changed));
+   mystring.signal_changed().connect(SigC::slot(*this,&window1::string_changed));
+   mystring.signal_changed().connect(SigC::slot(*this,&window1::someth_changed));
+   mybool.signal_changed().connect(SigC::slot(*this,&window1::bool_changed));
+   Gtk::AssociateVisibility(stringwidget,mybool2);
+   Gtk::AssociateSensitivity(boolwidget,mybool2);
    srand(time(0));
 }
 
@@ -44,6 +48,7 @@ void window1::someth_changed(gpointer x)
 
 void window1::randomize()
 {  mybool=rand()>=(RAND_MAX/2);
+   mybool2=rand()>=(RAND_MAX/2);
    myint=int(101.0*rand()/(RAND_MAX+1.0));
    std::string x;
    for (int i=int(17.0*rand()/(RAND_MAX+1.0));i>0;--i)

@@ -1,131 +1,120 @@
-<?xml version="1.0"?>
-<GTK-Interface>
+<?xml version="1.0" standalone="no"?> <!--*- mode: xml -*-->
+<!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
 
-<project>
-  <name>mvc</name>
-  <program_name>mvc</program_name>
-  <directory></directory>
-  <source_directory>.</source_directory>
-  <pixmaps_directory>pixmaps</pixmaps_directory>
-  <language>C++</language>
-  <gnome_support>False</gnome_support>
-  <gettext_support>False</gettext_support>
-  <output_main_file>False</output_main_file>
-  <main_source_file>gladesrc.c</main_source_file>
-  <main_header_file>gladesrc.h</main_header_file>
-  <handler_source_file>gladesig.c</handler_source_file>
-  <handler_header_file>gladesig.h</handler_header_file>
-</project>
+<glade-interface>
 
-<widget>
-  <class>GtkWindow</class>
-  <name>window1</name>
-  <title>window1</title>
-  <type>GTK_WINDOW_TOPLEVEL</type>
-  <position>GTK_WIN_POS_NONE</position>
-  <modal>False</modal>
-  <allow_shrink>False</allow_shrink>
-  <allow_grow>True</allow_grow>
-  <auto_shrink>False</auto_shrink>
+<widget class="GtkWindow" id="window1">
+  <property name="visible">True</property>
+  <property name="title" translatable="yes">window1</property>
+  <property name="type">GTK_WINDOW_TOPLEVEL</property>
+  <property name="window_position">GTK_WIN_POS_NONE</property>
+  <property name="modal">False</property>
+  <property name="resizable">True</property>
+  <property name="destroy_with_parent">False</property>
 
-  <widget>
-    <class>GtkVBox</class>
-    <name>vbox1</name>
-    <homogeneous>False</homogeneous>
-    <spacing>0</spacing>
+  <child>
+    <widget class="GtkVBox" id="vbox1">
+      <property name="visible">True</property>
+      <property name="homogeneous">False</property>
+      <property name="spacing">0</property>
 
-    <widget>
-      <class>Custom</class>
-      <name>intwidget</name>
-      <signal>
-	<name>activate</name>
-	<handler>grab_focus</handler>
-	<object>stringwidget</object>
-	<after>True</after>
-	<last_modification_time>Fri, 05 Jul 2002 20:55:40 GMT</last_modification_time>
-      </signal>
-      <creation_function>MVC_int_Widget(myint,0,100)</creation_function>
-      <int1>0</int1>
-      <int2>0</int2>
-      <last_modification_time>Fri, 05 Jul 2002 20:55:00 GMT</last_modification_time>
       <child>
-	<padding>0</padding>
-	<expand>True</expand>
-	<fill>True</fill>
+	<widget class="Custom" id="intwidget">
+	  <property name="visible">True</property>
+	  <property name="creation_function">int_SpinButton(myint,0,100)</property>
+	  <property name="int1">0</property>
+	  <property name="int2">0</property>
+	  <property name="last_modification_time">Fri, 05 Jul 2002 20:55:00 GMT</property>
+	  <signal name="activate" handler="grab_focus" after="yes" object="stringwidget"/>
+	</widget>
+	<packing>
+	  <property name="padding">0</property>
+	  <property name="expand">True</property>
+	  <property name="fill">True</property>
+	</packing>
+      </child>
+
+      <child>
+	<widget class="Custom" id="stringwidget">
+	  <property agent="glademm" name="cxx_visibility">protected</property>
+	  <property name="visible">True</property>
+	  <property name="creation_function">string_Entry(mystring)</property>
+	  <property name="int1">0</property>
+	  <property name="int2">0</property>
+	  <property name="last_modification_time">Fri, 05 Jul 2002 20:56:22 GMT</property>
+	  <signal name="activate" handler="grab_focus" after="yes" object="intwidget"/>
+	</widget>
+	<packing>
+	  <property name="padding">0</property>
+	  <property name="expand">True</property>
+	  <property name="fill">True</property>
+	</packing>
+      </child>
+
+      <child>
+	<widget class="Custom" id="boolwidget">
+	  <property agent="glademm" name="cxx_visibility">protected</property>
+	  <property name="visible">True</property>
+	  <property name="creation_function">bool_CheckButton(mybool,&quot;an/aus&quot;)</property>
+	  <property name="int1">0</property>
+	  <property name="int2">0</property>
+	  <property name="last_modification_time">Wed, 18 Sep 2002 08:01:17 GMT</property>
+	</widget>
+	<packing>
+	  <property name="padding">0</property>
+	  <property name="expand">True</property>
+	  <property name="fill">True</property>
+	</packing>
+      </child>
+
+      <child>
+	<widget class="Custom" id="custom1">
+	  <property name="visible">True</property>
+	  <property name="creation_function">bool_CheckButton(mybool2,&quot;(in)aktiv&quot;)</property>
+	  <property name="int1">0</property>
+	  <property name="int2">0</property>
+	  <property name="last_modification_time">Wed, 26 Feb 2003 12:53:07 GMT</property>
+	</widget>
+	<packing>
+	  <property name="padding">0</property>
+	  <property name="expand">True</property>
+	  <property name="fill">True</property>
+	</packing>
+      </child>
+
+      <child>
+	<widget class="GtkButton" id="button1">
+	  <property name="visible">True</property>
+	  <property name="can_focus">True</property>
+	  <property name="label" translatable="yes">loeschen</property>
+	  <property name="use_underline">True</property>
+	  <property name="relief">GTK_RELIEF_NORMAL</property>
+	  <signal name="clicked" handler="loeschen"/>
+	</widget>
+	<packing>
+	  <property name="padding">0</property>
+	  <property name="expand">False</property>
+	  <property name="fill">False</property>
+	</packing>
+      </child>
+
+      <child>
+	<widget class="GtkButton" id="button2">
+	  <property name="visible">True</property>
+	  <property name="can_focus">True</property>
+	  <property name="label" translatable="yes">randomize</property>
+	  <property name="use_underline">True</property>
+	  <property name="relief">GTK_RELIEF_NORMAL</property>
+	  <signal name="clicked" handler="randomize"/>
+	</widget>
+	<packing>
+	  <property name="padding">0</property>
+	  <property name="expand">False</property>
+	  <property name="fill">False</property>
+	</packing>
       </child>
     </widget>
-
-    <widget>
-      <class>Custom</class>
-      <name>stringwidget</name>
-      <signal>
-	<name>activate</name>
-	<handler>grab_focus</handler>
-	<object>intwidget</object>
-	<after>True</after>
-	<last_modification_time>Fri, 05 Jul 2002 20:56:54 GMT</last_modification_time>
-      </signal>
-      <creation_function>MVC_string_Widget(mystring)</creation_function>
-      <int1>0</int1>
-      <int2>0</int2>
-      <last_modification_time>Fri, 05 Jul 2002 20:56:22 GMT</last_modification_time>
-      <child>
-	<padding>0</padding>
-	<expand>True</expand>
-	<fill>True</fill>
-      </child>
-    </widget>
-
-    <widget>
-      <class>Custom</class>
-      <name>boolwidget</name>
-      <creation_function>MVC_bool_Widget(mybool,&quot;an/aus&quot;)</creation_function>
-      <int1>0</int1>
-      <int2>0</int2>
-      <last_modification_time>Wed, 18 Sep 2002 08:01:17 GMT</last_modification_time>
-      <child>
-	<padding>0</padding>
-	<expand>True</expand>
-	<fill>True</fill>
-      </child>
-    </widget>
-
-    <widget>
-      <class>GtkButton</class>
-      <name>button1</name>
-      <can_focus>True</can_focus>
-      <signal>
-	<name>clicked</name>
-	<handler>loeschen</handler>
-	<last_modification_time>Fri, 05 Jul 2002 20:57:21 GMT</last_modification_time>
-      </signal>
-      <label>löschen</label>
-      <relief>GTK_RELIEF_NORMAL</relief>
-      <child>
-	<padding>0</padding>
-	<expand>False</expand>
-	<fill>False</fill>
-      </child>
-    </widget>
-
-    <widget>
-      <class>GtkButton</class>
-      <name>button2</name>
-      <can_focus>True</can_focus>
-      <signal>
-	<name>clicked</name>
-	<handler>randomize</handler>
-	<last_modification_time>Wed, 18 Sep 2002 08:02:04 GMT</last_modification_time>
-      </signal>
-      <label>randomize</label>
-      <relief>GTK_RELIEF_NORMAL</relief>
-      <child>
-	<padding>0</padding>
-	<expand>False</expand>
-	<fill>False</fill>
-      </child>
-    </widget>
-  </widget>
+  </child>
 </widget>
 
-</GTK-Interface>
+</glade-interface>
