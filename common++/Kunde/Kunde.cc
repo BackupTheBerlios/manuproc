@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.47 2004/08/31 08:14:34 christof Exp $
+// $Id: Kunde.cc,v 1.48 2004/10/12 17:20:22 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -417,6 +417,15 @@ fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art) const throw(SQLe
 
 }
 
+
+std::string Kunde::Kontakt(const TelArt& art, Kunde::ID firmaid,
+		bool forcereload) const
+{
+ if(kontakt.valid() && !forcereload)
+   return kontakt.get_first_kontakt(art,firmaid,Id());
+ kontakt.reload(firmaid,Id());
+ return kontakt.get_first_kontakt(art,firmaid,Id());   
+}
 
 #if !defined(__GNUC__) || __GNUC__ > 2
 const Kunde::ID Kunde::eigene_id;

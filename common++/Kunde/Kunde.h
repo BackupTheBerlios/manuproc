@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.68 2004/10/12 15:54:28 jacek Exp $
+// $Id: Kunde.h,v 1.69 2004/10/12 17:20:22 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -36,6 +36,7 @@
 #include <utility> // for pair
 #include <Kunde/Kundengruppe.h>
 #include <Kunde/Lieferart.h>
+#include <Kunde/KontaktListe.h>
 
 class cH_Kunde;
 class H_Kunde;
@@ -152,6 +153,8 @@ private:
     mutable bool prlist_valid:1;
 
    bool lieferung_frei_haus;
+   mutable KontaktListe kontakt;
+   
 public:
 
 	static const ID default_id=ManuProC::DefaultValues::DefaultKundenId;
@@ -262,6 +265,8 @@ public:
         void updateKontaktperson(const st_ansprech &A) const;
         static void deleteKontaktperson(const H_Kunde K,const cH_Kunde P);
         // Telefon
+        std::string Kontakt(const TelArt& art, Kunde::ID firma,
+ 			bool forcereload=false) const;
         std::list<cH_Telefon> getTelefon(Kunde::ID pid=Kunde::none_id) const;
         std::string get_first_telefon(const TelArt& art) const;
         ID getBetreuer() const { return betreuer;}

@@ -1,4 +1,4 @@
-/* $Id: selFullAufEntry.h,v 1.21 2003/07/31 14:48:53 christof Exp $ */
+/* $Id: selFullAufEntry.h,v 1.22 2004/10/12 17:20:22 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,6 +33,7 @@
 class SelectedFullAufList
 {
  typedef std::list<AufEintrag> TYP ;
+ std::string order_clausel;
 
 public:
  typedef TYP::const_iterator const_iterator;
