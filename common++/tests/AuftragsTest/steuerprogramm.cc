@@ -47,7 +47,8 @@ enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       ZweiKundenTest,ZweiKundenMengeFreigebenTest,ManuProCTest,
       JumboLager,Rep_Mabella,Rep_Petig_PhysikalischesLager,
       Rep_Petig_0er_2er_gleichzeitig,Rep_KundenProgramm,Rep_Zuordnungen,
-      Rep_Kunden_Zuordnungen, Zusatzinfo, Zusatzinfo2 };
+      Rep_Kunden_Zuordnungen, Zusatzinfo, Zusatzinfo2,
+      AuftragLager };
 
 static std::ostream *testlog;
 // for more output ...
@@ -898,6 +899,40 @@ std::cout << "D13: "<<dummystring<<'\n';
        break;
 #endif
      }
+    case AuftragLager:
+     { graphheader("Auftrag Lager Interaktion");
+#if defined (PETIG_EXTENSIONS) && defined (MANUPROC_DYNAMICENUMS_CREATED)
+       LagerPlatz LP(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ);
+       KettplanKette KK=KettplanKette(Kette(MASCHINE,SCHAERDATUM));
+       std::vector<JumboRolle> JR=JumboRolle::create(KK); // 101
+       assert(JR.size()==1);
+       class JumboLager JL;
+       Zeitpunkt_new zp0("2002-3-1 11:00"),
+       		zp1("2002-3-1 11:11");
+       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0,true);
+       std::vector<JumboRolle> JR2=JumboRolle::create(KK); // 102
+       JL.Jumbo_Einlagern(LP,JR2.front(),JumboLager::Einlagern,UID,"TEST",&zp0,true);
+       vergleichen(C,Check::Menge,"AL_normal_rein","Einlagern","");
+
+       std::vector<JumboRolle> JR3=JumboRolle::create(KK); // 102
+       JL.Jumbo_Einlagern(LP,JR3.front(),JumboLager::Einlagern,UID,"TEST",&zp0,false);
+       std::vector<JumboRolle> JR4=JumboRolle::create(KK); // 102
+       JL.Jumbo_Einlagern(LP,JR4.front(),JumboLager::Einlagern,UID,"TEST",&zp0,false);
+       std::vector<JumboRolle> JR5=JumboRolle::create(KK); // 102
+       JL.Jumbo_Einlagern(LP,JR5.front(),JumboLager::Einlagern,UID,"TEST",&zp0,false);
+       vergleichen(C,Check::Menge,"AL_gefunden","Gefunden","");
+
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1,true);
+       JL.Jumbo_Entnahme(JR2.front(),JumboLager::Auslagern,UID,"TEST",&zp1,true);
+       vergleichen(C,Check::Menge,"AL_normal_raus","Auslagern","");
+
+       JL.Jumbo_Entnahme(JR3.front(),JumboLager::Auslagern,UID,"TEST",&zp1,false);
+       JL.Jumbo_Entnahme(JR4.front(),JumboLager::Auslagern,UID,"TEST",&zp1,false);
+       JL.Jumbo_Entnahme(JR5.front(),JumboLager::Auslagern,UID,"TEST",&zp1,false);
+       vergleichen(C,Check::Menge,"AL_verschwunden","Verschwunden","");
+#endif
+       break;
+     }
     case None: assert(!"Never get here\n");
    }
    if (!do_not_stop) erfolgreich();
@@ -914,7 +949,7 @@ static void usage(const std::string &argv0,const std::string &argv1)
                   "\t(L)ieferschein(J)acek\n"
                   "\t(Z)wei(K)unden)\n"
                   "\t(Z)wei(K)unden(M)engeFreigeben\n"
-                  "\t(M)anu(P)roCTest\n"
+                  "\t(M)anu(P)roCTest, (A)uftrag(L)ager,\n"
                   "\t(J)umboLager, (Z)usatz(I)nfo, ZI2, \n"
                   "\t(R)eparatur(P)hysikalischesLager\n"
                   "\t(R)eparatur_0er_2er_(g)leichzeitig\n"
@@ -985,6 +1020,7 @@ int main(int argc,char *argv[])
    else if(mode_str=="ZK" || mode_str=="ZweiKunden")  mode=ZweiKundenTest;
    else if(mode_str=="ZI")  mode=Zusatzinfo;
    else if(mode_str=="ZI2")  mode=Zusatzinfo2;
+   else if(mode_str=="AL")  mode=AuftragLager;
    else if(mode_str=="ZKM"|| mode_str=="ZweiKundenMengeFreigebenTest")  mode=ZweiKundenMengeFreigebenTest;
    else if(mode_str=="MP" || mode_str=="ManuProCTest")  mode=ManuProCTest;
    else if(mode_str=="J" || mode_str=="JumboLager")  mode=JumboLager;
