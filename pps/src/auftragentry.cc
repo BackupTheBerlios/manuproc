@@ -66,15 +66,16 @@ Gtk::OStream &operator<<(Gtk::OStream &o,const AufEintrag &a)
  int rest=a.getRest();  	    	    
  if(rest>0) o << rest << "\t";	    	    	    	    
  else o << "" << "\t";
-    
- Petig::Datum d(a.getSeqValue(KW_SEQ).Datum());
-	    	    	   
- o	<< Formatiere(a.GPreis().Wert(),2,0,".") << "\t"
- 	<< d.KW().Woche()<<"'"<<d.Jahr() << "\t"
-	<< a.getEntryStatusStr() << "\t"
-	<< a.LastEditDate().c_str() << "\n";
-
+ o	<< Formatiere(a.GPreis().Wert(),2,0,".") << "\t";
+ try {    
+        Petig::Datum d(a.getSeqValue(KW_SEQ).Datum());
+	o << d.KW().Woche()<<"'"<<d.Jahr();
+ } catch (Petig::Datumsfehler &e)
+ {  o << "Fehler"; }
+ o << '\t' << a.getEntryStatusStr() << '\t';
+ try { o << a.LastEditDate().c_str();
+ } catch (Petig::Datumsfehler &e)
+ {  o << "Fehler"; }
+ o << '\n';
  return o;
 }
-
-

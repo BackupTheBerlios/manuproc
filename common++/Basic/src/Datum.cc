@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/* $Id: Datum.cc,v 1.2 2001/05/04 09:14:17 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -60,7 +60,9 @@ void Petig::Datum::teste() const throw (Petig::Datumsfehler)
    if (tag<1 || tag>31) falsch|=Datumsfehler::tagfalsch;
    if (monat<1 || monat>12) falsch|=Datumsfehler::monatfalsch;
    if (jahr<1970 || jahr>2999) falsch|=Datumsfehler::jahrfalsch;
-   if (falsch) throw(Datumsfehler(*this,falsch));
+   if (falsch) 
+   {  throw(Datumsfehler(*this,falsch));
+   }
 }
 
 bool Petig::Datum::valid() const throw ()

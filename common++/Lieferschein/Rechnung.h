@@ -35,7 +35,6 @@ public:
 private:
  cH_Kunde kunde;
  RngArt rngart;
- Petig::Datum geliefertam;
  Petig::Datum zahlziel;
  Petig::Datum rgdatum;
  vector<RechnungEntry> REntries;
@@ -70,6 +69,7 @@ public:
  void addLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror);
  void deleteLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror);
  void setze_Rabatt(fixedpoint<2> r) throw(SQLerror);
+ const Petig::Datum getDatum() const { return rgdatum; }
 };
 
 #endif

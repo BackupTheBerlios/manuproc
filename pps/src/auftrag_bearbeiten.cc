@@ -108,7 +108,7 @@ void auftrag_bearbeiten::clearEntry()
  preis_spinbutton->set_value(0);
  kw_spinbutton->set_value(1);
  jahr_spinbutton->set_value(Petig::Datum::today().Jahr());
- liefdatum_datewin->set_value(Petig::Datum());
+ liefdatum_datewin->set_value(Petig::Datum::today());
  selectedentry=0;
  artikelbox->set_editable(true);
  aufentrystat->set_history((AufStatVal)UNCOMMITED); 
@@ -351,7 +351,7 @@ void auftrag_bearbeiten::loadAuftrag(int aid)
  rabattentry_spinbutton->set_value(0);
  preis_spinbutton->set_value(0);
  artikelbox->reset();
- liefdatum_datewin->set_value(Petig::Datum());
+ liefdatum_datewin->set_value(Petig::Datum::today());
  aufentrystat->set_history((AufStatVal)UNCOMMITED);
 }
 
@@ -466,10 +466,10 @@ void auftrag_bearbeiten::on_clear_all()
  aufnr_scombo->reset();
  youraufnr_scombo->reset();
  aufbemerkung_entry->set_text("");
- jahrgang_spinbutton->set_value(2000);
- aufdatum_datewin->set_value(Petig::Datum().today());
+ jahrgang_spinbutton->set_value(Petig::Datum::today().Jahr());
+ aufdatum_datewin->set_value(Petig::Datum::today());
  aufrabatt_spinbutton->set_value(0);
- zahlziel_datewin->set_value(Petig::Datum().today());
+ zahlziel_datewin->set_value(Petig::Datum::today());
  zahlart->set_history(0);
  waehrung->set_history(0);   
 }

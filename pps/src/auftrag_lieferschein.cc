@@ -70,17 +70,18 @@ void auftrag_lieferschein::display(int lfrsid)
  lieferschein_liste->showLieferschein(lfrsid);
  display2(lieferschein_liste->getLieferschein().KdNr());
  if (lieferschein_liste->getLieferschein().RngNr())
-    rngnr->set_text(Formatiere(lieferschein_liste->getLieferschein().RngNr(),0,6,"","",'0');
+    rngnr->set_text(Formatiere(lieferschein_liste->getLieferschein().RngNr(),0,6,"","",'0'));
  else rngnr->set_text("");
 }
 
 void auftrag_lieferschein::display2(int kdnr)
 {
+try{
  liefer_kunde->set_value(kdnr);
  offene_auftraege->setKdNr(kdnr);
  display2();
    cH_Kunde k(kdnr);
-   if (artikelbox->getSchema()->Id()!=k->getSchema())
+   if (artikelbox->getBezSchema()->Id()!=k->getSchema()->Id())
    { artikelbox->setExtBezSchema(k->getSchema()); }
  }
  catch(SQLerror &e) {meldung->Show(e);}

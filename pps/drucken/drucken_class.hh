@@ -147,6 +147,9 @@ public:
    const Kunde::ID KdNr() const {
       if (t==Rechnung)     return u.r->KdNr(); 
       if (t==Lieferschein) return u.l->KdNr(); abort(); }
+   const Petig::Datum getDatum() const {
+      if (t==Rechnung)     return u.r->getDatum(); 
+      if (t==Lieferschein) return u.l->getDatum(); abort(); }
    unsigned int RngNr()   const {
       if (t==Rechnung)     return u.r->Id(); 
       if (t==Lieferschein) return u.l->Id(); abort(); }

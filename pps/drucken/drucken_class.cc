@@ -100,7 +100,7 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie)
         if (l.KdNr() != kunden_id) sKunde = k->firma();
         else sKunde = "";
         if (Was()=="Rechnung")
-       	   lieferung_an(os,(*i).Lfrs_Id(),l.LsDatum(),sKunde); 
+       	   lieferung_an(os,(*i).Lfrs_Id(),l.getDatum(),sKunde); 
       }
     if (Was()=="Rechnung")
       {
@@ -155,7 +155,7 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie)
          if (stueck_bool && menge_bool)
             os <<linecolor<< FormatiereTeX_short(fixedpoint<3>((*k).Stueck() * (*k).Menge()))<<einheitsize <<Einheit(artikel_id).TeX()<<" & ";   
          for(ExtBezSchema::const_sigiterator l=schema_mem->sigbegin(signifikanz);l!=schema_mem->sigend(signifikanz);++l)
-          os <<linecolor<< string((*bez)[l->bezkomptype]) <<"  &  ";
+          os <<linecolor<< Gtk2TeX::string2TeX(string((*bez)[l->bezkomptype])) <<"  &  ";
          if(Was()=="Rechnung")       
           {
             os <<linecolor<<FormatiereTeX( (*k).getPreis().Wert() )<<" & ";
@@ -337,7 +337,7 @@ void LR_Abstraktion::page_header(int page,ofstream &os,const string& kopie)
    os <<"\\large Firma\n\n"<< kunde_an->getName()<<"\n\n\\bigskip";
   }
  os << "\\LARGE "<<Was()<<": "<<RngNr()<<"\\hfill\\normalsize "
-      <<kopie<<"\\hfill \\today\\\\[1ex]\n\n";
+      <<kopie<<"\\hfill "<< getDatum() << "\\\\[1ex]\n\n";
  if (page==1)
   {
    os << "\\scriptsize Wir sandten Ihnen auf Ihre Rechung und Gefahr\n";

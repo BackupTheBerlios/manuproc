@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.2 2001/05/04 09:14:17 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -16,7 +16,6 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-
 
 #include"Lieferschein.h"
 #include<Aux/Transaction.h>
@@ -41,7 +40,7 @@ Lieferschein::Lieferschein(int lid) throw(SQLerror)
  
  exec sql select kundennr, date(datum), coalesce(rngid,0),
 		coalesce(paeckchen,0),
-		coalesce(pakete,0),date(geliefertam),dpdliefnr
+		coalesce(pakete,0),date(coalesce(geliefertam,datum)),dpdliefnr
 		into :KDNR, :DATUM, :RNGID, :PAECKCHEN, :PAKETE,
 		:GELIEFERTAM:IGELIEFERTAM, :DPDLIEFNR:IDPDLIEFNR
  	from lieferschein where lfrsid = :LFRSID;
@@ -57,9 +56,7 @@ Lieferschein::Lieferschein(int lid) throw(SQLerror)
  if(IGELIEFERTAM) geliefertam=Petig::Datum();		 
  else geliefertam.from_postgres(GELIEFERTAM);		 
  dpdliefnr=IDPDLIEFNR ? 0 : DPDLIEFNR;
-
 }
-
 
 void Lieferschein::setDPDlnr(int dpdlnr) throw(SQLerror)
 {
@@ -73,7 +70,7 @@ void Lieferschein::setDPDlnr(int dpdlnr) throw(SQLerror)
  SQLerror::test(__FILELINE__);
 }
 
-
+// und was ist mit setDatum
 void Lieferschein::setDPDDatum() throw(SQLerror)
 {
  exec sql begin declare section;
@@ -84,8 +81,6 @@ void Lieferschein::setDPDDatum() throw(SQLerror)
 	where lfrsid= :LFRSID;
  SQLerror::test(__FILELINE__);
 }
-
-
 
 Lieferschein::Lieferschein(cH_Kunde k) throw(SQLerror)
 	: LieferscheinBase(none_id), lsdatum(Petig::Datum::today()),
@@ -117,7 +112,6 @@ Lieferschein::Lieferschein(cH_Kunde k) throw(SQLerror)
  tr.commit();
 }
 
-
 int Lieferschein::maxZnr() throw(SQLerror)
 {
  exec sql begin declare section;
@@ -133,3 +127,14 @@ int Lieferschein::maxZnr() throw(SQLerror)
  return ZNR;
 }
 
+void Lieferschein::setDatum(const Petig::Datum &d) throw(SQLerror)
+{  
+ exec sql begin declare section;
+ int LFRSID=lieferid;
+ char DATUM[20];
+ exec sql end declare section;
+ 
+ d.write_postgres(DATUM,sizeof DATUM);
+ exec sql update lieferschein set geliefertam=:DATUM where lfrsid= :LFRSID;
+ SQLerror::test(__FILELINE__);
+}

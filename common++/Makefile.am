@@ -41,7 +41,6 @@ libcommon___a_LIBADD= \
 		Aux/auto_conversion.o \
 		Aux/dbconnect.o \
 		Aux/exception.o \
-		Aux/fixedpoint.o \
 		Aux/itos.o \
 		Aux/postgres_conversion.o \
 		Aux/string0.o \
