@@ -1,0 +1,7 @@
+.deps
+Bankauftrag2.cc
+Bankauftrag2.pcl
+Makefile
+Makefile.in
+*_pg.cc
+*_p.cc

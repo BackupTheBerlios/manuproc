@@ -1,0 +1,167 @@
+/* $Id: LieferscheinEntry_sql.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include"LieferscheinEntry.h"
+#include"Lieferschein.h"
+#include<Aux/Transaction.h>
+#include <Auftrag/AufEintragBase2.h>
+#include<Auftrag/auftrag_status.h>
+
+exec sql include sqlca;
+
+LieferscheinEntry::LieferscheinEntry(const LieferscheinBase &lsbase, int zeile)
+ throw(SQLerror) : LieferscheinBase(lsbase), zeilennr(zeile) 
+{
+ exec sql begin declare section;
+ int LFRSID;
+ int ZEILE;
+ int REFAUFTRAGID;
+ int REFZEILENNR;
+ int STUECK;
+ float MENGE;
+ long ARTIKELID;
+ bool ZUSATZINFO;
+ int PALETTE;
+ exec sql end declare section;
+
+
+ LFRSID=Id();
+ ZEILE=zeilennr;
+ 
+ exec sql select artikelid, coalesce(refauftragid,0), 
+	 	coalesce(refzeilennr,0), stueck, coalesce(menge,0),
+	 	coalesce(palette,0), coalesce(zusatzinfo,'f')
+	into :ARTIKELID, :REFAUFTRAGID, :REFZEILENNR, :STUECK, :MENGE,
+		:PALETTE, :ZUSATZINFO
+	from lieferscheinentry where lfrsid= :LFRSID and zeile= :ZEILE;
+ SQLerror::test(__FILELINE__);
+ 
+ artikel=ArtikelBase(ARTIKELID);
+ refauftrag=AufEintragBase2(REFAUFTRAGID,REFZEILENNR);
+ stueck=STUECK;
+ menge=MENGE;
+ palette=PALETTE;
+ zusatzinfo=ZUSATZINFO;
+}
+
+LieferscheinEntry::LieferscheinEntry(const LieferscheinBase &lsb,
+	const AufEintragBase2 &auf, const ArtikelBase &art, int anzahl,
+	fixedpoint<3> _menge,int _palette, bool _zusatzinfo)
+throw(SQLerror) : LieferscheinBase(lsb),artikel(art),
+			refauftrag(auf),stueck(anzahl),menge(_menge),
+			palette(_palette), zusatzinfo(_zusatzinfo)
+{
+ exec sql begin declare section;
+ int LFRSID;
+ int ARTIKELID;
+ int REFAUFID;
+ int REFZEILENNR;
+ int STK;
+ int ZEILE;
+ float MENGE;
+ int IMENGE;
+ int PALETTE=palette;
+ bool ZUSATZINFO=zusatzinfo;
+ exec sql end declare section;
+
+ Transaction tr;
+ 
+ exec sql lock table lieferscheinentry in exclusive mode;
+ SQLerror::test(__FILELINE__":LieferscheinEntry: lock table");
+ 
+ LFRSID=Id();
+ ARTIKELID=art.Id();
+ REFAUFID=auf.Id();
+ REFZEILENNR=auf.ZNr();
+ STK=stueck;
+ MENGE=menge;
+ IMENGE=MENGE?0:-1;
+
+ exec sql select coalesce(max(zeile)+1,1) into :ZEILE from lieferscheinentry
+	where lfrsid=:LFRSID;
+ SQLerror::test(__FILELINE__":LieferscheinEntry: select max(zeilennr)");
+
+ exec sql insert into lieferscheinentry 
+ 		(lfrsid,zeile,artikelid, refauftragid, refzeilennr, stueck,
+		menge,palette,zusatzinfo)
+ 	values
+ 		(:LFRSID,:ZEILE,:ARTIKELID,:REFAUFID,:REFZEILENNR,:STK,
+ 		 :MENGE:IMENGE,:PALETTE,:ZUSATZINFO);
+ SQLerror::test(__FILELINE__":LieferscheinEntry: insert into lieferscheinentry");
+
+ zeilennr=ZEILE;
+ 
+ tr.commit();
+}
+
+
+LieferscheinEntry::LieferscheinEntry(const LieferscheinBase &lsb,
+			const ArtikelBase &art, int anzahl,
+			fixedpoint<3> _menge,int _palette, bool zusatz)
+							throw(SQLerror) 
+{  *this=LieferscheinEntry(lsb,AufEintragBase2(0,0),art,anzahl,_menge,zusatz);
+}
+
+void LieferscheinEntry::deleteEntry(const LieferscheinEntry &lse) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int LFRSID;
+ int ZEILE;
+ int AUFID;  
+ int AUFZNR;
+ int STATUS;   
+ int BESTELLT; 
+ int GELIEFERT;
+
+ exec sql end declare section;
+
+ Transaction tr;
+
+ LFRSID=lse.Id();
+ ZEILE=lse.Zeile(); 
+
+ exec sql lock table lieferscheinentry in exclusive mode;
+ exec sql lock table auftragentry in exclusive mode;
+ 
+ exec sql delete from lieferscheinentry where
+		lfrsid= :LFRSID and
+		zeile= :ZEILE;
+ SQLerror::test(__FILELINE__":deleteEntry: delete from lieferscheinentry");
+ 
+ AUFID=lse.AufId();
+ AUFZNR=lse.AufZeile();
+
+ if (AUFID || AUFZNR)
+ {  exec sql select bestellt, geliefert, status
+        into :BESTELLT, :GELIEFERT, :STATUS
+        from auftragentry where
+        auftragid = :AUFID and zeilennr = :AUFZNR;
+    SQLerror::test(__FILELINE__);
+ 
+    if (!lse.Menge()) GELIEFERT-=lse.Anzahl();
+    else GELIEFERT-=int(lse.Anzahl()*lse.Menge()+0.5);
+    if(GELIEFERT<BESTELLT) STATUS=(AufStatVal)OPEN;  
+ 
+    exec sql update auftragentry set geliefert= :GELIEFERT, status= :STATUS
+        where auftragid= :AUFID and zeilennr= :AUFZNR;
+    SQLerror::test(__FILELINE__);
+ }
+
+ tr.commit();
+}

@@ -1,0 +1,222 @@
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+
+#include"Rechnung.h"
+#include<Aux/Transaction.h>
+exec sql include sqlca;
+
+Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
+: RechnungBase(rid), kunde(Kunde::default_id)
+{
+ if(rid==none_id) return;
+
+ exec sql begin declare section;
+   int RNGID = rid;
+   int KDNR;
+   char RNGART[1];
+   char DATUM[21];
+   char ZAHLZIEL[11];
+   int IZAHLZIEL;
+   int WAEHRUNG;
+   float RABATT;
+   bool BEZAHLT;
+ exec sql end declare section;
+
+ Transaction tr;
+
+ exec sql select r.kundennr, date(r.datum), r.rngart, zahlziel, 
+ 			coalesce(waehrung,1), coalesce(rabatt,0), bezahlt
+		into :KDNR, :DATUM, :RNGART, :ZAHLZIEL:IZAHLZIEL,
+		   :WAEHRUNG, :RABATT, :BEZAHLT
+ 	from rechnung r where r.rngid = :RNGID ;
+ SQLerror::test(__FILELINE__);
+
+ kunde=cH_Kunde(KDNR);
+ rngart = (RngArt)RNGART[0];
+ waehrung=cP_Waehrung(WAEHRUNG);
+ rabatt=RABATT;
+ rgdatum=Petig::Datum(DATUM);
+ bezahlt=BEZAHLT;
+
+ // 2.Teil
+ exec sql begin declare section;
+   int ARTIKELID, ZEILENNR, STUECK, LFRSID;
+   float PREISMENGE;
+   float MENGE;
+   float PREIS;
+  char LIEFERDATUM[21];
+ exec sql end declare section;
+
+ exec sql declare rein cursor for
+   select ry.artikelid,
+      ry.zeilennr, coalesce(ry.menge,0), coalesce(ry.preis,0),
+      coalesce(ry.stueck,1), coalesce(ry.preismenge,1), coalesce(ry.rabatt,0),
+      coalesce(l.geliefertam,l.datum,date('today')), ry.lfrsid
+   from rechnungentry ry 
+   left join lieferschein l on ry.lfrsid=l.lfrsid
+   where ry.rngid = :RNGID 
+   order by ry.zeilennr;
+ exec sql open rein;
+ SQLerror::test(__FILELINE__);
+ while (true)
+   {
+    exec sql fetch rein into
+         :ARTIKELID, :ZEILENNR, :MENGE, :PREIS, :STUECK, 
+         :PREISMENGE, :RABATT, :LIEFERDATUM, :LFRSID ;
+    SQLerror::test(__FILELINE__,100);
+    if (sqlca.sqlcode) break;
+
+    REntries.push_back(RechnungEntry(RNGID,ZEILENNR,ARTIKELID,STUECK,MENGE,
+                               Preis(PREIS,waehrung,PREISMENGE),RABATT,LIEFERDATUM,LFRSID,0));
+   }
+ exec sql close rein;
+ tr.close();
+
+}
+
+Rechnung::Rechnung(const cH_Kunde k) throw(SQLerror)
+	: RechnungBase(none_id), kunde(k),rabatt(0)
+{
+ exec sql begin declare section;
+ int RNGID;
+ int KUNDENNR;
+ exec sql end declare section;
+
+ KUNDENNR=k->Id();
+
+ Transaction tr;
+  
+ exec sql lock table lieferschein in exclusive mode;
+ 
+ exec sql select coalesce(max(rngid)+1,(to_char(now(),'yy')||'0000')::int4)
+ 		into :RNGID
+ 		from rechnung where rngid 
+ 		between (to_char(now(),'yy')||'0000')::int4 and
+ 			(to_char(now(),'yy')||'9999')::int4;
+ SQLerror::test(__FILELINE__":Rechnung: select next rngid");
+ 
+ exec sql insert into rechnung (rngid, kundennr,zahlart)
+ 	values (:RNGID, :KUNDENNR,0);
+ SQLerror::test(__FILELINE__":Rechnung: insert into rechnung");	
+
+ rngid=RNGID;
+ rgdatum=Petig::Datum::today();
+
+ tr.commit();
+}
+
+
+void Rechnung::deleteLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int RNGID;
+ int LFRSID;
+ exec sql end declare section;
+ 
+ Transaction tr;
+ 
+ RNGID=Id();
+ LFRSID=lfrsid;
+
+ vector<RechnungEntry>::iterator i;
+ vector<RechnungEntry>::iterator j=end();
+ for(i=begin();i!=j;)
+	{if((*i).Lfrs_Id()==lfrsid)
+	  {RechnungEntry::deleteEntry(*i);
+	   REntries.erase(i);
+	   i=begin(); j=end();
+	  }
+	 ++i;
+	}
+
+ exec sql update lieferschein set rngid=null where lfrsid= :LFRSID;
+ SQLerror::test(__FILELINE__);
+
+ tr.commit();
+ 
+}
+
+#include <sys/types.h>
+#include <unistd.h>
+
+void Rechnung::addLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror)
+{
+ exec sql begin declare section; 
+ int LFRSID;
+ int RNGID;
+ char *COMMAND;
+ char *SEQNAME;
+ int MAXZNR;
+ exec sql end declare section;
+
+ RNGID=Id();
+ 
+ int mypid=getpid();
+ string seqname("tmp_rngrowseq_"+itos(mypid));
+ (const char*)SEQNAME=seqname.c_str();
+ 
+ string cmd="create sequence "+seqname+" START 1";
+ (const char*)COMMAND=cmd.c_str();
+ exec sql execute immediate :COMMAND;
+ SQLerror::test(__FILELINE__);
+
+ Transaction tr;
+
+ exec sql lock table rechnungentry in exclusive mode; 
+ SQLerror::test(__FILELINE__);
+
+ exec sql select coalesce(max(zeilennr),0) into :MAXZNR 
+	from rechnungentry where rngid= :RNGID;
+ SQLerror::test(__FILELINE__);
+ 
+ LFRSID=lfrsid;
+ 
+ exec sql insert into rechnungentry 
+ 	(rngid,zeilennr,artikelid,lfrsid,lfrszeile,menge,preis,
+ 		rabatt,preismenge,stueck)
+ 	(select :RNGID,:MAXZNR+nextval(:SEQNAME),
+ 		l.artikelid, l.lfrsid, l.zeile,l.menge,0,0,0,l.stueck
+ 	 from lieferscheinentry l 
+ 	 where l.lfrsid= :LFRSID and not coalesce(zusatzinfo,'f'));
+ SQLerror::test(__FILELINE__); 
+
+ exec sql update lieferschein set rngid=:RNGID where lfrsid=:LFRSID;
+ SQLerror::test(__FILELINE__);
+ 
+ tr.commit();
+  
+ cmd="drop sequence "+seqname;
+ (const char*)COMMAND=cmd.c_str();
+ exec sql execute immediate :COMMAND;
+ SQLerror::test(__FILELINE__);
+
+}
+
+void Rechnung::setzeWaehrung(const cP_Waehrung &w) throw(SQLerror)
+{  waehrung=w;
+ exec sql begin declare section;
+ int RNGID;
+ int WAEHRUNG;
+ exec sql end declare section;
+
+ RNGID=Id();
+ WAEHRUNG=w->Id();
+ exec sql update rechnung set waehrung=:WAEHRUNG where rngid=:RNGID;
+ SQLerror::test(__FILELINE__);
+}

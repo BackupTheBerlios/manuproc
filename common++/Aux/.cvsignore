@@ -1,0 +1,11 @@
+.deps
+Makefile
+Makefile.in
+SQLerror_adabas.cc
+SQLerror_postgres.cc
+*_p.cc
+dbconnect.cc
+Transaction.cc
+Waehrung_sql.cc
+Changejournal_sql.cc
+FetchIStream.cc

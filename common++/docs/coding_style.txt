@@ -1,0 +1,18 @@
+- sprintf und strcpy sind zu ersetzen durch:
+	g_snprintf (in Gtk* Programmen) bzw.
+	snprintf0() (aus dieser Library)
+	snprintf(),[sizoef(name)-1]=0 (überall sonst).
+  und
+  	strncpy0() (aus dieser Library) bzw.
+	strncpy(),[sizoef(name)-1]=0
+	
+  Als Abkürzung können die Macros
+  	strcpyx(puffer,from);
+  oder 
+  	sprintfx(puffer,format,...);
+  verwendet werden, die mit einem sizeof expandieren. 
+  Vorsicht: NIEMALS ZEIGER ÜBERGEBEN!
+	
+- Die Größe eines Puffers ist durch sizeof(name) anzugeben:
+  	g_snprintf (buf, sizeof buf,"...");
+  und nicht durch hartcodierte Zahlen!!!

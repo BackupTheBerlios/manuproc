@@ -1,0 +1,55 @@
+// $Id: Waehrung_sql.pgcc,v 1.1 2001/04/23 08:11:58 christof Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include<Aux/Waehrung.h>
+exec sql include sqlca;
+
+Waehrung::Waehrung(WaehID id) throw(SQLerror)
+{
+ if(id==0) return;
+ exec sql begin declare section;
+ int WID = id;
+ char KURZ[10];
+ char LANG[31];
+ double DMFKT;
+ short ILANG;
+ exec sql end declare section;
+ 
+ exec sql select kurz, lang, dmfkt 
+ 	into :KURZ, :LANG:ILANG, :DMFKT
+ 	from waehrung where wid= :WID;
+ SQLerror::test(__FILELINE__":Waehrung: select from waehrung");
+
+ wid=WID;
+ kurz = KURZ;
+ lang = ILANG ? "" : LANG;
+ dmfkt = DMFKT;
+}
+
+cP_Waehrung::cache_t cP_Waehrung::cache;
+
+cP_Waehrung::cP_Waehrung(Waehrung::ID wid)
+{  Waehrung *cached(cache.lookup(wid));
+   if (cached) *this=cached;
+   else *this=cache.Register(wid,Waehrung(wid));
+}
+
+double Waehrung::Umrechnung(const Waehrung &von, const Waehrung &nach)
+{  return von.dmfkt/nach.dmfkt;
+}

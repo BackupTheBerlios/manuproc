@@ -1,0 +1,132 @@
+// $Id: Person_sql.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <Kunde/Person.h>
+#include <Aux/Transaction.h>
+
+Person::Person(ID _id) throw(SQLerror) : personennr(_id)
+{  exec sql begin declare section;
+   int ID=_id;
+   int KUNDENNR;
+   char NAME[31], VORNAME[31], POSITION[31];
+   char GEBDATE[21],ANREDE[21],NOTIZ[1000];
+   short IGEBDATE,IKUNDENNR;
+   exec sql end declare section;
+
+   if(_id == none_id) return;   
+  
+   Transaction tr;
+
+   exec sql select kundennr, name, coalesce(vorname,''), coalesce(_position,''),
+	geburtstag, coalesce(anrede,''), coalesce(notiz,'')
+	into :KUNDENNR:IKUNDENNR, :NAME, :VORNAME, :POSITION,
+		:GEBDATE:IGEBDATE, :ANREDE, :NOTIZ
+	from kunden_personen where persnr= :ID;
+
+   SQLerror::test(__FILELINE__);
+
+   personennr=ID;
+   kundennr=IKUNDENNR ? Kunde::none_id : KUNDENNR;
+   name=NAME;
+   vorname=VORNAME;
+   position=POSITION;
+   gebdatum=IGEBDATE ? Petig::Datum() : Petig::Datum(GEBDATE);
+   anrede=ANREDE;
+   notiz=NOTIZ;	
+
+}
+
+
+
+cH_Person Person::newPerson(const Kunde::ID _knr, const string &_name, const string &_vorname,
+ 	const string &_pos, const Petig::Datum &gd, const string &_anrede,
+ 	const string &_not) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int KUNDENNR = _knr, PERSNR;
+ char *NAME, *VORNAME, *POSITION, *GEBURT, *ANREDE, *NOTIZ;   
+ exec sql end declare section;
+
+ NAME=(char*)_name.c_str();
+ VORNAME=(char*)_vorname.c_str();
+ POSITION=(char*)_pos.c_str();
+ GEBURT=(char*)gd.c_str();
+ ANREDE=(char*)_anrede.c_str();
+ NOTIZ=(char*)_not.c_str();   
+
+ Transaction tr;
+
+ exec sql select nextval('kunden_personen_persnr_seq') into :PERSNR;
+ SQLerror::test(__FILELINE__);
+
+ exec sql insert into kunden_personen
+       (kundennr, persnr, name,vorname,_position,geburt,anrede,notiz)
+    values
+       (:KUNDENNR,:PERSNR,:NAME,:VORNAME,:POSITION,:GEBURT,:ANREDE,:NOTIZ);
+  SQLerror::test(__FILELINE__);
+
+ tr.commit();
+
+ return cH_Person(PERSNR);
+
+}
+
+
+void Person::update() throw(SQLerror)
+{
+ exec sql begin declare section;
+ int KUNDENNR = kundennr, PERSNR=personennr;
+ char *NAME, *VORNAME, *POSITION, *GEBURT, *ANREDE, *NOTIZ;   
+ exec sql end declare section;
+
+ NAME=(char*)name.c_str();
+ VORNAME=(char*)vorname.c_str();
+ POSITION=(char*)position.c_str();
+ GEBURT=(char*)gebdatum.c_str();
+ ANREDE=(char*)anrede.c_str();
+ NOTIZ=(char*)notiz.c_str();   
+
+ Transaction tr;
+
+ exec sql update kunden_personen set
+	kundennr= :KUNDENNR,
+       name= :NAME, vorname= :VORNAME, _position= :POSITION,
+	geburt= :GEBURT, anrede= :ANREDE, notiz= :NOTIZ
+	where persnr= :PERSNR;
+  SQLerror::test(__FILELINE__);
+
+ tr.commit();
+
+}
+
+void Person::delPerson(const ID pid) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int PERSNR=pid;
+ exec sql end declare section;
+
+ Transaction tr;
+
+ exec sql delete from kunden_personen where persnr= :PERSNR;
+ SQLerror::test(__FILELINE__);
+
+ tr.commit();
+
+}
+

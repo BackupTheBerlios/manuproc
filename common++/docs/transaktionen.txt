@@ -1,0 +1,63 @@
+- Autocommit sollte _immer_ ON sein - Grund bitte nachfragen ...
+
+- Postgres kann Transaktionen nicht schachteln, daher muss jedes 
+  ####### veraltet, NEUER C++ CODE SIEHE UNTEN #######
+
+	exec sql begin work;
+flankiert werden von:
+	SQLerror::test(__FILELINE__"begin",ECPG_NOTICE_IN_TRANSACTION);
+	bool transaction(!sqlca.sqlcode);
+	
+jeder SQLerror::test ein Argument 
+	...,transaction);
+erhalten
+
+Das Unterprogramm sollte mit 
+	if (transaction) exec sql commit work;
+oder
+	if (transaction) exec sql rollback work;
+enden.
+
+Exceptions in unterprogrammen MÜSSEN abgefangen werden (und dann conditional
+rollback machen!):
+	} catch (SQLerror &e)
+	{  if (transaction) exec sql rollback work;
+	   throw;
+	}
+
+- Ein open cursor / close muss von einer transaktion umschlossen sein.
+  daher siehe oben.
+
+- in C sieht der Code typischerweise so aus:
+	bool transaction=0;
+	...
+	exec sql begin work;
+	transaction=!sqlca.sqlcode;
+	...
+	if (transaction) exec sql commit work;
+oder
+	if (transaction) exec sql rollback work;
+
+- #### NEUER C++ CODE ####
+	Transaction t; // statt begin work
+		(Vorsicht, _könnte_ SQLerror werfen)
+  und dann wenn ein commit statt eines rollbacks gewünscht wird
+  (Vorsicht ein rollback macht alle änderungen in Unterroutinen nichtig!)
+  	t.commit_on_close();
+  	
+  	t.close();	// statt commit/rollback
+  	t.commit();
+  	t.rollback();
+  oder
+  	'}' oder 'return' oder 'throw'
+  	
+  Jede die Funktion durchquerende Exception löst automatisch das Beenden
+  der Transaktion aus!
+
+- Für nichtlokale Transaktionen
+	Transaction t(false);
+	
+	t.open();
+	...
+	t.close();
+  Vorsicht, dass es gepaart auftritt!

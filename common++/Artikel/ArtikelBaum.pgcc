@@ -1,0 +1,70 @@
+// $Id: ArtikelBaum.pgcc,v 1.1 2001/04/23 08:11:58 christof Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <Artikel/ArtikelBaum.h>
+
+ArtikelBaum::ArtikelBaum(const ArtikelBase &stamp)
+  : ArtikelBase(stamp), prozess(Prozess::default_id)
+{
+ setID(stamp.Id());
+}
+
+ArtikelBaum::cache_t ArtikelBaum::cache;
+
+// liest Daten ein, Name kann verwirren, hoffentlich private
+
+void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
+{ArtikelBase::setID(stamp);
+ cache_payload *cached=cache.lookup(Id());
+ if (cached)
+ {  altartikel=cached->altartikel;
+    prozess=cH_Prozess(cached->pid);
+ }
+ else
+ {  exec sql begin declare section;
+    int ARTIKELID;
+    int ALTARTIKELID;
+    int IALTARTIKELID;
+    int PROZESSID;
+    int IPROZESSID;
+    exec sql end declare section;
+    
+    ARTIKELID=Id();
+    exec sql select altartikelid, prozessid 
+        into :ALTARTIKELID:IALTARTIKELID, :PROZESSID:IPROZESSID
+ 	from artikelbezeichnung
+	where artikelid= :ARTIKELID;
+    SQLerror::test(__FILELINE__);
+
+    altartikel = IALTARTIKELID ? 0 : ALTARTIKELID;
+    if (IPROZESSID) PROZESSID = Prozess::default_id;
+    prozess = cH_Prozess(PROZESSID);
+    cache.Register(Id(),cache_payload(altartikel,PROZESSID));
+ }
+}
+
+// recursive !
+const ArtikelBaum::ID ArtikelBaum::RohArtikelID() const
+{if(!altartikel) return Id();
+ return ArtikelBaum(altartikel).RohArtikelID();
+}
+
+float ArtikelBaum::Stueckgroesse() const
+{  return prozess->getMtrProStk();
+}

@@ -1,0 +1,91 @@
+/* $Id: SQLerror_postgres.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include "SQLerror_postgres.h"
+#include <iostream>
+#include <string>
+
+exec sql include sqlca;
+
+SQLerror_postgres::SQLerror_postgres(const string &ctext,int _code,const string &_name) throw()
+	: context(ctext), code(_code), name (_name), separator(' ')
+{  }
+
+SQLerror_postgres::SQLerror_postgres(const string &ctext) throw()
+	: context(ctext), separator(' ')
+{  exec sql begin declare section;
+   exec sql end declare section;
+   code=sqlca.sqlcode;
+   
+// do not copy leading and trailing spaces  
+   const char *errmc=sqlca.sqlerrm.sqlerrmc;
+   for (;*errmc==' ';++errmc) ;
+   int len=strlen(errmc);
+   for (;len>0 && errmc[len-1]==' ';--len) ;
+   name=string(errmc,len);
+}
+
+void SQLerror_postgres::rollback() throw()
+{  exec sql rollback;
+}
+
+void SQLerror_postgres::close_cursor(const string &c) throw()
+{exec sql begin declare section;
+ char *q;
+ exec sql end declare section;
+
+ string query=string("close ")+c;
+ q=(char *)query.c_str();
+
+ exec sql execute immediate :q;
+}
+
+ostream &operator<<(ostream &o,const SQLerror_postgres &e) throw()
+{  o<<e.context;
+   if (e.code)
+      o <<':'<<e.separator<<e.code<<e.separator<<e.name;
+   return o;
+}
+
+void SQLerror_postgres::test(const string &context,bool _rollback) throw(SQLerror_postgres)
+{  if (sqlca.sqlcode) 
+   {  if (_rollback) rollback_and_throw(context);
+      else throw SQLerror_postgres(context);
+   }
+}
+void SQLerror_postgres::test(const string &context,int codeok,bool _rollback) throw(SQLerror_postgres)
+{  if (sqlca.sqlcode && sqlca.sqlcode!=codeok) 
+   {  if (_rollback) rollback_and_throw(context);
+      else throw SQLerror_postgres(context);
+   }
+}
+
+void SQLerror_postgres::test(const string &context,const string &cursor,
+		int codeok, bool _rollback ) throw(SQLerror_postgres)
+{  if (sqlca.sqlcode && sqlca.sqlcode!=codeok) 
+   {  close_cursor(cursor);
+      if (_rollback) rollback_and_throw(context);
+      else throw SQLerror_postgres(context);
+   }
+}
+
+void SQLerror_postgres::print(const string &context,int codeok=0)
+{  if (sqlca.sqlcode && sqlca.sqlcode!=codeok)
+      cerr << SQLerror_postgres(context) << '\n';
+}

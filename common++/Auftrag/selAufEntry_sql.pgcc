@@ -1,0 +1,329 @@
+// $Id: selAufEntry_sql.pgcc,v 1.1 2001/04/23 08:11:58 christof Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <Auftrag/selAufEntry.h>
+#include <Auftrag/selFullAufEntry.h>
+#include <Aux/Transaction.h>
+
+exec sql include sqlca;
+
+SelectedAufList::SelectedAufList(const SQLAuftragSelector& selector)
+throw(SQLerror)
+{
+	exec sql begin declare section;
+	int AUFID[20];
+	int ZNUMMER[20];
+	int KDNR[20];
+	char *clausel;
+	exec sql end declare section;
+	
+	clausel = (char*)selector.getClausel();
+
+	Transaction tr;
+	exec sql prepare MYQ from :clausel;
+	exec sql declare AUFENTR cursor for MYQ;
+	exec sql open AUFENTR;
+	SQLerror::test(__FILELINE__" select all auftragids",100);
+
+	while(!sqlca.sqlcode)
+	  {
+	   exec sql fetch 20 in AUFENTR into :AUFID, :ZNUMMER, :KDNR;
+	   SQLerror::test(__FILELINE__" fetch all auftragids","AUFENTR",100);
+	   int j = sqlca.sqlerrd[2];
+           for (int i=0;i<j;++i)
+	      aufidliste.push_back(
+			SelectedAufentry(AUFID[i], ZNUMMER[i], KDNR[i]));
+	   if (j<20) break;
+	  }	   	
+
+	exec sql close AUFENTR;
+	tr.commit();
+}
+
+void SelectedAufList::addList(const SQLAuftragSelector &selector) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFID;
+ int ZNUMMER;
+ int KDNR;
+ char *clausel;
+ exec sql end declare section;
+
+ clausel = (char *)selector.getClausel();
+
+ Transaction tr;
+ exec sql prepare MYQ from :clausel;
+ exec sql declare SELAUFENT cursor for MYQ;
+ exec sql open SELAUFENT;
+ SQLerror::test(__FILELINE__" add auftragids to list",100);
+
+ while(!sqlca.sqlcode)
+   {
+    exec sql fetch in SELAUFENT into :AUFID, :ZNUMMER, :KDNR;
+    SQLerror::test(__FILELINE__" fetch auftragids","SELAUFENT",100);
+    if(sqlca.sqlcode) break;
+    aufidliste.push_back(SelectedAufentry(AUFID, ZNUMMER, KDNR));
+   }	   	
+
+ exec sql close SELAUFENT;
+ tr.commit();
+}
+
+
+SelectedFullAufList::SelectedFullAufList(const SQLFullAuftragSelector &selector)
+throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFID[20];
+ int ZNUMMER[20];
+ int KDNR[20];
+ int ARTIKELID[20];
+ int ROHARTIKELID[20];
+ int BESTELLT[20], GELIEFERT[20];
+ char LIEFERDATUM[20][21];
+ short ILIEFERDATUM[20];
+ int PROZESSID[20];
+ char PROZESSDATUM[20][11];
+ int STATUS[20];
+ int ENTRYSTATUS[20];
+ char LASTEDITDATE[20][21];
+ int DISPOENTNR[20];
+ int DISPONR[20];
+ int JAHRGANG[20];
+ short IDISPOENTNR[20], IDISPONR[20];
+ char YOURAUFNR[20][21];
+ short IYOURAUFNR[20];
+ short IROHARTIKELID[20];
+ float PREIS[20];
+ int RABATT[20];
+ int PREISMENGE[20];
+ int WAEHRUNG[20];
+ short IPREIS[20],IRABATT[20],IWAEHRUNG[20];
+ char *clausel;
+ exec sql end declare section;
+	
+	clausel = (char *)selector.getClausel();
+
+	Transaction tr;
+	exec sql prepare MYQ from :clausel;
+	exec sql declare AUFENTRYFULL2 cursor for MYQ;
+	exec sql open AUFENTRYFULL2;
+	SQLerror::test(__FILELINE__":SelectedFullAufList: select all auftragids",100);
+
+	while(1)
+	  {
+	   exec sql fetch 20 in AUFENTRYFULL2
+	   into :AUFID, :ZNUMMER,
+		:BESTELLT, :ARTIKELID, :ROHARTIKELID:IROHARTIKELID,
+		:LIEFERDATUM:ILIEFERDATUM,
+		:GELIEFERT, :JAHRGANG,
+		:STATUS, :KDNR, :YOURAUFNR:IYOURAUFNR,
+		:PROZESSID, :PROZESSDATUM,
+		:PREIS:IPREIS, :RABATT:IRABATT, :PREISMENGE,
+		:WAEHRUNG:IWAEHRUNG, :ENTRYSTATUS, :LASTEDITDATE;
+   SQLerror::test(__FILELINE__":SelectedFullAufList: fetch all auftragids",
+						"AUFENTRYFULL2",100);
+
+	   int j=sqlca.sqlerrd[2];
+           for (int i=0;i<j;++i)
+	      aufidliste.push_back(
+			AufEintragBase(
+			AUFID[i], ZNUMMER[i], BESTELLT[i], ARTIKELID[i],
+	ILIEFERDATUM[i] ? Petig::Datum() : Petig::Datum(LIEFERDATUM[i]),
+			GELIEFERT[i],
+			IDISPOENTNR[i] ? 0 : DISPOENTNR[i],
+			IDISPONR[i] ? 0 : DISPONR[i],
+			JAHRGANG[i], (AufStatVal)STATUS[i], KDNR[i],
+			IYOURAUFNR[i] ? string("") : string(YOURAUFNR[i]),
+			string(PROZESSDATUM[i]),PROZESSID[i],
+			Preis(IPREIS[i] ? 0 : PREIS[i],
+				IWAEHRUNG[i] ? Waehrung::ID(0):Waehrung::ID(WAEHRUNG[i]),
+				PREISMENGE[i]),
+			IRABATT[i] ? 0 : RABATT[i],
+		(AufStatVal)ENTRYSTATUS[i],Petig::Datum(LASTEDITDATE[i]),
+			cH_ExtBezSchema(KDNR[i],ExtBezSchema::default_Typ)
+			));
+
+	   if (j<20) break;
+	  }	   	
+
+	exec sql close AUFENTRYFULL2;
+	tr.commit();
+
+}
+
+SelectedFullAufList::SelectedFullAufList
+	(const SQLFullAuftragSelector &selector, cH_ExtBezSchema schema)
+throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFID[20];
+ int ZNUMMER[20];
+ int KDNR[20];
+ int ARTIKELID[20];
+ int ROHARTIKELID[20];
+ int BESTELLT[20], GELIEFERT[20];
+ char LIEFERDATUM[20][21];
+ short ILIEFERDATUM[20];
+ int PROZESSID[20];
+ char PROZESSDATUM[20][11];
+ int STATUS[20];
+ int ENTRYSTATUS[20];
+ char LASTEDITDATE[20][21];
+ int DISPOENTNR[20];
+ int DISPONR[20];
+ int JAHRGANG[20];
+ short IDISPOENTNR[20], IDISPONR[20];
+ char YOURAUFNR[20][21];
+ short IYOURAUFNR[20];
+ short IROHARTIKELID[20];
+ float PREIS[20];
+ int RABATT[20];
+ int PREISMENGE[20];
+ int WAEHRUNG[20];
+ short IPREIS[20],IRABATT[20],IWAEHRUNG[20];
+ char *clausel;
+ exec sql end declare section;
+	
+	clausel = (char *)selector.getClausel();
+
+	Transaction tr;
+	exec sql prepare MYQ from :clausel;
+	exec sql declare AUFENTRYFULL cursor for MYQ;
+	exec sql open AUFENTRYFULL;
+	SQLerror::test(__FILELINE__":SelectedFullAufList: select all auftragids",100);
+
+	while(1)
+	  {
+	   exec sql fetch 20 in AUFENTRYFULL
+	   into :AUFID, :ZNUMMER,
+		:BESTELLT, :ARTIKELID, :ROHARTIKELID:IROHARTIKELID,
+		:LIEFERDATUM:ILIEFERDATUM,
+		:GELIEFERT, :JAHRGANG,
+		:STATUS, :KDNR, :YOURAUFNR:IYOURAUFNR,
+		:PROZESSID, :PROZESSDATUM,
+		:PREIS:IPREIS, :RABATT:IRABATT, :PREISMENGE,
+		:WAEHRUNG:IWAEHRUNG,
+		:ENTRYSTATUS, :LASTEDITDATE;
+   SQLerror::test(__FILELINE__":SelectedFullAufList: fetch all auftragids",
+						"AUFENTRYFULL",100);
+
+	   int j=sqlca.sqlerrd[2];
+           for (int i=0;i<j;++i)
+	      aufidliste.push_back(
+			AufEintragBase(
+			AUFID[i], ZNUMMER[i], BESTELLT[i], ARTIKELID[i],
+	ILIEFERDATUM[i] ? Petig::Datum() : Petig::Datum(LIEFERDATUM[i]),
+			GELIEFERT[i],
+			IDISPOENTNR[i] ? 0 : DISPOENTNR[i],
+			IDISPONR[i] ? 0 : DISPONR[i],
+			JAHRGANG[i], (AufStatVal)STATUS[i], KDNR[i],
+			IYOURAUFNR[i] ? string("") : string(YOURAUFNR[i]),
+			string(PROZESSDATUM[i]),PROZESSID[i],
+			Preis(IPREIS[i] ? 0 : PREIS[i],
+				IWAEHRUNG[i] ? Waehrung::ID(0):Waehrung::ID(WAEHRUNG[i]),
+				PREISMENGE[i]),
+			IRABATT[i] ? 0 : RABATT[i],
+		(AufStatVal)ENTRYSTATUS[i],Petig::Datum(LASTEDITDATE[i]),
+			schema
+			));
+
+	   if (j<20) break;
+	  }	   	
+
+	exec sql close AUFENTRYFULL;
+	tr.commit();
+}
+
+
+void SelectedFullAufList::insert(int aid, int znr) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFID;
+ int ZNUMMER;
+ int KDNR;
+ int ARTIKELID;
+ int ROHARTIKELID;
+ int BESTELLT, GELIEFERT;
+ char LIEFERDATUM[21];
+ short ILIEFERDATUM;
+ int PROZESSID;
+ char PROZESSDATUM[11];
+ int STATUS;
+ int ENTRYSTATUS;
+ char LASTEDITDATE[21];
+ int DISPOENTNR;
+ int DISPONR;
+ int JAHRGANG;
+ short IDISPOENTNR, IDISPONR;
+ char YOURAUFNR[21];
+ short IYOURAUFNR;
+ short IROHARTIKELID;
+ float PREIS;
+ int RABATT;
+ int PREISMENGE;
+ int WAEHRUNG;
+ short IPREIS,IRABATT,IWAEHRUNG;
+ char *clausel;
+ exec sql end declare section;
+	
+	clausel = (char *)SQLFullAuftragSelector(
+			SQLFullAuftragSelector::sel_AufidZnr(aid,znr)).getClausel();
+
+	Transaction tr;
+	exec sql prepare MYQ from :clausel;
+	exec sql declare AUFENTRYINSERT cursor for MYQ;
+	exec sql open AUFENTRYINSERT;
+	SQLerror::test(__FILELINE__":SelectedFullAufList::insert: select all auftragids");
+
+	   exec sql fetch in AUFENTRYINSERT
+	   into :AUFID, :ZNUMMER,
+		:BESTELLT, :ARTIKELID, :ROHARTIKELID:IROHARTIKELID,
+		:LIEFERDATUM:ILIEFERDATUM,
+		:GELIEFERT, :JAHRGANG,
+		:STATUS, :KDNR, :YOURAUFNR:IYOURAUFNR,
+		:PROZESSID, :PROZESSDATUM,
+		:PREIS:IPREIS, :RABATT:IRABATT, :PREISMENGE,
+		:WAEHRUNG:IWAEHRUNG,
+		:ENTRYSTATUS, :LASTEDITDATE;
+   SQLerror::test(__FILELINE__":SelectedFullAufList::insert: fetch all auftragids",
+						"AUFENTRYINSERT");
+
+	      aufidliste.push_back(
+			AufEintragBase(
+			AUFID, ZNUMMER, BESTELLT, ARTIKELID,
+	ILIEFERDATUM ? Petig::Datum() : Petig::Datum(LIEFERDATUM),
+			GELIEFERT,
+			IDISPOENTNR ? 0 : DISPOENTNR,
+			IDISPONR ? 0 : DISPONR,
+			JAHRGANG, (AufStatVal)STATUS, KDNR,
+			IYOURAUFNR ? string("") : string(YOURAUFNR),
+			string(PROZESSDATUM),PROZESSID,
+			Preis(IPREIS ? 0 : PREIS,
+				IWAEHRUNG ? Waehrung::ID(0):Waehrung::ID(WAEHRUNG),
+				PREISMENGE),
+			IRABATT ? 0 : RABATT,
+			(AufStatVal)ENTRYSTATUS,Petig::Datum(LASTEDITDATE),
+			cH_ExtBezSchema(KDNR,ExtBezSchema::default_Typ)
+			));
+
+	exec sql close AUFENTRYINSERT;
+	tr.commit();
+}
+

@@ -1,0 +1,12 @@
+.deps
+Adresse.cc
+Adresse.pcl
+AdressenIterator.cc
+AdressenIterator.pcl
+Makefile
+Makefile.in
+*_pg.cc
+*_p.cc
+Person_sql.cc
+Kunde_sql.cc
+Telefon.cc

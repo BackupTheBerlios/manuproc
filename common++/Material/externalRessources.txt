@@ -1,0 +1,4 @@
+$Id: externalRessources.txt,v 1.1 2001/04/23 08:11:59 christof Exp $
+
+- Farbe eines Materials:	webkartei/wk2ppm
+- Gewicht/Preis eines Materials:	kalkulation

@@ -1,0 +1,307 @@
+// $Id: KettplanKette2.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+
+#include "KettplanKette.h"
+#include "Maschtyp.h"
+
+exec sql include sqlca;
+exec sql include ecpgerrno;
+
+Maschtyp Maschtyp::getMaschtyp(int nr) throw(SQLerror)
+{  exec sql begin declare section;
+   int maschinennummer=nr;
+   char typ[17];
+   int gaenge;
+   exec sql end declare section;
+   
+   exec sql SELECT typ,gaenge into :typ, :gaenge
+   	FROM maschinentyp
+   	WHERE masch= :maschinennummer;
+   SQLerror::test(__FILELINE__,100);
+   if (sqlca.sqlcode) return Maschtyp(0,"");
+   return Maschtyp(gaenge,(const char*)typ);
+}
+
+int KettplanKette::defaultKettlaenge() throw(SQLerror)
+{  Maschtyp mt=Maschtyp::getMaschtyp(planMaschine());
+   exec sql begin declare section;
+   int refmasch;
+   char refdate[11];
+   int gaenge;
+   long laenge=0; short ilaenge=-1;
+   exec sql end declare section;
+   
+   write(refmasch,refdate,sizeof refdate);
+   if (mt.Gaenge())
+   {  gaenge=mt.Gaenge();
+      exec sql select min(kettlaenge) into :laenge :ilaenge 
+   	from defaultlaenge2
+   	where artikelid in 
+   		(select artikelid from schaertabelle
+   		 where maschine= :refmasch and schaerdatum= :refdate)
+   	and Gangzahl= :gaenge;
+      SQLerror::test(__FILELINE__,100);
+   }
+   if (ilaenge)
+   {  exec sql select min(kettlaenge) into :laenge :ilaenge 
+   	from defaultlaenge2
+   	where artikelid in 
+   		(select artikelid from schaertabelle
+   		 where maschine= :refmasch and schaerdatum= :refdate);
+      SQLerror::test(__FILELINE__,100);
+   }
+   return ilaenge ? 0 : laenge;
+}
+
+int KettplanKette::defaultStuecklaenge() throw(SQLerror)
+{  Maschtyp mt=Maschtyp::getMaschtyp(planMaschine());
+   exec sql begin declare section;
+   int refmasch;
+   char refdate[11];
+   int gaenge;
+   long laenge=0; short ilaenge=-1;
+   exec sql end declare section;
+   
+   write(refmasch,refdate,sizeof refdate);
+   if (mt.Gaenge())
+   {  gaenge=mt.Gaenge();
+      exec sql select min(stuecklaenge) into :laenge :ilaenge 
+   	from defaultlaenge2
+   	where artikelid in 
+   		(select artikelid from schaertabelle
+   		 where maschine= :refmasch and schaerdatum= :refdate)
+   	and Gangzahl=:gaenge;
+      SQLerror::test(__FILELINE__,100);
+   }
+   if (ilaenge)
+   {  exec sql select min(stuecklaenge) into :laenge :ilaenge 
+   	from defaultlaenge2
+   	where artikelid in 
+   		(select artikelid from schaertabelle
+   		 where maschine= :refmasch and schaerdatum= :refdate);
+      SQLerror::test(__FILELINE__,100);
+   }
+   return ilaenge ? 0 : laenge;
+}
+
+float KettplanKette::defaultSchussdichte() throw(SQLerror)
+{  exec sql begin declare section;
+   long artikelid;
+   float schussdichte=0; short isd=-1;
+   exec sql end declare section;
+   
+   const vector <ArtikelGang> ag=get_artikel();
+   
+   for (vector<ArtikelGang>::const_iterator i=ag.begin();i!=ag.end();++i)
+   {  artikelid=(*i).Id();
+      exec sql select schussdichte into :schussdichte:isd
+   	from schussdichte2 where artikelid= :artikelid;
+      SQLerror::test(__FILELINE__,100);
+      if(!sqlca.sqlcode && !isd) return schussdichte;
+   }
+   return 0;
+}
+
+void KettplanKette::FrageNachSchussdichte() throw (SQLerror)
+{  exec sql begin declare section;
+   long artikelid;
+   exec sql end declare section;
+   
+   const vector <ArtikelGang> ag=get_artikel();
+   artikelid=ag[0].Id();
+   exec sql insert into schussdichte2 (artikelid,schussdichte,stand)
+			values ( :artikelid,NULL,now());
+   SQLerror::test(__FILELINE__,ECPG_PGSQL);
+}
+
+void KettplanKette::Schussdichte(float sd) throw(SQLerror)
+{  schussdichte=sd;
+   valid|=VA_SCHUSS;
+//   valid&=~(VA_BKETTARTIKEL|VA_BARTIKEL);
+
+   exec sql begin declare section;
+   float schussdichte=sd;
+   short isd=!sd;
+   int refmasch;
+   char refdate[11];
+   exec sql end declare section;
+   
+   write(refmasch,refdate,sizeof refdate);
+   exec sql update ketten 
+   	set schussdichte = :schussdichte :isd,
+   	    geaendert = now()
+   	where maschine = :refmasch and schaerdatum = :refdate;
+   SQLerror::test(__FILELINE__,true);
+   exec sql COMMIT WORK;
+   SQLerror::test(__FILELINE__);
+}
+
+int KettplanKette::barcoMaschine() throw()
+{  if (valid&VA_WEBMASCH) return webmasch;
+   exec sql begin declare section;
+   int masch;
+   short imasch=-1;
+   int refmasch;
+   char refdate[11];
+   exec sql end declare section;
+
+   write(refmasch,refdate,sizeof refdate);
+   exec sql select barcomaschine into :masch :imasch from ketten 
+   	where maschine = :refmasch and
+   	    schaerdatum = :refdate;
+   SQLerror::test(__FILELINE__,100);
+   if(sqlca.sqlcode)
+      webmasch=0;
+   else
+      webmasch=imasch?0:masch;
+
+   valid|=VA_WEBMASCH;
+   return webmasch;
+}
+
+void KettplanKette::setzeBarcoMasch(int m) throw(SQLerror)
+{  webmasch=m;
+   valid|=VA_WEBMASCH;
+
+   exec sql begin declare section;
+   int bmasch=m;
+   short ibm=!m;
+   int refmasch;
+   char refdate[11];
+   exec sql end declare section;
+   
+   write(refmasch,refdate,sizeof refdate);
+   exec sql update ketten 
+   	set barcomaschine = :bmasch :ibm,
+   	    geaendert = timestamp
+   	where maschine = :refmasch and
+   	    schaerdatum = :refdate;
+   SQLerror::test(__FILELINE__);
+}
+
+int KettplanKette::Kettlaenge() throw()
+{  if (valid&VA_KETTLEN) return kettlaenge;
+
+  try
+  {exec sql begin declare section;
+   int klen;
+   int masch;
+   char schaerdatum[11];
+   short iklen;
+   exec sql end declare section;
+   
+   write(masch,schaerdatum,sizeof schaerdatum);
+   exec sql select laenge into :klen :iklen from ketten
+   	where maschine= :masch and schaerdatum= :schaerdatum;
+   SQLerror::test(__FILELINE__);
+   if (!iklen)
+   {  kettlaenge=klen;
+      valid|=VA_KETTLEN;
+      return kettlaenge;
+   }
+  } 
+  catch(SQLerror &e) {}
+  
+  try 
+  {  kettlaenge=defaultKettlaenge();
+     valid|=VA_KETTLEN;
+  } catch(SQLerror &e) { kettlaenge=0; }
+  return kettlaenge;
+}
+
+int KettplanKette::Stuecklaenge() throw()
+{  if (valid&VA_STUECKLEN) return stuecklaenge;
+
+  try
+  {exec sql begin declare section;
+   int slen;
+   short islen;
+   int masch;
+   char schaerdatum[11];
+   exec sql end declare section;
+   
+   write(masch,schaerdatum,sizeof schaerdatum);
+   exec sql select stucklaenge into :slen :islen from ketten
+   	where maschine= :masch and schaerdatum= :schaerdatum;
+   SQLerror::test(__FILELINE__);
+   if (!islen)
+   {  stuecklaenge=slen;
+      valid|=VA_STUECKLEN;
+      return stuecklaenge;
+   }
+  } 
+  catch(SQLerror &e) {}
+
+  try {  stuecklaenge=defaultStuecklaenge();
+         valid|=VA_STUECKLEN;
+  } catch(SQLerror &e) { stuecklaenge=0; }
+  return stuecklaenge;
+}
+
+float KettplanKette::Schussdichte() throw()
+{  if (valid&VA_SCHUSS)
+      return schussdichte;
+  try
+  {exec sql begin declare section;
+   float sd;
+   short isd;
+   int masch;
+   char schaerdatum[11];
+   exec sql end declare section;
+   
+   write(masch,schaerdatum,sizeof schaerdatum);
+   exec sql select schussdichte into :sd :isd from ketten
+   	where maschine= :masch and schaerdatum= :schaerdatum;
+   SQLerror::test(__FILELINE__);
+   if (!isd && sd)
+   {  schussdichte=sd;
+      valid|=VA_SCHUSS;
+      return schussdichte;
+   }
+  } 
+  catch(SQLerror &e) {}
+  
+  schussdichte=defaultSchussdichte();
+  valid|=VA_SCHUSS;
+  return schussdichte;
+}
+
+int KettplanKette::holePlanMaschine() const throw(SQLerror)
+{  try
+  {exec sql begin declare section;
+   int pmasch;
+   int masch;
+   char schaerdatum[11];
+   exec sql end declare section;
+   
+   write(masch,schaerdatum,sizeof schaerdatum);
+   exec sql select coalesce(planmaschine,0) into :pmasch from ketten
+   	where maschine= :masch and schaerdatum= :schaerdatum;
+   SQLerror::test(__FILELINE__);
+   if (pmasch)
+   {  const_cast<KettplanKette*>(this)->planmasch=pmasch;
+      valid|=VA_PLAN;
+      return pmasch;
+   }
+  } 
+  catch(SQLerror &e) {}
+  return 0;
+}
+

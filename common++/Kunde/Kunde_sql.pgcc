@@ -1,0 +1,137 @@
+// $Id: Kunde_sql.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+
+#include "Kunde/Kunde.h"
+#include <Aux/Transaction.h>
+
+
+Kunde::Kunde(ID _id) throw(SQLerror) 
+: Kundennr(_id), schema(ExtBezSchema::default_id)
+{  exec sql begin declare section;
+   int ID=_id,BEZSCHEMA,BANKINDEX;
+   char SORTNAME[31];
+   char NAME[61], STRASSE[36], HSNR[8], POSTFACH[21],ORT[31],BANKNAME[31],
+         PLZ[11],POSTFACHPLZ[11],KTONR[11],BLZ[11];
+   exec sql end declare section;
+
+   if(_id == Kunde::none_id) return;   
+  
+   Transaction tr;
+
+   exec sql select firma,coalesce(sortname,''),coalesce(extartbezid,1),
+	 coalesce(strasse,''),
+         coalesce(hsnr,''),coalesce(plz,''),coalesce(postfach,''),
+         coalesce(postfplz,''),coalesce(ort,''),coalesce(text(ktonr),''),
+         coalesce(text(b.blz),''), coalesce(b.name,''), coalesce(b.bankindex,0)
+   	into :NAME, :SORTNAME, :BEZSCHEMA, :STRASSE, :HSNR, :PLZ, :POSTFACH,
+           :POSTFACHPLZ, :ORT, :KTONR, :BLZ, :BANKNAME, :BANKINDEX
+   	from kunden k left join banken b using(bankindex)
+   	where kundennr= :ID;
+   SQLerror::test(__FILELINE__);
+
+   schema=BEZSCHEMA;
+   adresse.firma=NAME;
+   adresse.sortname=SORTNAME;
+   adresse.strasse=STRASSE;
+   adresse.hsnr=HSNR;
+   adresse.plz=PLZ;
+   adresse.postfach=POSTFACH;
+   adresse.postfachplz=POSTFACHPLZ;
+   adresse.ort=ORT;
+   bankverb.konto=strtoll(KTONR,NULL,10);
+   bankverb.blz=strtoul(BLZ,NULL,10);
+   bankverb.bank=BANKNAME;
+   bankverb.bankindex=BANKINDEX;
+}
+
+
+void Kunde::update() throw(SQLerror)
+{
+ exec sql begin declare section;
+ char 	*IDNR, *FIRMA, *POSTANWVOR, *STRASSE,
+   	*POSTANWNACH, *HSNR, *PLZ, *POSTFACH, *POSTFPLZ,
+        *ORT, 
+        *SORTNAME;
+ bool LIEFERADRESSE, RECHNUNGSADRESSE;
+ unsigned int KUNDENNR, RECHNUNG_AN;  
+ exec sql end declare section;
+
+ KUNDENNR = Kundennr;
+ SORTNAME=(char *) adresse.sortname.c_str();
+ FIRMA=(char *)adresse.firma.c_str();
+ POSTANWVOR=(char *)adresse.postanwvor.c_str();
+ STRASSE=(char *)adresse.strasse.c_str();
+ HSNR=(char *)adresse.hsnr.c_str();
+ POSTANWNACH=(char *)adresse.postanwnach.c_str();
+ PLZ=(char *)adresse.plz.c_str();
+ ORT=(char *)adresse.ort.c_str();
+ POSTFACH=(char *)adresse.postfach.c_str();
+ POSTFPLZ=(char *)adresse.postfachplz.c_str();
+ IDNR=(char *)IDnr.c_str();
+
+ LIEFERADRESSE = lieferadresse;
+ RECHNUNGSADRESSE = rechnungsadresse;
+ RECHNUNG_AN = rngan;
+
+ Transaction tr;
+
+ exec sql UPDATE kunden SET
+        kundennr                =       :KUNDENNR,
+        sortname                =       :SORTNAME,
+        firma                   =       :FIRMA,   
+        postanwvor              =       :POSTANWVOR,
+        strasse                 =       :STRASSE,   
+        hsnr                    =       :HSNR,      
+        postanwnach             =       :POSTANWNACH,
+        plz                     =       :PLZ,
+        ort                     =       :ORT,
+        postfach                =       :POSTFACH,
+        postfplz                =       :POSTFPLZ,
+        idnr                    =       :IDNR,
+        lieferadresse           =       :LIEFERADRESSE,
+        rechnungsadresse        =       :RECHNUNGSADRESSE,
+        rechnung_an             =       :RECHNUNG_AN
+     WHERE kundennr = :KUNDENNR ;
+     SQLerror::test(__FILELINE__);
+
+ tr.commit();
+
+}
+
+const cH_Kunde Kunde::newKunde(const Kunde::ID kid, const string &firma) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int KID=kid;
+ char *FIRMA;
+ exec sql end declare section;
+
+ Transaction tr;
+
+ FIRMA=(char*)firma.c_str();
+ 
+ exec sql insert into kunden (kundennr, firma) values (:KID, :FIRMA);
+ SQLerror::test(__FILELINE__);
+ 
+ tr.commit();
+
+ return cH_Kunde(KID);
+ 
+}
+

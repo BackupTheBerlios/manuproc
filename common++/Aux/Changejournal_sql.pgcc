@@ -1,0 +1,179 @@
+// $Id: Changejournal_sql.pgcc,v 1.1 2001/04/23 08:11:58 christof Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include"Changejournal.h"
+#include"Aux/Transaction.h"
+
+exec sql include sqlca;
+
+const pps_ChJournalEntry pps_ChJournalEntry::newChange(
+		ppsInstanz::ppsInstId instid,
+ 		const AufEintragBase2 &aufe, const ArtikelBase &art,
+ 		double _newval, double _delta, ChJType _type,
+ 		CID change)
+throw(SQLerror)
+{
+ exec sql begin declare section;
+ int INSID=instid;
+ int CHID;
+ int AUFID;
+ int ZEILENNR;
+ double NEWVAL;
+ double DELTA;
+ char CHTYPE;
+ int ARTIKELID;
+ short INEWVAL=0, IDELTA=0;
+ exec sql end declare section;
+ 
+ Transaction tr;
+ 
+ if(change==0)
+   {
+    exec sql select nextval('prod_changejournal_chid_seq') into :CHID;
+    SQLerror::test(__FILELINE__":pps_ChJournalEntry::newChange:"
+    			"select nextval from sequence");
+   }
+ else CHID=change; 
+
+ ARTIKELID=art.Id();
+ AUFID=aufe.AufId();
+ ZEILENNR=aufe.ZNr();
+ NEWVAL=_newval;
+ DELTA=_delta; 
+ CHTYPE=_type;
+  
+ exec sql insert into prod_changejournal
+ 	(insid, chid, artikelid, auftragid, auftragzeile, new_val,
+ 		delta, chtype)
+ 	values
+ 	(:INSID, :CHID, :ARTIKELID, :AUFID, :ZEILENNR,
+ 	 :NEWVAL:INEWVAL, :DELTA:IDELTA, :CHTYPE);
+ SQLerror::test(__FILELINE__":pps_ChJournalEntry::newChange:"
+    			"insert into prod_changejournal");
+
+ pps_ChJournalEntry retval((ppsInstanz::ppsInstId)INSID,CHID);
+
+ tr.commit();
+
+ return retval;
+}
+
+const pps_ChJournalEntry pps_ChJournalEntry::newChange(
+		ppsInstanz::ppsInstId instid,
+ 		const AufEintragBase2 &aufe, const ArtikelBase &art,
+ 		const Petig::Datum &_newdat, double _delta, ChJType _type,
+ 		CID change)
+throw(SQLerror)
+{
+ exec sql begin declare section;
+ int INSID=instid;
+ int CHID;
+ int AUFID;
+ int ZEILENNR;
+ char NEWDAT[21];
+ double DELTA;
+ char CHTYPE;
+ int ARTIKELID;
+ short INEWDAT=0, IDELTA=0;
+ exec sql end declare section;
+ 
+ Transaction tr;
+ 
+ if(change==0)
+   {
+    exec sql select nextval('prod_changejournal_chid_seq') into :CHID;
+    SQLerror::test(__FILELINE__":pps_ChJournalEntry::newChange:"
+    			"select nextval from sequence");
+   }
+ else CHID=change; 
+
+ ARTIKELID=art.Id();
+ AUFID=aufe.AufId();
+ ZEILENNR=aufe.ZNr();
+ _newdat.write_postgres(NEWDAT, sizeof NEWDAT);
+ DELTA=_delta; 
+ CHTYPE=_type;
+  
+ exec sql insert into prod_changejournal
+ 	(insid, chid, artikelid, auftragid, auftragzeile, new_dat,
+ 		delta, chtype)
+ 	values
+ 	(:INSID, :CHID, :ARTIKELID, :AUFID, :ZEILENNR,
+ 	 :NEWDAT:INEWDAT, :DELTA:IDELTA, :CHTYPE);
+ SQLerror::test(__FILELINE__":pps_ChJournalEntry::newChange:"
+    			"insert into prod_changejournal");
+
+ pps_ChJournalEntry retval((ppsInstanz::ppsInstId)INSID,CHID);
+
+ tr.commit();
+
+ return retval;
+}
+
+
+
+
+
+pps_ChJournalEntry::pps_ChJournalEntry(ppsInstanz::ppsInstId instid, CID change)
+throw(SQLerror)
+{
+ exec sql begin declare section;
+ int INSID=instid;
+ int CHID=change;
+ int AUFID;
+ int ZEILENNR;
+ double NEWVAL;
+ double DELTA;
+ char CHTYPE;
+ int ARTIKELID;
+ int STATUS;
+ char DATUM[20];
+ char NEWDATUM[20];
+ short INEWVAL, IDELTA;
+ short INEWDATUM;
+ exec sql end declare section;
+
+ Transaction tr;
+ 
+ exec sql select datum,status,artikelid,auftragid,auftragzeile,
+ 		new_val,new_dat,delta,chtype
+ 	into
+ 		:DATUM, :STATUS, :ARTIKELID, :AUFID, :ZEILENNR, :NEWVAL:INEWVAL,
+ 		:NEWDATUM:INEWDATUM, :DELTA:IDELTA, :CHTYPE
+ 	from prod_changejournal
+ 	where insid= :INSID and chid= :CHID;
+ SQLerror::test(__FILELINE__":pps_ChJournalEntry::pps_ChJournalEntry:"
+	 		"select from prod_changejournal");
+ 
+ instanz = ppsInstanz(instid);
+ chid = change;
+ datum = Petig::Datum(DATUM);
+ status = (ChJStatVal)STATUS;
+ artikel = ArtikelBase(ARTIKELID);
+ auftragentry = AufEintragBase2(AUFID,ZEILENNR);
+ newval = INEWVAL ? 0 : NEWVAL;
+ newdate = INEWDATUM ? Petig::Datum() : Petig::Datum(NEWDATUM);
+ delta = IDELTA ? 0 : DELTA;
+ type = (ChJType)CHTYPE;   
+
+}
+
+
+
+

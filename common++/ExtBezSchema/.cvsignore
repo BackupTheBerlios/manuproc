@@ -1,0 +1,8 @@
+.deps
+ExtBezSchema_sql.cc
+ExtBezSchema_sql.pcl
+Makefile
+Makefile.in
+ExtBezSchema_sql_pg.cc
+ExtBezSchemaHandle_p.cc
+ArtikelTyp.cc

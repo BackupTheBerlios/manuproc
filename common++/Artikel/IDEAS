@@ -1,0 +1,7 @@
+- Artikel in eine Basisklasse (ArtikelID; ProzessID, AltartikelID auf
+				Anfrage holen)
+- Gtk Funktion weg, kann in eigenes File, aber nicht Bestandteil der Klasse
+   - vielleicht in Namespace Artikel ?
+- Abgeleitete Klasse stellt Kundenbezeichnungnen zur Verfügung
+- Text aus Artikelbezeichnung löschen!
+

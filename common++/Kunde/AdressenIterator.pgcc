@@ -1,0 +1,113 @@
+/* $Id: AdressenIterator.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <stdio.h>
+#include <ctype.h>
+#include <unistd.h>
+#include <string.h>
+#include "AdressenIterator.h"
+#include "Aux/string0.h"
+
+exec sql include sqlca;
+
+AdressenIterator::AdressenIterator(const char *pattern) throw(SQLerror)
+{  exec sql begin declare section;
+   int KUNDENNR;
+   char FIRMA[61];
+   char ORT[31];
+   short IORT;
+   exec sql end declare section;
+   char *ortp=strchr(pattern,ORTSEP);
+
+   if (!ortp) 
+   { strncpy0(ORT,"*",sizeof ORT); 
+     snprintf0(FIRMA,sizeof FIRMA,"*%s*",pattern); }
+   else 
+   { snprintf0(ORT,sizeof ORT,"*%s*",ortp+1);
+     snprintf0(FIRMA,sizeof FIRMA,"*%.*s*",pattern,ortp-pattern); }
+   exec sql SELECT AdressenIterator(kundennr,firma,ort) FROM kunden 
+   	WHERE firma LIKE :FIRMA AND ort LIKE :ORT AND typ!='R'
+	ORDER BY sortname;
+   SQLerror::test("SELECT AdressenIterator");
+   exec sql FETCH from AdressenIterator INTO :KUNDENNR, :FIRMA, :ORT :IORT;
+   if (sqlca.sqlcode) throw(SQLerror("FETCH AdressenIterator"));
+   if (IORT) ORT[0]=0;
+   kundennr=KUNDENNR;
+   strncpy0(firma,FIRMA,sizeof firma);
+   strncpy0(ort,ORT,sizeof ort);
+}
+
+AdressenIterator::~AdressenIterator() throw(SQLerror)
+{  exec sql close AdressenIterator;
+   SQLerror::test("close AdressenIterator");
+}
+
+void AdressenIterator::get_next() throw(SQLerror)
+{  exec sql begin declare section;
+   int KUNDENNR;
+   char FIRMA[61];
+   char ORT[31];
+   short IORT;
+   exec sql end declare section;
+
+   exec sql FETCH from AdressenIterator INTO :KUNDENNR, :FIRMA, :ORT :IORT;
+   SQLerror::test("FETCH AdressenIterator");
+   if (IORT) ORT[0]=0;
+   kundennr=KUNDENNR;
+   strncpy0(firma,FIRMA,sizeof firma);
+   strncpy0(ort,ORT,sizeof ort);
+}
+
+extern "C" {
+AdressenIterator *AdressenIterator_by_pattern(const char *pattern) throw()
+{  try
+   {  return new AdressenIterator(pattern);
+   }
+   catch (SQLerror& e)
+   {  if (e.Code()!=100)
+      {  cerr << "Datenbankfehler "<< e << '\n';
+         if (e.Code()<0) { cerr << "Programm beendet sich\n"; abort(); }
+      }
+      return NULL;
+   }
+}
+
+AdressenIterator *AdressenIterator_get_next(AdressenIterator *ai) throw()
+{  try {
+     ai->get_next();
+     return ai;
+   }
+   catch (SQLerror& e)
+   {  if (e.Code()!=100)
+      {  cerr << "Datenbankfehler "<< e << '\n';
+         if (e.Code()<0) { cerr << "Programm beendet sich\n"; abort(); }
+      }
+      return NULL;
+   }
+}
+
+void free_AdressenIterator(AdressenIterator *ai) throw()
+{  try { delete ai; }
+   catch (SQLerror& e)
+   {  cerr << "Datenbankfehler "<< e << '\n';
+      if (e.Code()<0) { cerr << "Programm beendet sich\n"; abort(); }
+   }
+}
+
+}

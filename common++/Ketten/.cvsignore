@@ -1,0 +1,9 @@
+.deps
+KettplanKette2.cc
+KettplanKette2.pcl
+KpK_get_artikel.cc
+KpK_get_artikel.pcl
+Makefile
+Makefile.in
+*_pg.cc
+*_p.cc

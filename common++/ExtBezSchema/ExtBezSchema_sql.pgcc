@@ -1,0 +1,86 @@
+// $Id: ExtBezSchema_sql.pgcc,v 1.1 2001/04/23 08:11:58 christof Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <ExtBezSchema/ExtBezSchemaHandle.h>
+#include <Aux/Transaction.h>
+
+exec sql include sqlca;
+
+cH_ExtBezSchema::cache_t cH_ExtBezSchema::cache;
+
+cH_ExtBezSchema::cH_ExtBezSchema(ExtBezSchema::ID eid,const ArtikelTyp &t) throw(SQLerror)
+{  cH_ExtBezSchema *cached(cache.lookup(CacheIndex(eid,t)));
+   if (cached) *this=*cached;
+   else
+   {  *this=cH_ExtBezSchema(new ExtBezSchema(eid,t));
+      cache.Register(CacheIndex(eid,t),*this);
+   }
+}
+
+ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
+	: typ(t)
+{
+ exec sql begin declare section;
+ int EXTARTBEZID=eid;
+ int BEZKOMPTYPE;
+ char BEZKOMPTEXT[21];
+ char SEPARATOR[2];
+ char SPALTENNAME[21];
+ short ISEPARATOR;
+ int SIGNIFIKANZ;
+ int TYP=t;
+ exec sql end declare section;
+ bool IDseen=false; // hack?
+ int maxBKT=0;
+
+ Transaction tr;
+ exec sql declare BEZKOMP cursor for 
+ 	select bezkomptype, bezkomptext, separator, 
+ 		coalesce(spaltenname,bezkomptext), coalesce(signifikanz,0)
+ 	from extbezschema
+	where extartbezid= :EXTARTBEZID and artikeltyp= :TYP
+	order by bezkomptype;
+ exec sql open BEZKOMP;
+ SQLerror::test(__FILELINE__"ExtBezSchema::ExtBezSchema",100);
+
+ extartbezid=eid; 
+
+ while(!sqlca.sqlcode)
+   {
+    exec sql fetch from BEZKOMP 
+	into :BEZKOMPTYPE, :BEZKOMPTEXT, :SEPARATOR:ISEPARATOR,
+		:SPALTENNAME, :SIGNIFIKANZ;
+    SQLerror::test(__FILELINE__"ExtBezSchema::ExtBezSchema","BEZKOMP",100);
+    if(sqlca.sqlcode==100) break;
+    bezkomps.push_back(BezKomp(BEZKOMPTYPE,BEZKOMPTEXT,
+    		ISEPARATOR ? " " :SEPARATOR,SPALTENNAME,SIGNIFIKANZ));
+    if (!IDseen && string(SPALTENNAME)=="id") IDseen=true;
+    if (BEZKOMPTYPE>maxBKT) maxBKT=BEZKOMPTYPE;
+   }
+ exec sql close BEZKOMP;
+ if (!IDseen) bezkomps.push_back(BezKomp(maxBKT+1,"ID","","id",99));
+}
+
+size_t ExtBezSchema::size(int signifikanz) const
+{
+  size_t s=0;
+  for (const_iterator i=begin(); i!=end();++i)
+     if (i->signifikanz == signifikanz) ++s;
+  return s;
+}

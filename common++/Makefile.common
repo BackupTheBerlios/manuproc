@@ -1,0 +1,41 @@
+# $Id: Makefile.common,v 1.1 2001/04/23 08:11:58 christof Exp $ 
+CXXFLAGS+=-Wall -g -O2 -DNO_SQL -I. $(shell gtkmm-config --cflags)
+ADALIBS=$(shell adabas-config --libs)
+LIBDIR=$(shell petiglibs-config --libdir c++)
+INCDIR=$(shell petiglibs-config --incdir c++)
+#ADACFLAGS=--no-cpcline
+#CPCFLAGS=-nlocalhost -ddb
+
+%.o %.cc: %.CPC
+	CPCFLAGS="$(CPCFLAGS)" CXXFLAGS="$(CXXFLAGS)" \
+	adabas-compile $(ADACFLAGS) --compile++ $*
+%.o: %.pgcc
+	CXXFLAGS="$(CXXFLAGS)" \
+	postgres-compile --compile++ $*
+
+common_all: do-it-all
+
+ifeq (.depend,$(wildcard .depend))
+include .depend
+do-it-all: all
+else
+do-it-all: .depend
+	@echo Dependancies calculated.
+	make all
+endif
+
+.common_depend: .depend
+	adabas-compile --clean++
+	postgres-compile --clean++
+	for i in *.cc ; do $(CXX) $(CXXFLAGS) -M $$i; done > .depend
+	CPCFLAGS="$(CPCFLAGS)" CXXFLAGS="$(CXXFLAGS)" \
+		adabas-compile --dependencies++ >>.depend
+	CXXFLAGS="$(CXXFLAGS)" \
+		postgres-compile --dependencies++ >>.depend
+	touch .common_depend
+
+common_clean:
+	rm -f *.log *.aux *.dvi *~ *.o *.pcl *.pct core .depend .common_depend
+	adabas-compile --clean++
+	postgres-compile --clean++
+

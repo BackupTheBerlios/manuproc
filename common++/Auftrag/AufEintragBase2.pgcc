@@ -1,0 +1,49 @@
+// $Id: AufEintragBase2.pgcc,v 1.8 2000/12/15 16:27:17 cvs_christof Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <Auftrag/AufEintragBase2.h>
+#include <Aux/Transaction.h>
+
+exec sql include sqlca;
+
+void AufEintragBase2::setVerarbeitung(const cH_Prozess p) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFTRAGID=auftragid;
+ int ZEILENNR=zeilennr;
+ int PROZESSID;
+ exec sql end declare section;
+
+ PROZESSID=p->getProzessID();
+ 
+ Transaction tr;
+ 
+ exec sql update auftrag_prozess set prozessid= :PROZESSID,
+ 	datum= now() where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR;
+ SQLerror::test("Prozessaktualisierung",100);
+ 
+ if((sqlca.sqlcode==100) || sqlca.sqlerrd[2]==0)
+   {
+    exec sql insert into auftrag_prozess values
+    	(:AUFTRAGID, :ZEILENNR, :PROZESSID, now());
+    SQLerror::test("Prozessaktualisierung");
+   }
+ tr.commit();
+}
+

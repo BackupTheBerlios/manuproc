@@ -1,0 +1,160 @@
+/* $Id: LieferscheinList_sql.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+
+#include <Lieferschein/LieferscheinList.h>
+#include <Aux/Transaction.h>
+
+exec sql include sqlca;
+
+// caller needs to roll back if transaction is already open and false is given
+// back
+bool LieferscheinList::setDPDData(int dpdlnr) throw(SQLerror)
+{
+ Transaction tr;
+ exec sql lock lieferschein in share row exclusive mode;
+ SQLerror::test(__FILELINE__"lock");
+
+// warum nicht for ???
+ vector<Lieferschein>::iterator i = sellist.begin();
+
+ try{
+     while(i!=sellist.end())
+       {(*i).setDPDlnr(dpdlnr);
+        (*i).setDPDDatum();
+        ++i;
+       }
+    }         
+ catch(SQLerror &e)
+   {tr.rollback();
+    return false;
+   }
+ 
+ tr.commit();
+ return true;
+}
+
+
+LieferscheinList::LieferscheinList(const sel_GeliefStat &sp)
+throw(SQLerror)
+{
+ exec sql begin declare section;
+ int LFRSID;
+ int KDNR;
+ int RNGID;
+ short IRNGID;
+ char DATUM[11];
+ short IDATUM;
+ int PAECKCHEN, PAKETE;
+ short IPAKETE,IPAECKCHEN;
+ char GELIEFERTAM[11];
+ short IGELIEFERTAM=-1;
+ int DPDLIEFNR;
+ short IDPDLIEFNR; 
+ exec sql end declare section;
+ 
+ if(sp.geliefert) 
+   {exec sql select lieflist(lfrsid,kundennr,datum,rngid,pakete,paeckchen,
+				date(geliefertam), dpdliefnr)
+	from lieferschein 
+	where geliefertam is not null order by lfrsid;
+    SQLerror::test(__FILELINE__,100);
+    if(sqlca.sqlcode) return;
+   }
+ else  
+   {exec sql select lieflist(lfrsid,kundennr,date(datum),rngid,pakete,paeckchen,
+				'', dpdliefnr)
+	from lieferschein 
+	where geliefertam is null order by lfrsid;
+    SQLerror::test(__FILELINE__,100);
+    if(sqlca.sqlcode) return;
+   }   
+ 
+ while(!sqlca.sqlcode)
+   {
+    exec sql fetch from lieflist
+		into :LFRSID, :KDNR, :DATUM:IDATUM, :RNGID:IRNGID,
+			:PAKETE:IPAKETE, :PAECKCHEN:IPAECKCHEN,
+			:GELIEFERTAM, :DPDLIEFNR:IDPDLIEFNR;
+    SQLerror::test(__FILELINE__,100);
+    if(sqlca.sqlcode) break;
+   
+    Petig::Datum d,gelam;
+    if(IDATUM) d=Petig::Datum();
+    else d.from_postgres(DATUM);
+    if(IGELIEFERTAM) gelam=Petig::Datum();
+    else gelam.from_postgres(GELIEFERTAM);
+
+    sellist.push_back(Lieferschein(LieferscheinBase(LFRSID),d,
+    			KDNR,IRNGID?0:RNGID,IPAECKCHEN?0:PAECKCHEN,
+			IPAKETE?0:PAKETE,gelam,
+			IDPDLIEFNR ? 0 : DPDLIEFNR) );
+   } 
+
+}
+
+
+LieferscheinList::LieferscheinList(const sel_DPDLNr &sp)
+throw(SQLerror)
+{
+ exec sql begin declare section;
+ int LFRSID;
+ int KDNR;
+ int RNGID;
+ short IRNGID;
+ char DATUM[11];
+ short IDATUM;
+ int PAECKCHEN, PAKETE;
+ short IPAKETE,IPAECKCHEN;
+ char GELIEFERTAM[11];
+ short IGELIEFERTAM=-1;
+ int DPDLIEFNR=sp.dpdlnr;
+ exec sql end declare section;
+ 
+ exec sql select lieflist(lfrsid,kundennr,date(datum),rngid,pakete,
+				paeckchen,date(geliefertam))
+	from lieferschein 
+	where dpdliefnr= :DPDLIEFNR order by lfrsid;
+ SQLerror::test(__FILELINE__);
+
+ 
+ while(!sqlca.sqlcode)
+   {
+    exec sql fetch from lieflist
+		into :LFRSID, :KDNR, :DATUM:IDATUM, :RNGID:IRNGID,
+		:PAKETE:IPAKETE, :PAECKCHEN:IPAECKCHEN, :GELIEFERTAM;
+    SQLerror::test(__FILELINE__,100);
+    if(sqlca.sqlcode==100) break;
+
+    Petig::Datum d,gelam;
+    if(IDATUM) d=Petig::Datum();
+    else d.from_postgres(DATUM);
+    if(IGELIEFERTAM) gelam=Petig::Datum();
+    else gelam.from_postgres(GELIEFERTAM);
+
+    sellist.push_back(Lieferschein(LieferscheinBase(LFRSID),d,
+    			KDNR,IRNGID?0:RNGID,IPAECKCHEN?0:PAECKCHEN,
+			IPAKETE?0:PAKETE,gelam,
+			DPDLIEFNR) );
+   } 
+
+}
+
+
+

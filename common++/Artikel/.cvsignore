@@ -1,0 +1,12 @@
+Makefile
+Makefile.in
+.deps
+ArtikelBaum.cc
+ArtikelBezeichnung.cc
+Artikel_sql.cc
+Aufmachung_sql.cc
+Misc.cc
+Prozess_sql.cc
+Prozesspreis.cc
+ArtikelTyp.cc
+Einheiten.cc

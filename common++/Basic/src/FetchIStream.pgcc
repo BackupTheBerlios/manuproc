@@ -1,0 +1,104 @@
+// $Id: FetchIStream.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <Aux/FetchIStream.h>
+#include <Aux/SQLerror.h>
+
+// ecpg shortcoming descriptor has to be FetchIStream
+
+FetchIStream &FetchIStream::operator>>(string &str)
+{  exec sql begin declare section;
+   int spalte=naechstesFeld++;
+   int LENGTH=0;
+   char *data=0;
+   exec sql end declare section;
+   
+   // exec sql get descriptor ? value :spalte :LENGTH = returned_octet_length;
+   ECPGget_desc(__LINE__,const_cast<char*>(descriptor.c_str()),spalte,ECPGd_ret_octet,
+		ECPGt_int,&(LENGTH),1L,1L,sizeof(int), ECPGd_EODT);
+   SQLerror::test("FetchIStream::>>(string):returned_octet_length");
+   if (LENGTH<1) str="";
+   else
+   {  ++LENGTH;
+      data=(char*)alloca(LENGTH);
+      // exec sql get descriptor ? value :spalte :data = data;
+      ECPGget_desc(__LINE__,const_cast<char*>(descriptor.c_str()),spalte,ECPGd_data,
+		ECPGt_char, data, LENGTH, 1L, LENGTH*sizeof(char), ECPGd_EODT);
+      SQLerror::test("FetchIStream::>>(string):data");
+      str=data;
+   }
+   return *this;
+}
+
+int FetchIStream::getIndicator() const
+{  exec sql begin declare section;
+//   char *desc=const_cast<char*>(descriptor.c_str());
+   int spalte=naechstesFeld;
+   int indicator;
+   exec sql end declare section;
+   
+   // exec sql get descriptor ? value :spalte :indicator = indicator;
+   ECPGget_desc(__LINE__,const_cast<char*>(descriptor.c_str()),spalte,ECPGd_indicator,
+	ECPGt_int,&(indicator),1L,1L,sizeof(int), ECPGd_EODT);
+   SQLerror::test("FetchIStream::>>(string):indicator");
+   return indicator;
+}
+
+FetchIStream &FetchIStream::operator>>(int &i)
+{  exec sql begin declare section;
+   int spalte=naechstesFeld++;
+   int data=0;
+   exec sql end declare section;
+   
+   // exec sql get descriptor X value :spalte :data = data;
+   ECPGget_desc(__LINE__,const_cast<char*>(descriptor.c_str()),spalte,ECPGd_data,
+		ECPGt_int,&(data),1L,1L,sizeof(int), ECPGd_EODT);
+   SQLerror::test("FetchIStream::>>(int):data");
+   i=data;
+   return *this;
+}
+
+FetchIStream &FetchIStream::operator>>(float &f)
+{  exec sql begin declare section;
+   int spalte=naechstesFeld++;
+   float data=0;
+   exec sql end declare section;
+   
+   // exec sql get descriptor X value :spalte :data = data;
+   ECPGget_desc(__LINE__,const_cast<char*>(descriptor.c_str()),spalte,ECPGd_data,
+		ECPGt_float,&(data),1L,1L,sizeof(float), ECPGd_EODT);
+   SQLerror::test("FetchIStream::>>(int):data");
+   f=data;
+   return *this;
+}
+
+FetchIStream &FetchIStream::operator>>(bool &b)
+{  exec sql begin declare section;
+   int spalte=naechstesFeld++;
+   bool data=0;
+   exec sql end declare section;
+   
+   // exec sql get descriptor X value :spalte :data = data;
+   ECPGget_desc(__LINE__,const_cast<char*>(descriptor.c_str()),spalte,ECPGd_data,
+		ECPGt_bool,&(data),1L,1L,sizeof(bool), ECPGd_EODT);
+   SQLerror::test("FetchIStream::>>(int):data");
+   b=data;
+   return *this;
+}
+

@@ -1,0 +1,10 @@
+.deps
+AufEintragBase_sql.cc
+AufEintragBase_sql.pcl
+Makefile
+Makefile.in
+selAufEntry_sql.cc
+selAufEntry_sql.pcl
+*_pg.cc
+*_p.cc
+AufEintragBase2.cc

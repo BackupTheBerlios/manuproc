@@ -1,0 +1,187 @@
+/* $Id: Adresse.pgcc,v 1.13 2001/03/16 11:24:09 cvs_christof Exp $ */
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <stdio.h>
+#include <ctype.h>
+#include <unistd.h>
+#include <string.h>
+#include "Adresse.h"
+#include "Aux/Ausgabe_neu.h"
+#include "Aux/string0.h"
+
+exec sql include sqlca;
+
+Adresse::Adresse(int kdnr) throw(SQLerror)
+{  exec sql begin declare section;
+   int KUNDENNR=kdnr;
+   char IDNR[21];
+   char FIRMA[61];
+   char POSTANWVOR[41];
+   char STRASSE[36];
+   char POSTANWNACH[41];
+   char HSNR[8];
+   int _PLZ;
+   long POSTFACH;
+   int POSTFPLZ;
+   char ORT[31];
+   int RNG_AN_POSTFACH;
+   char LANDNAME[41];
+   char POSTFACHNAME[41];
+   char ISOCODE[4];
+
+   short IIDNR, IPOSTANWVOR, ISTRASSE, IPOSTANWNACH, IHSNR, IPLZ,
+      IPOSTFACH, IPOSTFPLZ, IORT, IRNG_AN_POSTFACH;
+   short ILANDNAME,IPOSTFACHNAME;
+   exec sql end declare section;
+
+   exec sql SELECT firma, postanwvor, strasse, hsnr, postanwnach,
+         	plz, ort, postfach, postfplz, rng_an_postfach, idnr 
+	into :FIRMA, :POSTANWVOR :IPOSTANWVOR, :STRASSE :ISTRASSE,
+   		:HSNR :IHSNR, :POSTANWNACH :IPOSTANWNACH, :_PLZ :IPLZ,
+   		:ORT :IORT, :POSTFACH :IPOSTFACH,
+   		:POSTFPLZ :IPOSTFPLZ, :RNG_AN_POSTFACH :IRNG_AN_POSTFACH,
+   		:IDNR :IIDNR
+   	FROM kunden
+   	WHERE kundennr= :KUNDENNR;
+   SQLerror::test(__FILELINE__" select from kunden");
+   
+   if (IRNG_AN_POSTFACH) RNG_AN_POSTFACH=0;
+   if (IPOSTANWVOR) POSTANWVOR[0]=0;
+   if (IPOSTANWNACH) POSTANWNACH[0]=0;
+   if (ISTRASSE) STRASSE[0]=0;
+   if (IHSNR) HSNR[0]=0;
+   if (IORT) ORT[0]=0;
+   if (IPLZ) _PLZ=NULL_VALUE;
+   if (IPOSTFPLZ) POSTFPLZ=NULL_VALUE;
+   if (IPOSTFACH) POSTFACH=NULL_VALUE;
+   if (!IIDNR && IDNR[0])
+    { int i;
+      for (i=0;i<3 && isalpha(IDNR[i]);i++) 
+         ISOCODE[i]=tolower((unsigned char)IDNR[i]);
+      ISOCODE[i]=0;
+      exec sql SELECT landname, postfachname 
+      	into :LANDNAME :ILANDNAME, :POSTFACHNAME :IPOSTFACHNAME
+      	FROM AUSLAND  where isocode= :ISOCODE;
+      SQLerror::test(__FILELINE__"SELECT DIRECT FROM AUSLAND",100);
+      if(sqlca.sqlcode) IPOSTFACHNAME=ILANDNAME=-1;
+    }
+   else 
+     IPOSTFACHNAME=ILANDNAME=-1;
+   if (IPOSTFACHNAME) strncpy0(POSTFACHNAME,"Postfach",sizeof POSTFACHNAME);
+   if (ILANDNAME) LANDNAME[0]=0;
+   
+   kundennr=KUNDENNR;
+   strcpyx(IDnr,IDNR);
+   firma=FIRMA;
+   strcpyx(postanwvor,POSTANWVOR);
+   strasse=STRASSE;
+   strcpyx(postanwnach,POSTANWNACH);
+   hsnr=HSNR;
+   ort=ORT;
+   PLZ=_PLZ;
+   postfach=POSTFACH;
+   postfPLZ=POSTFPLZ;
+   rng_an_postfach=RNG_AN_POSTFACH;
+   strcpyx(landname,LANDNAME);
+   strcpyx(postfachname,POSTFACHNAME);
+   lieferadresse=false;
+}
+
+static const string Dform(unsigned int i,bool TeX=false) throw()
+{  return TeX?FormatiereTeX(i,2):Formatiere(i,2);
+}
+
+int Adresse::putIntoNLines(char **buf,int num,int len,bool TeX) const throw()
+{  int lines=0,line=0;
+   bool postfachflag=false;
+   bool ausland=landname[0]!=0;
+   bool postfach_valid=postfach!=NULL_VALUE && (ausland || postfPLZ!=NULL_VALUE);
+   
+   for (int i=0;i<num;i++) buf[i][0]=0;
+   if (firma!="") lines++;
+   if (postanwvor[0]) lines++;
+   if (strasse!="" && postfach_valid)
+   		postfachflag=true;
+   else if (rng_an_postfach && !lieferadresse && postfach_valid)
+           	postfachflag=true;
+   if (postfachflag || strasse[0] || hsnr[0]) lines++;
+   if (postanwnach[0]) lines++;
+   if (ort!="") lines++;
+   if (ausland) lines++;
+   
+   if (!ausland && lines<num && num>4) 
+   { strncpy0(buf[line++],"Firma",len); lines++; }
+   if (firma!="") strncpy0(buf[line++],TeX?string2TeX(firma).c_str():firma.c_str(),len);
+   if (postanwvor[0] && lines<=num) strncpy0(buf[line++],TeX?string2TeX(postanwvor).c_str():postanwvor,len);
+   if (postfachflag) 
+   {  if (TeX) snprintf0(buf[line++],len,"%s~%s",string2TeX(postfachname).c_str(),Dform(postfach,true).c_str());
+      else snprintf0(buf[line++],len,"%s %s",postfachname,Dform(postfach).c_str());
+   }
+   else if (strasse!="" || hsnr!="")
+   {  if (TeX) snprintf0(buf[line++],len,"%s~%s",string2TeX(strasse).c_str(),
+	string2TeX(hsnr).c_str());
+      else snprintf0(buf[line++],len,"%s %s",strasse.c_str(),hsnr.c_str());
+   }
+   if (postanwnach[0] && line+1<num) strncpy0(buf[line++],TeX?string2TeX(postanwnach).c_str():postanwnach,len);
+   if (line+1+ausland<num) { buf[line++][0]=0; lines++; }
+   if (ort!="" && line<num) 
+   {  if (PLZ!=NULL_VALUE) 
+         snprintf0(buf[line++],len,"%05d%c%s",
+         	postfachflag?postfPLZ:PLZ,
+         	TeX?'~':' ',TeX?string2TeX(ort).c_str():ort.c_str());
+      else 
+         strncpy0(buf[line++],TeX?string2TeX(ort).c_str():ort.c_str(),len);
+   }
+   if (ausland)
+   {  if (line<num) strncpy0(buf[line++],TeX?string2TeX(landname).c_str():landname,len);
+      else 
+      {  int ortlen=strlen(buf[line-1]);
+      
+         if (ortlen+strlen(landname)+1<len)
+         {  buf[line-1][ortlen]=' ';
+            strncpy0(buf[line-1]+ortlen+1,TeX?string2TeX(landname).c_str():landname,len-ortlen-1);
+         }
+         else /* geht halt nicht :-( */;
+      }
+   }
+   return line;
+}
+
+extern "C" {
+Adresse *Adresse_by_kdnr(int kdnr) throw()
+{  try 
+   {  return new Adresse(kdnr);
+   } 
+   catch (SQLerror& e)
+   {  cerr << "Datenbankfehler "<< e << '\n';
+      if (e.Code()<0) { cerr << "Programm beendet sich\n"; abort(); }
+      return NULL;
+   }
+}
+void free_Adresse(Adresse *a) throw()
+{  delete a;
+}
+int putIntoNLines(Adresse *a,char **buf,int num,int len,bool TeX) throw()
+{  return a->putIntoNLines(buf,num,len,TeX);
+}
+void mark_Lieferanschrift(Adresse *a) throw()
+{  a->mark_Lieferanschrift();
+}
+	   }
+

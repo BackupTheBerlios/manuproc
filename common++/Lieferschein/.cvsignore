@@ -1,0 +1,16 @@
+.deps
+LfrsEntry_sql.cc
+LfrsEntry_sql.pcl
+LfrsListe_sql.cc
+LfrsListe_sql.pcl
+Lieferschein_sql.cc
+Lieferschein_sql.pcl
+Makefile
+Makefile.in
+*_pg.cc
+*_p.cc
+LieferscheinList_sql.cc
+LieferscheinEntry_sql.cc
+Rechnung_sql.cc
+RechnungEntry_sql.cc
+LieferscheinVoll_sql.cc

@@ -1,0 +1,54 @@
+// $Id: FetchIStream.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+
+#include <Aux/FetchIStream.h>
+#include <Aux/dbconnect.h>
+#include <Aux/Transaction.h>
+exec sql include sqlca;
+
+exec sql whenever sqlerror do X();
+#define X() throw SQLerror(__FILELINE__)
+
+int main()
+{  Petig::dbconnect();
+   exec sql allocate descriptor mydesc;
+   
+   Transaction tr;
+   exec sql declare c cursor for select now(),date('yesterday'),null,null,
+   	200,20.5,'t';
+   exec sql open c;
+   exec sql fetch from c into sql descriptor mydesc;
+   string s,s2,s3,s4;
+   bool b;
+   int i;
+   float f;
+   int ind3=0;
+   
+   FetchIStream is("mydesc");
+   is >> s >> s2 >> FetchIStream::WithIndicator<string>(s3,ind3)
+      >> FetchIStream::MapNull<string>(s4,"<NULL>")
+      >> i >> f >> b;
+   cout << s << ", " << s2 << ", " << ind3 << ", " << s4 << '\n';
+   cout << i << ", " << f << ", " << b << '\n';
+   exec sql close c;
+   tr.commit();
+   Petig::dbdisconnect();
+   return 0;
+}

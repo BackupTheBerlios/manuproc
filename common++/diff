@@ -1,0 +1,10 @@
+263,266c263,266
+< libcommon++@.a: $(libcommon___LIBRARY_SUFFIX__a_OBJECTS) $(libcommon___LIBRARY_SUFFIX__a_DEPENDENCIES)
+< 	-rm -f libcommon++@.a
+< 	$(AR) cru libcommon++@.a $(libcommon___LIBRARY_SUFFIX__a_OBJECTS) $(libcommon___LIBRARY_SUFFIX__a_LIBADD)
+< 	$(RANLIB) libcommon++@.a
+---
+> libcommon++@LIBRARY_SUFFIX@.a: $(libcommon___LIBRARY_SUFFIX__a_OBJECTS) $(libcommon___LIBRARY_SUFFIX__a_DEPENDENCIES)
+> 	-rm -f libcommon++@LIBRARY_SUFFIX@.a
+> 	$(AR) cru libcommon++@LIBRARY_SUFFIX@.a $(libcommon___LIBRARY_SUFFIX__a_OBJECTS) $(libcommon___LIBRARY_SUFFIX__a_LIBADD)
+> 	$(RANLIB) libcommon++@LIBRARY_SUFFIX@.a

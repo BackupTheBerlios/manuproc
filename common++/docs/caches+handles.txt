@@ -1,0 +1,78 @@
+There are two different caches available:
+
+CacheStatic<index_t,payload_t> and Cache_Pointer<index_t,payload_t>.
+
+CacheStatic stores a copy of the Payload and Cache_Pointer stores a pointer
+to the payload class. So if you use Cache_Pointer you have to store the
+payload in memory under your control.
+
+========================================
+
+C++ uses 2 different Caches:
+
+CacheStatic<,constHandle<> >, CacheStatic<,simple_class>
+
+- CacheStatic<,constHandle<> > e.g. in cH_ExtBezSchema, ch_Prozess
+
+This cache holds a handle. Due to the nature of caches and handles these
+elements will never get freed unless the cache is flushed before exit().
+
+Typically the cache looks like:
+        // cache
+        typedef CacheStatic<Prozess::ID,cH_Prozess> cache_t;
+        static cache_t cache;
+
+with the folling definitions
+
+cH_Prozess::cache_t cH_Prozess::cache;
+
+cH_Prozess::cH_Prozess(Prozess::ID pid)
+{  cH_Prozess *cached(cache.lookup(pid));
+   if (cached) *this=*cached;
+   else
+   {  *this=cH_Prozess(new Prozess(pid));
+      cache.Register(pid,*this);
+   }
+}
+
+you might replace *this=cH_Prozess(new Prozess(pid));
+by
+	if (pid==default_pid) *this=cH_Prozess(new Prozess());
+	else *this=cH_Prozess(new Prozess(pid));
+if you have a default ctor in your base class.
+
+BEWARE: the default ctor must not access the cache !!!!!!!!!
+Because the cache uses the default ctor to allocate space in the map.
+
+So you might provide:
+private:
+        friend cache_t::stl_type;
+        cH_Prozess() {}
+public:
+        static const Prozess::ID default_pid=Prozess::default_id;
+        cH_Prozess(Prozess::ID pid);
+
+BECAUSE: stl needs a default ctor which normally is totally different from
+what you would like as a default ctor in user apps. I have no idea on how to
+solve this problem best.
+
+-------------------------------------------
+- CacheStatic<,simple_class> e.g. in cP_Waehrung
+
+This cache holds the class. So you might consider passing a pointer around.
+
+        // cache
+        typedef CacheStatic<WaehID,Waehrung> cache_t;
+        static cache_t cache;
+
+and 
+
+cP_Waehrung::cache_t cP_Waehrung::cache;
+
+cP_Waehrung::cP_Waehrung(Waehrung::ID wid)
+{  Waehrung *cached(cache.lookup(wid));
+   if (cached) *this=cached;
+   else *this=cache.Register(wid,Waehrung(wid));
+}
+
+========================================

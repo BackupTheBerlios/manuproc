@@ -1,0 +1,47 @@
+// $Id: Aufmachung_sql.pgcc,v 1.1 2001/04/23 08:11:58 christof Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include"Artikel/Aufmachung.h"
+#include"Aux/SQLerror.h"
+#include<vector>
+
+exec sql include sqlca;
+
+Aufmachung::Aufmachung(int aufid) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFMID=aufid;
+ char BEZEICHNUNG[31];
+ char ABKURZ[6];
+ int METER_PRO_STK;
+ int YARD;
+ short IYARD;
+ exec sql end declare section;
+ 
+ exec sql select bezeichnung, abkuerzung, meter_pro_stueck, yard
+ 	into :BEZEICHNUNG,:ABKURZ,:METER_PRO_STK,:YARD:IYARD
+ 	from aufmachungsart where aufmachung = :AUFMID;
+ if(sqlca.sqlcode) throw SQLerror("Aufmachung: select from aufmachungsart"); 	
+ 
+ bezeichnung = BEZEICHNUNG;
+ abkuerzung = ABKURZ;
+ meter_pro_stk = METER_PRO_STK;
+ yard = IYARD ? false : YARD;
+}
+

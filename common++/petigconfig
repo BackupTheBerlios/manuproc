@@ -1,0 +1,6 @@
+#!/bin/sh
+echo ./autogen.sh --includedir=`petiglibs-config --incdir c++` \
+	--libdir=`petiglibs-config --libdir c++`
+echo ---------------------------------------------------------
+./autogen.sh --includedir=`petiglibs-config --incdir c++` \
+	--libdir=`petiglibs-config --libdir c++`

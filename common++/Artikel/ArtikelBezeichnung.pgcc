@@ -1,0 +1,174 @@
+// $Id: ArtikelBezeichnung.pgcc,v 1.1 2001/04/23 08:11:58 christof Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <Artikel/ArtikelBezeichnung.h>
+#include "Aux/string0.h"
+#include <Aux/Transaction.h>
+#include <Aux/mystream.h>
+exec sql include sqlca;
+#include <Aux/FetchIStream.h>
+//#include <Aux/dbconnect.h>
+
+
+ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, const cH_ExtBezSchema &_schema) throw(SQLerror)
+ : ArtikelBase(artikel), schema(_schema)
+{  setzeExtBezSchema(_schema);
+}
+
+ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, const ExtBezSchema::ID _schema) throw(SQLerror)
+ : ArtikelBase(artikel),
+   schema(cH_ExtBezSchema(_schema,ArtikelTyp::vonArtikel(artikel)))
+{  setzeExtBezSchema(schema);
+}
+
+void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw(SQLerror)
+{   
+ schema = _schema;
+ exec sql begin declare section;
+ char *QUERY;
+ exec sql end declare section;
+
+ Transaction tr;
+ 
+    value.clear();
+    if (Id())
+    {mystream sq; 
+     vector<int> ibezkom;
+     sq << "SELECT ";
+     for (ExtBezSchema::const_iterator i=schema->begin();i!=schema->end();)
+      {
+         sq << i->spaltenname;
+         ibezkom.push_back(i->bezkomptype);
+         ++i;
+         if (i!=schema->end()) sq <<", " ;
+      }
+     sq << " FROM artbez_" << schema->Typ()<<"_"<<schema->Id()<<" WHERE id = "
+         << Id();
+     string this_string_holds_my_query=sq.str();
+     (const char*)QUERY=this_string_holds_my_query.c_str();
+     Transaction tr;
+     exec sql allocate descriptor mydesc;
+     exec sql prepare ein_ from :QUERY;
+     exec sql declare ein cursor for ein_;
+     exec sql open ein;
+     SQLerror::test(__FILELINE__);
+     exec sql fetch from ein into sql descriptor mydesc; 
+     vector<string> sbezkom;
+     sbezkom.resize(ibezkom.size());
+     value.resize(ibezkom[ibezkom.size()-1]+1);
+     FetchIStream is("mydesc");
+     for (size_t i=0;i<ibezkom.size();++i)
+      {
+         string s;
+         is >> s;
+         sbezkom[i]=s;
+         value[ibezkom[i]]=EntryValue(sbezkom[i]);  
+//cout << ibezkom[i] <<"\t"<<sbezkom[i]<<"  <--\n";
+      }
+     SQLerror::test(__FILELINE__);
+     exec sql close ein;
+     exec sql deallocate descriptor mydesc;
+//     tr.close(); // passiert automatisch
+    }
+} 
+
+
+const EntryValue ArtikelBezeichnung::getExtBezFeld(int feld) const throw(SQLerror)
+{  return feld<(int)value.size()?value[feld]:EntryValue();
+}
+
+string ArtikelBezeichnung::Bezeichnung(int signifikanz, char separator,int felder) const throw()
+{   string ret;
+    int f=0;
+    if (begin()!=end()) 
+    for (ExtBezSchema::const_iterator i=schema->begin();i!=schema->end();++i)
+    {  
+       if (signifikanz == i->signifikanz)
+        {
+          ret+=(const string)(value[i->bezkomptype]);
+          if (separator) // aber nur wenns nicht das letzte ist
+          {  if (i+1!=schema->end()) ret+=separator;
+          }
+          else ret+=i->separator;
+          f++;
+        }
+    }
+    if (separator)
+    {  for (;f<felder;++f) ret+=separator;
+    } 
+    return ret;
+}
+
+ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const vector<EntryValue> &_val, const cH_ExtBezSchema &_schema) throw(SQLerror)
+: schema(_schema)
+{
+ exec sql begin declare section;
+ long ARTIKELID;
+ char *QUERY;
+ exec sql end declare section;
+ mystream squery;
+ squery << "SELECT id FROM artbez_"<<schema->Typ()<<"_"<<schema->Id()
+      << " WHERE ";
+ int f=0;
+ for (ExtBezSchema::const_iterator i=schema->begin();i!=schema->end();)
+   {
+     if (i->signifikanz != signifikanz) {++i; continue;}
+     squery << i->spaltenname << " = '" << (string)_val[f] <<"'";
+     ++f;
+     do 
+     ++i;
+     while (i!=schema->end() && i->signifikanz != signifikanz ) ;
+     if (i!=schema->end()) squery <<" AND " ;
+   }
+
+ string query = squery.str(); 
+   
+ try
+ {  (const char*)QUERY=query.c_str();
+    Transaction tr;
+    exec sql prepare QUERY2 from :QUERY;
+    exec sql declare loadart cursor for QUERY2;
+    exec sql open loadart;
+    SQLerror::test("ArtikelBox::loadArtikel: select artikelid");
+    exec sql fetch in loadart into :ARTIKELID;
+    SQLerror::test("ArtikelBox::loadArtikel: fetch artikelid");
+    exec sql close loadart;
+    tr.commit();
+ }
+ catch (SQLerror &e) { throw; }
+//cout << ARTIKELID<<"\n";
+ 
+ *(ArtikelBase*)this=ARTIKELID;
+ setzeExtBezSchema(schema);
+}
+
+cH_ArtikelBezeichnung::cache_t cH_ArtikelBezeichnung::cache;
+
+cH_ArtikelBezeichnung::cH_ArtikelBezeichnung(const ArtikelBase &artikel,const cH_ExtBezSchema &schema) throw(SQLerror)
+{  *this=cH_ArtikelBezeichnung(artikel,schema->Id());
+}
+
+cH_ArtikelBezeichnung::cH_ArtikelBezeichnung(const ArtikelBase &artikel,const ExtBezSchema::ID &id) throw(SQLerror)
+{  cH_ArtikelBezeichnung *cached(cache.lookup(cache_key(artikel.Id(),id)));
+   if (cached) *this=*cached;
+   else
+   {  *this=cH_ArtikelBezeichnung(new ArtikelBezeichnung(artikel,id));
+      cache.Register(cache_key(artikel.Id(),id),*this);
+   }
+}

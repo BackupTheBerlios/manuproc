@@ -1,0 +1,114 @@
+// $Id: dbconnect.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include "Aux/dbconnect.h"
+#include <cstdlib>
+#include <cstdio>
+#include <unistd.h>
+#include "../config.h"
+#include "Aux/string0.h"
+
+void Petig::dbconnect(const Connection &c) throw(SQLerror)
+{  exec sql begin declare section;
+   char connstr[80];
+   exec sql end declare section;
+
+   string host;
+   string db;
+
+   host=DEFAULT_DBHOST;
+   db=DEFAULT_DB;
+
+   char *h_opt(getenv("PGHOST"));
+   char *d_opt(getenv("PGDATABASE"));
+   if(h_opt) host=h_opt;
+   if(d_opt) db=d_opt;
+//cout << "host1" << host << "\n";
+//cout << "db1" << db << "\n";
+
+   if(c.hFilled()) host=c.Host();
+   if(c.dFilled()) db=c.Dbase();
+
+
+//cout << "host1" << host << "\n";
+//cout << "db1" << db << "\n";
+
+  if (host=="localhost") strncpy0(connstr,db.c_str(),sizeof connstr);
+  else 
+#if 0  
+     snprintf0(connstr,sizeof connstr,"tcp:postgresql://%s/%s",host.c_str(),db.c_str());
+#else     
+     snprintf0(connstr,sizeof connstr,"%s@%s",db.c_str(),host.c_str());
+#endif     
+
+   char *opt(getenv("SQLOPT"));
+   if (!opt) {} 
+   else if (!strcmp(opt,"-X"))
+   {  FILE *f=fopen("dbconnect.pct","w");
+      ECPGdebug(1,f);
+   } 
+   else if (!strcmp(opt,"-E"))
+   {  ECPGdebug(1,stderr);
+   } 
+   exec sql connect to :connstr as petigdb;
+   SQLerror::test("dbconnect");
+   exec sql at petigdb set autocommit to on;
+}
+
+void Petig::dbdisconnect() throw(SQLerror)
+{  exec sql disconnect petigdb;
+   SQLerror::test("dbdisconnect");
+}
+
+void Petig::dbdefault() throw(SQLerror)
+{  exec sql set connection to petigdb;
+   SQLerror::test("dbdefault");
+}
+
+void Petig::dbconnect_nt(const Connection &c) throw()
+{  try { dbconnect(c); }
+   catch (SQLerror &e)
+   {  cerr << e << '\n';
+   }
+   try { setDTstyle("ISO"); }
+   catch (SQLerror &e)
+   {  cerr << e << '\n';
+   }   
+}
+
+void Petig::dbdisconnect_nt() throw()
+{  try { dbdisconnect(); }
+   catch (SQLerror &e)
+   {  cerr << e << '\n';
+   }
+}
+
+void Petig::setDTstyle(char *style) throw(SQLerror)
+{
+ exec sql begin declare section;
+ char ST[80];
+ exec sql end declare section;
+ 
+ snprintf0(ST,sizeof ST,"set datestyle to '%s'",style);
+ exec sql at petigdb execute immediate :ST;
+ // later
+/* exec sql at petigdb set datestyle to :ST; */
+ SQLerror::test("Datumsformat setzen");
+}
+

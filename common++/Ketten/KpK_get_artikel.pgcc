@@ -1,0 +1,58 @@
+// $Id: KpK_get_artikel.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include "KettplanKette.h"
+#include <iostream>
+#include <Aux/SQLerror.h>
+
+exec sql include sqlca;
+
+const vector <ArtikelGang> &KettplanKette::get_artikel_sorted()
+{  if (valid&VA_ARTIKEL) return artikel;
+   if (artikel.size())
+   {  cerr << (*this) << " KettplanKette::get_artikel_sorted() schon voll\n";
+      return artikel;
+   }
+   
+   // einlesen, sortieren, erzeugen
+   exec sql begin declare section;
+   int refmasch;
+   char refdate[11];
+   int GAENGE[10];
+   long ID[10];
+   char TEXT[10][81];
+   short IID[10];
+   exec sql end declare section;
+   
+   write(refmasch,refdate,sizeof refdate);
+   exec sql select s.gaenge,s.artikelid,e.text
+        into :GAENGE, :ID :IID, :TEXT
+   	from schaertabelle s, extartbez e
+   	where maschine= :refmasch and schaerdatum= :refdate
+   	 and s.artikelid=e.artikelid and kundennr=1 and bezkomptype=0
+   	order by e.text limit 10;
+   SQLerror::test(__FILELINE__,100);
+   for (int i=0;i<sqlca.sqlerrd[2];++i)
+   {  if (IID[i]) continue;
+#warning TEXT is ignored - why?
+      artikel.push_back(ArtikelGang(GAENGE[i],IID[i]?0:ID[i]/* ,TEXT*/));
+   }
+   valid|=VA_ARTIKEL;
+   return artikel;
+}

@@ -1,0 +1,14 @@
+.deps
+.libs
+Makefile
+Makefile.in
+preis
+test_pgsql_conv
+test_Bankauftrag
+testHandles
+testKW
+testExtBezHandle
+FetchIStream.cc
+FetchIStream
+dtaus1.txt
+out.tex

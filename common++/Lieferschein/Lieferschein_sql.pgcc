@@ -1,0 +1,135 @@
+/* $Id: Lieferschein_sql.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+
+#include"Lieferschein.h"
+#include<Aux/Transaction.h>
+exec sql include sqlca;
+
+Lieferschein::Lieferschein(int lid) throw(SQLerror)
+: LieferscheinBase(lid), kunde(Kunde::default_id)
+{
+ exec sql begin declare section;
+ int LFRSID;
+ int KDNR;
+ int RNGID;
+ char DATUM[11];
+ int PAECKCHEN, PAKETE;
+ char GELIEFERTAM[21];
+ short IGELIEFERTAM;
+ int DPDLIEFNR;
+ short IDPDLIEFNR;
+ exec sql end declare section;
+
+ LFRSID = lid;
+ 
+ exec sql select kundennr, date(datum), coalesce(rngid,0),
+		coalesce(paeckchen,0),
+		coalesce(pakete,0),date(geliefertam),dpdliefnr
+		into :KDNR, :DATUM, :RNGID, :PAECKCHEN, :PAKETE,
+		:GELIEFERTAM:IGELIEFERTAM, :DPDLIEFNR:IDPDLIEFNR
+ 	from lieferschein where lfrsid = :LFRSID;
+ SQLerror::test(__FILELINE__);
+ 
+ lieferid=lid;
+ kunde=cH_Kunde(KDNR);
+ rngid=RNGID;
+
+ lsdatum.from_postgres(DATUM);	
+ paeckchen=PAECKCHEN;
+ pakete=PAKETE;
+ if(IGELIEFERTAM) geliefertam=Petig::Datum();		 
+ else geliefertam.from_postgres(GELIEFERTAM);		 
+ dpdliefnr=IDPDLIEFNR ? 0 : DPDLIEFNR;
+
+}
+
+
+void Lieferschein::setDPDlnr(int dpdlnr) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int DPDLIEFNR=dpdlnr;
+ int LFRSID=lieferid;
+ exec sql end declare section;
+
+ exec sql update lieferschein set dpdliefnr= :DPDLIEFNR
+	where lfrsid= :LFRSID;
+ SQLerror::test(__FILELINE__);
+}
+
+
+void Lieferschein::setDPDDatum() throw(SQLerror)
+{
+ exec sql begin declare section;
+ int LFRSID=lieferid;
+ exec sql end declare section;
+
+ exec sql update lieferschein set geliefertam=now()
+	where lfrsid= :LFRSID;
+ SQLerror::test(__FILELINE__);
+}
+
+
+
+Lieferschein::Lieferschein(cH_Kunde k) throw(SQLerror)
+	: LieferscheinBase(none_id), lsdatum(Petig::Datum::today()),
+ 	kunde(k),rngid(0),paeckchen(0),pakete(0),dpdliefnr(0) 
+{
+ exec sql begin declare section;
+ int LFRSID;
+ int KUNDENNR;
+ exec sql end declare section;
+
+ KUNDENNR=k->Id();
+ Transaction tr;
+  
+ exec sql lock table lieferschein in exclusive mode;
+ 
+ exec sql select coalesce(max(lfrsid)+1,(to_char(now(),'yy')||'0000')::int4)
+ 		into :LFRSID
+ 		from lieferschein where lfrsid 
+ 		between (to_char(now(),'yy')||'0000')::int4 and
+ 			(to_char(now(),'yy')||'9999')::int4;
+ SQLerror::test(__FILELINE__":Lieferschein: select next lfrsid");
+ 
+ exec sql insert into lieferschein (lfrsid, kundennr)
+ 	values (:LFRSID, :KUNDENNR);
+ SQLerror::test(__FILELINE__":Lieferschein: insert into lieferschein");	
+ 
+ lieferid=LFRSID; 
+ 
+ tr.commit();
+}
+
+
+int Lieferschein::maxZnr() throw(SQLerror)
+{
+ exec sql begin declare section;
+ int ZNR;
+ int LFRSID;
+ exec sql end declare section;
+ 
+ LFRSID=Id();
+ exec sql select coalesce(max(zeile),0) into :ZNR from lieferscheinentry where
+ 	lfrsid= :LFRSID;
+ SQLerror::test(__FILELINE__":naxZnr: select from lieferscheinentry");	
+
+ return ZNR;
+}
+
