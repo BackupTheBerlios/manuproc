@@ -505,6 +505,7 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
          
          AuftragBase::mengen_t richtigeMenge=
          	ae.getRestStk()*ab.Faktor(i->first);
+         if (ae.getEntryStatus()!=OPEN) goto exit;
          if (menge!=richtigeMenge && 
          	between<AuftragBase::mengen_t>(menge,
          		floor(ae.getRestStk()*ab.Faktor(i->first)),
