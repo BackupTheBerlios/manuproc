@@ -13,7 +13,10 @@ int main()
   {Global_Settings gs(getuid(),"test","test2");
    std::cout << gs.get_Wert() << ' ' << gs.get_Wert(":",1)
    	<< ' ' << gs.get_Wert(":",2) << ' ' << gs.get_Wert(":",3) 
-   	<< ' ' << gs.get_Wert(":",4) << '\n';
+   	<< ' ' << gs.get_Wert(":",4) << ' ' << gs.get_Wert(":",0) << '\n';
+   std::cout << gs.get_Wert() << ' ' << gs.get_Wert0(":",0)
+   	<< ' ' << gs.get_Wert0(":",1) << ' ' << gs.get_Wert0(":",2) 
+   	<< ' ' << gs.get_Wert0(":",3) << ' ' << gs.get_Wert0(":",4) << '\n';
   }
    ManuProC::dbdisconnect();
    return 0;
