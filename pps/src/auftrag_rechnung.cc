@@ -295,7 +295,7 @@ try{
   // Preise
   RechnungEntry RE=dt->get_RechnungEntry();
   Artikelpreis::UnCache(cH_Kunde(lieferkunde->get_value())->preisliste(),RE.Artikel());
-  label_artikelpreis->set_text(Formatiere(Artikelpreis(cH_Kunde(lieferkunde->get_value())->preisliste(),RE.Artikel()).Wert()));
+  label_artikelpreis->set_text(Formatiere(Artikelpreis(cH_Kunde(lieferkunde->get_value())->preisliste(),RE.Artikel(),RE.Stueck()).Wert()));
   spinbutton_preiseingabe->set_value(RE.getPreis().Wert().as_float());
   table_preisvergleich->show_all();
   try{
@@ -379,7 +379,7 @@ void auftrag_rechnung::Preis_setzen()
   RechnungEntry RE=dt->get_RechnungEntry();
   if(radiobutton_artikelpreis->get_active())
    {
-     RE.setzePreis(Artikelpreis(cH_Kunde(lieferkunde->get_value())->preisliste(),RE.Artikel()));
+     RE.setzePreis(Artikelpreis(cH_Kunde(lieferkunde->get_value())->preisliste(),RE.Artikel(),RE.Stueck()));
    }
   else if(radiobutton_auftragspreis->get_active())
    {
