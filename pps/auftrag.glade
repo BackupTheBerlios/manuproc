@@ -10066,7 +10066,7 @@ Jahr
 	  <name>table30</name>
 	  <border_width>2</border_width>
 	  <rows>1</rows>
-	  <columns>3</columns>
+	  <columns>5</columns>
 	  <homogeneous>False</homogeneous>
 	  <row_spacing>0</row_spacing>
 	  <column_spacing>0</column_spacing>
@@ -10079,7 +10079,7 @@ Jahr
 	  <widget>
 	    <class>GtkLabel</class>
 	    <name>label131</name>
-	    <label>Kumulieren nach </label>
+	    <label>Vergl. Zeitr. 1 kumulieren nach </label>
 	    <justify>GTK_JUSTIFY_CENTER</justify>
 	    <wrap>False</wrap>
 	    <xalign>0.5</xalign>
@@ -10113,7 +10113,7 @@ Monat
 Quartal
 Jahr
 </items>
-	    <initial_choice>2</initial_choice>
+	    <initial_choice>4</initial_choice>
 	    <child>
 	      <left_attach>1</left_attach>
 	      <right_attach>2</right_attach>
@@ -10142,6 +10142,60 @@ Jahr
 	    <child>
 	      <left_attach>2</left_attach>
 	      <right_attach>3</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkLabel</class>
+	    <name>label133</name>
+	    <label>Vergl. Zeitr. 2 kumulieren nach </label>
+	    <justify>GTK_JUSTIFY_CENTER</justify>
+	    <wrap>False</wrap>
+	    <xalign>0</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <child>
+	      <left_attach>3</left_attach>
+	      <right_attach>4</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkOptionMenu</class>
+	    <name>liefdate_kumul</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <can_focus>True</can_focus>
+	    <items>Datum
+Woche
+Monat
+Quartal
+Jahr
+</items>
+	    <initial_choice>2</initial_choice>
+	    <child>
+	      <left_attach>4</left_attach>
+	      <right_attach>5</right_attach>
 	      <top_attach>0</top_attach>
 	      <bottom_attach>1</bottom_attach>
 	      <xpad>0</xpad>
@@ -10201,8 +10255,8 @@ Jahr
 	      <name>abverkauf_tree</name>
 	      <cxx_visibility>protected</cxx_visibility>
 	      <creation_function>SimpleTree</creation_function>
-	      <int1>4</int1>
-	      <int2>2</int2>
+	      <int1>5</int1>
+	      <int2>3</int2>
 	      <last_modification_time>Fri, 28 Jan 2005 10:22:44 GMT</last_modification_time>
 	    </widget>
 	  </widget>

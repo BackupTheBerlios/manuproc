@@ -22,7 +22,7 @@
 #include <Misc/Datum.h>
 #include "datum_kumul.h"
 
-typedef enum {SP_COMP_ZEIT=0, SP_LIEF_ZEIT,SP_MENGE,SP_DUMMY} Spalten;
+typedef enum {SP_COMP_ZEIT=0, SP_COMP_ZEIT2,SP_LIEF_ZEIT,SP_MENGE,SP_DUMMY} Spalten;
 
 class bestell_plan : public bestell_plan_glade
 {  
@@ -53,11 +53,13 @@ class Data_Abverkauf : public RowDataBase
  const ManuProC::Datum datum;
  mutable int menge;
  KumVal timecumulate;
+ KumVal liefdate_cumulate;
  Kunde::ID kid; 
 
 public:
- Data_Abverkauf(const ManuProC::Datum &d,int m,KumVal kv, const Kunde::ID k)
-   : datum(d), menge(m), timecumulate(kv), kid(k) {}
+ Data_Abverkauf(const ManuProC::Datum &d,int m,KumVal kv, KumVal ldk)
+   : datum(d), menge(m), timecumulate(kv), 
+     liefdate_cumulate(ldk) {}
 
 
 
@@ -82,7 +84,24 @@ public:
          default : return cH_EntryValueDatum(datum);
          }
         }
-    case SP_LIEF_ZEIT : return cH_EntryValueDatum( datum );        
+    case SP_COMP_ZEIT2 :
+        {switch(liefdate_cumulate) {
+         case KUM_DATUM :
+           return cH_EntryValueDatum( datum );
+         case KUM_WOCHE :
+           return cH_EntryValueKalenderwoche(
+                datum.valid() ? datum.KW() : Kalenderwoche());
+         case KUM_MONAT :
+           return cH_EntryValueMonat(datum);
+         case KUM_QUARTAL :
+           return cH_EntryValueQuartal(datum);
+         case KUM_JAHR :
+           return cH_EntryValueIntString(
+                datum.valid() ? datum.Jahr() : 0);
+         default : return cH_EntryValueDatum(datum);
+         }
+        }    
+    case SP_LIEF_ZEIT : return cH_EntryValueDatum( datum ); 
     case SP_MENGE :  return cH_EntryValueIntString(menge);    
   }
  return cH_EntryValue();

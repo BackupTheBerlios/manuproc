@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.36 2004/10/25 16:07:22 jacek Exp $
+// $Id: db_upgrade.cc,v 1.37 2005/02/01 23:07:44 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -247,6 +247,9 @@ int main(int argc,char *argv[])
 // optional
   if (argc>1)
     check_column("lieferscheinentry","reforder_free","text");
+
+  // Einheiten
+  check_column("einheiten","textid","integer");
 
   ManuProC::dbdisconnect();
   return 0;

@@ -153,10 +153,12 @@ void bestell_plan::load_abverkauf(const ArtikelBase a,KumVal kv)
  FetchIStream fi=q.Fetch();
  ManuProC::Datum ld;
  int m;
+ KumVal ldk=KumVal(reinterpret_cast<int>(liefdate_kumul->
+                    get_menu()->get_active()->get_user_data()));
  while(fi.good())
    {
     fi >> ld >> m;
-    datavec.push_back(new Data_Abverkauf(ld,m,kv,1));
+    datavec.push_back(new Data_Abverkauf(ld,m,kv,ldk));
     fi=q.Fetch();
    }
 
@@ -170,11 +172,13 @@ bestell_plan::bestell_plan(const ArtikelBase ab)
 {
  std::vector<std::string> ct(abverkauf_tree->Cols());
  
- ct[SP_COMP_ZEIT]="Vergleichszeit";
+ ct[SP_COMP_ZEIT]="Vergleichszeit 1";
+ ct[SP_COMP_ZEIT2]="Vergleichszeit 2"; 
  ct[SP_LIEF_ZEIT]="Lieferzeit";
  ct[SP_MENGE]="Menge";
  abverkauf_tree->setTitles(ct);
  abverkauf_tree->set_column_justification(SP_COMP_ZEIT, GTK_JUSTIFY_RIGHT);
+ abverkauf_tree->set_column_justification(SP_COMP_ZEIT2, GTK_JUSTIFY_RIGHT); 
  abverkauf_tree->set_column_justification(SP_LIEF_ZEIT, GTK_JUSTIFY_RIGHT); 
  abverkauf_tree->set_column_justification(SP_MENGE, GTK_JUSTIFY_RIGHT); 
  
@@ -183,6 +187,10 @@ bestell_plan::bestell_plan(const ArtikelBase ab)
  abverkauf_kumul->get_menu()->deactivate.connect(
    SigC::slot(static_cast<class bestell_plan*>(this),
    &bestell_plan::on_abverkauf_reload_clicked));
+
+ liefdate_kumul->get_menu()->deactivate.connect(
+   SigC::slot(static_cast<class bestell_plan*>(this),
+   &bestell_plan::on_abverkauf_reload_clicked));   
  
  if(ab.valid())
    load_artikel_list();
