@@ -148,12 +148,13 @@ try_again:
                 if(!M_rest) break;
              }
              if (!!M_rest) 
-             {  analyse("Es ist ein Rest geblieben, erneuter Versuch",*j,M_rest);
-                if (!looped)
-                {  looped=true;
+             {  if (!looped)
+                {  analyse("Es ist ein Rest geblieben, erneuter Versuch",*j,M_rest);
+                   looped=true;
                    goto try_again;
                 }
-                analyse("Programmfehler? Es ist ein Rest geblieben",*j,M_rest);
+                analyse("Es ist immer noch ein Rest geblieben, ignoriere Zuordnungen",*j,M_rest);
+                j->MengeAendern(uid,-M_rest,false,k->AEB,ManuProC::Auftrag::r_Reparatur);
              }
             }
             menge=0;
