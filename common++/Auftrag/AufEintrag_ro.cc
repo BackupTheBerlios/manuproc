@@ -1,4 +1,4 @@
-// $Id: AufEintrag_ro.cc,v 1.8 2004/01/28 13:09:11 jacek Exp $
+// $Id: AufEintrag_ro.cc,v 1.9 2004/01/28 14:52:55 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -84,8 +84,8 @@ const Preis AufEintrag::EPreis(bool brutto) const
  else
 #warning newly changed; not tested // 18.11.2003,
 #warning 23.01.2004 0->1 in Gesamtpreis
- return Preis(preis.Gesamtpreis(preis.getWaehrung(),1,0.0,rabatt)
-			*preis.PreisMenge(),
+ return Preis(preis.Gesamtpreis(preis.getWaehrung(),
+		preis.PreisMenge().as_int(),0.0,rabatt),
 		preis.getWaehrung(),preis.PreisMenge());
 }
 
