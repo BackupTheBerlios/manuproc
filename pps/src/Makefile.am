@@ -35,7 +35,7 @@ pps_SOURCES = pps.cc \
 	info_dialog_glade.cc \
 	info_dialog.cc
 
-#	auftrag_main_lager.cc \
+#	auftrag_main_lager.cc 
 
 
 noinst_HEADERS = \
