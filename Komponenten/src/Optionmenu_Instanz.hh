@@ -1,4 +1,4 @@
-// $Id: Optionmenu_Instanz.hh,v 1.10 2004/11/08 08:33:29 christof Exp $
+// $Id: Optionmenu_Instanz.hh,v 1.11 2004/11/08 08:34:05 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,7 +21,7 @@
 #ifndef _OPTIONMENU_INSTANZ_HH
 #  define _OPTIONMENU_INSTANZ_HH
 
-#include <gtk--/optionmenu.h>
+#include <gtkmm/optionmenu.h>
 #include <vector>
 #include <string>
 #include <Instanzen/ppsInstanz.h>

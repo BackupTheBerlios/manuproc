@@ -1,4 +1,4 @@
-// $Id: Optionmenu_Instanz.cc,v 1.5 2004/11/08 08:33:29 christof Exp $
+// $Id: Optionmenu_Instanz.cc,v 1.6 2004/11/08 08:34:05 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -28,7 +28,7 @@ Optionmenu_Instanz::Optionmenu_Instanz(emode mode)
 
 void Optionmenu_Instanz::set_mode(emode mode)
 { fuelle_menu(mode);
-  get_menu()->deactivate.connect(activate.slot());
+  get_menu()->signal_deactivate().connect(activate.slot());
 }
 
 
