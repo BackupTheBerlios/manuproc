@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten.hh,v 1.26 2003/10/22 10:19:11 jacek Exp $
+// $Id: auftrag_bearbeiten.hh,v 1.27 2004/03/31 14:34:36 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -127,7 +127,7 @@ public:
  void split_dialog_destroyed() { splitdialog=0; }
 
 auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEintragBase *auftragbase);
-~auftrag_bearbeiten();
+//~auftrag_bearbeiten();
 
 };
 #endif

@@ -266,8 +266,9 @@ gint auftrag_bearbeiten::on_aufrabatt_spinbutton_focus_out_event(GdkEventFocus *
 
 void auftrag_bearbeiten::on_backtomain_button_clicked()
 {if (splitdialog) { splitdialog->destroy(); splitdialog=0; }
- destroy();
+ if(auftrag) { delete(auftrag); auftrag=0; }
  MyWindow::setPositionSize(*auftragmain,"pps");
+ destroy();
 }
 
 void auftrag_bearbeiten::on_newauftrag_button_clicked()
@@ -740,11 +741,6 @@ void auftrag_bearbeiten::on_youraufnrscombo_activate()
 }
 
 
-
-auftrag_bearbeiten::~auftrag_bearbeiten()
-{
- if(auftrag) { delete(auftrag); auftrag=0; }
-}
 
 void auftrag_bearbeiten::setAufEntries()
 {
