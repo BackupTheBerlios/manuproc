@@ -1062,6 +1062,7 @@
 
 	  <child>
 	    <widget class="GtkLabel" id="label_string">
+	      <property agent="glademm" name="cxx_visibility">protected</property>
 	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">Name1</property>
 	      <property name="use_underline">False</property>
@@ -1086,6 +1087,7 @@
 
 	  <child>
 	    <widget class="GtkLabel" id="label_string2">
+	      <property agent="glademm" name="cxx_visibility">protected</property>
 	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">Name2</property>
 	      <property name="use_underline">False</property>
@@ -1110,6 +1112,7 @@
 
 	  <child>
 	    <widget class="Custom" id="sc_int">
+	      <property agent="glademm" name="cxx_visibility">protected</property>
 	      <property name="visible">True</property>
 	      <property name="creation_function">SearchCombo</property>
 	      <property name="int1">0</property>
@@ -1130,6 +1133,7 @@
 
 	  <child>
 	    <widget class="Custom" id="sc1_string">
+	      <property agent="glademm" name="cxx_visibility">protected</property>
 	      <property name="visible">True</property>
 	      <property name="creation_function">SearchCombo</property>
 	      <property name="int1">0</property>
@@ -1150,6 +1154,7 @@
 
 	  <child>
 	    <widget class="Custom" id="sc2_string">
+	      <property agent="glademm" name="cxx_visibility">protected</property>
 	      <property name="visible">True</property>
 	      <property name="creation_function">SearchCombo</property>
 	      <property name="int1">0</property>
@@ -1197,10 +1202,10 @@
 
   <child>
     <widget class="GtkMenuItem" id="zurueck">
+      <property agent="glademm" name="cxx_visibility">protected</property>
       <property name="visible">True</property>
       <property name="label" translatable="yes">Zurücksetzen</property>
       <property name="use_underline">True</property>
-      <signal name="activate" handler="reset" last_modification_time="Mon, 17 Mar 2003 16:10:54 GMT"/>
     </widget>
   </child>
 </widget>
