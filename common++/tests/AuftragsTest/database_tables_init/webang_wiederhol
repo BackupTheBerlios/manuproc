@@ -1,0 +1,27 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "webang_wiederhol";
+--
+-- TOC Entry ID 2 (OID 26006215)
+--
+-- Name: webang_wiederhol Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "webang_wiederhol" (
+	"artikel" integer NOT NULL,
+	"anfangszeile" numeric(2,0) NOT NULL,
+	"endzeile" numeric(2,0) NOT NULL,
+	"wiederholungen" numeric(2,0) NOT NULL,
+	Constraint "webang_wiederhol_pkey" Primary Key ("artikel", "anfangszeile", "endzeile")
+);
+
+--
+-- Data for TOC Entry ID 3 (OID 26006215)
+--
+-- Name: webang_wiederhol Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "webang_wiederhol" FROM stdin;
+\.

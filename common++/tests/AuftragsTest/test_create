@@ -1,0 +1,4 @@
+psql testdb -q -X -c "select to_char(instanz,'99') ||' - ' || to_char(auftragid,'99999') || ' - ' || text(zeilennr) as \"instanz-id-znr\",bestellt,geliefert,lieferdate,status,artikelid from auftragentry order by 1;" > /tmp/auftragentry
+
+psql testdb -q -X -c "select to_char(altinstanz,'99') ||' - ' || to_char(altauftragid,'99999') || ' - ' || text(altzeilennr) as \"ALT:instanz-id-znr\",
+      to_char(neuinstanz,'99') ||' - ' || to_char(neuauftragid,'99999') || ' - ' || text(neuzeilennr) as \"NEU:instanz-id-znr\",menge from auftragsentryzuordnung order by 1,2;" > /tmp/auftragsentryzuordnungn

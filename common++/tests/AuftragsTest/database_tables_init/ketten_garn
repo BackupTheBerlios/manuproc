@@ -1,0 +1,43 @@
+--
+-- Selected TOC Entries:
+--
+
+DROP INDEX "ketten_garn_artikel_gaenge_zeil";
+DROP TABLE "ketten_garn";
+--
+-- TOC Entry ID 2 (OID 26129307)
+--
+-- Name: ketten_garn Type: TABLE Owner: christof
+--
+
+CREATE TABLE "ketten_garn" (
+	"artikel" integer NOT NULL,
+	"gaenge" integer NOT NULL,
+	"zeile" integer NOT NULL,
+	"ketten" integer NOT NULL,
+	"faeden" integer NOT NULL,
+	"garn" integer NOT NULL,
+	"ketten_index" integer NOT NULL,
+	"laenge" integer,
+	"wiederholung" text
+);
+
+--
+-- TOC Entry ID 3 (OID 26129307)
+--
+-- Name: ketten_garn Type: ACL Owner: 
+--
+
+REVOKE ALL on "ketten_garn" from PUBLIC;
+GRANT INSERT,SELECT,UPDATE,DELETE on "ketten_garn" to PUBLIC;
+GRANT ALL on "ketten_garn" to "christof";
+GRANT ALL on "ketten_garn" to "malte";
+
+--
+-- TOC Entry ID 4 (OID 31967998)
+--
+-- Name: "ketten_garn_artikel_gaenge_zeil" Type: INDEX Owner: christof
+--
+
+CREATE UNIQUE INDEX ketten_garn_artikel_gaenge_zeil ON ketten_garn USING btree (artikel, gaenge, zeile, ketten_index);
+

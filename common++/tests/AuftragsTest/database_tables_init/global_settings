@@ -1,0 +1,36 @@
+--
+-- Selected TOC Entries:
+--
+--
+-- TOC Entry ID 2 (OID 17928970)
+--
+-- Name: global_settings Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "global_settings" (
+	"userid" integer NOT NULL,
+	"program" text NOT NULL,
+	"name" text NOT NULL,
+	"wert" text,
+	Constraint "global_settings_pkey" Primary Key ("userid", "program", "name")
+);
+
+--
+-- TOC Entry ID 3 (OID 17928970)
+--
+-- Name: global_settings Type: ACL Owner: 
+--
+
+REVOKE ALL on "global_settings" from PUBLIC;
+GRANT SELECT on "global_settings" to PUBLIC;
+GRANT INSERT,SELECT,RULE,UPDATE,DELETE,REFERENCES,TRIGGER on "global_settings" to "thoma";
+
+--
+-- Data for TOC Entry ID 4 (OID 17928970)
+--
+-- Name: global_settings Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "global_settings" FROM stdin;
+\.

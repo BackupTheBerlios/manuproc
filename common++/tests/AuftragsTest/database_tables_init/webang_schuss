@@ -1,0 +1,27 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "webang_schuss";
+--
+-- TOC Entry ID 2 (OID 26006043)
+--
+-- Name: webang_schuss Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "webang_schuss" (
+	"artikel" integer NOT NULL,
+	"index" integer NOT NULL,
+	"material" integer NOT NULL,
+	"anzahl" integer DEFAULT 1 NOT NULL,
+	Constraint "webang_schuss_pkey" Primary Key ("artikel", "index")
+);
+
+--
+-- Data for TOC Entry ID 3 (OID 26006043)
+--
+-- Name: webang_schuss Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "webang_schuss" FROM stdin;
+\.

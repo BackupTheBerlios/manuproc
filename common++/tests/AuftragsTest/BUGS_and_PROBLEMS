@@ -1,0 +1,12 @@
+* Annahme: Kunden bestellen den gleichen Artikel zu zwei Zeitpunkten Za und Zb
+   mit Za<Zb. Es wird zuerst an den späteren Auftrag (Zb) geliefert.
+  Problem: Bei den internen Aufträgen wird entsprechend des Datums 
+   abgeschrieben bzw. Produziert. Also zunächst bei den internen Aufträgen,
+   die Za zugeordnet sind. => Die internen Aufträge kommen durcheinander.
+  Lösung: Im Auftragselector für interne 0er Aufträge prüfen, ob diese
+   Aufträge über die Zuordnung mit dem Kundenauftrag verknüpft sind, bei dem 
+   abgeschrieben wird. Wenn dies NICHT der Fall sein sollte, dann die 
+   entsprechende Menge splitten. Nachteil: diese Lösung funktioniert nur 
+   beim ersten Mal.
+
+  
