@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.49 2003/02/10 14:33:59 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.50 2003/02/10 15:07:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -257,17 +257,19 @@ void AufEintrag::ArtikelInternNachbestellen(int uid,mengen_t menge,
 AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool instanzen,
      const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AE=",*this,
-   "ElternAEB=",ElternAEB,
-   "Menge=",menge,"Instanzen(bool)=",instanzen,"Reason=",reason);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
+   "Eltern=",ElternAEB,
+   "menge=",menge,"instanzen=",instanzen,"reason=",reason);
  assert(reason!=ManuProC::Auftrag::r_None);
 // if (reason==ManuProC::Auftrag::r_None) assert(!instanzen);
  if (!menge)  return menge;
- Transaction tr;
+ Transaction tr; // Beschleunigung
  Query("lock auftragentry in exclusive mode");
  SQLerror::test("updateStkDiff: lock table auftragentry");
 
  menge=updateStkDiffBase__(uid,menge);
+ bestellt+=menge;
+ if (ElternAEB.valid()) AufEintragZu(ElternAEB).Neu(*this,menge);
 
  if(auftragstatus==OPEN)
   {
@@ -280,8 +282,6 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
       updateStkDiffInstanz__(uid,menge,*this,reason);
   }
   tr.commit();
-
- bestellt+=menge;
  return menge;
 }
 
@@ -494,7 +494,7 @@ cH_Lieferschein AufEintrag::getLieferschein() const
 // vermutlich ehemals abschreiben_oder_reduzieren 
 void AufEintrag::WurdeProduziert(AuftragBase::mengen_t M,const AufEintragBase &ElternAEB)
 {  // Gilt für Lager && 
-   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,M,ElternAEB);
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,M,"Eltern",ElternAEB);
    assert(Id()==ungeplante_id);
    assert(Instanz()->LagerInstanz());
    if (Id()==ungeplante_id)

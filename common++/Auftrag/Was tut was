@@ -11,7 +11,7 @@
 - Auf _Ein_ tragsmenge ändern:
 	AE.MengeAendern(getuid(),<deltamenge>,true,AufEintragBase(),<reason>);
 	// true wegen rekursiv
-	// ElternAEB wird zum ändern des Pfeils benötigt
+	// ElternAEB wird zum ändern des Pfeils benötigt 
 
 - Neuen Auftrag anlegen:
 	A.push_back(...); ?

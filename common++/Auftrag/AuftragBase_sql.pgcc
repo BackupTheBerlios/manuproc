@@ -189,13 +189,14 @@ int AuftragBase::BestellmengeAendern(mengen_t deltamenge,
 
  // ist die Reihenfolge hier wichtig?
      // ändert Neu den Eintrag? 
+// if (kein_dispo && altAEB.valid())
+//      AufEintragZu(altAEB).Neu(NeuAEB,deltamenge);
+
+ // rekursion nur falls kein DispoAuftrag
+ AufEintrag(NeuAEB).MengeAendern(uid,deltamenge,kein_dispo,
+ 	kein_dispo?altAEB:AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
+
  // dispo=> andere Richtung des Pfeils muss geändert werden 
- if (kein_dispo && altAEB.valid())
-      AufEintragZu(altAEB).Neu(NeuAEB,deltamenge);
-
- // rekursion nur falls kein DispoAuftrag 
- AufEintrag(NeuAEB).MengeAendern(uid,deltamenge,kein_dispo,altAEB,ManuProC::Auftrag::r_Anlegen);
-
  if (!kein_dispo && altAEB.valid())
       AufEintragZu(NeuAEB).Neu(altAEB,deltamenge);
 
