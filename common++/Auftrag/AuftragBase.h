@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.37 2002/11/28 15:59:27 thoma Exp $ */
+/* $Id: AuftragBase.h,v 1.38 2002/12/10 10:04:46 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -105,6 +105,7 @@ class AuftragBase
    static mengen_t min(const mengen_t &x,const mengen_t &y);
    static mengen_t max(const mengen_t &x,const mengen_t &y);
 
+   static const UniqueValue::value_t trace_channel;
 };
 
 std::ostream &operator<<(std::ostream &o,const AuftragBase &a);
