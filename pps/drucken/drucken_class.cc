@@ -29,7 +29,11 @@
 #include <Misc/relops.h>
 #include "Configuration.h"
 
+#ifdef PETIG_EXTENSIONS
+#define TABW	"17.8"
+#else
 #define TABW	"18"
+#endif
 
 #define MWSTSATZ	0.16
 #define ENTSSATZ	0.002

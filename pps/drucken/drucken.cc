@@ -37,7 +37,7 @@ LR_drucken::LR_drucken(const LR_Base::typ RL_, unsigned int _auftragsnr,
 
 void LR_drucken::drucken()
 {
-   FILE *f=popen(("tex2prn.new -2 -y -Y"+Configuration.copies
+   FILE *f=popen(("tex2prn -2 -y -Y"+Configuration.copies
          +(Configuration.preview_only?" -G":"")).c_str(),"w");
    oFILEstream os(f);
 
