@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.20 2002/12/17 22:40:14 jacek Exp $
+// $Id: Lager.cc,v 1.21 2002/12/19 16:22:23 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -44,7 +44,7 @@ void LagerBase::rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::men
   assert(menge>=0);
 
      Transaction tr;
-     AuftragBase::dispo_auftrag_aendern(uid,*this,artikel,menge);
+     AuftragBase::dispo_auftrag_aendern(uid,*this,artikel,menge,LagerBase::Lagerdatum(),AufEintragBase());
      AuftragBase::menge_neu_verplanen(uid,*this,artikel,menge,ManuProC::Auftrag::r_Produziert);     
 
      ManuProC::st_produziert sp(artikel,menge,uid);

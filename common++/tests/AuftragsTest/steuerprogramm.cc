@@ -182,6 +182,7 @@ int auftragstests(e_mode mode)
     case Mengentest :
      {    
       // Menge des Auftrags erhöhen
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
       auftrag.kunden_bestellmenge_aendern(AEB,500);
       erfolgreich=C.teste(Check::Menge,"_menge_plus",mit_reparatur_programm);
       if(!erfolgreich) {cout << "Erhöhen der Auftragmenge \n\n";

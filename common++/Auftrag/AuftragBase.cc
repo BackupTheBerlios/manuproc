@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.17 2002/12/19 13:57:22 thoma Exp $
+// $Id: AuftragBase.cc,v 1.18 2002/12/19 16:22:20 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -131,14 +131,15 @@ bool AuftragBase::editierbar() const
   return true;
 }
 
-void AuftragBase::dispo_auftrag_aendern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,const mengen_t &menge)
+void AuftragBase::dispo_auftrag_aendern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,const mengen_t &menge,
+         const ManuProC::Datum &datum,const AufEintragBase &kindAEB)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
      "Artikel=",artikel,"Menge=",menge);
    AuftragBase da(instanz,AuftragBase::dispo_auftrag_id);
    int znr=-1,newznr=-1;
    AuftragBase::mengen_t oldmenge;
-   bool alt=da.existEntry(artikel,LagerBase::Lagerdatum(),znr,newznr,oldmenge,OPEN);
+   bool alt=da.existEntry(artikel,datum,znr,newznr,oldmenge,OPEN);
    if(alt)
      {
       AuftragBase::mengen_t mt=AufEintragBase(da,znr).updateStkDiffBase__(uid,menge);
@@ -147,8 +148,10 @@ void AuftragBase::dispo_auftrag_aendern(const int uid,cH_ppsInstanz instanz,cons
    else
      {
       Auftrag A(da);
-      A.push_back(menge,LagerBase::Lagerdatum(),artikel,OPEN,uid,false);
+      znr=A.push_back(menge,datum,artikel,OPEN,uid,false).ZNr();
      }
+   if(kindAEB.valid())
+      AufEintragZu(class AufEintragBase(da,znr)).setMengeDiff__(kindAEB,menge);
 }
 
 

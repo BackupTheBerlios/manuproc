@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.cc,v 1.5 2002/12/19 13:57:21 thoma Exp $
+// $Id: AufEintragZuMengenAenderung.cc,v 1.6 2002/12/19 16:22:20 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -89,15 +89,6 @@ void AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem(const int uid,
          ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AE0er=",AE0er,"AE1er=",AE1er,"Menge=",menge);
-/*
-  switch (reason) {
-    case ManuProC::Auftrag::r_Anlegen:  AE1er.updateStkDiff__(uid,menge,false,reason);break;
-    case ManuProC::Auftrag::r_Planen:   AE1er.updateStkDiff__(uid,menge,false,reason); 
-                                        AE0er.updateStkDiff__(uid,-menge,false,reason);
-                                        break;
-    default : cout << "Unbekannter Grund: "<<reason<<'\n'; abort();
-   }
-*/
   std::list<AufEintragZu::st_reflist> L=AufEintragZu(AE0er).get_Referenz_list(AE0er);
   for(std::list<AufEintragZu::st_reflist>::reverse_iterator i=L.rbegin();i!=L.rend();++i)
    {

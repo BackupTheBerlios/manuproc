@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.18 2002/12/19 13:57:16 thoma Exp $
+// $Id: AufEintrag.cc,v 1.19 2002/12/19 16:22:20 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -162,6 +162,7 @@ AufEintragBase AufEintrag::getFirstKundenAuftrag() const
 
 
 #warning diese Methode kann zu AufEintragBase werden
+#if 0
 void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const ArtikelBase artikel,int uid,ManuProC::Auftrag::Action reason)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AE=",*this,"Menge=",menge,"Reason=",reason);
@@ -227,6 +228,7 @@ void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const Art
   }
 */
 }
+#endif
 
 
 void AufEintrag::Produziert(mengen_t menge,
@@ -275,7 +277,7 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
       znr=neuAEB.ZNr();
     }
    
-   if(menge==AuftragBase::mengen_t(0)) {tr.commit(); return znr;}
+   if(menge==AuftragBase::mengen_t(0)) {tr.commit();   return znr;}
    assert(menge>0);
    // dispo (2er) Auftrag anlegen bei Überplanung
    if(menge-getRestStk() > 0  && !Instanz()->LagerInstanz() )
@@ -316,9 +318,11 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
 //      updateStkDiff__(uid,-menge,true,reason);
    }
 
+  AE1er.updateStkDiff__(uid,menge,false,reason);
+
+
 //  if(reason==ManuProC::Auftrag::r_Anlegen) 
-//  AE1er.updateStkDiff__(uid,menge,false,reason)
-   InstanzAuftraegeAnlegen(AE1er,menge,uid);
+//   InstanzAuftraegeAnlegen(AE1er,menge,uid);
 
 //   move_to(uid,AufEintragBase(zielauftrag,znr),menge,reason);
 

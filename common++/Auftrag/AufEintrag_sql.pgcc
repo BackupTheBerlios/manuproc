@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.36 2002/12/19 13:57:22 thoma Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.37 2002/12/19 16:22:20 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -249,7 +249,8 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
 //cout << "M;"<<menge<<'\t'<<mt<<'\n';
 
 //   if(instanzen || reason==ManuProC::Auftrag::r_Reparatur)
-   if(!Instanz()->LagerInstanz())
+   if((!Instanz()->LagerInstanz() || Id()==AuftragBase::ungeplante_id) && 
+         instanzen)
       updateStkDiffInstanz__(uid,mt,reason);
    bestellt+=menge;
 
@@ -264,18 +265,25 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,ManuProC::Auft
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"OldMenge=",oldmenge,
    "Reason=",reason);
- std::list<AufEintragZu::st_reflist> KindListeU = AufEintragZu(*this).get_Referenz_list_ungeplant();
+ std::list<AufEintragZu::st_reflist> KindListeU = AufEintragZu(*this).get_Referenz_list(*this,true);
  try{
-  std::vector<ArtikelBase> VA;
-  std::list<AufEintragZu::st_reflist> ZU;
+//  std::vector<ArtikelBase> VA;
+//  std::list<AufEintragZu::st_reflist> ZU;
+
+/*
   if(reason==ManuProC::Auftrag::r_Anlegen || reason==ManuProC::Auftrag::r_Closed) 
          ZU=KindListeU;
   else
+*/
+   typedef  std::map<ArtikelBase,std::list<AufEintragZu::st_reflist> > MapArt_t;
+   MapArt_t MapArt;
    for(std::list<AufEintragZu::st_reflist>::iterator i=KindListeU.begin();i!=KindListeU.end();++i)
     {
       // Nach dem Planen kann es zu einem Auftrag mehrere Kindaufträge 
       // mit demselben Artikel geben, nur bei EINEM darf die Menge geändert
       // werden
+      MapArt[i->Art].push_back(*i);
+/*
       std::vector<ArtikelBase>::iterator j=std::find(VA.begin(),VA.end(),i->Art);
       if(j!=VA.end()) continue; // Artikel schon bekannt
       // Nur wenn es keinen mit einer Menge!=null gibt diesen erhöhen.
@@ -285,31 +293,52 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,ManuProC::Auft
          VA.push_back(i->Art);
          ZU.push_back(*i);
        }
+*/
      }
 
-  for(std::list<AufEintragZu::st_reflist>::iterator i=ZU.begin();i!=ZU.end();++i)
+//  for(std::list<AufEintragZu::st_reflist>::iterator i=ZU.begin();i!=ZU.end();++i)
+  for(MapArt_t::iterator i=MapArt.begin();i!=MapArt.end();++i)
    {
-     ArtikelBaum::faktor_t faktor = ArtikelBaum(ArtId()).Faktor(i->Art);
+     ArtikelBaum::faktor_t faktor = ArtikelBaum(ArtId()).Faktor(i->first);
      AuftragBase::mengen_t menge=faktor*oldmenge;
 //cout <<*this<<'\t'<< menge<<'\t'<<faktor<<' '<<oldmenge<<'\n';
-     AufEintrag AE(i->AEB);
-//cout <<AE<<'\n';
-     mengen_t mt=AE.updateStkDiff__(uid,menge,true,reason);
-     AufEintragZu(*this).setMengeDiff__(i->AEB,menge);
-
-     if(mt!=mengen_t(menge)) // es konnte nicht alles bei ungeplanten reduziert werden
+     for(std::list<AufEintragZu::st_reflist>::iterator j=i->second.begin();j!=i->second.end();++j)
       {
-        AuftragBase::mengen_t restmenge=mt-menge;
-        assert(restmenge>AuftragBase::mengen_t(0));
-        move_menge_to_dispo_zuordnung_or_lager(restmenge,AE.Artikel(),uid,reason);
+        AufEintrag AE(j->AEB);
+//cout <<AE<<'\n';
+        mengen_t M=menge;
+        if(M<0) M=-AuftragBase::min(j->Menge,M.abs());
+        if(j->AEB.Id()==AuftragBase::ungeplante_id || j->AEB.Instanz()->LagerInstanz())
+           M=AE.updateStkDiff__(uid,M,true,reason);
+        else 
+          {
+            assert(j->AEB.Id()!=AuftragBase::dispo_auftrag_id);
+            assert(M<0);
+            dispo_auftrag_aendern(uid,j->AEB.Instanz(),i->first,-M,AE.getLieferdatum(),j->AEB);             
+          } 
+        AufEintragZu(*this).setMengeDiff__(j->AEB,M);
+        if(j->AEB.Instanz()->LagerInstanz() && 
+           j->AEB.Id()==AuftragBase::plan_auftrag_id && M<0)
+            dispo_auftrag_aendern(uid,j->AEB.Instanz(),i->first,-M,LagerBase::Lagerdatum(),AufEintragBase());
+        menge-=M;
+        if(!menge) break;
+      }
+/*
+     if(!!menge && Instanz()->LagerInstanz()) // es konnte nicht alles bei ungeplanten reduziert werden
+      {
+        
+        dispo_auftrag_aendern(uid,Instanz(),i->first,menge);
+//        move_menge_to_dispo_zuordnung_or_lager(menge,i->first,uid,reason);
 //        AE.move_menge_to_dispo_zuordnung_or_lager(restmenge,uid,reason);
       }
+*/
     }
 
   }catch(NoAEB_Error &e) 
   {std::cerr <<"Falsche Anzahl von AufEinträgen: "<<e.what()<<'\n'; 
    exit(1);}
 
+#if 0
   // Wenn ein 0er ein geplantes Kind hat, für das noch freie Menge (2er)
   // verfügbar ist ...
   std::list<AufEintragZu::st_reflist> KindListeG = AufEintragZu(*this).get_Referenz_list(*this,true);
@@ -338,6 +367,7 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,ManuProC::Auft
         if(restmenge==mengen_t(0)) break;
       }
    }  
+#endif
 }
 
 void AufEintrag::updatePreis(const Preis &pr) throw(SQLerror)
