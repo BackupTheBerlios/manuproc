@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.33 2004/02/02 16:59:02 jacek Exp $
+// $Id: sqlAuftragSelector.cc,v 1.34 2004/02/18 17:38:02 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -251,10 +251,22 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Status &selstr)
 SQLFullAuftragSelector::SQLFullAuftragSelector(
 			const sel_Kunde_Status_Lager &selstr)
 {
- std::string query("select ");
+// PRE QUERY
+ std::string tmptable("aktbestand_");
+ tmptable+=itos(getpid())+"_"+itos(getuid());
+
+ std::string query("create temp table ");
+ query+=tmptable+" as (select * from "+selstr.lager.ViewTabelle()+");";
+ query+=" create unique index temp_uniq on "+tmptable+" (artikelid)";
+
+ pre_query=query;
+
+// MAIN QUERY
+ query="select ";
  query+= FULL_SELECTIONS_BASE+",best.bestand "+
 	" from "+FULL_FROM+" left join "+
-	selstr.lager.ViewTabelle()+" best "
+	tmptable+" best "
+//	selstr.lager.ViewTabelle()+" best "
 	" using (artikelid) where true "
         " and bestellt!=0 "
 	     " and "+StatusQualifier(selstr.stat)+
@@ -263,6 +275,12 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(
 	     " order by e.lieferdate";
 
  setClausel(query);
+
+// POST QUERY
+
+ query="drop table "+tmptable;
+ post_query=query;
+
 }
 #endif
 

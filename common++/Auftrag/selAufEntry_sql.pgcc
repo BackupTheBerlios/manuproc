@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.31 2004/01/14 20:10:06 jacek Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.32 2004/02/18 17:38:02 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -79,8 +79,15 @@ FetchIStream &operator>>(FetchIStream &is, AufEintrag &ae)
 
 SelectedFullAufList::SelectedFullAufList
 	(const SQLFullAuftragSelector &selector) throw(SQLerror)
-{	Query q(selector.getClausel());
-        q.FetchArray(aufidliste);
+{
+ if(!selector.getPreQuery().empty())
+   Query(selector.getPreQuery());
+
+ Query q(selector.getClausel());
+ q.FetchArray(aufidliste);
+
+ if(!selector.getPostQuery().empty())
+   Query(selector.getPostQuery());
 }
 
 
