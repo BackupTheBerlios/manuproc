@@ -963,16 +963,12 @@ void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
             AuftragBase::mengen_t menge)
 {
 
-   if(Typ()==Intern||Typ()==Extern) 
-      { neue_spalte( erste_spalte, os);
-        if (!zusatzinfo)
-	        os <<"{"<<linecolor<< Gtk2TeX::string2TeX(bez->Bezeichnung()) ;
-        if(menge!=0) os << " }&{"<<linecolor<<"("<<menge<<")";
-	        os <<"}";
-      }
-   else if (Configuration.combine)
+   if (Configuration.combine)
    {  neue_spalte( erste_spalte, os);
-      os <<'{'<<linecolor<< Gtk2TeX::string2TeX(bez->Bezeichnung()) << '}';
+      if (!zusatzinfo)
+        os <<"{"<<linecolor<< Gtk2TeX::string2TeX(bez->Bezeichnung()) ;
+      if(menge!=0) os << " }&{"<<linecolor<<"("<<menge<<")";
+      os <<"}";
    }
    else
 	 for(ExtBezSchema::const_sigiterator l=s->sigbegin(signifikanz);l!=s->sigend(signifikanz);++l)
@@ -1059,7 +1055,7 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
        ueberschriften+= "&\\mbox{"+ug+"Rohware}";
        ueberschriften+= "&\\mbox{"+ug+"geplant für}";
      }
-  else if (Configuration.combine || Typ()==Extern)
+  else if (Configuration.combine) // || Typ()==Extern)
      { tabcolumn += "X"; spaltenzahl++; 
        ueberschriften+= "&\\mbox{"+ug+"Artikel}";
      }
