@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.27 2003/10/21 11:55:20 christof Exp $
+// $Id: SimpleTree.cc,v 1.28 2003/10/22 07:58:48 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -157,11 +157,16 @@ std::vector<cH_RowDataBase> SimpleTree::getSelectedRowDataBase_vec() const
 }
 
 
-static Gtk::MenuItem *add_mitem(Gtk::Menu *m,const std::string text,const SigC::Slot0<void> &callback)
+static Gtk::MenuItem *add_mitem(Gtk::Menu *m,const std::string text)
 {  Gtk::MenuItem *it=manage(new class Gtk::MenuItem(text));
-   it->signal_activate().connect(callback);
    m->append(*it);
    it->show();
+   return it;
+}
+
+static Gtk::MenuItem *add_mitem(Gtk::Menu *m,const std::string text,const SigC::Slot0<void> &callback)
+{  Gtk::MenuItem *it=add_mitem(m,text);
+   it->signal_activate().connect(callback);
    return it;
 }
 
@@ -171,24 +176,16 @@ void SimpleTree_Basic::fillMenu()
   // Hauptmenü
   add_mitem(menu,"Zurücksetzen",SigC::slot(*this,&SimpleTree_Basic::on_zuruecksetzen_clicked));
   add_mitem(menu,"Abbrechen",SigC::slot(*this,&SimpleTree_Basic::on_abbrechen_clicked));
-//  add_mitem(menu,"Neuordnen",SigC::slot(*this,&SimpleTree_Basic::Neuordnen));
-//  Gtk::MenuItem *spalten=add_mitem(menu,"Sichtbare Spalten",SigC::Slot0<void>());
+  add_mitem(menu,"Neuordnen",SigC::slot(*this,&SimpleTree_Basic::on_neuordnen_clicked));
+  Gtk::MenuItem *spalten=add_mitem(menu,"Sichtbare Spalten");
+  Gtk::Menu *spalten_menu=manage(new Gtk::Menu);
+  spalten->set_submenu(*spalten_menu);
+  Gtk::MenuItem *optionen=add_mitem(menu,"Optionen");
+  Gtk::Menu *optionen_menu=manage(new Gtk::Menu);
+  optionen->set_submenu(*optionen_menu);
   add_mitem(menu,"Alles aufklappen",SigC::slot(*this,&SimpleTree_Basic::Expand_recursively));
   add_mitem(menu,"Alles zuklappen",SigC::slot(*this,&SimpleTree_Basic::Collapse));
 #if 0
-   Gtk::MenuItem *neuordnen = manage(new class Gtk::MenuItem("Neuordnen"));
-   Gtk::MenuItem *zuruecksetzen = manage(new class Gtk::MenuItem("Zurücksetzen"));
-   Gtk::MenuItem *abbrechen = manage(new class Gtk::MenuItem("Abbrechen"));
-   Gtk::Menu *spalten_menu = manage(new class Gtk::Menu());
-   Gtk::MenuItem *spalten = manage(new class Gtk::MenuItem("Sichtbare Spalten"));
-   Gtk::Menu *optionen_menu = manage(new class Gtk::Menu());
-   Gtk::MenuItem *optionen = manage(new class Gtk::MenuItem("Optionen"));
-
-   menu->append(*zuruecksetzen);     
-   menu->append(*abbrechen);   
-   menu->append(*spalten);
-   spalten->set_submenu(*spalten_menu);
-
    for (guint i=0;i<Cols();++i)
     {
       Gtk::CheckMenuItem *sp = manage(new class Gtk::CheckMenuItem(getColTitle(i)));
@@ -211,15 +208,7 @@ void SimpleTree_Basic::fillMenu()
    optionen_menu->append(*colorize);
    optionen_menu->append(*exp_all);
    optionen_menu->append(*col_all);
-   titles->show();
-   auffuellen->show();
-   expandieren->show();
-   colorize->show();
    
-   neuordnen->activate.connect(SigC::slot(this,&TreeBase::on_neuordnen_clicked));
-   zuruecksetzen->activate.connect(SigC::slot(this,&TreeBase::on_zuruecksetzen_clicked));
-   abbrechen->activate.connect(SigC::slot(this,&TreeBase::on_abbrechen_clicked));
-
    titles_menu=titles;
    titles->set_active(titles_bool);
    titles->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::Titles),titles));
@@ -235,14 +224,6 @@ void SimpleTree_Basic::fillMenu()
 
    exp_all->activate.connect(SigC::slot(this,&TreeBase::Expand_recursively));
    col_all->activate.connect(SigC::slot(this,&TreeBase::Collapse_recursively));
-
-   // Menu anzeigen
-//   neuordnen->show();
-//   zuruecksetzen->show();
-//   abbrechen->show();
-//   spalten->show();
-//   optionen->show();
-   menu->show_all();
 #endif
 }
 
