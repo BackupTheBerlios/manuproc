@@ -3,7 +3,6 @@
 #include "Artikeleingabe_classes.hh"
 #include <gtkmm/main.h>
 #include <gtkmm/eventbox.h>
-#include <libgnomeui/gnome-stock.h>
 #include <gtkmm/toolbar.h>
 #include <Artikel/ArtikelBaum.h>
 #include <Artikel/ArtikelStamm.h>

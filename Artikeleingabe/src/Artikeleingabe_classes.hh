@@ -32,23 +32,31 @@ class Data_Node : public TreeRow
  public:
     virtual void cumulate(const cH_RowDataBase &rd)
       {
-         artbase = (dynamic_cast<const Data_tree &>(*rd)).Artikel();
-         artbase2 = (dynamic_cast<const Data_tree &>(*rd)).Artikel2();
+         artbase = rd.cast_dynamic<const Data_tree>()->Artikel();
+         artbase2 =  rd.cast_dynamic<const Data_tree>()->Artikel2();
       }
+    virtual void deduct(const cH_RowDataBase &rd)
+      {
+      }
+    virtual const cH_EntryValue Value(unsigned int, void*) const
+    {  return cH_EntryValue();
+    }
     ArtikelBase Artikel() const {return artbase;}
     ArtikelBase Artikel2() const {return artbase2;}
 
-    Data_Node::Data_Node(guint deep,const cH_EntryValue &v, guint child_s_deep,  const Handle<const TreeRow> &suminit)
-        :TreeRow(deep,v,child_s_deep,child_s_data,expand) 
-    {  if (suminit.Leaf()) cumulate(child_s_data);
+    Data_Node::Data_Node(const Handle<const TreeRow> &suminit)
+//        :TreeRow(deep,v,child_s_deep,expand)
+    {  if (suminit) cumulate(suminit.cast_dynamic<const RowDataBase>());
+#if 0    
        else 
        {  artbase=dynamic_cast<const Data_Node&>(suminit).artbase;
           artbase2=dynamic_cast<const Data_Node&>(suminit).artbase2;
        }
+#endif       
     }
 
-    static TreeRow *create(  const Handle<const TreeRow> &suminit)
-       {  return new Data_Node(col,v,child_s_deep,child_s_data,expand,suminit);
+    static TreeRow *create(const Handle<const TreeRow> &suminit)
+       {  return new Data_Node(suminit);
        }
 };
 #endif
