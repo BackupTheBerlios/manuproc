@@ -101,7 +101,7 @@ public:
       }
 
    const ManuProC::Datum getLieferdatum() const {
-	   if (Typ()==Auftrag) return u.a->getLieferdatum(); 
+	   if((Typ()==Auftrag)||(Typ()==Extern)) return u.a->getLieferdatum(); 
 	   return ManuProC::Datum();}
    AufEintragBase getAEB() const {
       if (Typ()==Intern) return *(u.a);

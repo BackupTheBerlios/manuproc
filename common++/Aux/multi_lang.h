@@ -94,6 +94,7 @@ public:
 		SEHR_VEREHRTE_F=79,
 		TXT_STORNO=80,
 		PRINTF_ZAHLUNG11=81,
+		TXT_ANSPRECHPARTNER=82,
 	     } LangTXT;
 
  MultiL_Dict(int sprache, int default_spr=1);

@@ -283,16 +283,20 @@ catch(SQLerror &e) { std::cout << e; return; }
    }
  else if(Typ()==Extern )
    {
-     os << "\n\\vspace{1cm}\n";
-     os << "Mit freundlichen Grüßen\\\\[6ex]\n";
-     if(kunde_an->getBetreuer()!=Person::none_id)
-	{cH_Person betr(kunde_an->getBetreuer());
-         os<< betr->Vorname()<<" "<<betr->Name()<<"\\\\\n";
-	}
-     else
-        {std::string name =  getpwuid(getuid())->pw_gecos;
-	 os <<name<<"\\\\\n";
-	}
+    os << "\\bigskip\n";
+    if(kunde_an->get_lieferung_frei_haus()) 
+      os << mld->MLT(MultiL_Dict::TXT_LIEF_FREI) <<"\\\\\n";
+//     os << "Mit freundlichen Grüßen\\\\[6ex]\n";
+//     if(kunde_an->getBetreuer()!=Person::none_id)
+//	{cH_Person betr(kunde_an->getBetreuer());
+//         os<< betr->Vorname()<<" "<<betr->Name()<<"\\\\\n";
+//	}
+//     else
+//        {std::string name =  getpwuid(getuid())->pw_gecos;
+//	 os <<name<<"\\\\\n";
+//	}
+    os << "\\\\Wir bitten um Zusendung einer Auftragsbestätigung\\\\\n";
+
    }
  else if(Typ()==Lieferschein)
   {
@@ -350,7 +354,7 @@ catch(SQLerror &e) { std::cout << e; return; }
 	else
 	  os << mld->MLT(MultiL_Dict::TXT_EU_PREFERENZ);
 	os << "\\\\\n";
-	os << "~\\\\\nWuppertal, "<<mld->MLT(MultiL_Dict::TXT_DEN);
+	os << "~\\\\\n"<<kunde_von->ort()<<", "<<mld->MLT(MultiL_Dict::TXT_DEN);
 	}
   Gtk2TeX::Footer(os);
 }
@@ -884,18 +888,19 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
           }
           
 
-	if(Typ() == Auftrag)
-	  { 
-#ifndef MABELLA_EXTENSIONS
-	    neue_spalte(erste_spalte,os);
-#endif
+	if((Typ() == Auftrag) || (Typ()==Extern))
+	  {
+	    if(Typ()==Extern) 
+	      neue_spalte(erste_spalte,os);
+
 	    Kalenderwoche kw(lieferdatum.KW());
 	    char jahr[3];
 	    snprintf(jahr,3,"%02d",kw.Jahr()%100);
 	    std::string kws = kw.valid() ? itos(kw.Woche())+"'"+jahr : "-";
-#ifndef MABELLA_EXTENSIONS
-	    os << linecolor << kws;
-#endif
+
+	    if(Typ()==Extern)
+	      os << linecolor << kws;
+
 	    if(!min_liefdatum.valid()) 
 		{min_liefdatum=lieferdatum;
 		 min_KWStr=kws;
@@ -1143,11 +1148,10 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
 #endif
   }
 
-#ifndef MABELLA_EXTENSIONS
-  if (Typ()==Auftrag)
+  if((Typ()==Auftrag) || (Typ()==Extern))
   { tabcolumn+="r"; spaltenzahl+=1; ueberschriften +=  "&{"+sg
 			+mld->MLT(MultiL_Dict::TXT_LIEFERKW)+"}"; }
-#endif
+
   
   os << "\\settowidth{\\breite}{"<<ug<<" "<<mld->MLT(MultiL_Dict::TXT_BEZEICHNUNG)<<"}%\n";
 #ifdef MABELLA_EXTENSIONS
@@ -1274,7 +1278,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
 
 #ifdef MABELLA_EXTENSIONS
 	os << "\\end{flushleft}\\end{minipage}}\\hfill"
-		"\\raisebox{0pt}[0pt][0pt]{\\begin{minipage}[t]{0.30\\linewidth}\n"
+		"\\raisebox{0pt}[0pt][0pt]{\\begin{minipage}[t]{0.38\\linewidth}\n"
 	      "\\footnotesize\n"
 	      "\\sloppy\n"
 	      "\\begin{flushleft}\n";
@@ -1358,8 +1362,12 @@ void LR_Abstraktion::page_header(std::ostream &os)
 		
 	if(kunde_rng->getBetreuer()!=Person::none_id)
 	  {cH_Person betr(kunde_rng->getBetreuer());
-           os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_BETREUUNG)<<":\\rm \\\\\n"
-           	<< betr->Anrede()->getAnrede(*mld) <<" "
+	   if(Typ()==Extern)
+             os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_ANSPRECHPARTNER)<<":\\rm \\\\\n";
+	   else
+             os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_BETREUUNG)<<":\\rm \\\\\n";
+
+           os << betr->Anrede()->getAnrede(*mld) <<" "
            	<< betr->Vorname()<<" "<<betr->Name()<<"\\\\\n"
         	<< mld->MLT(MultiL_Dict::TXT_TELEFON)<<": "<<betr->Kontakt(TEL_TEL,kunde_von->Id())<<"\\\\\n"
         	<< mld->MLT(MultiL_Dict::TXT_TELEFAX)<<": "<<betr->Kontakt(TEL_FAX,kunde_von->Id())<<"\\\\\n"
@@ -1373,7 +1381,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
         	<< "E-Mail: "<<kunde_von->get_first_telefon(TEL_E_MAIL)<<"\\\\\n";
         }
 
-	if(kunde_an->VerkNr()!=Person::none_id)
+	if(kunde_an->VerkNr()!=Person::none_id && Typ()!=Extern)
 	  {kunde_an->getVerkaeufer();
            os << "\\vspace*{2mm}\\bf "<<mld->MLT(MultiL_Dict::TXT_BESUCHTSIE)<<":\\rm \\\\\n"
            	<< kunde_an->VerkName() <<"~\\\\\n";
@@ -1423,8 +1431,8 @@ void LR_Abstraktion::page_header(std::ostream &os)
    os <<RngNr()<<"\\normalsize ~" << mld->MLT(MultiL_Dict::TXT_VOM)
 		<<" " <<getDatum()<<". ";
    if(Typ()==Extern)
-     os << "\n~\\\\\\small Die Bestellnummer bitte auf Auftragsbestätigung,"
-	   " Lieferschein und Rechnung immer angeben \\normalsize\\\\[.5ex]\n";
+     os << "\n~\\\\\\small Die Bestellnummer bitte immer auf Auftragsbestätigung,"
+	   " Lieferschein und Rechnung angeben \\normalsize\\\\[.5ex]\n";
 
 
    if(Typ()==Auftrag  && page_counter==1 && !Rueckstand())
