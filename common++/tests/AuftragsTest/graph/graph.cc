@@ -1,4 +1,4 @@
-// $Id: graph.cc,v 1.25 2003/11/17 13:30:32 christof Exp $
+// $Id: graph.cc,v 1.26 2003/11/26 16:29:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 
   if (optind!=argc-1) {usage(argv[0]); exit(1);}
   std::string mode=argv[optind];
-  Petig::PrintUncaughtExceptions();
+  ManuProC::PrintUncaughtExceptions();
   try{
   if (!getenv("PGDATABASE"))
   {
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
    putenv("PGDATABASE=testdb");
 #endif
   }
-   Petig::dbconnect();
+   ManuProC::dbconnect();
    dot_out D(mode,colour);
    D.write();
   }

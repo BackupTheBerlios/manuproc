@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.53 2003/11/17 13:30:32 christof Exp $
+// $Id: get_data.cc,v 1.54 2003/11/26 16:29:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -70,7 +70,7 @@ void graph_data_node::get_values_from_files()
         cH_ppsInstanz instanz(ppsInstanzID::None);
         int id,znr;
         AuftragBase::mengen_t bestellt,geliefert;
-        Petig::Datum datum;
+        ManuProC::Datum datum;
         AufStatVal status=NOSTAT;
         ArtikelBase artikel;
         std::string::size_type s1;
@@ -210,7 +210,7 @@ graph_data_node::st_node_strings graph_data_node::get_mengen_for_node(AufEintrag
       std::string z="("+std::string(j->datum.c_str())+","+itos(j->status)+")";
       if (!Z.empty()) Z+="/";
       if(Zmem != z )  Z+=prefix+z ;
-      Z+="/";
+//      Z+="/";
       Zmem=z;
       artikel=j->artikel;
     }

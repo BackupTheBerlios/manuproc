@@ -1,4 +1,4 @@
-// $Id: get_data.h,v 1.24 2003/08/06 09:17:53 christof Exp $
+// $Id: get_data.h,v 1.25 2003/11/26 16:29:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -31,10 +31,10 @@ class graph_data_node
 public:
       struct st_auftrag{AufEintragBase auftrag; AuftragBase::mengen_t bestellt;
                         AuftragBase::mengen_t geliefert;AufStatVal status;
-                        Petig::Datum datum;std::string prefix;
+                        ManuProC::Datum datum;std::string prefix;
                         ArtikelBase artikel;
              st_auftrag(AufEintragBase a, AuftragBase::mengen_t b,
-                         AuftragBase::mengen_t g,AufStatVal s,Petig::Datum d,
+                         AuftragBase::mengen_t g,AufStatVal s,ManuProC::Datum d,
                          std::string p,ArtikelBase art)
                 :auftrag(a),bestellt(b),geliefert(g),status(s),datum(d),prefix(p),
                 	artikel(art) {}
