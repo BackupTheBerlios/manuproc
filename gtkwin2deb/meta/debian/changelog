@@ -1,3 +1,9 @@
+mingw32-gtkmm-meta (4) experimental; urgency=low
+
+  * insist on new glib-dev
+
+ -- Christof Petig <christof@petig-baender.de>  Mon, 25 Oct 2004 17:23:36 +0200
+
 mingw32-gtkmm-meta (3) experimental; urgency=low
 
   * zlib and libpng are newly available

@@ -30,5 +30,6 @@ bin/libpangomm-1.4-1.dll bin/libgdkmm-2.4-1.dll lib/libatkmm-1.6.dll.a
 lib/libgdkmm-2.4.dll.a lib/libgtkmm-2.4.dll.a lib/libpangomm-1.4.dll.a
 lib/pkgconfig/atkmm-1.6.pc lib/pkgconfig/gdkmm-2.4.pc
 lib/pkgconfig/gtkmm-2.4.pc lib/pkgconfig/pangomm-1.4.pc include/atkmm-1.6
-include/gdkmm-2.4/ include/gtkmm-2.4/ include/pangomm-1.4
+include/gdkmm-2.4/ include/gtkmm-2.4/ include/pangomm-1.4 lib/gdkmm-2.4/
+lib/gtkmm-2.4/
 	
