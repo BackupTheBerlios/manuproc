@@ -13,6 +13,13 @@
 #  include "mpc_agent_glade.hh"
 #  define _MPC_AGENT_HH
 
+#ifdef DEF_VERKNR
+#define VERKNR		DEF_VERKNR
+#else
+#define VERKNR		0
+#endif
+
+
 typedef enum {KDBOX_NR=0,KDBOX_NAME,KDBOX_ORT} KdEntries;
 typedef enum {OD_ROW,OD_ARTICLE,OD_AMOUNT} OrderEntries;
 

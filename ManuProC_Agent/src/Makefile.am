@@ -24,7 +24,8 @@ endif
 
 mpc_agent_SOURCES = \
 	mpc_agent_glade.cc \
-	mpc_agent.cc 
+	mpc_agent.cc \
+	mpc_internal.cc
 
 noinst_HEADERS = \
 	mpc_agent_glade.hh \

@@ -172,9 +172,6 @@ void mpc_agent::on_orderid_activate()
 {  
 }
 
-void mpc_agent::on_orderid_search(gboolean *cont,GtkSCContext context)
-{  
 
-}
 
 
