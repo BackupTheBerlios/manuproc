@@ -1,4 +1,4 @@
-// $Id: test_sts.cc,v 1.1 2004/05/05 12:59:19 christof Exp $
+// $Id: test_sts.cc,v 1.2 2004/05/05 13:31:53 christof Exp $
 /*  ManuProcWidgets: ManuProC's GUI element library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,7 @@
 #include <Misc/EntryValueIntString.h>
 #include <Misc/EntryValueEmptyInt.h>
 #include <Misc/itos.h>
+#include <gtkmm/main.h>
 
 enum Spalten
 {  SP_ATT0, SP_ATT1, SP_ATT2, SP_ATT3, SP_ATT4, 
@@ -68,8 +69,9 @@ public:
 #endif   
 };
 
-int main()
-{  Glib::RefPtr<SimpleTreeStore> sts=SimpleTreeStore::create(SP_ANZ);
+int main(int argc,char ** argv)
+{  Gtk::Main m(argc,argv);
+   Glib::RefPtr<SimpleTreeStore> sts=SimpleTreeStore::create(SP_ANZ);
 
    std::vector <cH_RowDataBase> datavec;
 #if 1
@@ -77,5 +79,6 @@ int main()
    datavec.push_back(new MyRowData(2,"Y",2,3,"A"));
    datavec.push_back(new MyRowData(10,"Z",2,3,"A"));
 #endif
+   sts->setDataVec(datavec);
    TreeModelDebug(sts);
 }
