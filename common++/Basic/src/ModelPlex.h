@@ -1,4 +1,4 @@
-// $Id: ModelPlex.h,v 1.3 2003/09/04 07:43:34 christof Exp $
+// $Id: ModelPlex.h,v 1.4 2004/03/06 23:13:48 christof Exp $
 /*  libcommon++: ManuProC's OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -44,6 +44,15 @@
 #endif
 #include <sigc++/object_slot.h>
 
+#if 0
+#include <Misc/Trace.h>
+extern ManuProC::Tracer::Channel modelplex_chan;
+#define MODELPLEX_DEBUG(msg,arg...) ManuProC::Trace _mpx(modelplex_chan,msg,##arg)
+#define MODELPLEX_DEBUG_ON
+#else
+#define MODELPLEX_DEBUG(msg,arg...)
+#endif
+
 template <class T>
  class ModelPlex : public SigC::Object, public Model_copyable<T>
 {	typedef ModelPlex<T> this_t;
@@ -53,30 +62,44 @@ template <class T>
 
 	// model ist actmodel, we+we ist this
 	void we2actmodel(void *x)
-	{  mv_con.block();
+	{  MODELPLEX_DEBUG(__FUNCTION__,Id(),actmodel.Id());
+	   mv_con.block();
 	   if (actmodel.valid()) actmodel=Value();
            mv_con.unblock();
 	}
 	void actmodel2us()
-	{  cm_con.block();
+	{  MODELPLEX_DEBUG(__FUNCTION__,Id(),actmodel.Id());
+	   cm_con.block();
 	   if (Value()!=actmodel.Value()) // do not fire if unchanged
 	      *this=actmodel.Value(); 
 	   cm_con.unblock();
 	}
 	void actmodel_value_changed(void *x)
-	{  if (actmodel.matches(x)) actmodel2us();
+	{  MODELPLEX_DEBUG(__FUNCTION__,Id(),actmodel.Id());
+	   if (actmodel.matches(x)) actmodel2us();
 	}
 
 	void operator=(const this_t &b);
 public:
 	ModelPlex(const Model_ref<T> &m=Model_ref<T>())
-	{ cm_con=signal_changed().connect(
+	{ MODELPLEX_DEBUG(__FUNCTION__,Id(),m.Id());
+	  cm_con=signal_changed().connect(
 			SigC::slot(*this,&this_t::we2actmodel));
 	  if (m.valid()) set_model(m); 
 	}
+//#if defined(MODELPLEX_DEBUG_ON)	
+	ModelPlex(const ModelPlex<T> &a)
+	: SigC::Object(a), Model_copyable<T>(a)
+	{  MODELPLEX_DEBUG(__PRETTY_FUNCTION__,Id(),a.Id());
+	   cm_con=signal_changed().connect(
+			SigC::slot(*this,&this_t::we2actmodel));
+	   if (a.actmodel.valid()) set_model(a.actmodel);
+	}
+//#endif
 
 	void set_model(const Model_ref<T> &m)
-	{  mv_con.disconnect();
+	{  MODELPLEX_DEBUG(__FUNCTION__,Id(),m.Id());
+	   mv_con.disconnect();
 	   actmodel=m;
 	   actmodel2us();
 	   if (actmodel.valid())
@@ -85,7 +108,8 @@ public:
 	}
 	
 	const T &operator=(const T &v)
-	{  return Model<T>::operator=(v); }
+	{  MODELPLEX_DEBUG(__PRETTY_FUNCTION__,Id(),v);
+	   return Model<T>::operator=(v); }
 	void operator=(const Model_ref<T> &m)
 	{  set_model(m); }
 };
