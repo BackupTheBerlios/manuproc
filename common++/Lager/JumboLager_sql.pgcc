@@ -49,7 +49,7 @@ void JumboLager::Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jum
   if (zeit) zeit->write(PostgresTimestamp(ZEIT,sizeof ZEIT));
   else 
   {  exec sql select now() into :ZEIT;
-     SQLerror::test("select now",true);
+     SQLerror::test("select now");
      zeit_local_storage=Zeitpunkt_new(ZEIT);
      zeit=&zeit_local_storage;
   }
@@ -111,7 +111,7 @@ void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
   if (zeit) zeit->write(PostgresTimestamp(ZEIT,sizeof ZEIT));
   else 
   {  exec sql select now() into :ZEIT;
-     SQLerror::test("select now",true);
+     SQLerror::test("select now");
      zeit_local_storage=Zeitpunkt_new(ZEIT);
      zeit=&zeit_local_storage;
   }
