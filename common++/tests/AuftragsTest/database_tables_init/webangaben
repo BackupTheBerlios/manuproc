@@ -31,19 +31,3 @@ CREATE TABLE "webangaben" (
 
 COPY "webangaben" FROM stdin;
 \.
---
--- TOC Entry ID 5 (OID 16135367)
---
--- Name: "RI_ConstraintTrigger_16135366" Type: TRIGGER Owner: christof
---
-
-CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "webangaben"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'webangaben', 'artbez_4_1', 'UNSPECIFIED', 'schussmaterial', 'id');
-
---
--- TOC Entry ID 4 (OID 16135369)
---
--- Name: "RI_ConstraintTrigger_16135368" Type: TRIGGER Owner: christof
---
-
-CREATE CONSTRAINT TRIGGER "webangaben_fk0" AFTER INSERT OR UPDATE ON "webangaben"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('webangaben_fk0', 'webangaben', 'artbez_4_1', 'UNSPECIFIED', 'schussmaterial', 'id');
-

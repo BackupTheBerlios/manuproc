@@ -40,11 +40,3 @@ COPY "lieferscheinentry" FROM stdin;
 
 CREATE INDEX lieferscheinentry_check_fast ON lieferscheinentry USING btree (refzeilennr, refauftragid, instanz);
 
---
--- TOC Entry ID 5 (OID 31377959)
---
--- Name: "RI_ConstraintTrigger_31377958" Type: TRIGGER Owner: christof
---
-
-CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "lieferscheinentry"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'lieferscheinentry', 'auftrag', 'UNSPECIFIED', 'refauftragid', 'auftragid');
-

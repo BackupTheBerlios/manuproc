@@ -44,35 +44,3 @@ COPY "prod_instanz" FROM stdin;
 9	Rohwarenlager	6	9	\N	rl_inhalt	t	\N	\N	\N	L	\N	\N
 4	Weberei	\N	6	\N	\N	\N	28	4	\N	P	\N	\N
 \.
---
--- TOC Entry ID 4 (OID 41730534)
---
--- Name: "RI_ConstraintTrigger_41730533" Type: TRIGGER Owner: christof
---
-
-CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "prod_instanz"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
-
---
--- TOC Entry ID 5 (OID 41730536)
---
--- Name: "RI_ConstraintTrigger_41730535" Type: TRIGGER Owner: christof
---
-
-CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "prod_instanz"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
-
---
--- TOC Entry ID 6 (OID 41730538)
---
--- Name: "RI_ConstraintTrigger_41730537" Type: TRIGGER Owner: christof
---
-
-CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "prod_instanz"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
-
---
--- TOC Entry ID 7 (OID 41730540)
---
--- Name: "RI_ConstraintTrigger_41730539" Type: TRIGGER Owner: christof
---
-
-CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "prod_instanz"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
-

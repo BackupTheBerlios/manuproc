@@ -47,27 +47,3 @@ ALTER TABLE ONLY ku_briefanr
     ADD CONSTRAINT ku_briefanr_pkey PRIMARY KEY (branr);
 
 
---
--- TOC entry 6 (OID 18562815)
---
-
-CREATE CONSTRAINT TRIGGER "<unnamed>"
-    AFTER UPDATE ON ku_briefanr
-    FROM ku_person
-    NOT DEFERRABLE INITIALLY IMMEDIATE
-    FOR EACH ROW
-    EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_person', 'ku_briefanr', 'UNSPECIFIED', 'branr', 'branr');
-
-
---
--- TOC entry 7 (OID 18562816)
---
-
-CREATE CONSTRAINT TRIGGER "<unnamed>"
-    AFTER DELETE ON ku_briefanr
-    FROM ku_person
-    NOT DEFERRABLE INITIALLY IMMEDIATE
-    FOR EACH ROW
-    EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'ku_person', 'ku_briefanr', 'UNSPECIFIED', 'branr', 'branr');
-
-

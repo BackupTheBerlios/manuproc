@@ -53,7 +53,9 @@ createdb $PGDATABASE
    webang_bindung \
    webang_faeden \
    webang_schuss \
-   webang_wiederhol
+   webang_wiederhol \
+   \
+   triggers
 do
   cat $P/$i
 done ) | psql $PGDATABASE -q
