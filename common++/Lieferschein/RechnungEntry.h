@@ -1,4 +1,4 @@
-/* $Id: RechnungEntry.h,v 1.16 2002/12/11 14:55:47 jacek Exp $ */
+/* $Id: RechnungEntry.h,v 1.17 2002/12/16 23:36:11 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -63,6 +63,7 @@ class RechnungEntry : public RechnungEntryBase
  LieferscheinEntryBase lfrs;
  AuftragBase auftrag;
  mutable bool bezahlt, bezahlt_valid;
+ mutable cH_Kunde kunde;
 // LieferscheinBase::ID lfrsid;
 // int lieferzeile;
  
@@ -74,7 +75,8 @@ public:
                         const AuftragBase &ab)
   		: RechnungEntryBase(l,z),artikel(a),stueck(s),menge(m),preis(p),
                         rabatt(r),lieferdatum(ld),lfrs(ls),auftrag(ab),
-                        bezahlt(false),bezahlt_valid(false)
+                        bezahlt(false),bezahlt_valid(false),
+                        kunde(Kunde::none_id)
                 {};
 
  mengen_t Menge() const { return menge; }
@@ -106,6 +108,7 @@ public:
  const bool Bezahlt() const throw(SQLerror);
  const int AuftragId() const { return auftrag.Id();}
  const Preis GPreis() const { return preis.Gesamtpreis(stueck,menge.as_float(),rabatt); }
+ cH_Kunde Kunde() const; 
  
 };
 

@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.h,v 1.14 2002/12/16 21:23:05 jacek Exp $
+// $Id: Zahlungsart.h,v 1.15 2002/12/16 23:36:11 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,7 +40,7 @@ public:
            st_skonto(int i, fixedpoint<2> f) 
             :skontofrist(i),skontosatz(f) {} };
 
-    typedef neum {NONE=0, DTUAS=1, RIBA=2, LCR=3} Verfahren;
+    typedef enum {NONE=0, DTAUS=1, RIBA=2, LCR=3} Verfahren;
              
 
 private:

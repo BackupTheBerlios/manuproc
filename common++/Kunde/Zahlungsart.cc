@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.cc,v 1.13 2002/12/03 22:15:32 jacek Exp $
+// $Id: Zahlungsart.cc,v 1.14 2002/12/16 23:36:11 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -66,27 +66,48 @@ void Zahlungsart::TeX_out(std::ostream &os,
 {
  if(bankeinzug)
   {
-   os << std::string("Der Rechnungsbetrag ");
-   if(vec_skonto.size()>=1)
-     {os << "\\\\abzgl. "<<FormatiereTeX_short(vec_skonto[0].skontosatz)
-         <<"\\% Skonto";
-      if(!!einzugrabatt)
-        os << " = "<<w->TeXsymbol()<<" "<<FormatiereTeX_Preis(skontobetrag);
-      else
-        os << " = {\\bf "<<w->TeXsymbol()<<" "<<FormatiereTeX_Preis(skontobetrag)<<"}";
-     }
-  if(!!einzugrabatt)
-    os << "\\\\abzgl. "<<FormatiereTeX_short(einzugrabatt)
-       <<"\\% wg. Abbuchung = {\\bf "<<w->TeXsymbol()
-       <<" "<<FormatiereTeX_Preis(einzugrabattbetrag)<<"}\\\\";
-  os << "wird ";
-  if(zahlziel.valid())
-     os << " am "<<zahlziel<<"\\\\\n";
-  else if(zahlungsfrist)   
-     os << itos(zahlungsfrist) << " Tage nach Rechnungsstellung\\\\\n";     
-   os << "von Ihrem Konto "<<FormatiereTeX(k->getKtnr());
-   os << "\\\\\n bei der " <<k->getbank();
-   os << "\n BLZ "<<FormatiereTeX(k->getblz())<<" abgebucht\\\\\n";
+  if(verfahren==LCR)
+    {
+     os << "Paiement: par traite Lettre de change relev\\'e (LCR)";
+     if(zahlungsfrist)
+       {os << " \\`a "<<itos(zahlungsfrist)<<" jours";
+        if(!monatsende)
+          os << ".\\\\\n";
+        else   
+          os << " fin du mois.\\\\\n";
+       }
+     else
+       os << ".\\\\\n";       
+    }
+  else if(verfahren==RIBA)  
+    {
+  
+    }
+  else
+     {
+     os << std::string("Der Rechnungsbetrag ");
+     if(vec_skonto.size()>=1)
+       {os << "\\\\abzgl. "<<FormatiereTeX_short(vec_skonto[0].skontosatz)
+           <<"\\% Skonto";
+        if(!!einzugrabatt)
+          os << " = "<<w->TeXsymbol()<<" "<<FormatiereTeX_Preis(skontobetrag);
+        else
+          os << " = {\\bf "<<w->TeXsymbol()<<" "<<FormatiereTeX_Preis(skontobetrag)<<"}";
+       }
+    if(!!einzugrabatt)
+      os << "\\\\abzgl. "<<FormatiereTeX_short(einzugrabatt)
+         <<"\\% wg. Abbuchung = {\\bf "<<w->TeXsymbol()
+         <<" "<<FormatiereTeX_Preis(einzugrabattbetrag)<<"}\\\\";
+    os << "wird ";
+    if(zahlziel.valid())
+       os << " am "<<zahlziel<<"\\\\\n";
+    else if(zahlungsfrist)   
+       os << itos(zahlungsfrist) << " Tage nach Rechnungsstellung\\\\\n";     
+     os << "von Ihrem Konto "<<FormatiereTeX(k->getKtnr());
+     os << "\\\\\n bei der " <<k->getbank();
+     os << "\n BLZ "<<FormatiereTeX(k->getblz())<<" abgebucht\\\\\n";
+    }    
+      
   }
  else
   {
@@ -147,22 +168,39 @@ void Zahlungsart::TeX_out(std::ostream &os,
 {
  if(bankeinzug)
   {
-   os << std::string("Der Rechnungsbetrag ");
-   if(vec_skonto.size()>=1)
-     {os << "\\\\abzgl. "<<FormatiereTeX_short(vec_skonto[0].skontosatz)
-         <<"\\% Skonto\\\\\n";
-     }
-  if(!!einzugrabatt)
-    os << "\\\\abzgl. "<<FormatiereTeX_short(einzugrabatt)
-       <<"\\% wg. Abbuchung\\\\\n";
-  os << "wird ";
-  if(zahlziel.valid())
-     os << " am "<<zahlziel<<"\\\\\n";
-  else if(zahlungsfrist)   
-     os << itos(zahlungsfrist) << " Tage nach Rechnungsstellung\\\\\n";
-   os << "von Ihrem Konto "<<FormatiereTeX(k->getKtnr());
-   os << "\\\\\n bei der " <<k->getbank();
-   os << "\n BLZ "<<FormatiereTeX(k->getblz())<<" abgebucht\\\\\n";
+  if(verfahren==LCR)
+    {
+     os << "Paiement: par traite Lettre de change relev\\'e (LCR)\\";
+     if(zahlungsfrist)
+       os << "\\'a "<<itos(zahlungsfrist)<<" jours";
+     if(!monatsende)
+       os << ".\\\\\n";
+     else   
+       os << " fin du mois.\\\\\n";
+    }
+  else if(verfahren==RIBA)  
+    {
+  
+    }
+  else  
+   {  
+     os << std::string("Der Rechnungsbetrag ");
+     if(vec_skonto.size()>=1)
+       {os << "\\\\abzgl. "<<FormatiereTeX_short(vec_skonto[0].skontosatz)
+           <<"\\% Skonto\\\\\n";
+       }
+    if(!!einzugrabatt)
+      os << "\\\\abzgl. "<<FormatiereTeX_short(einzugrabatt)
+         <<"\\% wg. Abbuchung\\\\\n";
+    os << "wird ";
+    if(zahlziel.valid())
+       os << " am "<<zahlziel<<"\\\\\n";
+    else if(zahlungsfrist)   
+       os << itos(zahlungsfrist) << " Tage nach Rechnungsstellung\\\\\n";
+     os << "von Ihrem Konto "<<FormatiereTeX(k->getKtnr());
+     os << "\\\\\n bei der " <<k->getbank();
+     os << "\n BLZ "<<FormatiereTeX(k->getblz())<<" abgebucht\\\\\n";
+   }
   }
  else
   {
@@ -208,4 +246,16 @@ void Zahlungsart::TeX_out(std::ostream &os,
   }
 }
 
+
+void Zahlungsart::setVerfahren(const std::string v)
+{
+ if(v=="DTAUS")
+   verfahren=DTAUS;
+ else if(v=="RIBA") 
+   verfahren=RIBA;
+ else if(v=="LCR") 
+   verfahren=LCR;   
+ else verfahren=NONE;   
+ 
+}
 

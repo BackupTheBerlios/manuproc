@@ -25,7 +25,7 @@ exec sql include sqlca;
 
 RechnungEntry::RechnungEntry(const RechnungEntryBase& rechnung)
 throw(SQLerror)	:RechnungEntryBase(rechnung),
-bezahlt(false),bezahlt_valid(false) 
+bezahlt(false),bezahlt_valid(false), kunde(Kunde::none_id)
 {
  exec sql begin declare section;
    int ARTIKELID, STUECK, LFRSID, LFRSZN;
@@ -140,6 +140,26 @@ const bool RechnungEntry::Bezahlt() const throw(SQLerror)
  bezahlt_valid=true;
 
  return bezahlt;
+}
+
+
+cH_Kunde RechnungEntry::Kunde() const
+{
+ if(kunde->Id() != Kunde::none_id) return kunde;
+
+ exec sql begin declare section;
+ int RNGID=Id();
+ int KUNDENNR;
+ exec sql end declare section;
+
+ exec sql select kundennr into :KUNDENNR from rechnung where rngid=:RNGID;
+ SQLerror::test(__FILELINE__);
+
+
+ kunde=cH_Kunde(KUNDENNR);
+
+ return kunde;
+
 }
 
 

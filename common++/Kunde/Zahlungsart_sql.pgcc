@@ -1,4 +1,4 @@
-/* $Id: Zahlungsart_sql.pgcc,v 1.14 2002/12/16 21:23:05 jacek Exp $ */
+/* $Id: Zahlungsart_sql.pgcc,v 1.15 2002/12/16 23:36:11 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -57,10 +57,12 @@ Zahlungsart::Zahlungsart(ID _id) throw (SQLerror)
    zahlungsfrist  = ZAHLUNGSFRIST;
    monatsende	  = MONATSENDE;
       
-   if(IVERFAHREN==0);
+   if(IVERFAHREN==0) setVerfahren(VERFAHREN);
+   else verfahren=NONE;
 
    if(SKONTOS1) vec_skonto.push_back(st_skonto(SKONTOF1,SKONTOS1));
    if(SKONTOS2) vec_skonto.push_back(st_skonto(SKONTOF2,SKONTOS2));
    if(SKONTOS3) vec_skonto.push_back(st_skonto(SKONTOF3,SKONTOS3));
+
    ECPGfree_auto_mem();
 }

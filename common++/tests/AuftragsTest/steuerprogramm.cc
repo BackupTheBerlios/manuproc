@@ -834,7 +834,7 @@ std::cout << "D13: "<<dummystring<<'\n';
 
       {// Einkauf liefert Teilmenge
        Lieferschein liefs(EINKAUF,cH_Kunde(KUNDE2));
-ManuProC::Tracer::Enable(AuftragBase::trace_channel);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
        liefs.push_back(ARTIKEL_TRIO,13,0,0);
        erfolgreich=C.teste(Check::Menge|Check::Lieferschein,"_LSZP",mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferschein im Einkauf mit Teillieferung (Mabella) \n\n"; return fehler();}
@@ -842,7 +842,7 @@ ManuProC::Tracer::Enable(AuftragBase::trace_channel);
 exit(0);
       {// Einkauf liefert Vollmenge
        Lieferschein liefs(EINKAUF,cH_Kunde(KUNDE2));
-//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
+ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
        liefs.push_back(ARTIKEL_TRIO,25,0,0);
        erfolgreich=C.teste(Check::Menge|Check::Lieferschein,"_LSZM",mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferschein im Einkauf Weberei mit Restlieferung (Mabella) \n\n"; return fehler();}
