@@ -1,4 +1,4 @@
-/* $Id: EntryValueFixed.h,v 1.7 2002/11/22 15:27:03 christof Exp $ */
+/* $Id: EntryValueFixed.h,v 1.8 2003/10/29 12:38:15 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,10 +29,12 @@ template <int decimals=2,class Ftype=double,class Itype=long,bool shorten=true>
 	class EntryValueFixed : public EntryValueBase
 {
  fixedpoint<decimals,Ftype,Itype> wert;
+ std::string prefix;
 
 public:
- EntryValueFixed(const fixedpoint<decimals,Ftype,Itype> &v) 
- : wert(v) {}
+ EntryValueFixed(const fixedpoint<decimals,Ftype,Itype> &v,
+ 		const std::string _pfx="") 
+ : wert(v),prefix(_pfx) {}
    
  virtual bool operator==(const EntryValueBase &v) const
  {  try
@@ -56,8 +58,8 @@ public:
  const fixedpoint<decimals,Ftype,Itype> &Wert() const { return wert; }
  virtual int getIntVal() const { return wert.as_int();}
  virtual const std::string getStrVal() const 
- { if (shorten) return Formatiere_short(wert);
-   else return Formatiere(wert); 
+ { if (shorten) return (prefix+Formatiere_short(wert));
+   else return (prefix+Formatiere(wert)); 
  }
 };
 
@@ -65,8 +67,9 @@ template <int decimals=2,class Ftype=double,class Itype=long,bool shorten=true>
    class cH_EntryValueFixed : public cH_EntryValue
 {
 public:
- cH_EntryValueFixed(const fixedpoint<decimals,Ftype,Itype> &v) 
- : cH_EntryValue(new EntryValueFixed<decimals,Ftype,Itype,shorten>(v)) {}
+ cH_EntryValueFixed(const fixedpoint<decimals,Ftype,Itype> &v,
+ 		const std::string _pfx="") 
+ : cH_EntryValue(new EntryValueFixed<decimals,Ftype,Itype,shorten>(v,_pfx)) {}
 };
   
 #endif 
