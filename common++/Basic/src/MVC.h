@@ -1,4 +1,4 @@
-/* $Id: MVC.h,v 1.4 2002/11/13 08:13:07 christof Exp $ */
+/* $Id: MVC.h,v 1.5 2002/11/13 08:19:41 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -105,8 +105,8 @@ public:
 	{  return *value; }
 	
 	const T &operator=(const T &v)
-	{  value=v;
-	   signal_changed()(&value);
+	{  *value=v;
+	   signal_changed()(value);
 	   return *value;
 	}
 	const Model_ref<T> &operator=(const Model_ref<T> &m)
