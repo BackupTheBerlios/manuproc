@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.33 2003/12/23 00:09:48 christof Exp $
+# $Id: Makefile.am,v 1.34 2004/01/06 09:10:19 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -23,7 +23,8 @@ LINKS= EingabeBox.cc EingabeBox.hh datewin.cc datewin.h \
 	int_SpinButton.hh string_Entry.hh GType_cH_EntryValue.h \
 	SimpleTree.hh ModelWidgetConnection.h string_Label.cc \
 	string_Label.hh Event.cc Association.h Association.cc \
-	bvector_item_CheckMenuItem.hh SimpleTreeStore_test.cc
+	bvector_item_CheckMenuItem.hh SimpleTreeStore_test.cc \
+	CellRendererSimpleTree.h CellRendererSimpleTree.cc
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
@@ -59,7 +60,7 @@ libKomponenten_a_SOURCES= \
 	bool_properties.cc bool_ImageButton.cc \
 	IntStringBox_glade.cc IntStringPopup_glade.cc \
 	string_Label.cc Event.cc Association.cc \
-        KundenBox2.cc
+        KundenBox2.cc CellRendererSimpleTree.cc
 
 lateron= \
 		$(BUILT_SOURCES_L) \
