@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.44 2003/01/29 12:30:33 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.45 2003/01/30 16:32:11 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -117,7 +117,7 @@ void AufEintrag::abschreiben(mengen_t menge,
 #else
  if(STATUS!=oldstatus)
 #endif
-     setStatus(AufStatVal(STATUS),true);
+     setStatus(AufStatVal(STATUS),getuid(),true);
 
  tr.commit();
 }
@@ -149,11 +149,12 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
  }
 
  Transaction tr; 
- exec sql lock auftragentry in exclusive mode;
+ Query("lock auftragentry in exclusive mode");
  SQLerror::test("setStatus: lock table auftragentry");
 
+ // InternAbbestellen
  if(newstatus == CLOSED || newstatus == STORNO)
-     updateStkDiffInstanz__(uid,-getRestStk(),AufEintragBase(),ManuProC::Auftrag::r_Closed);
+     ArtikelInternAbbestellen(uid,getRestStk(),ManuProC::Auftrag::r_Closed);
 
  std::string sqlcommand = "update auftragentry set status="+itos(newstatus);
  if(uid) sqlcommand+=", lasteditdate = now(), lastedit_uid="+itos(uid);
@@ -167,13 +168,12 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
 
 
  if(newstatus==OPEN && auftragstatus==UNCOMMITED)
-    setStatusAuftragBase(newstatus);
+ {  setStatusAuftragBase(newstatus);
+    auftragstatus=newstatus;
+ }
 
  if(newstatus == OPEN  &&  oldentrystatus==UNCOMMITED)
-   { // besser wäre 
-     ArtikelInternNachbestellen(uid,getRestStk(),ManuProC::Auftrag::r_Anlegen);
-     //BaumAnlegen(*this,uid);
-   }
+    ArtikelInternNachbestellen(uid,getRestStk(),ManuProC::Auftrag::r_Anlegen);
 
  if(newstatus==OPEN)
    {
