@@ -1,4 +1,4 @@
-// $Id: Tag.cc,v 1.8 2004/06/03 07:09:32 christof Exp $
+// $Id: Tag.cc,v 1.9 2004/06/03 14:33:20 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -129,11 +129,11 @@ void Tag::repair_back_pointer() throw()
 }
 
 Tag &Tag::push_back(const Tag t) throw()
-{  bool needs_fixing=sub_specifications.capacity()<=sub_specifications.size();
+{  // bool needs_fixing=sub_specifications.capacity()<=sub_specifications.size();
    sub_specifications.push_back(t);
    Tag &result=sub_specifications.back();
-   if (needs_fixing) repair_back_pointer();
-   else
+   // if (needs_fixing) repair_back_pointer();
+//   else
    {  result.parent_ptr=this;
       result.repair_back_pointer();
    }

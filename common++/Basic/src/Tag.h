@@ -1,4 +1,4 @@
-// $Id: Tag.h,v 1.8 2004/06/03 07:09:32 christof Exp $
+// $Id: Tag.h,v 1.9 2004/06/03 14:33:20 christof Exp $
 /*  ManuProC_Base: Main ManuProC Library
  *  Copyright (C) 1998-2003  Christof Petig
  *
@@ -21,7 +21,7 @@
 #define TAG_HH
 #include <ManuProCConfig.h>
 #include <string>
-#include <vector>
+#include <list>
 #include <map>
 #include <algorithm> // for find
 #include <stdexcept>
@@ -31,13 +31,13 @@ class Tag {
     	std::string value;
     	typedef std::map<std::string,std::string> attvec_t;
     	attvec_t attributes;
-    	std::vector<Tag> sub_specifications;
+    	std::list<Tag> sub_specifications;
     	Tag *parent_ptr;
 
 	void repair_back_pointer() throw();
 
 public: // nice to have for custom parsing
-    	typedef std::vector<Tag>::difference_type difference_type;
+    	typedef std::list<Tag>::difference_type difference_type;
     	template <class T>
     	 static T parse_value(const std::string &val) throw(std::out_of_range);
     	template <class T>
@@ -51,18 +51,18 @@ public:
 	{}
 	// this makes a copy !!!
 	Tag &push_back(const Tag t) throw();
-	typedef std::vector<Tag>::iterator iterator;
-	typedef std::vector<Tag>::const_iterator const_iterator;
+	typedef std::list<Tag>::iterator iterator;
+	typedef std::list<Tag>::const_iterator const_iterator;
 	const_iterator begin() const throw()
 	{  return sub_specifications.begin(); }
 	const_iterator end() const throw()
 	{  return sub_specifications.end(); }
 	const Tag &back() const throw()
 	{  return sub_specifications.back(); }
-	std::vector<Tag>::size_type size() const throw()
+	std::list<Tag>::size_type size() const throw()
 	{  return sub_specifications.size(); }
-	void reserve(std::vector<Tag>::size_type n) throw()
-	{  return sub_specifications.reserve(n); }
+	void reserve(std::list<Tag>::size_type n) throw()
+	{  } // return sub_specifications.reserve(n); }
 	iterator begin() throw()
 	{  return sub_specifications.begin(); }
 	iterator end() throw()
