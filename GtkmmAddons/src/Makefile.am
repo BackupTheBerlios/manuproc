@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.10 2003/11/11 12:07:36 christof Exp $
+# $Id: Makefile.am,v 1.11 2004/01/29 14:43:49 christof Exp $
 
 CLEANFILES = *~
 
@@ -11,8 +11,6 @@ lib_LIBRARIES = libGtkmmAddons.a
 include_HEADERS = Gtk_OStream.h Message.h SearchCombo.h \
 		SearchComboContent.h gtksearchcombo.h \
 		TeX.h SelectMatching.h
-
-noinst_HEADERS = green_minus.xpm red_plus.xpm
 
 libGtkmmAddons_a_SOURCES = Gtk_OStream_label.cc \
 		 Gtk_OStream_optionmenu.cc Gtk_OStream_stream.cc \
