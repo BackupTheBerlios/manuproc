@@ -1,4 +1,4 @@
-// $Id: Optionmenu_Einheit.hh,v 1.2 2002/07/05 12:36:56 christof Exp $
+// $Id: Optionmenu_Einheit.hh,v 1.3 2004/11/08 14:34:33 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,7 +21,7 @@
 #ifndef _OPTIONMENU_EINHEIT_HH
 #  define _OPTIONMENU_EINHEIT_HH
 
-#include <gtk--/optionmenu.h>
+#include <gtkmm/optionmenu.h>
 #include <vector>
 #include <string>
 #include <Artikel/Einheiten.h>
