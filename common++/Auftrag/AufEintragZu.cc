@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.14 2003/05/26 13:43:27 christof Exp $
+// $Id: AufEintragZu.cc,v 1.15 2003/07/04 11:08:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -25,7 +25,6 @@
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Misc/FetchIStream.h>
 #include <Misc/TraceNV.h>
-#include <Misc/FetchIStream_fixedpoint.h>
 
 // was tut das eigentlich ? CP
 AufEintragZu::list_t AufEintragZu::get_Referenz_list_id(const AuftragBase::ID id,bool kinder,bool artikel) const throw(SQLerror)

@@ -1,4 +1,4 @@
-// $Id: Trace.cc,v 1.3 2003/05/19 08:59:52 christof Exp $
+// $Id: Trace.cc,v 1.4 2003/07/04 11:08:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,11 +19,16 @@
 
 #include <Misc/Trace.h>
 #include <cassert>
+#include <unistd.h>
 
 static int enabled_parts;
 static int depth;
 
 static std::ostream *os;
+
+ManuProC::Tracer::Environment::Environment(const std::string &name, Channel c)
+{  if (getenv(name.c_str())) ManuProC::Tracer::Enable(c);
+}
 
 void ManuProC::Tracer::Enable(Channel c, bool an)
 {  if (!os) os = &std::cerr;
