@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.84 2003/07/21 10:33:20 christof Exp $
+// $Id: AufEintrag.cc,v 1.85 2003/07/22 07:19:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -46,17 +46,6 @@ void AufEintrag::setLetztePlanungFuer(cH_ppsInstanz planinstanz) throw(SQLerror)
   AufEintragBase::setLetztePlanungFuer(planinstanz);
   letztePlanInstanz=planinstanz->Id();
 }
-
-#if 0
-void AufEintrag::setVerarbeitung(const cH_Prozess p)
-{
- AufEintragBase::setVerarbeitung(p);
-
- prozess=p;
- prozdate=ManuProC::Datum().today();
-}
-#endif
-
 
 void AufEintrag::setLetzteLieferung(const ManuProC::Datum &datum) throw(SQLerror)
 {
@@ -338,35 +327,6 @@ AuftragBase::mengen_t AufEintrag::Auslagern
      //   abschreibmenge=-min(-abmenge,i->getGeliefert());
 }
 
-#if 0
-// etwas bestelltes wird ausgelagert -> produziert markieren
-namespace { class MichAuslagern
-{	AufEintrag &elter;
-	unsigned uid;
-	ProductionContext ctx;
-public:
-	AuftragBase::mengen_t operator()(const ArtikelBase &art,
-		const AufEintragBase &kind,AuftragBase::mengen_t m) const
-	{  if (elter.Id()==AuftragBase::dispo_auftrag_id) return 0;
-	   if (ctx.aeb.valid() && ctx.aeb!=elter) return 0;
-	   mythis.Einlagern2(uid,m,elter,elter,ctx.leb);
-	   return m;
-	}
-	MichAuslagern(AufEintrag &m,const ProductionContext &_ctx) 
-		: elter(m), uid(getuid()), ctx(_ctx) {}
-};}
-#endif
-
-#if 0
-// nicht statisch der AufEintrag in Frage ist this
-void AufEintrag::Auslagern_sub
-	(mengen_t menge, unsigned uid, const ProductionContext2 &ctx)
-{  ManuProC::Trace _t(trace_channel, __FUNCTION__,
-		NV("this",*this),NV("menge",menge),NV("ctx",ctx));
-   
-}
-#endif
-
 void AufEintrag::Auslagern
 	(mengen_t menge, unsigned uid, const ProductionContext &ctx)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
@@ -379,47 +339,12 @@ void AufEintrag::Auslagern
       abschreiben(menge);
    }
    else if (Id()==ungeplante_id)
-   { 
-#warning Könnte von anderem Auftrag weggenommen worden sein    
+   {  
+#warning Könnte von anderem Auftrag weggenommen worden sein
+      // sollte ich das jetzt als Produziert markieren oder nicht?
       MengeAendern(uid,-menge,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
    }
 }
-#if 0   
-   
-   AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(ae));
-   const AufEintragZu::list_t &l=MapArt[artikel];
-   
-   mengen_t AE_menge2=menge;
-   for(AufEintragZu::list_t::const_reverse_iterator zuloop_var=l.rbegin();
-	   		zuloop_var!=l.rend();++zuloop_var)
-   {  AuftragBase::mengen_t mengen_var;
-      if (zuloop_var->AEB.Instanz()!=inst) continue;
-      if (menge>=0) 
-         mengen_var=AuftragBase::min(zuloop_var->Menge,AE_menge2);
-      else 
-         mengen_var=-AuftragBase::min(-AE_menge2,AufEintrag(zuloop_var->AEB).getGeliefert());
-      if (!mengen_var) continue;
-
-      if (zuloop_var->AEB.Id()==plan_auftrag_id)
-      {  // Zuordnung?
-         AufEintrag(zuloop_var->AEB).abschreiben(mengen_var);
-      }
-      else if (zuloop_var->AEB.Id()==ungeplante_id)
-      {  AufEintrag(zuloop_var->AEB).MengeAendern(uid,mengen_var,true,ae,ManuProC::Auftrag::r_Produziert);
-      }
-      else assert(zuloop_var->AEB.Id()==plan_auftrag_id || zuloop_var->AEB.Id()==ungeplante_id);
-
-      AE_menge2-=mengen_var;
-      if(!AE_menge2) break;
-   }
-   // pass the remainder
-   if (AE_menge2>0)
-   {  unbestellteMengeProduzieren(inst,artikel,AE_menge2,uid,true,ae,ctx.leb);
-   }
-   else assert(!AE_menge2); // eventuell vergessen?
-   return 0;
-}
-#endif
 
 namespace { class Einlagern_cb
 {	bool abbestellen;
@@ -513,10 +438,7 @@ void AufEintrag::WiederEinlagern(const int uid,cH_ppsInstanz instanz,const Artik
       ae.MengeAendern(uid,M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
      // Menge wird direkt neu verplant (evtl. wieder abbestellt)
      i->MengeAendern(uid,-M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
-#if 0     
-     // passiert das jemals ohne dass es schon so ist?
-     if (!i->getRestStk()) i->setStatus(AufStatVal(CLOSED),uid,true);
-#endif
+     assert(i->getCombinedStatus()==CLOSED);
      menge-=M;
      if(!menge) break;
   }
