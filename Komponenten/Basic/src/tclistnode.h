@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistnode.h,v 1.3 2001/06/25 08:37:08 christof Exp $
+// $Id: tclistnode.h,v 1.4 2001/06/27 08:05:51 christof Exp $
 
 #ifndef KOMPONENTEN_TCLISTNODE
 #define KOMPONENTEN_TCLISTNODE
@@ -43,8 +43,10 @@ public:
  void initTCL(TCListRow_API *api, TCListRow_API::iterator davor,
  			const TreeBase &tb,int deep);
  void initTCL(TCListRow_API *api, const TreeBase &tb,int deep);
- 
+
+ // nicht notwendig? 
  int SumValue() const { return sumvalue; }
+ // ruft get SumCol auf
  void refreshSum(const TreeBase &tb);
  void set_Show(bool b) {show=b;}
  bool get_Show() const {return show;}

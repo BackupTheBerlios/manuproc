@@ -26,8 +26,8 @@ public:
  
  const vector<string> getColEntries(int cols);
 
- MyLeaf::MyLeaf(int _seqnr, const cH_RowDataBase &v,int deep) 
-		: TCListLeaf(_seqnr,v,deep) {}
+ MyLeaf::MyLeaf(int _seqnr, gpointer gp,const cH_RowDataBase &v,int deep) 
+		: TCListLeaf(_seqnr,gp,v,deep) {}
 
 };
 

@@ -186,7 +186,7 @@ void TreeBase::refillTCL()
  vector<cH_RowDataBase>::const_iterator i=datavec.begin();
  vector<cH_RowDataBase>::const_iterator j=datavec.end();
 
-// neu einordnen
+// neu einordnen, Summen berechnen
  for(; i!=j; ++i)
     insertIntoTCL((TCListRow_API*)this,*this,*i,currseq,0);
 
@@ -197,7 +197,7 @@ void TreeBase::refillTCL()
   else ++i;
  }
 
-// Summen errechnen
+// Summen anzeigen
  for(TCListRow_API::iterator i = begin(); i!=end(); ++i)
    ((TCListRowData*)(*i).get_user_data())->refreshSum(*this);
 
@@ -207,10 +207,10 @@ void TreeBase::refillTCL()
 //CList Breite anpassen
  for (unsigned int i=0;i<Cols();++i)
         set_column_auto_resize(i,true);
-
 }
 
 
+// einordnen, Summen berechnen
 void TreeBase::insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
 				const cH_RowDataBase &v,deque<guint> selseq,guint deep)
 {

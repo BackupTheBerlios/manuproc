@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistnode.cc,v 1.2 2001/06/25 08:20:23 christof Exp $
+// $Id: tclistnode.cc,v 1.3 2001/06/27 08:05:51 christof Exp $
 
 #include"tclistnode.h"
 #include"rowdata.h"
@@ -43,6 +43,7 @@ void TCListNode::initTCL(TCListRow_API *api, TCListRow_API::iterator davor,
 			const TreeBase &tb,int deep)
 {
 // cerr << typeid(*this).name() << '\n';
+// listrow = api->insert(davor, getColEntries(tb.Cols(),tb.Attrs()),deep+1,show);
  listrow = api->insert(davor, getColEntries(tb.Cols()),deep+1,show);
  listrow->set_user_data(this);
 }
@@ -50,6 +51,7 @@ void TCListNode::initTCL(TCListRow_API *api, TCListRow_API::iterator davor,
 void TCListNode::initTCL(TCListRow_API *api, const TreeBase &tb,int deep)
 {
 //cerr << typeid(*this).name() << '\n';
+// listrow = api->push_back(getColEntries(tb.Cols(),tb.Attrs()),deep+1,show);
  listrow = api->push_back(getColEntries(tb.Cols()),deep+1,show);
  listrow->set_user_data(this);
 }

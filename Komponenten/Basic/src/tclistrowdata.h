@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistrowdata.h,v 1.2 2001/06/25 08:20:23 christof Exp $
+// $Id: tclistrowdata.h,v 1.3 2001/06/27 08:05:51 christof Exp $
 
 #ifndef TCLISTROWDATA
 #define TCLISTROWDATA
@@ -31,12 +31,12 @@ class TreeBase;
 
 class TCListRowData 
 {
- cH_EntryValue value;
- int deep;
 
 protected:
  TCListRow_API *listrow;
+ cH_EntryValue value;
  bool leaf;
+ int deep;
  
 public: 
  virtual void cumulate(const cH_RowDataBase &rd, int seqnr,gpointer gp) const=0;

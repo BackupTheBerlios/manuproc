@@ -25,7 +25,8 @@ public:
  MyRowData(int i,const string &s)
 	: intval(i),stringval(s) {}
 	
- virtual const cH_EntryValue Value(int _seqnr,gpointer gp) const
+// virtual const cH_EntryValue Value(int _seqnr,gpointer gp) const
+ virtual const cH_EntryValue Value(int _seqnr) const
 	{switch(_seqnr)
 		{case 0 : return cH_EntryValueIntString(intval); break;
 		 case 1 : return cH_EntryValueIntString(stringval); break;

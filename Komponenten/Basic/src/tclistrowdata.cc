@@ -40,19 +40,15 @@ const string TCListRowData::getColText()
 
 const vector<string> TCListRowData::getColEntries(int treecols)
 {
- static vector<string> v;
- v.erase(v.begin(),v.end());
+ vector<string> v;
 
 // das kann man aber zu 2 Zeilen zusammenfassen CP 2001-3-2
- for(int i=0; i<deep; ++i)
-   v.push_back("");
+ for(int i=0; i<deep; ++i)  v.push_back("");
 
  v.push_back(value->getStrVal());
 
  for(int i=deep+1;i<treecols;++i) 
    v.push_back("");
-
-//cout << "getColEntries Base\n";
 
  return v;
 }

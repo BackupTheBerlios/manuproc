@@ -27,12 +27,11 @@ class MyNode : public TCListNode
 
 public:
 
- virtual void cumulate(const cH_RowDataBase &rd, int seqnr) const;
- virtual const vector<string> getColEntries(int cols);
- virtual void resetSumValues(gpointer p);
+ virtual void cumulate(const cH_RowDataBase &rd, int seqnr,gpointer gp) const;
+// virtual const vector<string> getColEntries(int cols);
  virtual const string getSumCol(int col);
 
- MyNode::MyNode(int _seqnr, const cH_RowDataBase &v, int deep);
+ MyNode::MyNode(int _seqnr, gpointer gp, const cH_RowDataBase &v, int deep);
  int Sum1() const { return sum1; }
  int Sum2() const { return sum2; }
 

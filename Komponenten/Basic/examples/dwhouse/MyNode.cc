@@ -19,23 +19,17 @@
 #include<Aux/Ausgabe_neu.h>
 #include"MyNode.h"
 
-MyNode::MyNode(int _seqnr, 
+MyNode::MyNode(int _seqnr, gpointer gp, 
 		const cH_RowDataBase &v, 
 		int deep) 
- : TCListNode(_seqnr,v,deep), sum1(0),sum2(0)
+ : TCListNode(_seqnr,gp, v,deep), sum1(0),sum2(0)
 {}
 
 
-void MyNode::cumulate(const cH_RowDataBase &rd, int seqnr) const
+void MyNode::cumulate(const cH_RowDataBase &rd, int seqnr,gpointer gp) const
 {
  sum1+= (dynamic_cast<const MyRowData &>(*rd)).Data1();
  sum2+= (dynamic_cast<const MyRowData &>(*rd)).Data2();
-}
-
-void MyNode::resetSumValues(gpointer p)
-{
- sum1=((MyNode*)p)->Sum1();
- sum2=((MyNode*)p)->Sum2();
 }
 
 const string MyNode::getSumCol(int col)
@@ -51,7 +45,7 @@ const string MyNode::getSumCol(int col)
    }
 }
 
-
+/*
 const vector<string> MyNode::getColEntries(int cols)
 {
  static vector<string> v;
@@ -65,3 +59,4 @@ const vector<string> MyNode::getColEntries(int cols)
  return v;
 
 }
+*/

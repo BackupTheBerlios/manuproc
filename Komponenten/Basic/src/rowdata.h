@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: rowdata.h,v 1.3 2001/06/25 09:40:10 christof Exp $
+// $Id: rowdata.h,v 1.4 2001/06/27 08:05:51 christof Exp $
 
 #ifndef KOMPONENTEN_ROWDATA_H
 #define KOMPONENTEN_ROWDATA_H
@@ -24,6 +24,7 @@
 #include <Aux/Handles.h>
 #include <Aux/EntryValueBase.h>
 #include <glib.h>
+#include <cassert>
 
 class RowDataBase : public HandleContent
 {
@@ -34,7 +35,10 @@ public:
  virtual ~RowDataBase(){}
 
  // old interface, deprecated
- virtual const cH_EntryValue Value(int _seqnr) const=0; 
+ virtual const cH_EntryValue Value(int _seqnr) const
+ { assert(!"this should never get called"); 
+   return Value(_seqnr); // this endless recursion is never reached
+ }; 
 };
 
 class cH_RowDataBase : public const_Handle<RowDataBase>

@@ -52,16 +52,16 @@ const string MyTreeBase::getColTitle(guint col) const
 }
 
  
-TCListNode *MyTreeBase::NewNode(guint _seqnr,
+TCListNode *MyTreeBase::NewNode(guint _seqnr, gpointer gp,
         const cH_RowDataBase &v, guint deep)
 {
- return new  MyNode(_seqnr,v,deep);
+ return new  MyNode(_seqnr,gp, v,deep);
 }
 
-TCListLeaf *MyTreeBase::NewLeaf(guint _seqnr, 
+TCListLeaf *MyTreeBase::NewLeaf(guint _seqnr, gpointer gp,
 	const cH_RowDataBase &v, guint deep)
 {
- return new MyLeaf(_seqnr,v,deep);
+ return new MyLeaf(_seqnr,gp,v,deep);
 }
 
  

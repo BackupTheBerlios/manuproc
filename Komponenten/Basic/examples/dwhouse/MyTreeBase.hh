@@ -34,9 +34,9 @@ public:
 	  init(); 
 	}
 
- TCListNode *NewNode(guint _seqnr, const cH_RowDataBase &v, guint deep);
+ TCListNode *NewNode(guint _seqnr, gpointer gp, const cH_RowDataBase &v, guint deep);
 
- TCListLeaf *NewLeaf(guint _seqnr, const cH_RowDataBase &v, guint deep);
+ TCListLeaf *NewLeaf(guint _seqnr, gpointer gp, const cH_RowDataBase &v, guint deep);
 
  const string getColTitle(guint seq) const;
 
