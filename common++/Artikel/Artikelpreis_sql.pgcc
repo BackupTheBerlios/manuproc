@@ -1,4 +1,4 @@
-// $Id: Artikelpreis_sql.pgcc,v 1.15 2003/01/15 15:29:16 christof Exp $
+// $Id: Artikelpreis_sql.pgcc,v 1.16 2003/01/17 16:34:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -215,7 +215,7 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 	"where "+artbez_tabelle+".id=p.artikelid and p.kundennr="+
 	itos(PRLSID)+" and p.mindestmenge="+itos(mindmenge)+")";
 
-    to_insert=Query(query).FetchArray<int>();
+    Query(query).FetchArray(to_insert);
     
    }
  else
@@ -344,7 +344,7 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
 	}
     query+=" true "; // damit am Ende kein einsames "and" stehen bleibt
 
-    to_delete=Query(query).FetchArray< std::pair<int,float> >();
+    Query(query).FetchArray(to_delete);
     
    }
  else
