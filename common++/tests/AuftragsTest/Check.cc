@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.30 2002/12/10 12:16:56 thoma Exp $
+// $Id: Check.cc,v 1.31 2002/12/10 14:04:00 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -74,7 +74,7 @@ bool Check::teste(was_checken check,const std::string &zusatz, bool mit_reparatu
      int d=system(comD.c_str());
      std::string comE=Com+" -i "+itos((*i)->Id())+" -a E";
      int e=system(comE.c_str());
-     std::string comF=Com+" -i "+itos((*i)->Id())+" -a F -y";
+     std::string comF=Com+" -i "+itos((*i)->Id())+" -a F";
      int f=system(comF.c_str());
      if(d || e || f) {cout <<*i<<'\t'<< d<<e<<f<<'\n'; return false; }
    }  

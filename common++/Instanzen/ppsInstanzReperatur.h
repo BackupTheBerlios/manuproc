@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReperatur.h,v 1.2 2002/12/10 12:16:56 thoma Exp $
+// $Id: ppsInstanzReperatur.h,v 1.3 2002/12/10 14:04:00 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -63,11 +63,11 @@ class ppsInstanzReparatur : public ppsInstanz
       bool check_F_dispo(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const;
 
       void check_D_ungeplantReparatur(const int uid,const AufEintrag &AE,const AuftragBase::mengen_t &menge) const; 
+      void check_F_dispoReparatur(const int uid,const AufEintrag &AE,const AuftragBase::mengen_t &menge) const; 
 
       void Reparatur_Kundenauftrag_AE(const int uid,const AufEintrag &KundeAE,AufEintrag &KindAE,const ABmt &menge) const;
       void Reparatur_Kundenauftrag_AEB(const int uid,const AufEintrag &KundeAE,const AufEintragBase &KindAE,const ABmt &menge) const;
       void MengenReparatur(const int uid,const AufEintrag &AE, AufEintrag &AEB,const ABmt& zumenge) const;
-//      void ReparaturDatum(const int uid,const AufEintrag &AE,const AufEintrag &AEK,const ABmt &menge) const ;
 
 
       void analyse(const std::string &s,const AufEintrag &AE,const std::string &x,const std::string &y) const;

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for x in M P S L Z D Ls Lm LZ LA ZK ZKM J RP Rg RK ; do
+for x in M P S L Z D Ls Lm LZ LA ZK ZKM J RP Rg RK RZ ; do
 
   if ./steuerprogramm $x
   then

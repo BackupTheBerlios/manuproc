@@ -179,7 +179,7 @@ bool ppsInstanzReparatur::check_D_ungeplant(const int uid,const bool analyse_onl
     }
   else if(Msum>AE.getStueck())
    { 
-cout << Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\n';
+//std::cout << Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\n';
      if(analyse_only) { 
             analyse("Zuord.-Summen ist größer als Auftragssumme",AE,Msum,AE.getStueck());
             return false; }
@@ -192,14 +192,15 @@ void ppsInstanzReparatur::check_D_ungeplantReparatur(const int uid,const AufEint
 {
   AuftragBase::mengen_t DiffMenge=AE.getStueck()-menge;
   assert(DiffMenge!=0);
-cout << "REP1: "<<AE<<'\t'<<DiffMenge<<'\n';
+  ReparaturE_2_ZuSumme_1(uid,true); 
+//std::cout << "REP1: "<<AE<<'\t'<<DiffMenge<<'\n';
   std::list<AufEintragZu::st_reflist> L=AufEintragZu(AE).get_Referenz_list_dispo(false);
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
    {
      AuftragBase::mengen_t M=0;
      if(DiffMenge>0) M =  DiffMenge;
      else            M = -AuftragBase::min(i->Menge,-DiffMenge);
-cout << "REP2: "<<i->AEB<<'\t'<<M<<'\n';
+//std::cout << "REP2: "<<i->AEB<<'\t'<<M<<'\n';
      i->AEB.updateStkDiffBase__(uid,M);
      AufEintragZu(i->AEB).setMengeDiff__(AE,M);
      DiffMenge -= M;
@@ -210,7 +211,7 @@ cout << "REP2: "<<i->AEB<<'\t'<<M<<'\n';
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
    {
      AuftragBase::mengen_t M=AuftragBase::min(i->Menge,DiffMenge);
-cout << "REP3: "<<i->AEB<<'\t'<<M<<'\n';
+//std::cout << "REP3: "<<i->AEB<<'\t'<<M<<'\n';
      AufEintrag(i->AEB).updateStkDiff__(uid,M,true,ManuProC::Auftrag::r_Reparatur);
      AufEintragZu(i->AEB).setMengeDiff__(AE,-M);
      DiffMenge -= M;
@@ -223,7 +224,7 @@ bool ppsInstanzReparatur::check_E_geplant(const int uid,const bool analyse_only,
 {
   if(Msum!=AE.getStueck())
    { 
-cout <<"check_E_geplant: "<< AE<<'\t'<<Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\t'<<Msum-AE.getStueck()<<'\n';
+//std::cout <<"check_E_geplant: "<< AE<<'\t'<<Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\t'<<Msum-AE.getStueck()<<'\n';
      if(analyse_only || AE.Id()!=AuftragBase::dispo_auftrag_id) {
         std::cout << "Analyse: Zuord.-Summen ("<<Msum<<") stimmen nicht ("<<AE.getStueck()<<") für "<<AE<<'\n';
         return false; }
@@ -236,11 +237,29 @@ bool ppsInstanzReparatur::check_F_dispo(const int uid,const bool analyse_only,co
 {
   if(Msum>AE.getRestStk())
    { 
-     if(analyse_only) std::cout << "Analyse: Zuord.-Summen ("<<Msum<<") sind größer als ("<<AE.getRestStk()<<") für "<<AE<<'\n';
-     else assert(!"nicht implementiert\n");
-     return false;
+     if(analyse_only) { std::cout << "Analyse: Zuord.-Summen ("<<Msum<<") sind größer als ("<<AE.getRestStk()<<") für "<<AE<<'\n';
+                        return false; }
+     else check_F_dispoReparatur(uid,AE,Msum);
    }
   return true;
+}
+
+void ppsInstanzReparatur::check_F_dispoReparatur(const int uid,const AufEintrag &AE,const AuftragBase::mengen_t &menge) const
+{
+  ReparaturE_2_ZuSumme_1(uid,true); 
+  AuftragBase::mengen_t ReduceMenge=menge-AE.getRestStk();
+  assert(ReduceMenge>0);
+//std::cout << "R1: "<<AE<<'\t'<<ReduceMenge<<'\n';
+  std::list<AufEintragZu::st_reflist> L=AufEintragZu(AE).get_Referenz_list_dispo(false);
+  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+   {
+     AuftragBase::mengen_t M=AuftragBase::min(ReduceMenge,i->Menge);
+//std::cout << "R2: "<<i->AEB<<'\t'<<M<<'\n';
+     i->AEB.updateStkDiffBase__(uid,-M);
+     AufEintragZu(i->AEB).setMengeDiff__(AE,-M);
+     ReduceMenge-=M;
+     if(!ReduceMenge) return;
+   }  
 }
 
 

@@ -368,6 +368,14 @@ std::cout << dummystring<<'\n';
         if(!erfolgreich) { cout << "Reparatur-Zuordungen () \n";
                return fehler();}
       }
+      {
+        Query::Execute("update auftragentry set geliefert=16555 where "
+            "(instanz,auftragid)=(2,20000)");
+        SQLerror::test(__FILELINE__);
+        erfolgreich=C.teste(Check::Menge,"_rep_pfE",mit_reparatur_programm,true);
+        if(!erfolgreich) { cout << "Reparatur-Zuordungen () \n";
+               return fehler();}
+      }
       cout << "Reparatur-Test (Petig, Zuordnungen) erfolgreich\n";
       break;      
      }
