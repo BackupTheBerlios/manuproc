@@ -272,8 +272,11 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
     if (!i->getZusatzInfos().empty())
     {  if (i->getZusatzInfos()[0].aeb.valid())
        {  AufEintrag ae(i->getZusatzInfos()[0].aeb);
-          p=ae.EPreis(false);
           rabatt=ae.Rabatt();
+	  if(rabatt==0)
+            p=ae.EPreis(false);
+	  else
+	    p=ae.EPreis(true);
           provsatz=ae.ProvSatz();
        }
     }

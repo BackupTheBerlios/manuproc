@@ -1,4 +1,4 @@
-/* $Id: RechnungEntry.h,v 1.23 2004/01/23 10:27:19 jacek Exp $ */
+/* $Id: RechnungEntry.h,v 1.24 2004/01/28 13:09:11 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -110,7 +110,8 @@ public:
    if(brutto) return preis;
 #warning   
 #warning I think, it should be 1 for stueck here and not 0, but beware !   
-   else return Preis(preis.Gesamtpreis(preis.getWaehrung(),1,0.0,rabatt),
+   else return Preis(preis.Gesamtpreis(preis.getWaehrung(),1,0.0,rabatt)
+   			*preis.PreisMenge(),
    			preis.getWaehrung(),preis.PreisMenge());
  }
  
@@ -130,7 +131,7 @@ public:
  const Preis GPreis() const { 
  	return Preis(preis.Gesamtpreis(preis.getWaehrung(),
  				stueck,menge.as_float(),rabatt),
- 			preis.getWaehrung(),preis.PreisMenge()); }
+ 			preis.getWaehrung()); }
 
  
 };
