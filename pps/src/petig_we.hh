@@ -14,6 +14,16 @@
 #  define _PETIG_WE_HH
 class petig_we : public petig_we_glade
 {
+ struct we_entry {
+   ArtikelBase	artikel;
+   std::vector<std::string> artbez;
+   int stueck;
+   AuftragBase::ID auftrag;
+   we_entry(const std::vector<std::string> a, int s, 
+            const AuftragBase::ID auf) : artbez(a),stueck(s),auftrag(auf) {}
+   };
+ std::vector<struct we_entry> we_ls;
+  
         void on_petig_we_ok_clicked();
         void on_petig_we_cancel_clicked();  
 };

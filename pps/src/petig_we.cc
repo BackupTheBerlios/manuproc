@@ -38,8 +38,20 @@ void petig_we::on_petig_we_ok_clicked()
   }
 
  ManuProC::dbdefault(c_to_p.Name());
-
  ManuProC::dbdisconnect(c_to_p.Name());
+
+
+
+
+/*
+ lieferschein->push_back(artikel,anzahl->get_value_as_int(),
+                  e.hatMenge()?liefermenge->get_value_as_float():0.0,
+                  Palette->get_value_as_int());
+ lieferschein->push_back(auftragentry, artikel, anzahl->get_value_as_int(),
+     		e.hatMenge()?liefermenge->get_value_as_float():0.0,
+     		Palette->get_value_as_int());
+*/
+
 }
 
 void petig_we::on_petig_we_cancel_clicked()
