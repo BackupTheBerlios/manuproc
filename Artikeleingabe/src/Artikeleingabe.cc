@@ -32,7 +32,11 @@ Artikeleingabe::Artikeleingabe(int argc, char **argv)
  table_verschmelzen->hide(); // Nur für Administratoren!!!!
 // frame_artikel->set_sensitive(false);
 // frame_editieren->hide();
- alias_schema->Einschraenken_b(true);
+
+ // nur Kunden die ein Schema haben anzeigen
+ alias_schema->Einschraenkung(" and kundennr in (select distinct extartbezid"
+			" from extbezschema)");
+
  alias_warengruppe->hide();
  set_tree_titels();
  tree->set_NewNode(&Data_Node::create);
@@ -474,10 +478,12 @@ void Artikeleingabe::on_kunde_activate()
   fill_eingabebox(2);
   alias_eingabe->grab_focus();
   // diese Heuristik ist etwas fraglich CP
-  if(alias_schema->get_value()==1) 
-    alias_warengruppe->show();
-  else 
+// ich würde es ganz rausnehmen JJ
+//  if(alias_schema->get_value()==1) 
+//    alias_warengruppe->show();
+//  else 
     alias_warengruppe->hide();
+
   }catch(SQLerror &e) {std::cerr << e<<'\n';}
  fill_eingabebox(2);
 }
