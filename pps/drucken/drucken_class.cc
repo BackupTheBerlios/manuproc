@@ -148,12 +148,23 @@ if(!firmenpapier)
          "\\scalebox{4}{%%\n"
          "{\\color{lgray}" << string2TeX(kunde_an->verein()) << "}%%\n"
          "}}}}%%\\\\\n";
+
 #endif
 
  if(! kunde_an->isInGrp(KundengruppeID::Rechnungsadresse))
    kunde_an = cH_Kunde(kunde_an->Rngan());
     
  mld=new MultiL_Dict(kunde_an->Sprache());
+
+   if(Typ()==Rechnung && storniert())
+   {
+     os << "\\raisebox{-300pt}[0pt][0pt]{%%\n"
+         "\\makebox[0pt][s]{%%\n"
+         "\\kern+70pt \\rotatebox{0}{%%\n"
+         "\\scalebox{12}{%%\n"
+         "{\\color{lgray} "<< mld->MLT(MultiL_Dict::TXT_STORNO) << " }%%\n"
+         "}}}}%%\\\\\n";
+   }
 
 }
 
@@ -1209,7 +1220,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
       os << "\\hfill "<<kunde_von->LaTeX_von_gross(KdNr())<<"\n\n"  ;
       zeilen_passen_noch=ZEILEN_SEITE_1;
     }
-   os << "\\LARGE "<<typString(gutschrift())<<' '<<RngNr()<<"\\hfill\\normalsize "
+   os << "\\LARGE "<<typString()<<' '<<RngNr()<<"\\hfill\\normalsize "
         <<(kopie?"Kopie, ":"");
    os <<"\\hfill "<< getDatum() << "\\\\\n\n";
    os <<string2TeX(getBemerkung())<<"\n\n";
@@ -1378,7 +1389,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
 
 #ifdef MABELLA_EXTENSIONS
    os <<"\\hfill " << mld->MLT(MultiL_Dict::TXT_SEITE) << " \\thepage\\\\\n";
-   os << "\\large "<<typString(gutschrift())<<" ";
+   os << "\\large "<<typString()<<" ";
    os.width(6);os.fill('0');
    os <<RngNr()<<"\\normalsize ~" << mld->MLT(MultiL_Dict::TXT_VOM)
 		<<" " <<getDatum()<<". ";
@@ -1405,7 +1416,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
 #else
    os << "\\LARGE ";
    if (Typ()==Auftrag) os << "Auftragsbestätigung";
-   else os << typString(gutschrift());
+   else os << typString();
    os <<' '<<RngNr()<<"\\hfill\\normalsize "
         <<(kopie?"Kopie, ":"");
    os <<"Seite "<<page_counter;

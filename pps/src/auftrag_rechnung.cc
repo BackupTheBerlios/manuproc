@@ -188,6 +188,13 @@ void auftrag_rechnung::redisplay()
      set_title("Rechnung");
      gutschrift->set_sensitive(true);     
    }
+ else if(rechnung.rngArt()==Rechnung::RART_STORNO)
+   {
+     frame_rechnung->set_label("Rechnung (Storniert)");
+     frame_rechnungsdaten->set_label("Rechnungsdaten");
+     set_title("Rechnung");
+     gutschrift->set_sensitive(true);     
+   }
  else 
    {
 std::cout <<rechnung.rngArt()<<'\n';
@@ -229,6 +236,8 @@ void auftrag_rechnung::on_rngnr_activate()
  rng_notiz_save->set_sensitive(false);
 
  bezahlt->set_active(rechnung.Bezahlt());
+ storno->set_sensitive(!bezahlt->get_active() &&
+			rechnung.rngArt()==RechnungBase::RART_RNG);
 
  rtree_daten->show();
 // vbox_n_b_lieferscheine->show();
@@ -730,12 +739,16 @@ void auftrag_rechnung::on_notiz_save_clicked()
 
 gint auftrag_rechnung::on_bezahlt_toggled(GdkEventButton *ev)
 { 
+
+
  DBCapability::WhiteColumn wc("rechnung","bezahlt");
  if(dbcapability->isWhite(DBCapability::ColAct(wc,DBCapability::UPDATE)) )
    {
     try{
     if(rechnung.Id()!=Rechnung::none_id)
-      rechnung.setBezahlt(bezahlt->get_active());
+      {rechnung.setBezahlt(bezahlt->get_active());
+
+      }
     }
     catch(SQLerror &e){meldung->Show(e);
       bezahlt->set_active(bezahlt->get_active());
@@ -746,6 +759,8 @@ gint auftrag_rechnung::on_bezahlt_toggled(GdkEventButton *ev)
    bezahlt->set_active(bezahlt->get_active());
   }
 
+ if(rechnung.rngArt()==RechnungBase::RART_RNG)
+   storno->set_sensitive(!bezahlt->get_active());   
  return false;
 }
 
@@ -785,7 +800,27 @@ void auftrag_rechnung::on_gutschrift_activate()
 
 
 void auftrag_rechnung::on_storno_activate()
-{  
+{
+ if(rechnung.Bezahlt())
+   { meldung->Show("Die Rechnung ist bereits bezahlt und kann nicht"
+		" storniert werden; Bitte eine Gutschrift erstellen,");
+    return;
+   }
+
+ ja_nein_frage jnf(std::string("Wollen Sie wirklich die Rechnung ")+
+		itos0pad(rechnung.Id(),6)+" stornieren ?");
+
+ jnf.set_transient_for(*this);
+
+ int ret=jnf.run();
+
+ if(ret==0) 
+   {rechnung.setRngArt(RechnungBase::RART_STORNO);
+    storno->set_sensitive(false);
+   }
+	
+ on_rngnr_activate();
+
 }
 
 

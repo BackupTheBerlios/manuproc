@@ -247,7 +247,11 @@ public:
 	: LR_Base(Lieferschein),UEBLICHE_INITIALISIERUNG(fp,l->Instanz())
   { u.l=l; }
   LR_Abstraktion(const RechnungVoll *r, bool fp=false) 
-	: LR_Base(Rechnung),UEBLICHE_INITIALISIERUNG(fp,ppsInstanz::Kundenauftraege)
+	: LR_Base(Rechnung,
+			false,
+			r->rngArt()==RechnungBase::RART_GUT,
+			r->rngArt()==RechnungBase::RART_STORNO),
+		UEBLICHE_INITIALISIERUNG(fp,ppsInstanz::Kundenauftraege)
   { u.r=r; gut=(r->rngArt()==Rechnung::RART_GUT); }
   LR_Abstraktion(LR_Base::typ _typ,const AuftragFull *a, bool fp=false) 
 	: LR_Base(_typ), UEBLICHE_INITIALISIERUNG(fp,a->Instanz())
@@ -289,6 +293,10 @@ public:
       if (Typ()==Rechnung)     return u.r->Id(); 
       if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern)      return u.a->Id(); 
       if (Typ()==Lieferschein) return u.l->Id(); abort(); }
+   unsigned int RngArt()   const {
+      if (Typ()==Rechnung)     return u.r->rngArt(); 
+      std::cerr << "RngArt() not available\n";
+	abort(); }
    cH_Zahlungsart getZahlungsart() const {
       if (Typ()==Rechnung)     return u.r->getZahlungsart(); 
       if (Typ()==Auftrag)     return u.a->Zahlart(); 

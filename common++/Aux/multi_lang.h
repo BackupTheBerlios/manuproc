@@ -92,6 +92,7 @@ public:
 		SEHR_GEEHRTE_DUH=77,
 		SEHR_GEEHRTE_H=78,
 		SEHR_VEREHRTE_F=79,
+		TXT_STORNO=80,
 	     } LangTXT;
 
  MultiL_Dict(int sprache, int default_spr=1);
