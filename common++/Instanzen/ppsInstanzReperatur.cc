@@ -47,7 +47,7 @@ bool ppsInstanz::Reparatur_2_ZuSumme_1Rest(const int uid,const bool analyse_only
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
   if(LagerInstanz()) {cout << "Sinnlos für LagerInstanz\n"; return true;}
   else
-     Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::plan_auftrag_id,false,ez_dispo);
+     return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::plan_auftrag_id,false,ez_dispo);
 }
 
 

@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.17 2002/12/04 11:34:29 thoma Exp $
+// $Id: adjust_store.cc,v 1.18 2002/12/04 12:12:09 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -54,7 +54,7 @@ void usage(const std::string &s)
 
 bool check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktion,const bool analyse_only)
 {   
-   bool alles_ok=false;
+   bool alles_ok=true;
     if     (aktion=="A")
      {
       if(I->EigeneLagerKlasseImplementiert()) I->ReparaturLager(getuid(),analyse_only);
@@ -81,10 +81,10 @@ const static struct option options[]=
  { NULL,      0,       NULL, 0 }
 };
 
-int ende(bool b)
+int ende(bool alles_ok)
 {
-  if(b) return 0;
-  else  return 1;
+  if(alles_ok) return 0;
+  else         return 1;
 }
 
 
@@ -118,14 +118,13 @@ int main(int argc,char *argv[])
 
 
   ManuProC::PrintUncaughtExceptions();
-  bool alles_ok=false;
+  bool alles_ok=true;
   try{
     ManuProC::Connection conn;
     conn.setHost(dbhost);
     conn.setDbase(database);
     ManuProC::dbconnect(conn);
 
-cout << conn.Dbase()<<'\n';
     if(instanz!=ppsInstanzID::None) 
       alles_ok=check_for(argv[0],cH_ppsInstanz(instanz),aktion,analyse_only);
     else

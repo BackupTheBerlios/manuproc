@@ -1,4 +1,4 @@
-// $Id: dbconnect.pgcc,v 1.12 2002/12/04 11:32:20 thoma Exp $
+// $Id: dbconnect.pgcc,v 1.13 2002/12/04 12:16:09 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,7 +28,7 @@
 extern "C" { int snprintf(char *str, size_t size, const  char  *format, ...); }
 #endif
 
-ManuProC::Connection::Connection(const std::string &h="", const std::string &d="", const std::string &u="",const std::string &n="")
+ManuProC::Connection::Connection(const std::string &h, const std::string &d, const std::string &u,const std::string &n)
         	: host(h), dbase(d), user(u), name(n)
 {
    std::string host_=DEFAULT_DBHOST;
