@@ -1,4 +1,4 @@
-// $Id: Faden.hh,v 1.6 2003/06/27 08:04:44 christof Exp $
+// $Id: Faden.hh,v 1.7 2003/10/23 09:27:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -30,13 +30,18 @@
 #include <Aux/fixedpoint.h>
 class Wiederholung;
 
-class Faden {
-        unsigned int anzahl;
+struct Faden {
+        unsigned anzahl;
         ArtikelBase material;
         Bindung bindung;
+        int kettscheibe;
+        unsigned max_kettlaenge;
+        unsigned max_fadenzahl;
+        
 	friend std::ostream& operator<< (std::ostream&, const Faden&);
 public:
-	Faden (unsigned int, ArtikelBase::ID, Bindung=Bindung());
+	Faden (unsigned int anzahl, ArtikelBase::ID, Bindung=Bindung());
+	Faden() : anzahl(), kettscheibe(-1), max_kettlaenge(), max_fadenzahl() {}
 	bool operator== (const Faden&) const;
 	bool operator!= (const Faden&) const;
 	int getAnzahl() const { return anzahl; }
@@ -52,7 +57,7 @@ public:
    static void create_wiederholung(const ArtikelBase &artikel, const Wiederholung &W) throw(SQLerror);
 };
 
-class Wiederholung {
+struct Wiederholung {
 	unsigned int start, end, anzahl;
 public:
 	Wiederholung (const unsigned int s, const unsigned int e, const unsigned int a);
@@ -71,6 +76,8 @@ class Fadenliste {
 	std::vector<Faden> sumliste;
 	std::vector<Wiederholung> repliste;
 	std::vector<unsigned int> repnumliste;
+	ArtikelBase variante_von;
+	std::map<ArtikelBase,ArtikelBase> ersetzen; // variante
 public:
 	typedef std::vector<Faden>::const_iterator const_iterator;
 	typedef std::vector<Faden>::const_iterator const_sumiterator;
@@ -78,6 +85,7 @@ public:
 	
 	Fadenliste() : liste(), sumliste(), repliste(), repnumliste() {}
 	void Load(const ArtikelBase &ab,const Bindungsliste &bindungsliste);
+	bool istVariante() const { return !!variante_von; }
 	
 	const_iterator begin() const { return liste.begin(); }
 	const_iterator end() const { return liste.end(); }

@@ -1,4 +1,4 @@
-// $Id: Bindung.cc,v 1.10 2002/11/22 15:31:05 christof Exp $
+// $Id: Bindung.cc,v 1.11 2003/10/23 09:27:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -43,6 +43,20 @@ bool Bindung::haveExtraFunction(ExtraFunc ex) const
  return true;
 }
 
+static Bindungsliste bindungsliste;
+
+const Bindungsliste &Bindung::GlobaleListe()
+{  if (bindungsliste.empty()) 
+   {  bindungsliste.Load();
+      if (bindungsliste.empty()) bindungsliste.add(Bindung());
+   }
+   return bindungsliste;
+}
+
+Bindung Bindung::getById(ID id)
+{  return GlobaleListe().getById(id);
+}
+
 int Bindungsliste::getIdByName (const char *name) const
 {
    std::vector<Bindung>::const_iterator i = find (liste.begin(), liste.end(), name);
@@ -50,7 +64,7 @@ int Bindungsliste::getIdByName (const char *name) const
    return 0;
 }
 
-Bindung Bindungsliste::getByName (const std::string n) const
+Bindung Bindungsliste::getByName (const std::string &n) const
 {
    std::vector<Bindung>::const_iterator it = find (liste.begin(), liste.end(), n);
    if (it != liste.end()) return (*it);

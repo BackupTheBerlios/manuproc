@@ -17,58 +17,62 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Faden_sql.pgcc,v 1.6 2003/01/08 09:46:57 christof Exp $
+// $Id: Faden_sql.pgcc,v 1.7 2003/10/23 09:27:27 christof Exp $
 
 #include <Faden.hh>
 #include <Misc/Transaction.h>
-exec sql include sqlca;
+#include <Misc/FetchIStream.h>
+
+static FetchIStream &operator>>(FetchIStream &is, Bindung &b)
+{  int bnr;
+   is >> bnr;
+   b=Bindung::getById(bnr);
+   return is;
+}
+
+static FetchIStream &operator>>(FetchIStream &is, Faden &f)
+{  int znr;
+   is >> znr >> f.anzahl >> f.material >> f.bindung
+   	>> FetchIStream::MapNull(f.kettscheibe,-1)
+   	>> FetchIStream::MapNull(f.max_kettlaenge)
+   	>> FetchIStream::MapNull(f.max_fadenzahl);
+   return is;
+}
 
 void Fadenliste::Load(const ArtikelBase &ab,const Bindungsliste &bindungsliste)
-{  exec sql begin declare section;
-   int ZEILENNUMMER[20], ANZAHL[20], BINDUNG[20], 
-   	ANFANGSZEILE[20], ENDZEILE[20], WIEDERHOLUNGEN[20];
-   int ARTIKEL, MATERIAL[20];
-   exec sql end declare section;
-
-   erase();
-   ARTIKEL=ab.Id();
-
-   exec sql declare zn cursor for 
-   	select zeilennummer, anzahl, material, bindung 
-   	from webang_faeden
-        where artikel= :ARTIKEL 
-        order by zeilennummer;
-   Transaction tr;
-   exec sql open zn;
-   SQLerror::test(__FILELINE__ "select from webang_faeden",100);
-   while (! sqlca.sqlcode)
-   {  exec sql fetch 20 from zn into :ZEILENNUMMER, :ANZAHL, :MATERIAL, :BINDUNG;
-      SQLerror::test(__FILELINE__ "fetch from webang_faeden",100);
-      if (sqlca.sqlcode) break;
-      unsigned int lines=sqlca.sqlerrd[2];
-      for (unsigned int i=0;i<lines;++i)
-         add (Faden (ANZAHL[i], MATERIAL[i], bindungsliste.getById(BINDUNG[i])), -1);
-      if (lines<20) break;
+{  erase();
+   
+   ArtikelBase var_von;
+   Query("select variante_von from webangaben where artikel=?")
+   	<< ab
+   	>> FetchIStream::MapNull(var_von);
+   if (!!var_von)
+   {
    }
-   exec sql close zn;
+   else
+   {  std::vector<Faden> vfd;
+      
+      Query q("select zeilennummer, anzahl, material, bindung, kettscheibe, "
+      	"max_kettlaenge, max_fadenzahl "
+      	"from webang_faeden where artikel=? order by zeilennummer");
+      q << ab;
+      q.FetchArray(vfd);
+      for (std::vector<Faden>::const_iterator i=vfd.begin();i!=vfd.end();++i)
+      {  add(*i,-1);
+      }
 
-   // request small ones first so we print it right
-   exec sql declare wdh cursor for 
-   	select anfangszeile, endzeile, wiederholungen 
-   	from webang_wiederhol
-        where artikel= :ARTIKEL
-        order by endzeile-anfangszeile;
-   exec sql open wdh;
-   SQLerror::test(__FILELINE__ "select from webang_wiederhol",100);
-   while (! sqlca.sqlcode)
-   {  exec sql fetch 20 from wdh into :ANFANGSZEILE , :ENDZEILE, :WIEDERHOLUNGEN;
-      SQLerror::test(__FILELINE__ "fetch from webang_wiederhol",100);
-      if (sqlca.sqlcode) break;
-      unsigned int lines=sqlca.sqlerrd[2];
-      for (unsigned int i=0;i<lines;++i)
-         rep_add (ANFANGSZEILE[i], ENDZEILE[i], WIEDERHOLUNGEN[i]);
-      if (lines<20) break;
+      Query q2("select anfangszeile, endzeile, wiederholungen "
+		"from webang_wiederhol where artikel=? "
+		// request small ones first so we print it right
+		"order by endzeile-anfangszeile");
+      q2 << ab;
+      FetchIStream is;
+      while ((q2>>is).good())
+      {  int anfangszeile, endzeile, wiederholungen;
+         is >> anfangszeile >> endzeile >> wiederholungen;
+         is.ThrowIfNotEmpty(__FILELINE__);
+         rep_add(anfangszeile, endzeile, wiederholungen);
+      }
+      
    }
-   exec sql close wdh;
-   tr.commit();
 }

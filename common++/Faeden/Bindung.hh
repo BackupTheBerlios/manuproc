@@ -1,4 +1,4 @@
-// $Id: Bindung.hh,v 1.5 2002/10/24 14:06:50 thoma Exp $
+// $Id: Bindung.hh,v 1.6 2003/10/23 09:27:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -28,6 +28,7 @@
 #include <algo.h>
 #include <Aux/SQLerror.h>
 
+class Bindungsliste;
 class Bindung {
 public:
 	typedef int ID;
@@ -51,14 +52,16 @@ public:
 	bool operator!= (const ID i) const { return i != id; }
 	bool operator== (const char *s) { return s == name; }
 	bool operator!= (const char *s) { return s != name; }
-	bool operator== (const std::string s) const { return s == name; }
-	bool operator!= (const std::string s) const { return s != name; }
+	bool operator== (const std::string &s) const { return s == name; }
+	bool operator!= (const std::string &s) const { return s != name; }
 	std::string getName() const { return name; }
 	const char* getCName() const { return name.c_str(); }
 	ID getId() const { return id; }
 	const std::string extraFunctionData(const ExtraFunc efid) const 
 			{ return const_cast<Efs&>(ef)[efid]; }
 	bool haveExtraFunction(ExtraFunc ex) const;
+	static Bindung getById(ID id);
+	static const Bindungsliste &GlobaleListe();
 };
 
 class Bindungsliste {
@@ -71,9 +74,9 @@ public:
 	const_iterator begin() const { return liste.begin(); }
 	const_iterator end() const { return liste.end(); }
 	size_t size() const { return liste.size(); }
-	void add (const Bindung b) { liste.push_back (b); }
+	void add (const Bindung &b) { liste.push_back (b); }
 	int getIdByName (const char*) const;
-	Bindung getByName (const std::string) const;
+	Bindung getByName (const std::string &) const;
 	Bindung	getById (const ID) const;
 	void print_out() const;
 	bool empty() const { return liste.empty(); }
