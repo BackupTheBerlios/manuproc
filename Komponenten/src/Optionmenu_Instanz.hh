@@ -9,10 +9,13 @@
 
 class Optionmenu_Instanz :  public Gtk::OptionMenu
 {
-   void fuelle_menu();
+ public:
+   enum emode {allesAnzeigen,nurLager,ohneLagerZulieferer,nurLieferanten,keineKunden};
+
+   void fuelle_menu(emode mode,bool nokunde);
 
  public:
-   Optionmenu_Instanz() ;
+   Optionmenu_Instanz(emode mode,bool nokunde=false) ;
    SigC::Signal0<void> activate;
 
    void set_value(const cH_ppsInstanz &i);

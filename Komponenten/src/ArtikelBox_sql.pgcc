@@ -186,7 +186,6 @@ void ArtikelBox::fuelleMenu()
    Gtk::Menu *optionen_menu = manage(new class Gtk::Menu());
    Gtk::MenuItem *optionen = manage(new class Gtk::MenuItem("Optionen"));
    optionen->set_submenu(*optionen_menu);
-//   Gtk::Menu *neu_menu = manage(new class Gtk::Menu());
    Gtk::MenuItem *neu = manage(new class Gtk::MenuItem("Neuen Eintrag anlegen"));
    neu->activate.connect(SigC::slot(this,&ArtikelBox::Neuer_Eintrag));
 
@@ -468,13 +467,12 @@ void ArtikelBox::Neuer_Eintrag()
   where = "(id," ;
   what  = "("+itos(db_id)+",";
   where_what(where,what,false);
-
   Neuer_Eintrag_sql(db_id,where,what,
-#if (defined PETIG_EXTENSIONS) || (defined MABELLA_EXTENSION)
-  		ppsInstanz::Kundenauftraege
+#if (defined PETIG_EXTENSIONS) 
+  		ppsInstanz::Rollerei
 #else
-		ppsInstanz::default_id
-#endif  		
+		ppsInstanz::None
+#endif
   						);
 #ifdef PETIG_EXTENSIONS  // Jumborollen anlegen ?
  std::string aufmachung;

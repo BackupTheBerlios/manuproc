@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.9 2002/02/08 21:45:04 christof Exp $
+# $Id: Makefile.am,v 1.10 2002/02/13 12:40:04 christof Exp $
 CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK_INCLUDES@ @COMMONXX_INCLUDES@  
 
@@ -36,12 +36,12 @@ libKomponenten_a_SOURCES=datewin.cc \
 		tclistnode.cc tclistleaf.cc treebase.cc \
       Artikel_Bestellen.cc \
       PPixmap.cc \
-      Optionmenu_Einheit.cc
-
+      Optionmenu_Einheit.cc \
+      Optionmenu_Instanz.cc 
 
 BUILT_SOURCES_L= ArtikelBox_sql.cc ProzessBox.cc KundenBox.cc $(LINKS) \
    WWaehrung_sql.cc WPreis_sql.cc WAuftragStatus_sql.cc \
-   Optionmenu_Instanz_sql.cc Optionmenu_Warengruppe_sql.cc
+   Optionmenu_Warengruppe_sql.cc
 
 BUILT_SOURCES=datewin.hh SimpleTree.hh logwin.hh $(BUILT_SOURCES_L) 
 

@@ -122,10 +122,10 @@
 	  <handler>OI_activate</handler>
 	  <last_modification_time>Wed, 14 Nov 2001 09:23:30 GMT</last_modification_time>
 	</signal>
-	<creation_function>Optionmenu_Instanz</creation_function>
+	<creation_function>Optionmenu_Instanz(Optionmenu_Instanz::allesAnzeigen)</creation_function>
 	<int1>0</int1>
 	<int2>0</int2>
-	<last_modification_time>Wed, 14 Nov 2001 09:12:02 GMT</last_modification_time>
+	<last_modification_time>Tue, 12 Feb 2002 10:48:55 GMT</last_modification_time>
 	<child>
 	  <padding>0</padding>
 	  <expand>True</expand>
