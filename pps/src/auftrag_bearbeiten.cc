@@ -22,6 +22,7 @@
 #include <Artikel/Einheiten.h>
 #include <Artikel/ArtikelStamm.h>
 #include <Artikel/Artikelpreis.h>
+#include <SearchComboContent.h>
 #include <Gtk_OStream.h>
 #include <Misc/Ausgabe_neu.h>
 #include <Misc/dbconnect.h>
@@ -76,6 +77,7 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
    kundenbox->setExpandStr2(true);
    checkbutton_ean_drucken->show();
    youraufnr_scombo->set_value_in_list(false,false);
+   aufbemerkung_entry->set_sensitive(false);
 #endif 
 
  zahlart->hide_int(true);
@@ -585,7 +587,7 @@ void auftrag_bearbeiten::andererKunde()
    artikelbox->Einschraenken_b(true);
    checkbutton_ean_drucken->set_active(kunde->showEAN());
    newauftrag_button->set_sensitive(kunde->Aktiv());
-   auftrag_ok->set_sensitive(kunde->Aktiv());
+//   auftrag_ok->set_sensitive(false);
    if(kunde->Aktiv())
       _tooltips.set_tip(*kundenbox,NULL,"");
    else
@@ -617,7 +619,7 @@ int auftrag_bearbeiten::get_active_index(Gtk::Menu *om)
 void auftrag_bearbeiten::on_youraufnrscombo_activate()
 { 
  if(newauftrag)
-   jahrgang_spinbutton->grab_focus();
+   aufbemerkung_entry->grab_focus();
  else if(auftrag)
   {
    ja_nein_frage jnf("Sie verändern gerade die Auftragsnummer des Kunde. "
@@ -635,7 +637,11 @@ void auftrag_bearbeiten::on_youraufnrscombo_activate()
  else
   try{
    loadAuftrag(AuftragBase(instanz,youraufnr_scombo->Content()));
-   } catch(SQLerror &e) {std::cerr << e<<'\n';}
+   } 
+   catch(SQLerror &e) {std::cerr << e<<'\n';}
+   catch(SearchComboContent<int>::ContentError &c)
+   { meldung->Show("Auftrag mit dieser Nummer nicht vorhanden"); 
+    return;}
 }
 
 
