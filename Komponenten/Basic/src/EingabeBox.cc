@@ -1,4 +1,4 @@
-// $Id: EingabeBox.cc,v 1.7 2002/10/17 07:17:24 christof Exp $
+// $Id: EingabeBox.cc,v 1.8 2003/05/19 13:11:13 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,6 +19,7 @@
 
 #include "EingabeBox.hh"
 #include <gtk/gtksignal.h>
+#include <cassert>
 
 gint EingabeBox::try_grab_focus(GtkWidget *w,gpointer gp)
 {  // assert(Gtk::Table::isA((Gtk::Object *)gp)); // very weak check

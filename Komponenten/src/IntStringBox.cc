@@ -1,4 +1,4 @@
-// $Id: IntStringBox.cc,v 1.5 2003/03/17 17:17:40 christof Exp $
+// $Id: IntStringBox.cc,v 1.6 2003/05/19 13:11:13 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
  *  1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -20,6 +20,7 @@
 #include "IntStringBox.hh"
 #include <Misc/itos.h>
 #include <gtk/gtksignal.h>
+#include <cassert>
 
 void IntStringBox::hide_int(bool b)
 {

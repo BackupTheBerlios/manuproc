@@ -1,4 +1,4 @@
-// $Id: ModelWidgetConnection.h,v 1.5 2003/05/09 20:56:00 christof Exp $
+// $Id: ModelWidgetConnection.h,v 1.6 2003/05/19 13:11:13 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -27,10 +27,11 @@
 
 template <class T,class W>
  class ModelWidgetConnection : public SigC::Object
-{protected:
+{public: // protected:  work around a g++ 3.3.0 bug
 	typedef ModelWidgetConnection<T,W> this_t;
 	typedef W widget_t;
-
+	
+protected:
 	SigC::Connection mv_con, cm_con;
 	Model_ref<T> model;
 	widget_t *widget;
