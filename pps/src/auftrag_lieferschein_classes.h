@@ -107,7 +107,7 @@ public:
    {
     Handle<const Data_Lieferdaten> h_ld=
     	l.cast_dynamic<const Data_Lieferdaten>();
-    if(status != h_ld->get_LieferscheinEntry().Status()) return true;
+    if(status == h_ld->get_LieferscheinEntry().Status()) return true;
     return false;
    }
 };
