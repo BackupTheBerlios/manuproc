@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.3 2001/06/21 09:56:40 christof Exp $
+# $Id: Makefile.am,v 1.2 2001/06/21 09:54:46 christof Exp $
 CXXFLAGS+=-Wall -g -I$(top_srcdir)/src  \
 	@COMMONXX_INCLUDES@ @COMMONGTK_INCLUDES@
 
