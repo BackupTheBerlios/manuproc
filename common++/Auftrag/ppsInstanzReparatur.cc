@@ -458,6 +458,9 @@ void ppsInstanzReparatur::check_F_dispoReparatur(const int uid,const AufEintrag 
 
 ////////////////////////////////////////////////////////////////////////////
 
+#endif
+
+#warning sehr Datenbanklastig implementiert, neu implementieren
 void ppsInstanzReparatur::Reparatur_0er_und_2er(const int uid,const bool analyse_only) const throw(SQLerror)
 {
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
@@ -498,7 +501,7 @@ std::cout << "RepLan: "<<*i<<'\t'<<zielauftrag<<"Menge: "<<M<<'\n';
     }
 }
 
-
+#if 0
 
 ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
@@ -845,11 +848,84 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
 }
 
 bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bool analyse_only) const
-{  // schauen ob offeneMenge=Sum(kinder)
-   
+{  bool alles_ok=true;
+   if (ae.Id()==AuftragBase::dispo_auftrag_id)
+   {  // 2er: Kinder gleiche instanz
+      AuftragBase::mengen_t menge2;
+      for (AufEintragZu::map_t::iterator i=kinder.begin();i!=kinder.begin();++i)
+      {  for (AufEintragZu::list_t::iterator j=i->second.begin();j!=i->second.end();)
+         {  if (j->AEB.Instanz()!=ae.Instanz())
+            {  analyse("Instanz passt nicht",ae,j->AEB,j->Menge);
+             weg:
+               if (!analyse_only) AufEintragZu::remove(ae,j->AEB);
+               j=i->second.erase(j);
+               alles_ok=false;
+               continue;
+            }
+            AufEintrag ae2(j->AEB);
+            if (ae2.Artikel()!=ae.Artikel()
+         	|| ae2.getLieferdatum()!=ae.getLieferdatum()) 
+            {  analyse("Artikel oder Datum passt nicht",ae,j->AEB,j->Menge);
+               goto weg;
+            }
+            menge2+=j->Menge;
+            ++j;
+         }
+      }
+      if (menge2!=ae.getStueck())
+      {  analyse("2er: Zuordnungen!=eigene Menge",ae,menge2,ae.getStueck());
+         if (!analyse_only) 
+            ae.MengeAendern(getuid(),menge2-ae.getStueck(),false,
+            		AufEintragBase(),ManuProC::Auftrag::r_Reparatur);
+      }
+   }
+   else // 0er, 1er, 3er
+   {  for (AufEintragZu::map_t::iterator i=kinder.begin();i!=kinder.begin();++i)
+      {  AuftragBase::mengen_t menge;
+         for (AufEintragZu::list_t::iterator j=i->second.begin();j!=i->second.end();)
+         {  if (ae.Instanz()->NaechsteInstanz(ae.Artikel())!=ppsInstanzID::None
+         	&& j->AEB.Instanz()!=ae.Instanz()->NaechsteInstanz(i->first))
+            {  analyse("Instanz passt nicht",ae,j->AEB,j->Menge);
+             weg1:
+               if (!analyse_only) AufEintragZu::remove(ae,j->AEB);
+               j=i->second.erase(j);
+               alles_ok=false;
+               continue;
+            }
+            else if (ae.Instanz()->NaechsteInstanz(ae.Artikel())==ppsInstanzID::None)
+            {  if (!ArtikelBaum(ae.Artikel()).istKind(i->first))
+               {  analyse("Kindartikel falsch",ae,j->AEB,j->Menge);
+                  goto weg1;
+               }
+               // Artikel ist schon mal richtig ...
+               cH_ppsInstanz bi=ppsInstanz::getBestellInstanz(i->first);
+               if (j->AEB.Instanz()!=bi && !bi->PlanungsInstanz())
+               {  analyse("Kindartikel bei falscher Instanz",ae,j->AEB,j->Menge);
+                  goto weg1;
+               }
+            }
+            AufEintrag ae2(j->AEB);
+            if (ae2.getLieferdatum()+ae.Instanz()->ProduktionsDauer()
+            		>ae.getLieferdatum()) 
+            {  analyse("Datum passt nicht",ae,j->AEB,j->Menge);
+               goto weg1;
+            }
+            menge+=j->Menge;
+            ++j;
+         }
+         // schauen ob offeneMenge=Sum(kinder)
+         AuftragBase::mengen_t richtigeMenge=
+         	ae.getRestStk()*ArtikelBaum(ae.Artikel()).Faktor(i->first);
+         if (menge!=richtigeMenge)
+         {  analyse("Zuordnungen!=eigene RestMenge",ae,menge,richtigeMenge);
+            assert (analyse_only);
+            alles_ok=false;
    // Sum zu klein: nachbestellen
    // Sum zu gross: abbestellen (falls 0er, bei 1er 2er erzeugen)
-   return true;
+         }
+      }
+   }
+   return alles_ok;
 }
 
 bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
