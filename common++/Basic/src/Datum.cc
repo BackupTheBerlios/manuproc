@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.24 2004/02/09 10:46:41 christof Exp $
+// $Id: Datum.cc,v 1.25 2004/02/16 10:09:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.24 2004/02/09 10:46:41 christof Exp $ */
+/* $Id: Datum.cc,v 1.25 2004/02/16 10:09:27 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -124,6 +124,10 @@ void ManuProC::Datum::teste() const throw (ManuProC::Datumsfehler)
    if (falsch) 
    {  throw(Datumsfehler(falsch));
    }
+}
+
+ManuProC::Datum ManuProC::Datum::Infinity() throw()  
+{  return ManuProC::Datum(31,12,2999);
 }
 
 bool ManuProC::Datum::valid() const throw ()

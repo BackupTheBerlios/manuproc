@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.21 2004/02/09 10:46:41 christof Exp $ */
+/* $Id: Datum.h,v 1.22 2004/02/16 10:09:27 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -89,6 +89,7 @@ public:
 	
 	/// heutiges Datum
 	static Datum today() throw();
+	static Datum Infinity() throw();
 	
 	/// in Menschenlesbare Form bringen (NOT THREAD SAFE!)
 	const char *c_str() const throw(Datumsfehler);

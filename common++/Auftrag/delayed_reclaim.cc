@@ -1,4 +1,4 @@
-// $Id: delayed_reclaim.cc,v 1.4 2003/09/11 15:25:55 christof Exp $
+// $Id: delayed_reclaim.cc,v 1.5 2004/02/16 10:09:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -36,14 +36,19 @@ void AufEintrag::delayed_reclaim::reclaim()
    while (!delayed.empty())
    {  std::pair<cH_ppsInstanz,ArtikelBase> act=delayed.front();
       AuftragBase ab(act.first,dispo_auftrag_id);
-      assert(act.first->LagerInstanz()); // wegen Lagerdatum sonst Liste
-      AuftragBase::mengen_t m;
-      AufEintragBase neuerAEB(ab,
+      if (act.first->LagerInstanz()) // wegen Lagerdatum sonst Liste
+      {  AuftragBase::mengen_t m;
+         AufEintragBase neuerAEB(ab,
               ab.existEntry(act.second,LagerBase::Lagerdatum(),OPEN,m));
-      // verteilen
-      if (neuerAEB.valid())
-      {  MengeVormerken(act.first,act.second,m,true,ProductionContext());
-         AufEintrag(neuerAEB).MengeAendern(-m,false,AufEintragBase());
+         // verteilen
+         if (neuerAEB.valid())
+         {  MengeVormerken(act.first,act.second,m,true,ProductionContext());
+            AufEintrag(neuerAEB).MengeAendern(-m,false,AufEintragBase());
+         }
+      }
+      else
+      {  // alle 2er suchen
+         auf_positionen_verteilen(...)
       }
       delayed.pop_front();
    }
