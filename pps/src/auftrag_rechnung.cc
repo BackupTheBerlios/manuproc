@@ -52,12 +52,14 @@ void auftrag_rechnung::on_rng_save()
 
 void auftrag_rechnung::on_rng_preview()
 {   
+   if (rngnr->get_text()=="") return;
    string command = "auftrag_drucken Rechnung "+rngnr->get_text()+" Preview";
    system(command.c_str());
 }
 
 void auftrag_rechnung::on_rng_print()
 {   
+   if (rngnr->get_text()=="") return;
    string command = "auftrag_drucken Rechnung "+rngnr->get_text()+" Plot";
    system(command.c_str());
 }
@@ -104,6 +106,10 @@ void auftrag_rechnung::on_rngnr_activate()
  if (rabatt<0.0) { rabatt=-rabatt; rabatt_typ->set_history(rabatt_typ::Zuschlag); }
  else rabatt_typ->set_history(rabatt_typ::Rabatt);
  rabatt_wert->set_value(rabatt);
+
+ rechnung_liste->show();
+ vbox_n_b_lieferscheine->show();
+
  }
  catch(SQLerror &e) {meldung->Show(e);}
 }
@@ -217,4 +223,12 @@ void auftrag_rechnung::rabatt_geaendert()
 {  gtk_spin_button_update(rabatt_wert->gtkobj());
    int plus_minus=(rabatt_typ::enum_t((int)(rabatt_typ->get_menu()->get_active()->get_user_data())))==rabatt_typ::Rabatt?+1:-1;
    rechnung_liste->getRechnung().setze_Rabatt(rabatt_wert->get_value_as_float()*plus_minus);
+}
+
+
+auftrag_rechnung::auftrag_rechnung()
+: selectedrow_lief(NULL), selectedrow_rng(NULL),kunde(Kunde::none_id)
+{
+   rechnung_liste->hide();
+   vbox_n_b_lieferscheine->hide();
 }

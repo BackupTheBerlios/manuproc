@@ -12,3 +12,4 @@ auftragentry_sql.cc
 OffAuf_RowData_sql.cc
 OffLief_Tree_sql.cc
 auftrag_rechnung_sql.cc
+AuftragEntry_sql.cc

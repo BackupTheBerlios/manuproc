@@ -36,7 +36,8 @@ private:
 	AufEintragBaseList eintragliste;
 public:
 	AuftragFull(int auftragid) throw(SQLerror);
-	AuftragFull(long kundennr, int jahr=0) throw(SQLerror);
+	// neuen Auftrag anlegen
+	AuftragFull(int stage, long kundennr, int jahr=0) throw(SQLerror);
 	void deleteEintrag(int zeilennr, int idx) throw(SQLerror);	
 	bool existsAufEntry(int idx) const
 	{ return ((uint)idx) < eintragliste.size(); }

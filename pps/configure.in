@@ -1,7 +1,7 @@
 # generated 2001/2/19 21:34:27 CET by jacek@mimi.
 # using glademm V0.5_11f_cvs
 
-AC_INIT(src/auftrag.cc)
+AC_INIT(src/pps.cc)
 AM_INIT_AUTOMAKE(auftrag, 0.0)
 AM_CONFIG_HEADER(config.h)
 

@@ -16,32 +16,35 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+// perhaps this belongs to pps ???
+
 #ifndef AUFTRAG_AUFTRAGENTRY_H
 #define AUFTRAG_AUFTRAGENTRY_H
-#include"aktAufEintrag.h" // hmmmm
-#include<Auftrag/selAufEntry.h> // erforderlich?
-#include<Auftrag/AufEintragBase.h>
-#include<Aux/EntryValue.h> // veraltet
-#include<Artikel/ArtikelBase.h> 
-#include<Aux/SQLerror.h>
-#include<Gtk_OStream.h> // weg da!
-
-typedef map<int,AufEintrag> AUFENTRYMAP;
-typedef vector<AufEintrag> AufEintragList;
+#include "aktAufEintrag.h" // Datenabstraktion
+#include <Auftrag/AufEintragBase.h>
+#include <Aux/EntryValue.h> // veraltet
+#include <Artikel/ArtikelBase.h> 
+#include <Aux/SQLerror.h>
+#include <iostream>
 
 class AufEintrag : public AufEintragBase
 {	
-	
 public:
- AufEintrag(const SelectedAufentry &aufentry, const cH_ExtBezSchema &schema);	
+ AufEintrag(const SelectedAufentry &aufentry, const cH_ExtBezSchema &schema)
+	 :AufEintragBase(aufentry,schema)
+ {}
  AufEintrag(const aktAufEintrag &aufentry,int aufid, int wrkst,
  				const cH_ExtBezSchema &schema) throw(SQLerror);
- const EntryValue getSeqValue(int seqnr) const;
- const ArtikelBase::ID &ArtikelID() const { return artikel->Id(); }
  AufEintrag() {} ;
  AufEintrag(const AufEintragBase &ab) : AufEintragBase(ab) {} ;
+ 
+ const EntryValue getSeqValue(int seqnr) const;
+ const ArtikelBase::ID &ArtikelID() const { return artikel->Id(); }
 
- friend Gtk::OStream &operator<<(Gtk::OStream &o,const AufEintrag &a);
+ friend ostream &operator<<(ostream &o,const AufEintrag &a);
 };
+
+typedef map<int,AufEintrag> AUFENTRYMAP;
+typedef vector<AufEintrag> AufEintragList;
 
 #endif

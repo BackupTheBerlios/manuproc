@@ -23,8 +23,8 @@ int main (int argc, char *argv[])
 
   if (argc!=4) {cerr<< "FEHLER: 3 Argumente nötig für "<< argv[0]<<"\n"; return 1;}
   string s = argv[1];
-  if (s!="Rechnung" && s!= "Lieferschein")
-    {cerr<<"FEHLER: 1. Argument von "<<argv[0]<<" muß 'Rechnung' oder 'Lieferschein' sein und nicht ´"<<s<<"´\n"; return 1;}
+  if (s!="Rechnung" && s!= "Lieferschein" && s!="Auftrag" )
+    {cerr<<"FEHLER: 1. Argument von "<<argv[0]<<" muß 'Rechnung' oder 'Lieferschein' oder 'Auftrag' sein und nicht ´"<<s<<"´\n"; return 1;}
   unsigned int auftragsnr = atoi(argv[2]);
   string p = argv[3];
   if (p!="Preview" && p!= "Plot")
@@ -37,6 +37,7 @@ int main (int argc, char *argv[])
 
 //      LR_drucken l("Lieferschein",10025,"Preview");
 //      LR_drucken l("Rechnung",10008,"Preview");
+//      LR_drucken l("Auftrag",10040,"Preview");
 
       LR_drucken l(s,auftragsnr,p);      
          

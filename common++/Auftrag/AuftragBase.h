@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.2 2001/05/10 16:31:37 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.3 2001/06/08 19:32:33 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,12 +23,14 @@
 class AuftragBase
 {
  protected:
+ 	int stage;
  	int auftragid;	
  	
  public:
-	AuftragBase() : auftragid(0) {}
-	AuftragBase(int &aufid) throw() : auftragid(aufid) {}
+	AuftragBase() : stage(1), auftragid(0) {}
+	AuftragBase(int &aufid) throw() : stage(1), auftragid(aufid) {}
 	int Id() const {return auftragid;}
+	int Stage() const { return stage; }
 };
 
 #endif

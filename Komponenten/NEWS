@@ -1,0 +1,3 @@
+CP Fri, 18 May 2001 12:21:39 +0200
+	ArtikelBox: bool variablen initialisiert, 
+	artikelstamm statt artikelbezeichnung verwendet

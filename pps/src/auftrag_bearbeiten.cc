@@ -41,6 +41,8 @@ auftrag_bearbeiten::auftrag_bearbeiten(int aufid, int znr)
 : kunde(Kunde::default_id)
 {
  splitdialog=0;
+ table_auftragseintraege->hide();
+ scrolledwindow_auftraege->hide();
 
  liefertermin->set_page(0);
  zahlziel_datewin->setLabel(string("Zahlungsziel"));
@@ -81,8 +83,6 @@ void auftrag_bearbeiten::onSelArtikel()
  {  cerr << e <<'\n';
  }
  
-// preis_spinbutton->grab_focus();
-// preis_spinbutton->select_region(0,preis_spinbutton->get_text().size());
  stkmtr_spinbutton->grab_focus();
  stkmtr_spinbutton->select_region(0,preis_spinbutton->get_text().size());
 }
@@ -91,7 +91,7 @@ void auftrag_bearbeiten::on_auftrag_clist_select_row
 				(gint row, gint column, GdkEvent *event)
 {   
  if(!auftrag->existsAufEntry(row)) return;
- AufEintrag &aufe=auftrag->getAufEntry(row);
+ AufEintragBase &aufe=auftrag->getAufEntry(row);
  try{artikelbox->set_value(ArtikelBase(aufe.ArtikelID()));
  Einheit e(artikelbox->get_value());
  mengeeinheit->set_text((string)e);
@@ -265,7 +265,8 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
      {
       int znr=auftrag->insertNewEntry(*aktaufeintrag,artikelbox->getBezSchema());
       allaufids->insert(auftrag->getAuftragid(),znr);
-      aktaufeintrag->clear();
+      // perhaps the user want's to preserve lieferdatum ?
+      aktaufeintrag->clear(); 
       fillMask();
       setAufEntries();
       artikelbox->reset();
@@ -368,6 +369,7 @@ void auftrag_bearbeiten::on_preis_spinbutton_activate()
 void auftrag_bearbeiten::loadAuftrag(int aid)
 {
 // int aufid = aid ? aid : atoi(aufnrentry.get_text().c_str());
+
  
  try { if(auftrag) delete(auftrag); auftrag = new AuftragFull(aid);}
  catch(SQLerror &e)
@@ -386,6 +388,10 @@ void auftrag_bearbeiten::loadAuftrag(int aid)
  artikelbox->reset();
  liefdatum_datewin->set_value(Petig::Datum::today());
  aufentrystat->set_history((AufStatVal)UNCOMMITED);
+
+ table_auftragseintraege->show();
+ scrolledwindow_auftraege->show();
+
 }
 
 void auftrag_bearbeiten::fillMask() 
@@ -420,7 +426,6 @@ void auftrag_bearbeiten::andererKunde()
 void auftrag_bearbeiten::on_aufnrscombo_activate()
 {
  loadAuftrag(aufnr_scombo->Content());
- 
 }
 
 int auftrag_bearbeiten::get_active_index(Gtk::Menu *om)
@@ -561,4 +566,18 @@ void auftrag_bearbeiten::on_aufbemerkung_activate()
 {   
  if(newauftrag)
    auftrag_ok->grab_focus();
+}
+
+
+void auftrag_bearbeiten::on_button_preview_clicked()
+{  if (!auftrag) return;
+   string command = "auftrag_drucken Auftrag "+itos(auftrag->Id())+" Preview";
+   system(command.c_str());
+}  
+
+void auftrag_bearbeiten::on_button_drucken_clicked()
+{
+   if (!auftrag) return;
+   string command = "auftrag_drucken Auftrag "+itos(auftrag->Id())+" Plot";
+   system(command.c_str());
 }

@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.1 2001/04/23 08:36:50 christof Exp $
+// $Id: ArtikelBox.cc,v 1.2 2001/06/08 19:32:00 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -34,10 +34,15 @@ void ArtikelBox::selectFunc(unsigned int sp,unsigned int l) throw(SQLerror)
       activate();
      }
    catch(SQLerror &e)
-     {cerr << e.Code() << e.Message() << e.Context() << "\n";}
+     {cerr << e.Code() << e.Message() << e.Context() << "\n";
+      pixmap->set(stock_button_cancel);
+      artikel=ArtikelBase();
+     }
    return;
  }
-
+ pixmap->set(stock_button_cancel);
+ artikel=ArtikelBase();
+ 
  combos[l][sp+1]->reset();
  combos[l][sp+1]->grab_focus();
 }
@@ -78,6 +83,8 @@ throw(SQLerror,ArtikelBoxErr)
     setExtBezSchema(artbez->getExtBezSchema());
 
  artikel=art;
+
+ pixmap->set(stock_button_apply);
 
  ExtBezSchema::const_iterator ci = schema->begin();
 
@@ -125,6 +132,7 @@ void ArtikelBox::loadArtikel(unsigned int l) throw(SQLerror)
  try {
   cH_ArtikelBezeichnung bez(signifikanz[l],v,schema);
   artikel=bez->Id();
+  pixmap->set(stock_button_apply);
 
   ExtBezSchema::const_iterator ci = schema->begin();
   for (unsigned int j=0;j<=signifikanz.size();++j)
@@ -221,7 +229,15 @@ Gtk::Container* ArtikelBox::init_table(int l)
     else text = j->bezkomptext;
     labels[l].push_back(lb=manage(new Gtk::Label(text)));
 
-    table->attach(*lb,i,i+1,0,1);
+    if (i==0) 
+     {
+       Gtk::HBox *hb= manage(new Gtk::HBox());
+       pixmap= manage(new class Gtk::Pixmap(stock_button_cancel));
+       hb->pack_start(*pixmap,false,false);   pixmap->show();
+       hb->pack_start(*lb);                   hb->show();
+       table->attach(*hb,i,i+1,0,1);
+     }
+    else  table->attach(*lb,i,i+1,0,1);
     table->attach(*sc,i,i+1,1,2);
     sc->show();
     lb->show();
@@ -236,16 +252,12 @@ Gtk::Container* ArtikelBox::init_table(int l)
 
 
 ArtikelBox::ArtikelBox(const cH_ExtBezSchema &_schema)  throw(SQLerror)
-: schema(_schema), menu(0), show_id(false), tr("",false), tr2("",false)
+: oberstes(0), vertikalbool(false), autocompletebool(false), kombiniertbool(false),
+  schema(_schema), menu(0), tr("",false), tr2("",false)
 { 
-// if (signifikanz.size()==0) signifikanz.push_back(1);
-
  init();
  menu=manage(new Gtk::Menu());
  fuelleMenu();
-//cout << signifikanz.size()<<"\t";
-//for (int i=0;i<signifikanz.size();++i)cout << signifikanz[i]<<"\t";
-//cout << "\n";
  this->button_press_event.connect(SigC::slot(this,&ArtikelBox::MouseButton));
 
  // redirect our grab_focus
@@ -290,7 +302,7 @@ void ArtikelBox::TypSelected(int typ)
 
 gint ArtikelBox::MouseButton(GdkEventButton *event)
 {  // cout << "MB\n";
-   if ((event->type == GDK_BUTTON_PRESS) && (event->button == 1) && menu)
+   if ((event->type == GDK_BUTTON_PRESS) && menu)
    {  menu->popup(event->button,event->time);
       return true;
    }

@@ -154,12 +154,12 @@ AuftragFull::AuftragFull(int aufid) throw(SQLerror)
  }
 }
 
-AuftragFull::AuftragFull(long kundennr, int jahr) throw(SQLerror)
-	: Auftrag(kundennr,jahr)
+AuftragFull::AuftragFull(int stage, long kundennr, int jahr) throw(SQLerror)
+	: Auftrag(stage, kundennr,jahr)
 {  // braucht nicht geladen zu werden
 }
 
-Auftrag::Auftrag(long kdnr,int jahr) throw(SQLerror)
+Auftrag::Auftrag(int stage, long kdnr,int jahr) throw(SQLerror)
 {
  exec sql begin declare section;
  int AUFTRAGID;
@@ -168,6 +168,7 @@ Auftrag::Auftrag(long kdnr,int jahr) throw(SQLerror)
  int KUNDENNR=kdnr;
  int JAHRGANG=jahr;
  int STATUS;
+ int STAGE=stage;
  exec sql end declare section;
 
  Transaction tr;
@@ -180,7 +181,8 @@ Auftrag::Auftrag(long kdnr,int jahr) throw(SQLerror)
  
  exec sql select coalesce(max(auftragid)+1,:YEAR*10000) 
  		into :AUFTRAGID from auftrag 
- 		where int4(float4(auftragid / 10000))= :YEAR;
+ 		where auftragid between (:YEAR*10000) and (:YEAR+1)*10000-1
+ 		and stage=:STAGE;
  SQLerror::test("Auftrag: select neue auftragid");
 
  STATUS = OPEN;

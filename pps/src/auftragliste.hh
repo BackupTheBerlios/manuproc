@@ -16,21 +16,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// generated 2000/11/22 20:43:27 MET by jacek@mimi.
-// using glademm V0.5.10
-//
-// newer (non customized) versions of this file go to auftragliste.hh_glade
-
-// you might replace
-//    class Foo : public Foo_glade { ... };
-// by
-//    typedef Foo_glade Foo;
-// if you didn't make any modifications to the widget
-
 #ifndef _AUFTRAGLISTE_HH
 #  include "auftragliste_glade.hh"
 #  define _AUFTRAGLISTE_HH
-#include "glademm_support.hh"
 
 class auftragliste : public auftragliste_glade
 {   

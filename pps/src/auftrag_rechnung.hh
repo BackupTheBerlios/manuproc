@@ -16,21 +16,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// generated 2001/3/28 15:07:10 CEST by jacek@mimi.
-// using glademm V0.5_11f_cvs
-//
-// newer (non customized) versions of this file go to auftrag_rechnung.hh_new
-
-// you might replace
-//    class foo : public foo_glade { ... };
-// by
-//    typedef foo_glade foo;
-// if you didn't make any modifications to the widget
-
 #ifndef _AUFTRAG_RECHNUNG_HH
 #  include "auftrag_rechnung_glade.hh"
 #  define _AUFTRAG_RECHNUNG_HH
-#include "glademm_support.hh"
 
 #include<Kunde/Kunde.h>
 
@@ -63,8 +51,7 @@ class auftrag_rechnung : public auftrag_rechnung_glade
  cH_Kunde kunde;
 
 public:
- auftrag_rechnung() : selectedrow_lief(NULL), selectedrow_rng(NULL),
-			kunde(Kunde::none_id){}
+ auftrag_rechnung(); 
 
 };
 #endif

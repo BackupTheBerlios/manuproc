@@ -5,55 +5,58 @@
 
 %.cc: %.pgcc ; $(ECPG) -o $*.cc $<
 
-bin_PROGRAMS = auftrag
+bin_PROGRAMS = pps
 
-auftrag_SOURCES = $(BUILT_SOURCES) \
-	Rg_Tree.cc \
-	OffLief_Tree.cc \
-	auftrag_rechnung.cc \
-	auftrag_rechnung_glade.cc \
+pps_SOURCES = $(BUILT_SOURCES) \
+	AuftragEntry2.cc \
+	AuftragFull2.cc \
 	Lief_Tree.cc \
-	OffAuf_Tree.cc \
-	aktAufEintrag.cc \
-	Auftrag.cc \
-	auftrag.cc\
-	termsplidial_glade.cc \
-	termsplidial.cc \
-	auftragliste_glade.cc \
-	auftragliste.cc \
-	auftrag_main_glade.cc \
-	auftrag_main.cc \
 	MainTree.cc \
-	myRow.cc \
-	auftragentry.cc \
+	OffAuf_Tree.cc \
+	OffLief_Tree.cc \
+	Rg_Tree.cc \
+	aktAufEintrag.cc \
 	auftrag_bearbeiten.cc \
 	auftrag_bearbeiten_glade.cc \
 	auftrag_lieferschein.cc \
-	auftrag_lieferschein_glade.cc
-
+	auftrag_lieferschein_glade.cc \
+	auftrag_main.cc \
+	auftrag_main_glade.cc \
+	auftrag_rechnung.cc \
+	auftrag_rechnung_glade.cc \
+	auftragliste.cc \
+	auftragliste_glade.cc \
+	myRow.cc \
+	pps.cc\
+	termsplidial.cc \
+	termsplidial_glade.cc 
 
 noinst_HEADERS = \
-	termsplidial_glade.hh \
-	termsplidial.hh \
-	auftragliste_glade.hh \
-	auftragliste.hh \
-	auftrag_main_glade.hh \
-	auftrag_main.hh \
-	auftrag_rechnung_glade.hh \
-	auftrag_rechnung.hh \
-	Rg_Tree.h \
-	Rg_TCList.hh \
+	OffLief_TCList.hh \
 	OffLief_Tree.h \
-	OffLief_TCList.hh
+	Rg_TCList.hh \
+	Rg_Tree.h \
+	auftrag_main.hh \
+	auftrag_main_glade.hh \
+	auftrag_rechnung.hh \
+	auftrag_rechnung_glade.hh \
+	auftragliste.hh \
+	auftragliste_glade.hh \
+	termsplidial.hh \
+	termsplidial_glade.hh 
 
-BUILT_SOURCES=auftragentry_sql.cc Auftrag_sql.cc auftrag_bearbeiten_sql.cc\
-	auftrag_liefer_sql.cc OffAuf_TCList_sql.cc\
-	OffAuf_RowData_sql.cc OffLief_Tree_sql.cc \
+BUILT_SOURCES= \
+	AuftragEntry_sql.cc \
+	OffAuf_RowData_sql.cc \
+	OffAuf_TCList_sql.cc \
+	OffLief_Tree_sql.cc \
+	auftrag_bearbeiten_sql.cc \
+	auftrag_liefer_sql.cc \
 	auftrag_rechnung_sql.cc
 
 CXXFLAGS += @CXXFLAGS@ @KOMPONENTEN_INCLUDES@ @GNOMEMM_CFLAGS@ 
 
 LDFLAGS= @LDFLAGS@ @KOMPONENTEN_LDFLAGS@ 
 
-auftrag_LDADD =  @LIBS@ @KOMPONENTEN_LIBS@ @GNOMEMM_LIBS@
+pps_LDADD =  @LIBS@ @KOMPONENTEN_LIBS@ @GNOMEMM_LIBS@
 

@@ -31,6 +31,8 @@
 #include<Auftrag/auftrag_status.h>
 #include"auftrag_lieferschein.hh"
 #include"auftrag_rechnung.hh"
+#include <Gtk2TeX.h>
+#include <fstream.h>
 
 extern AUFENTRYMAP aufentrymap;
 extern MyMessage *meldung;
@@ -75,10 +77,49 @@ void auftrag_main::on_neuladen_activate()
 
 }
 
-void auftrag_main::on_main_drucken_activate()
-{   
+#define TEXCMD "tex2prn -2 -q -Phl1260"
+
+static void expand_recursively(TCListRow_API &api)
+{  api.expand();
+   for (TCListRow_API::iterator i=api.begin();i!=api.end();++i)
+      if ((*i).size()) expand_recursively(*i);
 }
 
+// not the best of all possible solutions ...
+static string kopfzeile(int col,const string &typ,const string &title,gpointer user_data)
+{  if (!strncmp(title.c_str(),"Verarbeitung",12)) return "p{3.5cm}";
+   return typ;
+}
+
+static string shorten_some(int col,const string &title,gpointer user_data)
+{  if (!strncmp(title.c_str(),"Artikel",7) ||
+	!strncmp(title.c_str(),"Breite",6) ||
+	!strncmp(title.c_str(),"Farbe",5) ||
+	!strncmp(title.c_str(),"Aufmachung",10) ||
+	!strncmp(title.c_str(),"offen ",6))
+      return "\\tiny "+Gtk2TeX::string2TeX(title);
+   else
+      return Gtk2TeX::string2TeX(title);
+}
+
+void auftrag_main::on_main_drucken_activate()
+{  expand_recursively(*maintree);
+   FILE *f=popen(TEXCMD,"w");
+   ofstream os(fileno(f));
+   Gtk2TeX::HeaderFlags fl;
+   fl.ptsize=10;
+   fl.leftmargin=0.5;
+   fl.leftfoot=Gtk2TeX::string2TeX("offene Aufträge");
+   fl.rightfoot="\\today";
+   Gtk2TeX::Header(os,fl);
+   Gtk2TeX::TableFlags tf;
+   tf.columntype_cb=&kopfzeile;
+   tf.columntitle_cb=&shorten_some;
+   Gtk2TeX::CList2Table(os,maintree,tf);
+   Gtk2TeX::Footer(os);
+   os.close();
+   pclose(f);
+}
 
 void auftrag_main::on_abschreiben_activate()
 {   
@@ -121,7 +162,7 @@ void auftrag_main::on_main_intbez_activate()
 }
 
 void auftrag_main::on_mainprint_button_clicked()
-{   
+{   on_main_drucken_activate();
 }
 
 void auftrag_main::on_main_showtreebutton_clicked()

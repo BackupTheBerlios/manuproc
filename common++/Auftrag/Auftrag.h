@@ -42,7 +42,8 @@ private:
 	
 public:
 	Auftrag(int auftragid) throw(SQLerror);
-        Auftrag(long kundennr, int jahr=0) throw(SQLerror);
+	// neuen Auftrag anlegen
+        Auftrag(int stage, long kundennr, int jahr=0) throw(SQLerror);
 //        void newArtWrkar(aktAufEintrag &entry) throw(SQLerror);
         void deleteAuftrag() throw(SQLerror);
 	void deleteEintrag(int zeilennr) throw(SQLerror);

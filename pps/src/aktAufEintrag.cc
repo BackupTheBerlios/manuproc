@@ -19,10 +19,8 @@
 #include"aktAufEintrag.h"
 #include"AufEintrag.h"
 #include"auftragbase.h"
-#include"glademm_support.hh"
-#include<SearchCombo.h>
 
-void aktAufEintrag::fill(AufEintrag &aufentry)
+void aktAufEintrag::fill(const AufEintrag &aufentry)
 {
  zeile=aufentry.getZnr();
  stueck=aufentry.getStueck();
@@ -32,7 +30,6 @@ void aktAufEintrag::fill(AufEintrag &aufentry)
  stk_ok=lief_ok=true; 
  preis=aufentry.EPreis();
  rabatt=aufentry.Rabatt();
-// preismenge=aufentry.PreisMenge();
 }
 
 bool aktAufEintrag::setLieferdatum(Kalenderwoche kw)
@@ -47,13 +44,9 @@ bool aktAufEintrag::setLieferdatum(const Petig::Datum ld)
  return lief_ok;
 }
 
-bool aktAufEintrag::allesOK()
+bool aktAufEintrag::allesOK() const
 {
  if(!stk_ok) return false;
  if(!lief_ok) return false;
  return true;
 } 
-
-
-
-

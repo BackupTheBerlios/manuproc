@@ -26,10 +26,13 @@ exec sql include sqlca;
 
 void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned int sp,unsigned int l) throw(SQLerror)
 {
+
  try
  {switch(newsearch)
   { case GTK_SEARCH_OPEN:
     { 
+      pixmap->set(stock_button_cancel);
+      artikel=ArtikelBase();
  exec sql begin declare section;
    char *QUERY;
  exec sql end declare section;
@@ -227,8 +230,8 @@ string ArtikelBox::kombinierteAnzeige(int sig, int atyp, int id)
     into :db_bezkomptype, :db_text, :db_sep
     from extbezschema where artikeltyp = :db_atyp and signifikanz = :db_sig
     and extartbezid = :eab_id order by bezkomptype limit 20;
-  string text;
   SQLerror::test(__FILELINE__);
+  string text;
   if (!sqlca.sqlcode)
   for (int i=0;i<sqlca.sqlerrd[2];++i)
      { string t= db_text[i];
@@ -312,10 +315,58 @@ void ArtikelBox::Neuer_Eintrag()
    char db_query[1024];
   exec sql end declare section;
   string table = "artbez_"+itos(schema->Typ())+"_"+itos(schema->Id());
-  exec sql select nextval ('artikelbezeichnun_artikelid_seq') into :db_id;
+  if (schema->Id()==1 || !intern_id(schema->Typ()))
+     exec sql select nextval ('artikelbezeichnun_artikelid_seq') into :db_id;
+  else db_id=intern_id(schema->Typ()) ;
   string where, what;
   where = "(id,stand," ;
   what  = "("+itos(db_id)+",now(),";
+  where_what(where,what);
+  string sq = "insert into "+table +" "+ where+" values "+what;
+  strncpy(db_query,sq.c_str(),sizeof(db_query));
+  exec sql execute immediate :db_query;
+  SQLerror::test(__FILELINE__);
+
+  // Eintrag in Artikelbezeichnung
+  db_warengruppe=schema->Typ();
+  exec sql insert into artikelstamm (id,stand,warengruppe)
+     values (:db_id,now(),:db_warengruppe);
+  SQLerror::test(__FILELINE__);
+     
+  artikel=db_id;
+  pixmap->set(stock_button_apply);
+
+  activate();
+  }catch (SQLerror &e)   {  cerr << e << '\n';}
+}
+
+
+unsigned int ArtikelBox::intern_id(int typ)
+{
+  exec sql begin declare section;
+   char db_query[1024];
+   int db_id;
+  exec sql end declare section;
+  string where, what;
+  where = "(" ;
+  what  = "(";
+  where_what(where,what);
+
+  string sq = "select id from artbez_"+itos(typ)+"_1 where "+where+"="+what;
+  strncpy(db_query,sq.c_str(),sizeof(db_query));
+  Transaction tr;
+  exec sql prepare e_ from :db_query;
+  exec sql declare e cursor for e_;
+  exec sql open e;
+  exec sql fetch e into :db_id;
+  SQLerror::test(__FILELINE__,100);
+  if (sqlca.sqlcode) return 0;
+  else return db_id;
+
+}
+
+void ArtikelBox::where_what(string& where, string& what)
+{
   unsigned int l=0; 
   for (vector<int>::const_iterator i=signifikanz.begin();i!=signifikanz.end();++i)
    {
@@ -338,19 +389,4 @@ void ArtikelBox::Neuer_Eintrag()
      ++l;
    }
   where += ")"; what+=")";
-  string sq = "insert into "+table +" "+ where+" values "+what;
-  strncpy(db_query,sq.c_str(),sizeof(db_query));
-cout << db_query<<"\n"<<flush;
-  exec sql execute immediate :db_query;
-  SQLerror::test(__FILELINE__);
-
-  // Eintrag in Artikelbezeichnung
-  db_warengruppe=schema->Typ();
-  exec sql insert into artikelbezeichnung (artikelid,stand,warengruppe)
-     values (:db_id,now(),:db_warengruppe);
-     
-  artikel=db_id;
-  activate();
-  }catch (SQLerror &e)   {  cerr << e << '\n';}
 }
-

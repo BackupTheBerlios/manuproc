@@ -41,6 +41,7 @@ auftrag_bearbeiten *auftragbearbeiten;
 int main(int argc, char **argv)
 {  
  Petig::Connection conn;
+ conn.setDbase("petigdb");
  int i;
 
  while ((i = getopt(argc, argv, "h:d:")) != EOF)
@@ -62,10 +63,10 @@ int main(int argc, char **argv)
 
  meldung = new MyMessage();
 
- try{ Petig::dbconnect_nt(conn); }
+ try{ Petig::dbconnect(conn); }
   catch(SQLerror &e)
   { meldung->Show(e);
-    Petig::dbdisconnect_nt();
+    Petig::dbdisconnect_nt(conn.Dbase());
     return 1;
   }
 
@@ -81,7 +82,7 @@ weiter:
    catch(SQLerror &e) {meldung->Show(e); goto weiter;}
 
  delete auftragmain;
- Petig::dbdisconnect_nt();
+ Petig::dbdisconnect_nt(conn.Dbase());
  delete meldung;
  return 0;
 }

@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.1 2001/04/23 08:36:50 christof Exp $
+// $Id: ArtikelBox.hh,v 1.2 2001/06/08 19:32:00 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -31,6 +31,10 @@
 #include <gtk--/label.h>
 #include <gtk--/eventbox.h>
 #include "SearchCombo.h"
+#include <gtk--/pixmap.h>
+#include "stock_button_apply.xpm"
+#include "stock_button_cancel.xpm"
+
 
 
 class ArtikelBoxErr
@@ -55,9 +59,12 @@ class ArtikelBox : public Gtk::EventBox
  friend class SigC::ObjectSlot1_<void,unsigned int,ArtikelBox>;
  friend class SigC::ObjectSlot1_<int,_GdkEventButton *,ArtikelBox>;
 
-//ALT Gtk::Table table;
- Gtk::Container *oberstes;
+ typedef vector<Gtk::SearchCombo *> t_combos;
+ typedef vector<t_combos> t_combos2;
+ typedef vector<Gtk::Label *> t_labels;
+ typedef vector<t_labels> t_labels2;
 
+ Gtk::Container *oberstes;
  vector<int> signifikanz;
  bool vertikalbool;
  bool autocompletebool;
@@ -66,23 +73,13 @@ class ArtikelBox : public Gtk::EventBox
  ArtikelBase artikel;
  cH_ExtBezSchema schema;
  
- guint komps; // was ist das ??? - um den Zusatnd der Eingabe im long Feld zu haben
- 
-
- typedef vector<Gtk::SearchCombo *> t_combos;
- typedef vector<t_combos> t_combos2;
- typedef vector<Gtk::Label *> t_labels;
- typedef vector<t_labels> t_labels2;
-// typedef vector<Gtk::MenuItem *> t_menuitems;
  t_combos2 combos;
  t_labels2 labels;
 
  Gtk::Menu *menu;
-// t_menuitems menuitems;
-
-// noch nicht implementiert 
- bool show_id:1; // ob die ID mit angezeigt wird
+ Gtk::Pixmap *pixmap;
  Transaction tr,tr2; // internal use (search)
+
  void searchFunc(int *cont, GtkSCContext newsearch, guint sp, guint l) throw(SQLerror);
  void selectFunc(guint sp, guint l) throw(SQLerror);
  gint MouseButton(GdkEventButton *);
@@ -96,6 +93,8 @@ class ArtikelBox : public Gtk::EventBox
  void Benutzerprofil_speichern();
  void Benutzerprofil_laden();
  void Neuer_Eintrag();
+ unsigned int intern_id(int typ);
+ void where_what(string& where, string& what);
 
  void loadArtikel(unsigned int l) throw(SQLerror);
  static gint try_grab_focus(GtkWidget *w,gpointer gp);
@@ -106,8 +105,6 @@ class ArtikelBox : public Gtk::EventBox
  void setzeSignifikanz(int t);
 
 public:
-//        typedef enum {SHOW_DETAIL,SHOW_KOMPL} ShowType;
-
 	ArtikelBox(const cH_ExtBezSchema &_schema) throw(SQLerror);
 	~ArtikelBox();
 
@@ -129,22 +126,14 @@ public:
       for (t_combos::iterator i=j->begin();i!=j->end();++i)
         (*i)->set_editable(edit); }  
 
-	// CP: I don''t like this function too much
-//        void set_focus(uint idx=0)
-//	{ combos[idx]->grab_focus(); }
-
 	// war set_expand
 	void set_autoexpand(bool exp)
-//	{  for(uint j=0;j<combos.size();++j)
-//         for(uint i=0;i<combos[j].size();++i) combos[j][i]->set_autoexpand(exp);	}
    { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
       for (t_combos::iterator i=j->begin();i!=j->end();++i)
         (*i)->set_autoexpand(exp); }  
 
 	// war set_fill
 	void set_always_fill(bool fill)
-//	{  for(uint j=0;j<combos.size();++j)
-//         for(uint i=0;i<combos[j].size();++i) combos[j][i]->set_always_fill(fill);}
    { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
       for (t_combos::iterator i=j->begin();i!=j->end();++i)
         (*i)->set_always_fill(fill); }  

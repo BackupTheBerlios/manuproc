@@ -1078,6 +1078,35 @@
 	<label>alles leeren</label>
 	<stock_pixmap>GNOME_STOCK_PIXMAP_CLEAR</stock_pixmap>
       </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>button_preview</name>
+	<signal>
+	  <name>clicked</name>
+	  <handler>on_button_preview_clicked</handler>
+	  <last_modification_time>Wed, 30 May 2001 12:23:09 GMT</last_modification_time>
+	</signal>
+	<label>Anzeigen</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_SEARCH</stock_pixmap>
+	<child>
+	  <new_group>True</new_group>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>button_drucken</name>
+	<signal>
+	  <name>clicked</name>
+	  <handler>on_button_drucken_clicked</handler>
+	  <last_modification_time>Wed, 30 May 2001 12:23:42 GMT</last_modification_time>
+	</signal>
+	<label>Drucken</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_PRINT</stock_pixmap>
+      </widget>
     </widget>
 
     <widget>
@@ -1752,8 +1781,9 @@ US-Dollar
 
       <widget>
 	<class>GtkTable</class>
-	<name>table6</name>
+	<name>table_auftragseintraege</name>
 	<border_width>5</border_width>
+	<cxx_visibility>protected</cxx_visibility>
 	<rows>3</rows>
 	<columns>9</columns>
 	<homogeneous>False</homogeneous>
@@ -2391,8 +2421,9 @@ fertig
 
     <widget>
       <class>GtkScrolledWindow</class>
-      <name>scrolledwindow3</name>
+      <name>scrolledwindow_auftraege</name>
       <border_width>5</border_width>
+      <cxx_visibility>protected</cxx_visibility>
       <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
       <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
       <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
@@ -3009,7 +3040,8 @@ löschen</label>
 
       <widget>
 	<class>GtkVBox</class>
-	<name>vbox6</name>
+	<name>vbox_eingabe</name>
+	<cxx_visibility>protected</cxx_visibility>
 	<homogeneous>False</homogeneous>
 	<spacing>0</spacing>
 
@@ -3279,7 +3311,7 @@ löschen</label>
 	    <wrap>False</wrap>
 	    <value>1</value>
 	    <lower>0</lower>
-	    <upper>100</upper>
+	    <upper>999</upper>
 	    <step>1</step>
 	    <page>10</page>
 	    <page_size>10</page_size>
@@ -4032,7 +4064,8 @@ Euro
 
       <widget>
 	<class>GtkVBox</class>
-	<name>vbox8</name>
+	<name>vbox_n_b_lieferscheine</name>
+	<cxx_visibility>protected</cxx_visibility>
 	<homogeneous>False</homogeneous>
 	<spacing>0</spacing>
 

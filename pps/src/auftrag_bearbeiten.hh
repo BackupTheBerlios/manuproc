@@ -30,20 +30,19 @@
 #ifndef _AUFTRAG_BEARBEITEN_HH
 #  include "auftrag_bearbeiten_glade.hh"
 #  define _AUFTRAG_BEARBEITEN_HH
-#include "glademm_support.hh"
 
-#include"termsplidial.hh"
-#include"AuftragFull.h"
-#include"aktAufEintrag.h"
-#include<Aux/SQLerror.h>
-#include<Artikel/Prozess.h>
-#include<vector>
+#include "termsplidial.hh"
+#include <Auftrag/AuftragFull.h>
+#include "aktAufEintrag.h"
+#include <Aux/SQLerror.h>
+#include <Artikel/Prozess.h>
+#include <vector>
 
 class auftrag_bearbeiten : public auftrag_bearbeiten_glade
 {   
  AuftragFull *auftrag;      
  aktAufEintrag *aktaufeintrag;  
- const_KundeHandle kunde;
+ cH_Kunde kunde;
  gint aufentrystat_chid;
  gint aufstat_chid;
  int selectedentry;
@@ -60,6 +59,8 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_youraufnrscombo_activate();
         void on_youraufnrscombo_search(int *_continue, GtkSCContext newsearch)
 							throw(SQLerror);
+        void on_button_preview_clicked();
+        void on_button_drucken_clicked();
         void on_zahlzieldatewin_activate();
         void on_zahlziel_showkal_button_clicked();
         void on_aufdat_showkal_button_clicked();

@@ -39,8 +39,8 @@ void LR_drucken::drucken(string view_plot)
    string texplotter= " -Phl1260lt ";
    if (n==2) texplotter = " -Phl1260 ";
    FILE *f;
-   if (view_plot=="Preview") f=popen("tex2prn -2 -G","w");
-   if (view_plot=="Plot") f=popen(("tex2prn -2 "+texplotter).c_str(),"w");
+   if (view_plot=="Preview") f=popen("tex2prn -2 -G ","w");
+   if (view_plot=="Plot") f=popen(("tex2prn -q -2 "+texplotter).c_str(),"w");
 
    ofstream os(fileno(f));
 
@@ -51,6 +51,10 @@ void LR_drucken::drucken(string view_plot)
    else if (RL=="Lieferschein")  
     { LieferscheinVoll l(auftragsnr);
       LR_Abstraktion(&l).drucken_table(os,kopie);
+    }
+   else if (RL=="Auftrag")  
+    { AuftragFull a((int)auftragsnr);
+      LR_Abstraktion(&a).drucken_table(os,kopie);
     }
    else abort();
   }

@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.3 2001/06/06 07:27:39 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.4 2001/06/08 19:32:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -88,7 +88,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    bankverb.bank=BANKNAME;
    bankverb.bankindex=BANKINDEX;
    rngan=RNG_AN;
-   preisliste=PREISLISTE;
+   kundendaten.preisliste=PREISLISTE;
 
    kundendaten.flaeche = FLAECHE;
    kundendaten.mitarbeiter=MITARBEITER;
@@ -113,7 +113,7 @@ void Kunde::update() throw(SQLerror)
         *ORT, 
         *SORTNAME;
  bool LIEFERADRESSE, RECHNUNGSADRESSE;
- unsigned int KUNDENNR, RECHNUNG_AN;  
+ unsigned int KUNDENNR, RECHNUNG_AN, SCHEMA;  
    int FLAECHE,MITARBEITER;
    double KUNDENUMSATZ,PLANUMSATZ,UMSATZ, RABATT,EINZUGRABATT;
    int SKONTOFRIST;
@@ -128,6 +128,7 @@ void Kunde::update() throw(SQLerror)
 
  KTONR=bankverb.konto;
  KUNDENNR = Kundennr;
+ SCHEMA = schema;
  SORTNAME=(char *) adresse.sortname.c_str();
  FIRMA=(char *)adresse.firma.c_str();
  POSTANWVOR=(char *)adresse.postanwvor.c_str();
@@ -165,6 +166,7 @@ void Kunde::update() throw(SQLerror)
  exec sql UPDATE kunden SET
         kundennr                =       :KUNDENNR,
         sortname                =       :SORTNAME,
+        extartbezid             =       :SCHEMA,
         firma                   =       :FIRMA,   
         postanwvor              =       :POSTANWVOR,
         strasse                 =       :STRASSE,   
@@ -219,11 +221,50 @@ const cH_Kunde Kunde::newKunde(const Kunde::ID kid, const string &firma) throw(S
  
 }
 
+void Kunde::delete_Kunde(const Kunde::ID kid) throw(SQLerror)
+{
+ exec sql begin declare section;
+    int KID=kid;
+ exec sql end declare section;
+
+ exec sql delete from kunden where kundennr = :KID;
+ SQLerror::test(__FILELINE__);
+}
+
 unsigned int Kunde::nextval()
 {
  exec sql begin declare section;
    unsigned int KUNDENNR;
  exec sql end declare section;
  exec sql select nextval('kunden_seq') into :KUNDENNR;
+ SQLerror::test(__FILELINE__);
  return KUNDENNR;
+}
+
+void Kunde::get_blz_from_bankindex(unsigned int bankindex)
+{
+ exec sql begin declare section;
+   unsigned int BANKINDEX=bankindex;
+   unsigned long int BLZ;   
+ exec sql end declare section;
+ exec sql select blz into :BLZ from banken where bankindex=:BANKINDEX;
+ SQLerror::test(__FILELINE__);
+ bankverb.blz=BLZ;
+}
+
+
+unsigned long int Kunde::neue_bank_anlegen(const string& name, unsigned long int blz)
+{
+ exec sql begin declare section;
+   unsigned int BANKINDEX;
+   char NAME[50];
+   unsigned long int BLZ=blz;   
+ exec sql end declare section;
+ exec sql select nextval('banken_bankindex_seq') into :BANKINDEX;
+ SQLerror::test(__FILELINE__);
+ strncpy(NAME,name.c_str(),sizeof(NAME));
+ exec sql insert into banken (bankindex,name,blz)
+   values (:BANKINDEX,:NAME,:BLZ);
+ SQLerror::test(__FILELINE__);
+ return BANKINDEX;
 }

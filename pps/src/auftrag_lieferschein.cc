@@ -55,23 +55,30 @@ void auftrag_lieferschein::on_lief_save()
 }
 
 void auftrag_lieferschein::on_lief_preview()
-{  string command = "auftrag_drucken Lieferschein "+liefernr->get_text()+" Preview";
+{  
+   if (liefernr->get_text()=="") return;
+   string command = "auftrag_drucken Lieferschein "+liefernr->get_text()+" Preview";
    system(command.c_str());
 }
 
 void auftrag_lieferschein::on_lief_print()
-{  string command = "auftrag_drucken Lieferschein "+liefernr->get_text()+" Plot";
+{  
+   if (liefernr->get_text()=="") return;
+   string command = "auftrag_drucken Lieferschein "+liefernr->get_text()+" Plot";
    system(command.c_str()); 
 }
 
 void auftrag_lieferschein::display(int lfrsid)
 {
+
  lieferschein_liste->clear();
  lieferschein_liste->showLieferschein(lfrsid);
  display2(lieferschein_liste->getLieferschein().KdNr());
  if (lieferschein_liste->getLieferschein().RngNr())
     rngnr->set_text(Formatiere(lieferschein_liste->getLieferschein().RngNr(),0,6,"","",'0'));
  else rngnr->set_text("");
+ lieferschein_liste->show();
+ vbox_eingabe->show();
 }
 
 void auftrag_lieferschein::display2(int kdnr)
@@ -161,6 +168,9 @@ auftrag_lieferschein::auftrag_lieferschein()
  selectedrow=NULL;
  liefernr->set_value_in_list(false,false);
  liefernr->set_always_fill(false);
+
+ lieferschein_liste->hide();
+ vbox_eingabe->hide();
 }
 
 void auftrag_lieferschein::clear_offauf()
@@ -246,6 +256,7 @@ void auftrag_lieferschein::on_Palette_activate()
 	clear_offauf();
 	lieferschein_liste->clear();
 	lieferschein_liste->showLieferschein(lieferschein_liste->getLieferschein().Id());
+	liefermenge->select_region(0,liefermenge->get_text().size());
 	liefermenge->grab_focus();
        }
        catch (SQLerror &e)
@@ -342,7 +353,7 @@ void auftrag_lieferschein::on_artikelbox_activate()
  menge_einheit->set_text(e);
  if (e!=Einheit(EINH_STUECK)) 
  { liefermenge->grab_focus();
-   liefermenge->select_region(0,-1);
+   liefermenge->select_region(0,liefermenge->get_text().size());
  }
  else 
  { auftragnr->grab_focus();

@@ -1,4 +1,4 @@
-// $Id: KundenBox.pgcc,v 1.13 2001/04/20 08:03:32 christof Exp $
+// $Id: KundenBox.pgcc,v 1.14 2001/05/28 10:29:47 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -125,7 +125,7 @@ KundenBox::KundenBox() : id(Kunde::none_id), tr("",false), tr2("",false)
                  GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
 }
 
-void KundenBox::set_value(const const_KundeHandle &k)
+void KundenBox::set_value(const cH_Kunde &k)
 {  char buf[30];
    snprintf(buf,sizeof buf,"%d",k->Id());
    kundennr->set_text(buf);

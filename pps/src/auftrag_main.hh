@@ -16,24 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// generated 2000/11/22 20:43:27 MET by jacek@mimi.
-// using glademm V0.5.10
-//
-// newer (non customized) versions of this file go to auftrag_main.hh_glade
-
-// you might replace
-//    class Foo : public Foo_glade { ... };
-// by
-//    typedef Foo_glade Foo;
-// if you didn't make any modifications to the widget
-
 #ifndef _AUFTRAG_MAIN_HH
 #  include "auftrag_main_glade.hh"
 #  define _AUFTRAG_MAIN_HH
-#include "glademm_support.hh"
 
-#include<Artikel/Prozess.h>
-#include<vector>
+#include <Artikel/Prozess.h>
+#include <vector>
 
 class auftrag_main : public auftrag_main_glade
 {   

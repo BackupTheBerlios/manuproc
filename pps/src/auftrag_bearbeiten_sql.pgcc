@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten_sql.pgcc,v 1.1 2001/04/23 11:59:26 christof Exp $
+// $Id: auftrag_bearbeiten_sql.pgcc,v 1.2 2001/06/08 19:35:30 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,8 +30,10 @@ throw(SQLerror)
  int AUFID;
  char AUFIDCHR[10];
  char *PAT;
+ int KUNDE;
  exec sql end declare section;
  static bool transaction = false;
+ KUNDE= kundenbox->get_value();
   
  switch(newsearch)
    {
@@ -47,7 +49,9 @@ throw(SQLerror)
        exec sql declare AUFNR_CURSOR cursor for
        		select auftragid, ltrim(to_char(auftragid,'000000'))
        		from auftrag where
-       		ltrim(to_char(auftragid,'000000')) like :PAT;
+       		ltrim(to_char(auftragid,'000000')) like :PAT
+                and (:KUNDE<1 or kundennr=:KUNDE)
+       		order by auftragid;
        	
        exec sql open AUFNR_CURSOR;
        SQLerror::test(__FILELINE__":on_aufnrscombo_search: open cursor",
@@ -87,8 +91,10 @@ throw(SQLerror)
  int AUFID;
  char YOURAUFID[21];
  char *PAT;
+ int KUNDE;
  exec sql end declare section;
  static bool transaction = false;
+ KUNDE= kundenbox->get_value();
 
  if(newauftrag) {*_continue=false; return;}  
  switch(newsearch)
@@ -105,7 +111,9 @@ throw(SQLerror)
        exec sql declare YOURAUFNR_CURSOR cursor for
        		select auftragid, youraufnr
        		from auftrag where
-       		youraufnr like :PAT;
+       		youraufnr like :PAT
+                and (:KUNDE<1 or kundennr=:KUNDE)
+       		order by youraufnr;
        	
        exec sql open YOURAUFNR_CURSOR;
        SQLerror::test(__FILELINE__":on_youraufnrscombo_search: open cursor",

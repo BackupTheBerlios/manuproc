@@ -16,19 +16,27 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef AKTAUFEINTRAG
-#define AKTAUFEINTRAG
+#ifndef AKTAUFEINTRAG_H
+#define AKTAUFEINTRAG_H
 
-#include<cstdlib>
-#include<string>
-#include<Aux/SQLerror.h>
-#include<gtk--/list.h> // weg !
-#include<SearchCombo.h> // weg !
-#include<Artikel/ArtikelBase.h>
-#include<ArtikelBox.hh> // weg !
+/* Diese Klasse beinhaltet die Daten einer Auftragszeile
+   Es erfolgen keinerlei Datenbankzugriffe
+   Diese Klasse ist eine reine Datenabstraktion
+*/
+
+#include <cstdlib>
+#include <string>
+//#include<Aux/SQLerror.h>
+//#include<gtk--/list.h> // weg !
+//#include<SearchCombo.h> // weg !
+#include <Artikel/ArtikelBase.h>
+#include <Auftrag/auftrag_status.h>
+//#include<ArtikelBox.hh> // weg !
 #include <Aux/Kalenderwoche.h>
-#include<Auftrag/auftrag_status.h>
-#include<Auftrag/AufEintragBase.h>
+//#include <Auftrag/auftrag_status.h>
+//#include <Auftrag/AufEintragBase.h>
+#include <Aux/Preis.h>
+#include <Aux/Datum.h>
 
 class AufEintrag;
 
@@ -36,7 +44,6 @@ class aktAufEintrag
 {
  int stueck;
  bool stk_ok;
-// Kalenderwoche lieferwoche;
  Petig::Datum lieferdatum;
  bool lief_ok;
  int zeile;
@@ -45,13 +52,15 @@ class aktAufEintrag
  ArtikelBase artikel;
  Preis preis;
  int rabatt;
-// float preismenge;
     
 public:
-
-
-void fill(AufEintrag &aufentry);
-bool allesOK();
+ aktAufEintrag() : stueck(0), stk_ok(false), lief_ok(false), 
+ 	zeile(0), status(UNCOMMITED), dispoentrynr(0), rabatt(0) 
+ // the only sensible value
+ { lieferdatum=Petig::Datum::today(); } 
+ 
+ void fill(const AufEintrag &aufentry);
+ bool allesOK() const;
 
  Kalenderwoche getKW() const { return lieferdatum.KW();}
  const Petig::Datum getLieferdatum() const { return lieferdatum; }
@@ -67,27 +76,11 @@ bool allesOK();
  int Rabatt() const { return rabatt; }
  float Preismenge() const { return preis.PreisMenge(); }
 
- aktAufEintrag() { zeile=0; }
- 	
- void clear()
- {
-  stueck=zeile=dispoentrynr=0;
-  stk_ok=lief_ok=false; 
-  preis=Preis();
-  rabatt=0;
- }
-
- bool setStk(int stk)
- {
-  stueck=stk;
-  return (stk_ok=(stk>0));
- }
-
+ void clear() {*this=aktAufEintrag(); }
+ bool setStk(int stk) { stueck=stk; return (stk_ok=(stk>0)); }
  void setArtikel(const ArtikelBase &a) { artikel=a; }	  
-
  void setPreis(const Preis &p) { preis = p; }
  void setRabatt(int r) { rabatt = r; }
-// void setPreismenge(float _pm){preismenge=_pm;}
 };
 
 #endif

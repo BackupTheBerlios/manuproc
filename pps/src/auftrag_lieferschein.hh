@@ -16,21 +16,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// generated 2001/1/26 10:08:28 CET by jacek@mimi.(none)
-// using glademm V0.5_11a
-//
-// newer (non customized) versions of this file go to auftrag_lieferschein.hh_glade
-
-// you might replace
-//    class Foo : public Foo_glade { ... };
-// by
-//    typedef Foo_glade Foo;
-// if you didn't make any modifications to the widget
-
 #ifndef _AUFTRAG_LIEFERSCHEIN_HH
 #  include "auftrag_lieferschein_glade.hh"
 #  define _AUFTRAG_LIEFERSCHEIN_HH
-#include "glademm_support.hh"
 
 #include<Lieferschein/LieferscheinVoll.h>
 #include<tclistrowdata.h>
