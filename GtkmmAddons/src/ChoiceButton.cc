@@ -43,18 +43,20 @@ ManuProC::ChoiceButton::~ChoiceButton()
 }
 
 void ManuProC::ChoiceButton::add(const Glib::RefPtr<Gdk::Pixbuf> &_image, const Glib::ustring &text, const SigC::Slot0<void> &callback)
-{  bool first_one=images.empty();
+{  unsigned old_size=images.size();
    images.push_back(_image);
    texts.push_back(text);
    callbacks.push_back(callback);
    // menuitem erzeugen
+   // scale?
+   Gtk::Image *im=manage(new Gtk::Image(_image));
+   menu->items().push_back(Gtk::Menu_Helpers::ImageMenuElem(text,*im));
+   Gtk::MenuItem *mi=(Gtk::ImageMenuItem *)&menu->items().back();
+   im->show();
+   mi->show();
+   mi->signal_activate().connect(SigC::bind(SigC::slot(*this,&ChoiceButton::on_menuitem_selected),old_size));
    
-   
-   if (first_one)
-   {  image->set(_image);
-      label->set_text(text);
-      actual_index=0;
-   }
+   if (!old_size) set_index(0);
 }
 
 void ManuProC::ChoiceButton::on_button_pressed()
@@ -65,14 +67,20 @@ void ManuProC::ChoiceButton::on_button_pressed()
 
 void ManuProC::ChoiceButton::on_sbutton_pressed(int mbutton)
 {  // menu zeigen
+   menu->popup(mbutton,0);
 }
 
 void ManuProC::ChoiceButton::on_menuitem_selected(unsigned idx)
 {  // index wechsel, Bild darstellen, callback ausführen
+   set_index(idx);
+   callbacks[idx]();
 }
 
 void ManuProC::ChoiceButton::set_index(unsigned idx)
 {  // index wechsel, Bild darstellen
+   image->set(images[idx]);
+   label->set_text(texts[idx]);
+   actual_index=idx;
 }
 
 void ManuProC::ChoiceButton::set_style(bool _image, bool _text)

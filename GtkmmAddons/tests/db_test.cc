@@ -1,4 +1,4 @@
-/* $Id: db_test.cc,v 1.2 2003/04/10 06:31:11 christof Exp $ */
+/* $Id: db_test.cc,v 1.3 2003/04/10 07:27:42 christof Exp $ */
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 1998  Adolf Petig GmbH. & Co. KG
     Developed by Christof Petig <christof.petig@wtal.de>
@@ -28,8 +28,8 @@
 #include <iostream>
 #include <gdkmm/pixbufloader.h>
 
-extern const unsigned char rot_png_data[],gelb_png_data[],blau_png_data[],gruen_png_data[];
-extern const unsigned rot_png_size,gelb_png_size,blau_png_size,gruen_png_size;
+extern const unsigned char rot_jpeg_data[],gelb_jpeg_data[],blau_jpeg_data[],gruen_jpeg_data[];
+extern const unsigned rot_jpeg_size,gelb_jpeg_size,blau_jpeg_size,gruen_jpeg_size;
 
 class testwindow : public Gtk::Window
 {
@@ -45,8 +45,8 @@ class testwindow : public Gtk::Window
     	void on_sclicked(int mousebutton)
     	{  std::cout << "on_sclicked ("<<mousebutton<<")\n";
     	}
-    	void on_cclicked(unsigned index)
-    	{  std::cout << "on_cclicked ("<<index<<")\n";
+    	void on_cclicked(std::string farbe)
+    	{  std::cout << "on_cclicked ("<<farbe<<")\n";
     	}
 
         testwindow() 
@@ -65,10 +65,23 @@ class testwindow : public Gtk::Window
             dbutton.signal_secondpressed().connect(SigC::slot(*this,&testwindow::on_sclicked));
             
             {  Glib::RefPtr<Gdk::PixbufLoader> loader=Gdk::PixbufLoader::create();
-	       loader->write(rot_png_data, rot_png_size);
+	       loader->write(rot_jpeg_data, rot_jpeg_size);
 	       loader->close();
-	       cbutton.add(loader->get_pixbuf(),"rot",SigC::bind(SigC::slot(*this,&testwindow::on_cclicked),1));
+	       cbutton.add(loader->get_pixbuf(),"rot",SigC::bind(SigC::slot(*this,&testwindow::on_cclicked),"rot"));
+	    }{ Glib::RefPtr<Gdk::PixbufLoader> loader=Gdk::PixbufLoader::create();
+	       loader->write(blau_jpeg_data, blau_jpeg_size);
+	       loader->close();
+	       cbutton.add(loader->get_pixbuf(),"blau",SigC::bind(SigC::slot(*this,&testwindow::on_cclicked),"blau"));
+	    }{ Glib::RefPtr<Gdk::PixbufLoader> loader=Gdk::PixbufLoader::create();
+	       loader->write(gruen_jpeg_data, gruen_jpeg_size);
+	       loader->close();
+	       cbutton.add(loader->get_pixbuf(),"gruen",SigC::bind(SigC::slot(*this,&testwindow::on_cclicked),"gruen"));
+	    }{ Glib::RefPtr<Gdk::PixbufLoader> loader=Gdk::PixbufLoader::create();
+	       loader->write(gelb_jpeg_data, gelb_jpeg_size);
+	       loader->close();
+	       cbutton.add(loader->get_pixbuf(),"gelb",SigC::bind(SigC::slot(*this,&testwindow::on_cclicked),"gelb"));
 	    }
+	    cbutton.set_style(true,false);
         }
         bool delete_event_impl(GdkEventAny *)
         {
