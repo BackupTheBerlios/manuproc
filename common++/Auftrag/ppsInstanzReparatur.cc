@@ -437,10 +437,24 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
             }
          }
       }
-      for (ArtikelBaum::const_iterator i=ab.begin();i!=ab.end();++i)
+      // kam der Artikel überhaupt vor ?
+      if (next!=ppsInstanzID::None)
+      {  AufEintragZu::map_t::const_iterator f=kinder.find(ae.Artikel());
+         AuftragBase::mengen_t M=ae.getRestStk();
+         if (f==kinder.end() && !!M)
+         {  alles_ok=false;
+            analyse("Artikel fehlt intern völlig",ae,itos(ae.Artikel().Id()),M.String(true));
+            if (!analyse_only)
+            {  AufEintrag::ArtikelInternNachbestellen(next,M,newdate,
+            				ae.Artikel(),uid,ae);
+            }
+         }
+      }
+      else for (ArtikelBaum::const_iterator i=ab.begin();i!=ab.end();++i)
       {  AufEintragZu::map_t::const_iterator f=kinder.find(i->rohartikel);
          if (f==kinder.end() && !!ae.getRestStk()) // Artikel nie bestellt
          {  AuftragBase::mengen_t M=ae.getRestStk()*i->menge;
+            alles_ok=false;
             analyse("Rohartikel fehlt völlig",ae,itos(i->rohartikel.Id()),M.String(true));
             if (!analyse_only)
             {  AufEintrag::ArtikelInternNachbestellen(
