@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.43 2003/04/12 11:51:42 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.44 2003/04/14 13:33:46 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,7 +29,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
 : ManuProcEntity<>(_id), KundenGruppennr(0),schema(ExtBezSchema::default_id),rngan(0),
   rng_an_postfach(false),
 //lieferadresse(false),
-rechnungsadresse(false),
+//rechnungsadresse(false),
   entsorg(false),
   waehrung(WaehrungID::EUR),lieferung_frei_haus(true)
 { 
@@ -49,7 +49,8 @@ rechnungsadresse(false),
    bool ZEILENRABATT;
    int ZAHLUNGSART;
    char VEREIN[31];
-   bool LIEFERADRESSE,RECHUNGSADRESSE,ENTSORGUNG,RNGANLFRA;
+/*   bool LIEFERADRESSE,RECHUNGSADRESSE; */
+   bool ENTSORGUNG,RNGANLFRA;
    char NOTIZ[2048];
    char STAND[50];
    int WAEHRUNGID;
@@ -84,7 +85,7 @@ rechnungsadresse(false),
 	 coalesce(branr,0),
 	 gebdatum,
          coalesce(idnr,''),
-         coalesce(lieferadresse,false), coalesce(rechnungsadresse,false), 
+/*         coalesce(lieferadresse,false), coalesce(rechnungsadresse,false), */
          coalesce(rng_an_postfach,false),
          coalesce(flaeche,0),coalesce(mitarbeiter,0),
    /* the 0.0s are to make typing more strict, which gives an error
@@ -108,7 +109,8 @@ rechnungsadresse(false),
            :POSTFACHPLZ, :ORT, :KTONR, :BLZ, :BANKNAME, :BANKINDEX, :RNG_AN,
 	   :LFR_AN, :BRANRID, :GEBDATUM:IGEBDATUM,
            :IDNR,
-            :LIEFERADRESSE,:RECHUNGSADRESSE,:RNGANLFRA,
+/*           :LIEFERADRESSE,:RECHUNGSADRESSE, */
+	   :RNGANLFRA,
            :FLAECHE,:MITARBEITER,:KUNDENUMSATZ,:PLANUMSATZ,:UMSATZ,
 	   :RABATT,:ZEILENRABATT,:ZAHLUNGSART, :VEREIN, 
 	   :NOTIZ,:STAND, :LANDESID, :WAEHRUNGID, :ENTSORGUNG, :VERKNR,
@@ -138,7 +140,7 @@ rechnungsadresse(false),
    adresse.unsere_kundennr = UNSERE_KUNDENNR;
    IDnr=IDNR;
 //   lieferadresse=LIEFERADRESSE;
-   rechnungsadresse=RECHUNGSADRESSE;
+//   rechnungsadresse=RECHUNGSADRESSE;
    rng_an_postfach=RNGANLFRA;
    bankverb.konto=strtoll(KTONR,NULL,10);
    bankverb.blz=strtoul(BLZ,NULL,10);
@@ -406,9 +408,9 @@ void Kunde::update_e(UpdateBitsAdresse e)
      else if (i==B_Postfachplz) query += "postfplz  = '"+postfachplz()+"',";
      else if (i==B_Ort        ) query += "ort  = '"+ort()+"',";
      else if (i==B_Lkz           ) query += "landid  = '"+itos(land()->Id())+"',";
-     else if (i==B_Lieferadresse  ) query += "lieferadresse  = "+btos(isLieferadresse())+",";
-     else if (i==B_Rechnungadresse) query += "rechnungsadresse  = "+btos(isRechnungsadresse())+",";
-     else if (i==B_Auftragadresse) query += "auftragsadresse  = "+btos(isAuftragsadresse())+",";
+//     else if (i==B_Lieferadresse  ) query += "lieferadresse  = "+btos(isLieferadresse())+",";
+//     else if (i==B_Rechnungadresse) query += "rechnungsadresse  = "+btos(isRechnungsadresse())+",";
+//     else if (i==B_Auftragadresse) query += "auftragsadresse  = "+btos(isAuftragsadresse())+",";
      else if (i==B_Rng_an_postfach) query += "rng_an_postfach  = "+btos(Rng_an_postfach())+",";
    }
  query += "stand  = now() where kundennr = "+itos(Id());

@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.28 2003/04/11 12:34:51 jacek Exp $
+// $Id: Kunde.cc,v 1.29 2003/04/14 13:33:46 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -169,7 +169,7 @@ bool Kunde::isInGrp(const Kundengruppe::ID gid) const
 #ifdef MANUPROC_DYNAMICENUMS_CREATED
  std::vector<cH_Kundengruppe>::const_iterator f;
  
- if(!gruppen.size())
+ if(gruppen.size())
    return (find(gruppen.begin(),gruppen.end(),gid)!=gruppen.end());
   
  load_Gruppen();
@@ -202,13 +202,15 @@ void Kunde::pullFromGrp(const Kundengruppe::ID gid)
 }
 
 
-
+/*******************
+* use isInGrp instead of all these methodes below
+***
 bool Kunde::isLieferadresse() const 
 {
 #ifdef MANUPROC_DYNAMICENUMS_CREATED
  std::vector<cH_Kundengruppe>::const_iterator f;
  
- if(!gruppen.size())
+ if(gruppen.size())
    return (std::find(gruppen.begin(),gruppen.end(),
    		KundengruppeID::Lieferadresse)!=
    		gruppen.end());
@@ -222,6 +224,8 @@ bool Kunde::isLieferadresse() const
  return false;
 #endif
 }
+up to here ******+*/
+
 
 void Kunde::isLieferadresse(bool is) 
 {
@@ -232,6 +236,28 @@ void Kunde::isLieferadresse(bool is)
    pullFromGrp(KundengruppeID::Lieferadresse);
 #endif       
 }
+
+void Kunde::isRechnungsadresse(bool is) 
+{
+#ifdef MANUPROC_DYNAMICENUMS_CREATED
+ if(is)
+   putInGrp(KundengruppeID::Rechnungsadresse);
+ else       
+   pullFromGrp(KundengruppeID::Rechnungsadresse);
+#endif       
+}
+
+
+void Kunde::isAuftragsadresse(bool is) 
+{
+#ifdef MANUPROC_DYNAMICENUMS_CREATED
+ if(is)
+   putInGrp(KundengruppeID::Auftragsadresse);
+ else       
+   pullFromGrp(KundengruppeID::Auftragsadresse);
+#endif       
+}
+
 
 
 

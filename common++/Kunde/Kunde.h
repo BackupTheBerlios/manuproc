@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.47 2003/04/12 11:51:41 jacek Exp $
+// $Id: Kunde.h,v 1.48 2003/04/14 13:33:46 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -125,8 +125,8 @@ private:
 	ID lfran;
         bool rng_an_postfach:1;
 //        bool lieferadresse:1;
-        bool rechnungsadresse:1;
-        bool auftragsadresse:1;
+//        bool rechnungsadresse:1;
+//        bool auftragsadresse:1;
         bool entsorg:1;
         mutable bool isaktiv:1;
         mutable bool preisautomatik:1;
@@ -219,9 +219,9 @@ public:
         cH_ExtBezSchema getSchema(class ArtikelTyp t) const
         	{  return cH_ExtBezSchema(schema,t); }
         ExtBezSchema::ID getSchemaId() const {  return schema; }
-        bool isLieferadresse() const;
-        bool isRechnungsadresse() const { return rechnungsadresse; }
-        bool isAuftragsadresse() const { return auftragsadresse; }        
+//        bool isLieferadresse() const;
+//        bool isRechnungsadresse() const;
+//        bool isAuftragsadresse() const;
         bool isInGrp(const Kundengruppe::ID gid) const;
         void putInGrp(const Kundengruppe::ID gid); 
         void pullFromGrp(const Kundengruppe::ID gid);
@@ -318,8 +318,8 @@ public:
 	void reread_Stand() throw(SQLerror);                
 	
 	void isLieferadresse(bool is);
-	void isRechnungsadresse(bool is) { rechnungsadresse=is; }
-	void isAuftragsadresse(bool is) { auftragsadresse=is; }	
+	void isRechnungsadresse(bool is);
+	void isAuftragsadresse(bool is);
 	void RngAn(const Kunde::ID kid) { rngan=kid; }
 	void LfrAn(const Kunde::ID kid) { lfran=kid; }	
         void Rng_an_postfach(bool b) {rng_an_postfach=b;}

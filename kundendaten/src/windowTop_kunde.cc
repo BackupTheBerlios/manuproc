@@ -15,6 +15,7 @@ void windowTop::on_buttonNeu_clicked()
 void windowTop::on_kunden_reset()
 {
   clear_entrys();
+  notebook_main->set_page(PAGE_KUNDE);
 }
 
 void windowTop::show_kundendaten()
@@ -66,6 +67,7 @@ void windowTop::kunden_activate()
 
    show_kundendaten();
    KundenTelefon->setKdPer(kundendaten->Id(),Person::none_id);
+   notebook_main->set_page(PAGE_KUNDE);
 }
 
 void windowTop::on_KundenTelefon_activate(cH_Telefon ct)

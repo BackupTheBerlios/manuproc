@@ -64,6 +64,9 @@ windowTop::windowTop()
  kundenauswahl->EinschraenkenKdGr(gruppenwahl->get_value());
  geburtstag->setLabel("Geburtstag");
  geburtstag->setExpandYear(false);
+ 
+ rng_an->EinschraenkenKdGr(KundengruppeID::Rechnungsadresse);
+ lfr_an->EinschraenkenKdGr(KundengruppeID::Lieferadresse);
  connectFkt();
 }
 
@@ -145,6 +148,7 @@ void windowTop::clear_entrys()
    entry_blz->set_text("");
    extartbez->reset();
    rng_an->reset();
+   lfr_an->reset();
    textNotiz->delete_text(0,textNotiz->get_length());;
    
    checkbutton_zeilenrabatt->set_active(false);

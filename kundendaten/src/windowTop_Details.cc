@@ -4,7 +4,7 @@
 #include <SelectMatching.h>
 #include "kundendaten_aux.hh"
 #include "MyMessage.h"
-
+#include <Kunde/Kundengruppe.h>
 
 void windowTop::show_details()
 {
@@ -33,6 +33,7 @@ void windowTop::show_details()
 	entryBankKonto->set_text(ulltos(kundendaten->getKtnr()));
 	entry_blz->set_text(itos(kundendaten->getblz()));
    rng_an->set_value(kundendaten->Rngan());
+   lfr_an->set_value(kundendaten->Lfran());
    extartbez->set_value(kundendaten->Schema());
 
    Waehrung->set_value(kundendaten->getWaehrung());
@@ -40,8 +41,9 @@ void windowTop::show_details()
    geburtstag->setLabel("Geburtstag");
 
    checkbutton_zeilenrabatt->set_active(kundendaten->zeilenrabatt());
-   checkbuttonLieferAdr->set_active(kundendaten->isLieferadresse());
-   checkbuttonRchngAdr->set_active(kundendaten->isRechnungsadresse());
+   checkbuttonLieferAdr->set_active(kundendaten->isInGrp(KundengruppeID::Lieferadresse));
+   checkbuttonRchngAdr->set_active(kundendaten->isInGrp(KundengruppeID::Rechnungsadresse));
+   checkbuttonAuftrAdr->set_active(kundendaten->isInGrp(KundengruppeID::Auftragsadresse));
    checkbutton_rng_an_postfach->set_active(kundendaten->Rng_an_postfach());
    checkbutton_entsorgung->set_active(kundendaten->entsorgung());
    checkbutton_lieferung_frei_haus->set_active(

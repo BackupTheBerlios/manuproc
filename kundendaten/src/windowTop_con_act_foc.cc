@@ -40,6 +40,7 @@ void windowTop::changedFktA(Kunde::UpdateBitsAdresse e)
      else if (e==Kunde::FLkz        ) kundendaten->set_land(landesbox->get_value()) ;
      else if (e==Kunde::FLieferadresse  ) kundendaten->isLieferadresse(checkbuttonLieferAdr->get_active());
      else if (e==Kunde::FRechnungadresse) kundendaten->isRechnungsadresse(checkbuttonRchngAdr->get_active());
+     else if (e==Kunde::FAuftragadresse) kundendaten->isAuftragsadresse(checkbuttonAuftrAdr->get_active());
      else if (e==Kunde::FRng_an_postfach) kundendaten->Rng_an_postfach(checkbutton_rng_an_postfach->get_active());
      else if (e==Kunde::FBranr		) kundendaten->set_Anrede(scc_anrede->get_value());
      else if (e==Kunde::FName2		) kundendaten->set_name2(entryName2->get_text());     
@@ -262,6 +263,7 @@ void windowTop::connectFkt()
 
   checkbuttonLieferAdr->toggled.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FLieferadresse));
   checkbuttonRchngAdr->toggled.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FRechnungadresse));
+  checkbuttonAuftrAdr->toggled.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FAuftragadresse));
   checkbutton_rng_an_postfach->toggled.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FRng_an_postfach));
 
   landesbox->activate.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FLkz));
@@ -348,6 +350,7 @@ void windowTop::connectFkt()
 
   extartbez->activate.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktS),Kunde::FExtartbezid));
   rng_an->activate.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktS),Kunde::FRechnungan));
+  lfr_an->activate.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktS),Kunde::FLieferscheinan));
 
   checkbutton_entsorgung->toggled.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktS),Kunde::FEntsorgung));
   checkbutton_lieferung_frei_haus->toggled.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktS),Kunde::Flieferung_frei_haus));

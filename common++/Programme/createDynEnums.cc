@@ -1,4 +1,4 @@
-// $Id: createDynEnums.cc,v 1.11 2003/04/14 08:58:35 jacek Exp $
+// $Id: createDynEnums.cc,v 1.12 2003/04/14 13:33:47 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynEnums.cc,v 1.11 2003/04/14 08:58:35 jacek Exp $
+// $Id: createDynEnums.cc,v 1.12 2003/04/14 13:33:47 jacek Exp $
 
 #include <Misc/dbconnect.h>
 #include <Misc/FetchIStream.h>
@@ -118,7 +118,7 @@ int main()
       //--- waehrung
       std::cout << "  namespace Waehrung {\n"
 		"   enum enum_t {\n"
-		"    None=-1,";
+		"   None=-1,";
       {  Query q("select wid,kurz from waehrung order by wid");
          while ((q >> is).good())
          {  int id; std::string text;

@@ -1,4 +1,4 @@
-// $Id: Waehrung.h,v 1.14 2003/04/10 08:45:07 jacek Exp $
+// $Id: Waehrung.h,v 1.15 2003/04/14 13:33:46 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,9 +21,9 @@
 #define AUX_WAEHRUNG_H
 #include <ManuProCConfig.h>
 #include <DynamicEnums/DynamicEnums.h>
-#include<Misc/SQLerror.h>
-#include <Misc/CacheStatic.h>
-#include <Misc/Pointer.h>
+#include<Aux/SQLerror.h>
+#include <Aux/CacheStatic.h>
+#include <Aux/Pointer.h>
 
 namespace WaehrungID = ManuProC::DynamicEnums::Waehrung;
 
@@ -32,6 +32,7 @@ class Waehrung
 public:
  typedef WaehrungID::enum_t ID;
  static const ID default_id=WaehrungID::EUR;
+ static const ID none_id=WaehrungID::None;
  typedef ID WaehID; // older variant
  
 private:

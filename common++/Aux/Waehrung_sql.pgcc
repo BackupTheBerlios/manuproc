@@ -1,4 +1,4 @@
-// $Id: Waehrung_sql.pgcc,v 1.13 2003/01/08 09:46:56 christof Exp $
+// $Id: Waehrung_sql.pgcc,v 1.14 2003/04/14 13:33:46 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,9 +20,10 @@
 #include<Misc/Waehrung.h>
 exec sql include sqlca;
 
-Waehrung::Waehrung(WaehID id) throw(SQLerror)
+Waehrung::Waehrung(WaehID id)  throw(SQLerror)
+: wid(id)
 {
- if(id==0) return;
+ if(id==WaehrungID::None) return;
  exec sql begin declare section;
  int WID = id;
  char KURZ[10];
@@ -31,7 +32,7 @@ Waehrung::Waehrung(WaehID id) throw(SQLerror)
  double FAKTOR;
  exec sql end declare section;
  
- exec sql select kurz, coalesce(lang,kurz), coalesce(tex,kurz), dmfkt
+ exec sql select kurz, coalesce(lang,kurz), coalesce(tex,kurz), fkt
  	into :KURZ, :LANG, :TEX, :FAKTOR
  	from waehrung where wid= :WID;
  SQLerror::test(__FILELINE__":Waehrung: select from waehrung");
