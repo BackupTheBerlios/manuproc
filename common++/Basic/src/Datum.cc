@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.30 2004/06/03 09:52:14 christof Exp $
+// $Id: Datum.cc,v 1.31 2004/10/07 16:34:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.30 2004/06/03 09:52:14 christof Exp $ */
+/* $Id: Datum.cc,v 1.31 2004/10/07 16:34:28 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -94,7 +94,7 @@ void ManuProC::Datum::write_euro(char *buf,unsigned int size) const throw(ManuPr
 const std::string ManuProC::Datum::Short() const throw(Datumsfehler)
 {
   teste();
-  return itos(Tag())+"."+itos(Monat());
+  return itos(Tag())+"."+itos(Monat())+".";
 }
 
 std::string ManuProC::Datum::to_iso() const throw(Datumsfehler)

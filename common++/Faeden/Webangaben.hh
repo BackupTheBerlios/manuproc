@@ -1,4 +1,4 @@
-// $Id: Webangaben.hh,v 1.11 2004/02/26 11:18:40 christof Exp $
+// $Id: Webangaben.hh,v 1.12 2004/10/07 16:34:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -35,7 +35,7 @@ class Webangaben
       
    private:
       ArtikelBase artikel;
-      Petig::Datum erstellt,geaendert;
+      ManuProC::Datum erstellt,geaendert;
       std::string riet,bemerkung;
       ArtikelBase fangfaden;
       schussdichte_t schussdichte; // in cm
