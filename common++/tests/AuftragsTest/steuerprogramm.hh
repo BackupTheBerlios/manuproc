@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.36 2003/07/08 07:09:13 christof Exp $
+// $Id: steuerprogramm.hh,v 1.37 2003/07/15 09:01:35 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -39,7 +39,7 @@
 #endif
 
 #ifdef MANU_PROC_TEST
-  #define MANU_DATAPATH "../../Anleitung/datenbank"
+  #define MANU_DATAPATH "../../../Anleitung/datenbank"
 #elif defined(MABELLA_TEST)
   #define MANU_DATAPATH "./database_tables_init_Mabella"
 #else
