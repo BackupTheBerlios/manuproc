@@ -31,13 +31,15 @@ MyMessage *meldung;
 auftrag_main *auftragmain;
 ManuProC::Connection *Conn;
 DBCapability *dbcapability;
+bool load_list=true; 	// Wenn false, dann auf keinen Fall die Liste beim
+			// Start laden, da die ISDN Leitung zu langsam ist
 
 int main(int argc, char **argv)
 {  
  Conn = new ManuProC::Connection();
  int i;
 
- while ((i = getopt(argc, argv, "h:d:")) != EOF)
+ while ((i = getopt(argc, argv, "h:d:s")) != EOF)
  switch (i)
    {  case 'h':
          Conn->setHost(optarg);
@@ -45,6 +47,9 @@ int main(int argc, char **argv)
       case 'd':
          Conn->setDbase(optarg);
          break;
+      case 's':
+	 load_list=false;
+	 break;
       default : break;
    }
 

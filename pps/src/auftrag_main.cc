@@ -47,6 +47,7 @@ extern MyMessage *meldung;
 bool stuecksumme;/* ob stueck summiert werden sollen */
 bool auftragflag;/* zeigt an ab wann auftragid in den Zeilen */
                         /* gespeichert werden soll */
+extern bool load_list;
 
 #include <Aux/Ausgabe_neu.h>
 #include "aktAufEintrag.h" //wg. Lieferwoche ???
@@ -94,7 +95,7 @@ void auftrag_main::on_neuladen_activate()
 
 void auftrag_main::neuladen()
 {
- if(preload_orders->get_active()) fill_simple_tree();
+ if(preload_orders->get_active() && load_list) fill_simple_tree();
  else maintree_s->clear();
 }
 
@@ -414,6 +415,7 @@ auftrag_main::auftrag_main()
  neuer_auftrag_tree_titel_setzen();
 
  instanz_selected(instanz); 
+ load_list=true;		// nur beim Start ggf. nicht laden
  maintree_s->set_remember("pps","maintree-"+itos(instanz->Id()));
 }
 
