@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.7 2003/06/18 15:18:29 jacek Exp $
+// $Id: db_upgrade.cc,v 1.8 2003/06/23 12:02:43 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -75,6 +75,9 @@ int main(int argc,char *argv[])
   // Provisionsaten in Auftrag
   check_column("auftrag","verknr","numeric(5)");
   check_column("auftragentry","provsatz","numeric(4,2)");
+
+  // Verkaeufer in Lieferschein
+  check_column("lieferschein","verknr","numeric(5)");
   
   // Verkäuferspezifische Daten
 	// es gibt noch die alte Spalte verknr mit anderem Nummernkreis,
