@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.50 2003/06/25 07:12:16 christof Exp $
+// $Id: Check.cc,v 1.51 2003/07/15 09:15:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -72,7 +72,8 @@ bool Check::vergleich(was_checken was,const std::string &zusatz)
   if (was & Lieferschein)
   {  files.push_back("lieferschein");
      files.push_back("lieferscheinentry");
-     files.push_back("lieferscheinentryzusatz");
+     if (!access((referenzdir+"lieferscheinentryzusatz_"+zusatz).c_str(),R_OK))
+        files.push_back("lieferscheinentryzusatz");
   }
   if (was & Menge)
   {  files.push_back("auftragsentryzuordnung");
@@ -114,24 +115,25 @@ void Check::dump(was_checken check, const std::string &zusatz)
   {  system((psql_cmd+" \""+
   	"select code,maschine,lauf,gang,status,wiederinslager,verarb_datum,"
   	  "artikelid,rest,lagerplatz from rohjumbo order by code;"
-  	    +"\" >"+resultdir+"rohjumbo"+"_"+zusatz).c_str());
+  	    +"\" >"+resultdir+"rohjumbo_"+zusatz).c_str());
      system((psql_cmd+" \""+
   	"select code,action,name,lagerplatz from lager_bewegung order by code,zeit;"
-  	    +"\" >"+resultdir+"lager_bewegung"+"_"+zusatz).c_str());
+  	    +"\" >"+resultdir+"lager_bewegung_"+zusatz).c_str());
   }
   if(check & Lieferschein)
   {  system((psql_cmd+" \""+
   	"select instanz,lfrsid,kundennr,coalesce(rngid,-1) as rngid,instanz"
   	  " from lieferschein order by instanz,lfrsid;"
-  	    +"\" >"+resultdir+"lieferschein"+"_"+zusatz).c_str());
+  	    +"\" >"+resultdir+"lieferschein_"+zusatz).c_str());
      system((psql_cmd+" \""+
   	"select instanz,lfrsid,zeile,artikelid,refauftragid,stueck,refzeilennr,menge "
   	   " from lieferscheinentry order by instanz,lfrsid,zeile;"
-  	    +"\" >"+resultdir+"lieferscheinentry"+"_"+zusatz).c_str());
-     system((psql_cmd+" \""+
+  	    +"\" >"+resultdir+"lieferscheinentry_"+zusatz).c_str());
+     if (!access((referenzdir+"lieferscheinentryzusatz_"+zusatz).c_str(),R_OK))
+       system((psql_cmd+" \""+
   	"select instanz,lfrsid,lfsznr,auftragid,auftragznr,menge "
   	   " from lieferscheinentryzusatz order by instanz,lfrsid,lfsznr,auftragid,auftragznr;"
-  	    +"\" >"+resultdir+"lieferscheinentryzusatz"+"_"+zusatz).c_str());
+  	    +"\" >"+resultdir+"lieferscheinentryzusatz_"+zusatz).c_str());
   }
   
  if (check & Menge)
@@ -141,7 +143,7 @@ void Check::dump(was_checken check, const std::string &zusatz)
       "\\\"instanz-id-znr\\\",bestellt,"
       "geliefert,lieferdate,e.status,a.stat,kundennr,artikelid from auftragentry e"
       ", auftrag a where a.auftragid=e.auftragid and a.instanz=e.instanz "
-      "order by 1;\" > "+resultdir+"auftragentry"+"_"+zusatz; 
+      "order by 1;\" > "+resultdir+"auftragentry_"+zusatz; 
   system(s1.c_str());
 
   std::string s2=psql_cmd+" \"select to_char(altinstanz,'99') ||' - ' "
@@ -150,18 +152,18 @@ void Check::dump(was_checken check, const std::string &zusatz)
       "to_char(neuinstanz,'99') ||' - ' "
       "|| to_char(neuauftragid,'99999') || ' - ' || text(neuzeilennr) as "
       "\\\"NEU:instanz-id-znr\\\",menge from auftragsentryzuordnung "
-      "order by 1,2;\" > "+resultdir+"auftragsentryzuordnung"+"_"+zusatz; 
+      "order by 1,2;\" > "+resultdir+"auftragsentryzuordnung_"+zusatz; 
   system(s2.c_str());
  }
   if(check & RohLager)
   {  system((psql_cmd+" \""+
   	"select position_ as pos,material,kartons,kg_per_karton as a,"
   		" reste,rest_kg as kg  from rl_inhalt order by 1;"
-  	    +"\" >"+resultdir+"rl_inhalt"+"_"+zusatz).c_str());
+  	    +"\" >"+resultdir+"rl_inhalt_"+zusatz).c_str());
      system((psql_cmd+" \""+
   	"select position_ as pos,material,typ,kartons,kg_per_karton as a,"
   		" reste,rest_kg as kg,misc from rl_log order by zeit;"
-  	    +"\" >"+resultdir+"rl_log"+"_"+zusatz).c_str());
+  	    +"\" >"+resultdir+"rl_log_"+zusatz).c_str());
   }
 }
 
