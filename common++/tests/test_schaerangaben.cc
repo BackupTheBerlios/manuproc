@@ -1,4 +1,4 @@
-// $Id: test_schaerangaben.cc,v 1.7 2004/06/22 09:55:54 christof Exp $
+// $Id: test_schaerangaben.cc,v 1.8 2004/06/22 09:57:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -69,6 +69,7 @@ int main()
    dump(ArtikelBase(127755),8,40000); // 1810/8/
    dump(ArtikelBase(127754),2,30000); // 1812/25/
    dump(ArtikelBase(127754),4,30000); // 1812/25/
+   dump(ArtikelBase(212504),4,30000); // 1812/40/
    dump(ArtikelBase(127789),6,20000); // 1820/25/
    dump(ArtikelBase(127786),4,20000); // 1820/40/
    dump(ArtikelBase(127786),6,20000); // 1820/40/
@@ -87,14 +88,17 @@ int main()
    dump(ArtikelBase(220465),ArtikelBase(225167),1,6000); // 2727/25/265+420
    dump(ArtikelBase(220445),ArtikelBase(225166),1,6000); // 2727/40/265+420
    dump(ArtikelBase(220096),ArtikelBase(220100),1,6000); // 2730/40/310+360
+   dump(ArtikelBase(225041),ArtikelBase(225036),1,10000); // 2736/40/300+515
+   dump(ArtikelBase(225017),1,10000); // 2737/40/435
    dump(ArtikelBase(225021),ArtikelBase(225025),1,10000); // 2737/55/305+430
+   // 3038/25+40/430+435 sollte kombinieren !!!
+   dump(ArtikelBase(225187),2,10000); // 3038/25/435
    dump(ArtikelBase(225186),ArtikelBase(225187),1,10000); // 3038/25/430+435
    dump(ArtikelBase(225193),ArtikelBase(225194),1,10000); // 3038/40/430+435
    dump(ArtikelBase(225975),ArtikelBase(225974),1,10000); // 3039/25/300+420
    dump(ArtikelBase(224768),ArtikelBase(224774),1,6500); // 3040/35/360+430
    dump(ArtikelBase(224969),ArtikelBase(224967),1,6500); // 3040/75/360+420
-   dump(ArtikelBase(224479),3,25000); // 3041/25/
-   dump(ArtikelBase(224481),3,25000); // 3041/40/
+   dump(ArtikelBase(224479),ArtikelBase(224481),3,25000); // 3041/25+40/
    dump(ArtikelBase(225168),ArtikelBase(225169),1,10000); // 3042/40/300+310
    dump(ArtikelBase(123618),4,25000); // 375/40/
    dump(ArtikelBase(226121),2,14200); // 4409/40/20
@@ -102,7 +106,7 @@ int main()
    dump(ArtikelBase(226120),4,28000); // 4532/40/05
    dump(ArtikelBase(225661),4,10000); // 4872/15/
    dump(ArtikelBase(225661),6,10000); // 4872/15/
-   dump(ArtikelBase(210964),6,30000); // 4972/10/
+   dump(ArtikelBase(210966),6,30000); // 4972/10/
    dump(ArtikelBase(210968),6,22000); // 4972/25/
    dump(ArtikelBase(210964),10,30000); // 4972/3/
    dump(ArtikelBase(210964),6,30000); // 4972/3/
