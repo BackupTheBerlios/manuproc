@@ -7,7 +7,7 @@ const Kundengruppe::ID Kundengruppe::default_ID=ManuProC::DefaultValues::Kunden;
 
 Kundengruppe::Kundengruppe(ID kgid, const std::string _obg, 
 	const std::string _grpnm, const std::string _komm) 
-: ManuProcEntity<ID>(kgid), grpname(_grpnm), obergruppe(_obg),
+: ManuProcHandle<ID>(kgid), grpname(_grpnm), obergruppe(_obg),
 	kommentar(_komm) 
 {}
 

@@ -1,4 +1,4 @@
-// $Id: Telefon.h,v 1.15 2003/01/08 09:46:57 christof Exp $
+// $Id: Telefon.h,v 1.16 2003/04/24 13:44:37 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,11 +25,11 @@
 #include<string>
 #include<Misc/SQLerror.h>
 #include<Kunde/TelefonArt.h>
-#include<BaseObjects/ManuProcEntity.h>
+#include<BaseObjects/ManuProcHandle.h>
 
 class cH_Telefon;
 
-class Telefon : public ManuProcEntity<>
+class Telefon : public ManuProcHandle<>
 {
 public:
  const static int Landeskennzahl=49;

@@ -1,4 +1,4 @@
-/* $Id: ManuProcHandle.h,v 1.1 2003/04/24 11:09:40 jacek Exp $ */
+/* $Id: ManuProcHandle.h,v 1.2 2003/04/24 13:44:36 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -24,15 +24,16 @@
 #define MANU_PROC_HANDLE
 
 #include<Misc/Handles.h>
+#include<BaseObjects/ManuProcEntity.h>
 
 
 template <class T=long int> class ManuProcHandle 
-: public ManuProcEntity, public HandleContent
+: public ManuProcEntity<T>, public HandleContent
 {
  
 public:
- virtual ID Id() const = 0;
-
+ ManuProcHandle() : ManuProcEntity<T>(none_id) {}
+ ManuProcHandle(const ID i) : ManuProcEntity<T>(i) {}
 };
 
 #endif

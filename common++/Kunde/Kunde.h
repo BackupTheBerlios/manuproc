@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.49 2003/04/17 09:22:13 jacek Exp $
+// $Id: Kunde.h,v 1.50 2003/04/24 13:44:36 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -31,7 +31,7 @@
 #include <Kunde/TelefonArt.h>
 #include <Kunde/LandesListe.h>
 #include <Kunde/Person.h>
-#include <BaseObjects/ManuProcEntity.h>
+#include <BaseObjects/ManuProcHandle.h>
 #include <DynamicEnums/DefaultValues.h>
 #include <utility> // for pair
 #include <Kunde/Kundengruppe.h>
@@ -42,7 +42,7 @@ class H_Kunde;
 class cH_Telefon;
 #include <Kunde/Zahlungsart.h>
 
-class Kunde : public ManuProcEntity<>
+class Kunde : public ManuProcHandle<>
 {
 
 public:

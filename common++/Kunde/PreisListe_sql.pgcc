@@ -1,5 +1,5 @@
 
-// $Id: PreisListe_sql.pgcc,v 1.9 2003/01/08 09:46:57 christof Exp $
+// $Id: PreisListe_sql.pgcc,v 1.10 2003/04/24 13:44:37 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -43,7 +43,7 @@ cH_PreisListe::cH_PreisListe(PreisListe::ID id)
 
 
 PreisListe::PreisListe(ID _id) throw(SQLerror) 
-: ManuProcEntity<>(_id)
+: ManuProcHandle<>(_id)
 {  
    if(_id == none_id) return;   
    exec sql begin declare section;

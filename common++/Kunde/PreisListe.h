@@ -1,4 +1,4 @@
-// $Id: PreisListe.h,v 1.10 2003/01/08 09:46:57 christof Exp $
+// $Id: PreisListe.h,v 1.11 2003/04/24 13:44:37 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,11 +24,11 @@
 #include<Misc/SQLerror.h>
 #include <Misc/Handles.h>
 #include <Misc/CacheStatic.h>
-#include <BaseObjects/ManuProcEntity.h>
+#include <BaseObjects/ManuProcHandle.h>
 #include <Misc/Waehrung.h>
 #include <Misc/fixedpoint.h>
 
-class PreisListe : public ManuProcEntity<>
+class PreisListe : public ManuProcHandle<>
 {
 public:
  typedef fixedpoint<2> rabatt_t;

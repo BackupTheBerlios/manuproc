@@ -1,4 +1,4 @@
-// $Id: Lieferart.h,v 1.1 2003/04/08 13:15:38 jacek Exp $
+// $Id: Lieferart.h,v 1.2 2003/04/24 13:44:37 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,7 +21,7 @@
 #ifndef KUNDE_LIEFERART_HH
 #define KUNDE_LIEFERART_HH
 #include <string>
-#include <BaseObjects/ManuProcEntity.h>
+#include <BaseObjects/ManuProcHandle.h>
 #include <Misc/SQLerror.h>
 #include <Misc/Datum.h>
 #include <Misc/multi_lang.h>
@@ -32,7 +32,7 @@
 
 class cH_Kunde;
 
-class Lieferart : public ManuProcEntity<>
+class Lieferart : public ManuProcHandle<>
 {
 private:
     std::string bezeichnung;

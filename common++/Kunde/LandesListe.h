@@ -1,4 +1,4 @@
-// $Id: LandesListe.h,v 1.7 2003/01/08 09:46:57 christof Exp $
+// $Id: LandesListe.h,v 1.8 2003/04/24 13:44:37 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -24,10 +24,10 @@
 #include <Misc/SQLerror.h>
 #include <Misc/Handles.h>
 #include <Misc/CacheStatic.h>
-#include <BaseObjects/ManuProcEntity.h>
+#include <BaseObjects/ManuProcHandle.h>
 
 
-class LandesListe : public ManuProcEntity<>
+class LandesListe : public ManuProcHandle<>
 {
 private:
  std::string name,lkz;

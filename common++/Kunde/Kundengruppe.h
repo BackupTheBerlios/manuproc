@@ -2,7 +2,7 @@
 #ifndef COMMON_KUNDENGRUPPE
 #define COMMON_KUNDENGRUPPE
 
-#include <BaseObjects/ManuProcEntity.h>
+#include <BaseObjects/ManuProcHandle.h>
 #include <DynamicEnums/DynamicEnums.h>
 #include <DynamicEnums/DefaultValues.h>
 #include <Misc/FetchIStream.h>
@@ -11,7 +11,7 @@
 namespace KundengruppeID=ManuProC::DynamicEnums::Kundengruppen;
 
 
-class Kundengruppe : public ManuProcEntity<KundengruppeID::enum_t>
+class Kundengruppe : public ManuProcHandle<KundengruppeID::enum_t>
 {
 
  std::string grpname;
@@ -24,7 +24,7 @@ public:
  friend class Handle<const Kundengruppe>;
  friend class cH_Kundengruppe;
  
- Kundengruppe() : ManuProcEntity<ID>(KundengruppeID::None) {}
+ Kundengruppe() : ManuProcHandle<ID>(KundengruppeID::None) {}
   
  Kundengruppe(ID kgid, const std::string _obg,const std::string _grpnm,
  	const std::string komm="");

@@ -1,4 +1,4 @@
-// $Id: LandesListe_sql.pgcc,v 1.6 2003/01/08 09:46:57 christof Exp $
+// $Id: LandesListe_sql.pgcc,v 1.7 2003/04/24 13:44:37 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -41,7 +41,7 @@ cH_LandesListe::cH_LandesListe(LandesListe::ID id)
 }
 
 LandesListe::LandesListe(ID _id) throw(SQLerror) 
-: ManuProcEntity<>(_id)
+: ManuProcHandle<>(_id)
 {  
    if(_id == none_id) return;   
    exec sql begin declare section;

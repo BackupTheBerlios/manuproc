@@ -1,4 +1,4 @@
-/* $Id: Ueberweisung.h,v 1.1 2003/04/24 10:21:51 jacek Exp $ */
+/* $Id: Ueberweisung.h,v 1.2 2003/04/24 13:44:36 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -56,6 +56,8 @@ public:
   Ueberweisung();
 
   static Ueberweisung &newUeberweisung() throw(SQLerror);
+
+  ID Id() const { return ID(entityid); }
 
   std::string Empfaenger() const { return empfaenger; }
   std::string Auftraggeber() const { return auftraggeber; }  

@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.h,v 1.20 2003/03/10 08:49:53 christof Exp $
+// $Id: Zahlungsart.h,v 1.21 2003/04/24 13:44:37 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,7 +23,7 @@
 #include <string>
 #include <ExtBezSchema/ExtBezSchemaHandle.h>
 #include <Misc/fixedpoint.h>
-#include <BaseObjects/ManuProcEntity.h>
+#include <BaseObjects/ManuProcHandle.h>
 #include <Misc/SQLerror.h>
 #include <Misc/Waehrung.h>
 #include <Misc/fixedpoint.h>
@@ -35,7 +35,7 @@
 class cH_Kunde;
 class FetchIStream;
 
-class Zahlungsart : public ManuProcEntity<>
+class Zahlungsart : public ManuProcHandle<>
 {
 public:
     struct st_skonto{int skontofrist; fixedpoint<2> skontosatz;

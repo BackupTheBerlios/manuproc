@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.44 2003/04/14 13:33:46 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.45 2003/04/24 13:44:36 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,7 +26,7 @@
 exec sql include sqlca;
 
 Kunde::Kunde(ID _id) throw(SQLerror) 
-: ManuProcEntity<>(_id), KundenGruppennr(0),schema(ExtBezSchema::default_id),rngan(0),
+: ManuProcHandle<>(_id), KundenGruppennr(0),schema(ExtBezSchema::default_id),rngan(0),
   rng_an_postfach(false),
 //lieferadresse(false),
 //rechnungsadresse(false),
