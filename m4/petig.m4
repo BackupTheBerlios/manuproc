@@ -370,7 +370,7 @@ CXXFLAGS="$old_cxxflags"
 
 if test "x$MPC_SQLITE" = x
 then
-	ECPG
+	PETIG_CHECK_ECPG
 else
 	COMMONXX_LDFLAGS="$COMMONXX_LDFLAGS -lqlite"
 fi
