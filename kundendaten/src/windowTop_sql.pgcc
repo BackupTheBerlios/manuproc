@@ -9,6 +9,7 @@ exec sql include sqlca;
 
 void windowTop::scc_verkaeufer_search(int *_continue, GtkSCContext newsearch)
 {
+#ifdef MABELLA_EXTENSIONS
  exec sql begin declare section;
    int VERKNR;
    char *NAME=0;
@@ -47,6 +48,7 @@ void windowTop::scc_verkaeufer_search(int *_continue, GtkSCContext newsearch)
         transaction.commit();
         break;
    }
+#endif   
 }
 
 void windowTop::scc_anrede_search(int *_continue, GtkSCContext newsearch)

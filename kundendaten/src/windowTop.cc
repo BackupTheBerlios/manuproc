@@ -254,7 +254,7 @@ void windowTop::on_gruppenwahl_activate()
 
 void windowTop::on_riba_save_clicked()
 {
- 
+#ifdef MABELLA_EXTENSIONS 
  try{
  kundendaten->setABI_CAB(abi_entry->get_text(),cab_entry->get_text());
  abi_entry->set_text(kundendaten->getABI_Code(true));
@@ -266,10 +266,12 @@ void windowTop::on_riba_save_clicked()
  
  riba_save->set_sensitive(false);
  riba_abbruch->set_sensitive(false); 
+#endif 
 }
 
 void windowTop::on_riba_abbruch_clicked()
 {  
+#ifdef MABELLA_EXTENSIONS 
  riba_save->set_sensitive(false);
  riba_abbruch->set_sensitive(false);
  
@@ -288,19 +290,23 @@ void windowTop::on_riba_abbruch_clicked()
       }
    MyMessage *m=manage(new MyMessage()); m->Show(e); 
   } 
+#endif
 }
 
 void windowTop::on_iban_abbruch_clicked()
 {
+#ifdef MABELLA_EXTENSIONS 
  iban_save->set_sensitive(false);
  iban_abbruch->set_sensitive(false);  
 
  try{iban_entry->set_text(kundendaten->getIBAN_Code());}
  catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e); } 
+#endif
 }
 
 void windowTop::on_iban_save_clicked()
 {  
+#ifdef MABELLA_EXTENSIONS 
  try{
  kundendaten->setIBAN(iban_entry->get_text());
  iban_entry->set_text(kundendaten->getIBAN_Code(true));
@@ -310,6 +316,7 @@ void windowTop::on_iban_save_clicked()
 
  iban_save->set_sensitive(false);
  iban_abbruch->set_sensitive(false);
+#endif
 }
 
 gint windowTop::on_abi_entry_changed(GdkEventFocus *e)
@@ -336,6 +343,7 @@ gint windowTop::on_iban_entry_changed(GdkEventFocus *e)
 
 void windowTop::on_zahlverfahren_book_switch_page(Gtk::Notebook_Helpers::Page *p0, guint pagenr)
 {  
+#ifdef MABELLA_EXTENSIONS 
  try{
  switch(enum_zahl_verfahren(pagenr))
    {
@@ -353,6 +361,7 @@ void windowTop::on_zahlverfahren_book_switch_page(Gtk::Notebook_Helpers::Page *p
  }
  catch(SQLerror &e) { if(e.Code()==100) return;
  	MyMessage *m=manage(new MyMessage()); m->Show(e); } 
+#endif
  
 }
 
