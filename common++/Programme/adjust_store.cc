@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.40 2003/06/24 07:21:48 christof Exp $
+// $Id: adjust_store.cc,v 1.41 2003/06/24 07:24:20 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -148,12 +148,15 @@ int main(int argc,char *argv[])
 
 restart:
     alles_ok=true;
-    if (actions&b_links) 
+    if (actions&b_links && !analyse_only)
     {  Query("delete from auftragsentryzuordnung where not exists "
     	"(select true from auftragentry where (instanz,auftragid,zeilennr)="
     		"(altinstanz,altauftragid,altzeilennr)) or not exists "
     	"(select true from auftragentry where (instanz,auftragid,zeilennr)="
     		"(neuinstanz,neuauftragid,neuzeilennr))");
+       if (Query::Lines())
+       {  std::cout << Query::Lines() << " ungültige Zuordnungen gelöscht\n";
+       }
     }
     if(instanz!=ppsInstanzID::None) 
       alles_ok&=check_for(argv[0],cH_ppsInstanz(instanz),analyse_only);
