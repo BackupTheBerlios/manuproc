@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.64 2003/07/31 11:32:58 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.65 2003/08/08 11:55:46 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,8 +17,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef CXX_AUFTRAG_AUFEINTRAGBASE_H
-#define CXX_AUFTRAG_AUFEINTRAGBASE_H
+#ifndef CXX_AUFTRAG_AUFEINTRAG_H
+#define CXX_AUFTRAG_AUFEINTRAG_H
 
 // na ob das alles erforderlich ist ... CP
 #include <Artikel/ArtikelBaum.h> //?
@@ -57,6 +57,7 @@ class AufEintrag : public AufEintragBase
      friend class AuftragBase;
      friend class ppsInstanzReparatur;
      friend FetchIStream &operator>>(FetchIStream &is, AufEintrag &ae);
+     class delayed_reclaim;
 
 private: 
  mengen_t bestellt;
