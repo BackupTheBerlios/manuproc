@@ -1,0 +1,34 @@
+#include <Aux/Transaction.h>
+#include <Aux/SQLerror.h>
+exec sql include sqlca;
+#include "dialogError.hh"
+#include <gtk--/menu.h> 
+#include <gtk--/menuitem.h>
+#include "windowTop.hh"
+#include <Gtk_OStream.h>
+
+exec sql include sqlca;
+
+int windowTop::fill_bank_bei(unsigned long int blz)
+{
+ exec sql begin declare section;
+  int BANKINDEX[10];
+  long int BLZ=blz;
+  char BANKNAME[10][50]; 
+ exec sql end declare section;
+ exec sql select bankindex,name into :BANKINDEX, :BANKNAME
+   from banken where blz = :BLZ;
+ SQLerror::test(__FILELINE__,100);
+ if (sqlca.sqlcode) { /*manage(new dialogError() );*/ return false;}
+
+ {Gtk::OStream os(optionmenu_bankbei);
+  for (int i=0;i<sqlca.sqlerrd[2];++i)
+   {
+    os << BANKNAME[i];
+    os.flush((gpointer)BANKINDEX[i]);
+   }
+ }
+ optionmenu_bankbei->get_menu()->deactivate.connect
+   (SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FBankindex));
+ return BANKINDEX[0];
+}

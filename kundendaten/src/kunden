@@ -1,0 +1,45 @@
+DROP TABLE "kunden";
+CREATE TABLE "kunden" (
+	"kundennr" numeric(5,0) NOT NULL,
+	"sortname" character varying(30),
+	"firma" character varying(60) NOT NULL,
+	"postanwvor" character varying(40),
+	"strasse" character varying(35),
+	"hsnr" character varying(7),
+	"postanwnach" character varying(40),
+	"plz" character varying(10),
+	"ort" character varying(30),
+	"postfach" character varying(20),
+	"postfplz" character varying(10),
+	"idnr" character varying(20),
+	"flaeche" numeric(5,0),
+	"mitarbeiter" numeric(5,0),
+	"planumsatz" numeric(8,0),
+	"umsatz" numeric(10,2),
+	"kundenumsatz" numeric(10,2),
+	"kalkulation" numeric(3,0),
+	"rabatt" numeric(3,1) DEFAULT 0,
+	"skontofrist" numeric(3,0),
+	"preisliste" character varying(30),
+	"verein" character varying(30),
+	"bankeinzug" bool DEFAULT 'f'::bool,
+	"ktonr" numeric(10,0),
+	"blz" numeric(8,0),
+	"bankbei" character varying(27),
+	"lieferadresse" bool DEFAULT 'f'::bool,
+	"rechnungsadresse" bool DEFAULT 'f'::bool,
+	"rechnung_an" numeric(5,0),
+	"notiz" character varying(1000),
+	"stand" timestamp,
+--	"extbezschemaid" numeric(5,0),
+--	"extartbezid" numeric(5,0),
+--	"typ" character varying(4) DEFAULT 'RL',
+--	"rng_an_postfach" bool DEFAULT 'f'::bool,
+--	"bankname" character varying(27),
+	PRIMARY KEY ("kundennr")
+);
+REVOKE ALL on "kunden" from PUBLIC;
+GRANT SELECT on "kunden" to PUBLIC;
+GRANT INSERT,UPDATE,DELETE,SELECT on "kunden" to GROUP "buro";
+COMMENT ON COLUMN "kunden"."rechnung_an" IS 'references kunden(kundennr)';
+--COMMENT ON COLUMN "kunden"."extbezschemaid" IS 'references extbezschema(extartbezid)';

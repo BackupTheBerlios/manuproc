@@ -1,0 +1,80 @@
+//#include <Aux/Transaction.h>
+#include <Aux/SQLerror.h>
+exec sql include sqlca;
+//#include "dialogError.hh"
+//#include <gtk--/menu.h>
+//#include <gtk--/menuitem.h>
+#include "windowTop.hh"
+
+void windowTop::scc_verkaeufer_search(int *_continue, GtkSCContext newsearch)
+{
+ exec sql begin declare section;
+   int VERKNR;
+   char NAME[31],KURZ[6];
+   char *PAT;
+ exec sql end declare section;
+ 
+ switch(newsearch)
+   {
+    case GTK_SEARCH_OPEN :
+      {
+        std::string pat = scc_verkaeufer->get_text() + "%";
+        PAT = (char*)pat.c_str();
+        exec sql declare VERKAEUFER_CURSOR cursor for
+           select verknr,name,kurz from ku_verkaeufer 
+           where name like :PAT order by name;
+        transaction.open();
+        exec sql open VERKAEUFER_CURSOR;
+        SQLerror::test(__FILELINE__);
+      }
+    case GTK_SEARCH_FETCH:
+        exec sql fetch VERKAEUFER_CURSOR into :VERKNR,:NAME,:KURZ;
+        SQLerror::test(__FILELINE__,100);
+        if (sqlca.sqlcode) return;
+        scc_verkaeufer->add_item(NAME,VERKNR);
+        *_continue=true;
+        break;
+     case GTK_SEARCH_CLOSE:
+        exec sql close VERKAEUFER_CURSOR;
+        SQLerror::test(__FILELINE__);
+        transaction.commit();
+        break;
+   }
+}
+
+void windowTop::scc_anrede_search(int *_continue, GtkSCContext newsearch)
+{
+ exec sql begin declare section;
+   int BRANR;
+   char NAME[41];
+   char *PAT;
+ exec sql end declare section;
+ 
+ switch(newsearch)
+   {
+    case GTK_SEARCH_OPEN :
+      {
+        std::string pat = scc_anrede->get_text() + "%";
+        PAT = (char*)pat.c_str();
+        exec sql declare ANREDE_CURSOR cursor for
+           select branr,briefanrede from ku_briefanr 
+           where briefanrede like :PAT order by briefanrede;
+        transaction.open();
+        exec sql open ANREDE_CURSOR;
+        SQLerror::test(__FILELINE__);
+      }
+    case GTK_SEARCH_FETCH:
+        exec sql fetch ANREDE_CURSOR into :BRANR,:NAME;
+        SQLerror::test(__FILELINE__,100);
+        if (sqlca.sqlcode) return;
+        scc_anrede->add_item(NAME,BRANR);
+        *_continue=true;
+        break;
+     case GTK_SEARCH_CLOSE:
+        exec sql close ANREDE_CURSOR;
+        SQLerror::test(__FILELINE__);
+        transaction.commit();
+        break;
+   }
+}
+

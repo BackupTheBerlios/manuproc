@@ -1,0 +1,80 @@
+// generated 2001/2/22 9:59:33 CET by thoma@ig23.
+// using glademm V0.5_11f_cvs
+//
+// newer (non customized) versions of this file go to windowAuswahl.cc_new
+
+// This file is for your program, I won't touch it again!
+
+#include "config.h"
+#include "windowAuswahl.hh"
+#include <Aux/Transaction.h>
+#include <Aux/SQLerror.h>
+exec sql include sqlca;
+#include <Gtk_OStream.h>
+
+
+void windowAuswahl::on_radiobuttonSortiername_clicked()
+{   
+   windowAuswahl::load_liste();
+}
+
+void windowAuswahl::on_radiobuttonKdNr_clicked()
+{   
+   windowAuswahl::load_liste();
+}
+
+void windowAuswahl::on_windowAuswahl_destroy()
+{   
+}
+
+void windowAuswahl::load_liste()
+{
+   clistAuswahl->clear();
+   exec sql begin declare section;
+      char SORTNAME [31];
+      unsigned int  KUNDENNR;
+      char QUERY[1024];
+   exec sql end declare section;
+   string ord;
+   if (radiobuttonSortiername->get_active()) ord = "sortname";
+   if (radiobuttonKdNr->get_active()) ord = "kundennr";
+   snprintf(QUERY,sizeof(QUERY),
+      "select kundennr, sortname FROM kunden order by %s",ord.c_str());
+
+   Transaction tr;
+   exec sql prepare inp_ from :QUERY ;
+   exec sql declare inp cursor for inp_ ;
+   exec sql open inp;
+   SQLerror::test(__FILELINE__);
+   Gtk::OStream os(clistAuswahl);
+   while(true)
+      {
+         exec sql fetch inp into :KUNDENNR, :SORTNAME;
+         SQLerror::test(__FILELINE__,100);  
+         if (sqlca.sqlcode) break;
+         os <<SORTNAME<<"\t"<< KUNDENNR<<"\n";
+      }      
+   exec sql close inp;
+   tr.close();
+   for (unsigned int i=0;i<clistAuswahl->columns().size();++i)
+      clistAuswahl->set_column_auto_resize(i,true);
+}
+
+
+windowAuswahl::windowAuswahl(windowTop* h)
+{
+   hauptfenster=h ;
+   windowAuswahl::load_liste();
+}
+
+void windowAuswahl::on_clistAuswahl_select_row(gint row, gint column, GdkEvent *event)
+{
+   string sortname = clistAuswahl->get_text(row,0);
+   unsigned int kndr = atoi(clistAuswahl->get_text(row,1).c_str());
+   hauptfenster->load_kunde(sortname,kndr);
+   destroy();
+}
+
+windowAuswahl::~windowAuswahl()
+{  glademm_RadioButtonGroup("Sortierung")=Gtk::RadioButton_Helpers::Group();
+}

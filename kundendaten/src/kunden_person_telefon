@@ -1,0 +1,12 @@
+\connect - christof
+DROP TABLE   "kunden_personen_telefon";
+CREATE TABLE "kunden_personen_telefon" (
+	"kundennr" numeric(5,0) NOT NULL,
+	"name" character varying(30) NOT NULL,
+	"vorname" character varying(30),
+	"nummer" text NOT NULL,
+	"art" character varying(21) NOT NULL,
+	"privat" character varying(21)
+);
+REVOKE ALL on "kunden_personen_telefon" from PUBLIC;
+GRANT INSERT,UPDATE,DELETE,SELECT on "kunden_personen_telefon" to GROUP "buro";

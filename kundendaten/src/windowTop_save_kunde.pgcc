@@ -1,0 +1,115 @@
+#include "windowTop.hh"
+#include <Aux/Transaction.h>
+#include <Aux/SQLerror.h>
+exec sql include sqlca;
+
+void windowTop::save_kunde()
+{
+/*
+  exec sql begin declare section;
+   char  IDNR[21], FIRMA[61], POSTANWVOR[41], STRASSE[36],
+        POSTANWNACH[41], HSNR[8], PLZ[11], POSTFACH[8],
+        POSTFPLZ[11], ORT[31], STAND[27], PREISLISTE[6],
+        NOTIZ[1001], SORTNAME[31], VEREIN[31], BANKBEI[28];
+   bool  BANKEINZUG,  LIEFERADRESSE,  RECHNUNGSADRESSE;
+   unsigned int  KUNDENNR,  FLAECHE,  MITARBEITER,  RECHNUNG_AN,  
+      KALKULATION,  SKONTOFRIST,  KTONR   ,BLZ   ;
+   float  PLANUMSATZ,  UMSATZ,  KUNDENUMSATZ,  RABATT   ;
+ exec sql end declare section;
+
+  KUNDENNR = kundendaten->Id();
+  snprintf (SORTNAME, sizeof(SORTNAME), "%s", kundendaten->sortname().c_str());
+  snprintf (FIRMA, sizeof(FIRMA), "%s", kundendaten->firma().c_str());
+  snprintf (POSTANWVOR, sizeof(POSTANWVOR), "%s", kundendaten->postanwvor().c_str());
+  snprintf (STRASSE, sizeof(STRASSE), "%s", kundendaten->strasse().c_str());
+  snprintf (HSNR, sizeof(HSNR), "%s", kundendaten->hausnr().c_str());
+  snprintf (POSTANWNACH, sizeof(POSTANWNACH), "%s", kundendaten->postanwnach().c_str());
+  snprintf (PLZ, sizeof(PLZ), "%s", kundendaten->plz().c_str());
+  snprintf (ORT, sizeof(ORT), "%s", kundendaten->ort().c_str());
+  snprintf (POSTFACH, sizeof(POSTFACH), "%s", kundendaten->postfach().c_str());
+  snprintf (POSTFPLZ, sizeof(POSTFPLZ), "%s", kundendaten->postfachplz().c_str());
+  snprintf (IDNR, sizeof(IDNR), "%s", kundendaten->idnr().c_str());
+
+  FLAECHE = details.flaeche;
+  MITARBEITER = details.mitarbeiter;
+  PLANUMSATZ = details.planumsatz;
+  UMSATZ = details.umsatz;
+  RECHNUNG_AN = details.rchngan;
+  KUNDENUMSATZ = details.kundenumsatz;
+  KALKULATION = details.kalkulation;
+  RABATT = details.rabatt;
+  SKONTOFRIST = details.skontofrist;
+  KTONR = details.bankkonto;
+  BLZ =   details.bankblz;
+  
+  snprintf (PREISLISTE, sizeof(PREISLISTE), "%s", details.preisliste.c_str());
+  snprintf (VEREIN, sizeof(VEREIN), "%s", details.verein.c_str());
+  BANKEINZUG = details.bankeinzug;
+  snprintf (BANKBEI, sizeof(BANKBEI), "%s", details.bankbei.c_str());
+  LIEFERADRESSE = details.lieferadresse;
+  RECHNUNGSADRESSE = details.rechnungsadresse;
+  RECHNUNG_AN = details.rchngan;
+  snprintf (NOTIZ, sizeof(NOTIZ), "%s", details.notiz.c_str());
+  if (details.stand != "") details.stand = "now";
+  snprintf (STAND, sizeof(STAND), "%s", details.stand.c_str());
+
+  exec sql update  kunden set 
+      sortname = :SORTNAME ,
+      postanwvor = :POSTANWVOR ,
+      strasse = :STRASSE,
+      hsnr = :HSNR,
+      postanwnach = :POSTANWNACH,
+      plz = :PLZ,
+      ort = :ORT,
+      postfach = :POSTFACH,
+      postfplz = :POSTFPLZ,
+      idnr = :IDNR,
+      flaeche = :FLAECHE,
+      mitarbeiter = :MITARBEITER,
+      planumsatz = :PLANUMSATZ,
+      umsatz = :UMSATZ,
+      kundenumsatz = :KUNDENUMSATZ,
+      kalkulation = :KALKULATION,
+      rabatt = :RABATT,
+      skontofrist = :SKONTOFRIST,
+      preisliste = :PREISLISTE,
+      verein = :VEREIN,
+      bankeinzug = :BANKEINZUG,
+      ktonr = :KTONR,
+      blz = :BLZ,
+      bankbei = :BANKBEI,
+      lieferadresse = :LIEFERADRESSE,
+      rechnungsadresse = :RECHNUNGSADRESSE,
+      rechnung_an = :RECHNUNG_AN,
+      notiz = :NOTIZ,
+      stand = :STAND
+   where kundennr = :KUNDENNR ; 
+
+  SQLerror::test(__FILELINE__,100);
+  if (sqlca.sqlcode==100) windowTop::save_kunde_anlegen();
+*/
+}
+
+void windowTop::save_kunde_anlegen()
+{
+   exec sql begin declare section;
+      unsigned int KUNDENNR;
+      char *FIRMA;
+   exec sql end declare section;
+
+  KUNDENNR= kundendaten->Id();
+  FIRMA = (char*)kundendaten->firma().c_str();
+
+  Transaction tr;
+
+   exec sql insert into kunden (kundennr,firma)
+     values (:KUNDENNR, :FIRMA);
+   SQLerror::test(__FILELINE__":save_kunde_anlegen:");
+   
+  windowTop::save_kunde();
+
+  tr.commit();
+}
+
+
+

@@ -1,0 +1,32 @@
+// generated 2002/3/25 16:08:55 CET by thoma@Tiger.(none)
+// using glademm V0.6.4b_cvs
+//
+// newer (non customized) versions of this file go to kundendaten.cc_new
+
+// This file is for your program, I won't touch it again!
+
+#include <config.h>
+#include <gnome--/main.h>
+
+#include "windowTop.hh"
+#include "dialogInfo.hh"
+#include "dialogBestaetigen.hh"
+#include "dialogError.hh"
+#include "window_neue_Kundennummer.hh"
+#include "window_neue_bank_anlegen.hh"
+#include "window_Dialog_Bestaetigen.hh"
+
+int main(int argc, char **argv)
+{  
+   
+   Gnome::Main m(PACKAGE, VERSION, argc, argv);
+manage(new class windowTop());
+manage(new class dialogInfo());
+manage(new class dialogBestaetigen());
+manage(new class dialogError());
+manage(new class window_neue_Kundennummer());
+manage(new class window_neue_bank_anlegen());
+manage(new class window_Dialog_Bestaetigen());
+   m.run();
+   return 0;
+}
