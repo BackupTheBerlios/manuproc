@@ -23,9 +23,11 @@ class window_neue_Kundennummer : public window_neue_Kundennummer_glade
         friend class window_neue_Kundennummer_glade;
         void on_kundennr_activate();
         void on_firma_activate();
+        void on_name2_activate();
         void on_button_ok_clicked();
         void on_button_abbrechen_clicked();
    public:
-       window_neue_Kundennummer::window_neue_Kundennummer(windowTop* h);
+       window_neue_Kundennummer::window_neue_Kundennummer(windowTop* h,
+			Kundengruppe::ID kid);
 };
 #endif

@@ -5497,13 +5497,14 @@ anlegen</label>
 <widget>
   <class>GtkWindow</class>
   <name>window_neue_Kundennummer</name>
+  <border_width>5</border_width>
   <title>Vergabe einer neuen Kundennummer</title>
   <type>GTK_WINDOW_TOPLEVEL</type>
   <position>GTK_WIN_POS_NONE</position>
   <modal>False</modal>
-  <allow_shrink>False</allow_shrink>
+  <allow_shrink>True</allow_shrink>
   <allow_grow>True</allow_grow>
-  <auto_shrink>False</auto_shrink>
+  <auto_shrink>True</auto_shrink>
 
   <widget>
     <class>GtkVBox</class>
@@ -5514,8 +5515,8 @@ anlegen</label>
     <widget>
       <class>GtkTable</class>
       <name>table1</name>
-      <rows>3</rows>
-      <columns>2</columns>
+      <rows>4</rows>
+      <columns>1</columns>
       <homogeneous>False</homogeneous>
       <row_spacing>0</row_spacing>
       <column_spacing>0</column_spacing>
@@ -5526,44 +5527,14 @@ anlegen</label>
       </child>
 
       <widget>
-	<class>GtkLabel</class>
-	<name>label8</name>
-	<label>Kundennmmer</label>
-	<justify>GTK_JUSTIFY_CENTER</justify>
-	<wrap>False</wrap>
-	<xalign>0</xalign>
-	<yalign>0.5</yalign>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
+	<class>GtkFrame</class>
+	<name>frame80</name>
+	<label>Name / Firma</label>
+	<label_xalign>0</label_xalign>
+	<shadow_type>GTK_SHADOW_NONE</shadow_type>
 	<child>
 	  <left_attach>0</left_attach>
 	  <right_attach>1</right_attach>
-	  <top_attach>1</top_attach>
-	  <bottom_attach>2</bottom_attach>
-	  <xpad>5</xpad>
-	  <ypad>5</ypad>
-	  <xexpand>False</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>False</yfill>
-	</child>
-      </widget>
-
-      <widget>
-	<class>GtkLabel</class>
-	<name>label9</name>
-	<label>(Nur ändern, wenn sie genau wissen, was Sie tun)</label>
-	<justify>GTK_JUSTIFY_CENTER</justify>
-	<wrap>False</wrap>
-	<xalign>0</xalign>
-	<yalign>0.5</yalign>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
-	<child>
-	  <left_attach>1</left_attach>
-	  <right_attach>2</right_attach>
 	  <top_attach>2</top_attach>
 	  <bottom_attach>3</bottom_attach>
 	  <xpad>0</xpad>
@@ -5573,94 +5544,167 @@ anlegen</label>
 	  <xshrink>False</xshrink>
 	  <yshrink>False</yshrink>
 	  <xfill>True</xfill>
-	  <yfill>False</yfill>
+	  <yfill>True</yfill>
 	</child>
+
+	<widget>
+	  <class>GtkEntry</class>
+	  <name>entry_firma</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <can_focus>True</can_focus>
+	  <signal>
+	    <name>activate</name>
+	    <handler>on_firma_activate</handler>
+	    <last_modification_time>Sat, 12 Apr 2003 11:11:36 GMT</last_modification_time>
+	  </signal>
+	  <editable>True</editable>
+	  <text_visible>True</text_visible>
+	  <text_max_length>0</text_max_length>
+	  <text></text>
+	</widget>
       </widget>
 
       <widget>
-	<class>GtkEntry</class>
-	<name>entry_kundennr</name>
-	<cxx_visibility>protected</cxx_visibility>
-	<can_focus>True</can_focus>
-	<signal>
-	  <name>activate</name>
-	  <handler>on_kundennr_activate</handler>
-	  <last_modification_time>Tue, 05 Jun 2001 13:12:08 GMT</last_modification_time>
-	</signal>
-	<editable>True</editable>
-	<text_visible>True</text_visible>
-	<text_max_length>0</text_max_length>
-	<text></text>
+	<class>GtkFrame</class>
+	<name>frame79</name>
+	<label>neue Nummer</label>
+	<label_xalign>0</label_xalign>
+	<shadow_type>GTK_SHADOW_NONE</shadow_type>
 	<child>
-	  <left_attach>1</left_attach>
-	  <right_attach>2</right_attach>
+	  <left_attach>0</left_attach>
+	  <right_attach>1</right_attach>
 	  <top_attach>1</top_attach>
 	  <bottom_attach>2</bottom_attach>
-	  <xpad>5</xpad>
-	  <ypad>5</ypad>
-	  <xexpand>True</xexpand>
-	  <yexpand>False</yexpand>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
+	  <xexpand>False</xexpand>
+	  <yexpand>True</yexpand>
 	  <xshrink>False</xshrink>
 	  <yshrink>False</yshrink>
 	  <xfill>True</xfill>
-	  <yfill>False</yfill>
+	  <yfill>True</yfill>
 	</child>
+
+	<widget>
+	  <class>GtkVBox</class>
+	  <name>vbox10</name>
+	  <homogeneous>False</homogeneous>
+	  <spacing>0</spacing>
+
+	  <widget>
+	    <class>GtkEntry</class>
+	    <name>entry_kundennr</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <can_focus>True</can_focus>
+	    <signal>
+	      <name>activate</name>
+	      <handler>on_kundennr_activate</handler>
+	      <last_modification_time>Tue, 05 Jun 2001 13:12:08 GMT</last_modification_time>
+	    </signal>
+	    <editable>True</editable>
+	    <text_visible>True</text_visible>
+	    <text_max_length>0</text_max_length>
+	    <text></text>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>False</fill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkLabel</class>
+	    <name>label9</name>
+	    <label>Nur ändern, wenn sie genau wissen, was Sie tun</label>
+	    <justify>GTK_JUSTIFY_CENTER</justify>
+	    <wrap>False</wrap>
+	    <xalign>0.5</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <child>
+	      <padding>0</padding>
+	      <expand>True</expand>
+	      <fill>True</fill>
+	    </child>
+	  </widget>
+	</widget>
       </widget>
 
       <widget>
-	<class>GtkLabel</class>
-	<name>label10</name>
-	<label>Firma</label>
-	<justify>GTK_JUSTIFY_CENTER</justify>
-	<wrap>False</wrap>
-	<xalign>0</xalign>
-	<yalign>0.5</yalign>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
+	<class>GtkFrame</class>
+	<name>frame81</name>
+	<label>Vorname / Name2</label>
+	<label_xalign>0</label_xalign>
+	<shadow_type>GTK_SHADOW_NONE</shadow_type>
+	<child>
+	  <left_attach>0</left_attach>
+	  <right_attach>1</right_attach>
+	  <top_attach>3</top_attach>
+	  <bottom_attach>4</bottom_attach>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
+	  <xexpand>False</xexpand>
+	  <yexpand>True</yexpand>
+	  <xshrink>False</xshrink>
+	  <yshrink>False</yshrink>
+	  <xfill>True</xfill>
+	  <yfill>True</yfill>
+	</child>
+
+	<widget>
+	  <class>GtkEntry</class>
+	  <name>entry_name2</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <can_focus>True</can_focus>
+	  <signal>
+	    <name>activate</name>
+	    <handler>on_name2_activate</handler>
+	    <last_modification_time>Sat, 12 Apr 2003 11:12:01 GMT</last_modification_time>
+	  </signal>
+	  <editable>True</editable>
+	  <text_visible>True</text_visible>
+	  <text_max_length>0</text_max_length>
+	  <text></text>
+	</widget>
+      </widget>
+
+      <widget>
+	<class>GtkFrame</class>
+	<name>gruppe</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<label>Gruppe</label>
+	<label_xalign>0</label_xalign>
+	<shadow_type>GTK_SHADOW_NONE</shadow_type>
 	<child>
 	  <left_attach>0</left_attach>
 	  <right_attach>1</right_attach>
 	  <top_attach>0</top_attach>
 	  <bottom_attach>1</bottom_attach>
-	  <xpad>5</xpad>
+	  <xpad>0</xpad>
 	  <ypad>0</ypad>
 	  <xexpand>False</xexpand>
-	  <yexpand>False</yexpand>
+	  <yexpand>True</yexpand>
 	  <xshrink>False</xshrink>
 	  <yshrink>False</yshrink>
 	  <xfill>True</xfill>
-	  <yfill>False</yfill>
+	  <yfill>True</yfill>
 	</child>
-      </widget>
 
-      <widget>
-	<class>GtkEntry</class>
-	<name>entry_firma</name>
-	<cxx_visibility>protected</cxx_visibility>
-	<can_focus>True</can_focus>
-	<signal>
-	  <name>activate</name>
-	  <handler>on_firma_activate</handler>
-	  <last_modification_time>Tue, 05 Jun 2001 13:42:57 GMT</last_modification_time>
-	</signal>
-	<editable>True</editable>
-	<text_visible>True</text_visible>
-	<text_max_length>0</text_max_length>
-	<text></text>
-	<child>
-	  <left_attach>1</left_attach>
-	  <right_attach>2</right_attach>
-	  <top_attach>0</top_attach>
-	  <bottom_attach>1</bottom_attach>
-	  <xpad>5</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>True</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>False</yfill>
-	</child>
+	<widget>
+	  <class>Custom</class>
+	  <name>custom3</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <signal>
+	    <name>activate</name>
+	    <handler>on_gruppenwahl_activate</handler>
+	    <last_modification_time>Thu, 17 Oct 2002 00:21:03 GMT</last_modification_time>
+	  </signal>
+	  <creation_function>Optionmenu_Kundengruppe</creation_function>
+	  <int1>0</int1>
+	  <int2>0</int2>
+	  <last_modification_time>Thu, 17 Oct 2002 00:20:15 GMT</last_modification_time>
+	</widget>
       </widget>
     </widget>
 
@@ -5682,6 +5726,7 @@ anlegen</label>
 	<class>GtkButton</class>
 	<name>button_ok</name>
 	<width>100</width>
+	<cxx_visibility>protected</cxx_visibility>
 	<can_focus>True</can_focus>
 	<signal>
 	  <name>clicked</name>
@@ -5711,6 +5756,7 @@ anlegen</label>
 	<name>button_abbrechen</name>
 	<width>100</width>
 	<can_focus>True</can_focus>
+	<has_focus>True</has_focus>
 	<signal>
 	  <name>clicked</name>
 	  <handler>on_button_abbrechen_clicked</handler>

@@ -11,19 +11,24 @@
 
 void window_neue_Kundennummer::on_kundennr_activate()
 {   
-  on_button_ok_clicked();
+ entry_firma->grab_focus();
 }
 
 void window_neue_Kundennummer::on_firma_activate()
 {   
-  on_button_ok_clicked();
+ entry_name2->grab_focus();
+}
+
+void window_neue_Kundennummer::on_name2_activate()
+{  
+ button_ok->grab_focus();
 }
 
 void window_neue_Kundennummer::on_button_ok_clicked()
 {   
- Kunde K(Kunde::none_id);
  int kid = atoi(entry_kundennr->get_text().c_str());
- K.newKunde(kid,entry_firma->get_text()); 
+ K.newKunde(kid,entry_firma->get_text(),entry_name2->get_text(),
+ 		gruppe->get_value()); 
  hauptfenster->neue_kundennmmer(kid);
  destroy();
 }
@@ -33,10 +38,9 @@ void window_neue_Kundennummer::on_button_abbrechen_clicked()
   destroy();
 }
 
-window_neue_Kundennummer::window_neue_Kundennummer(windowTop* h)
+window_neue_Kundennummer::window_neue_Kundennummer(windowTop* h,
+		Kundengruppe::ID kid)
 {
  hauptfenster=h;
- Kunde K(Kunde::none_id);
- unsigned int nextval = K.nextval();
- entry_kundennr->set_text(itos(nextval));
+ entry_kundennr->set_text(itos(Kunde::nextval()));
 }
