@@ -1,4 +1,4 @@
-## $Id: configure.in,v 1.1 2003/01/06 15:07:32 christof Exp $
+## $Id: configure.in,v 1.2 2003/04/09 08:55:10 christof Exp $
 #
 # process this file with GNU autoconf to produce a configure script.
 #
@@ -24,7 +24,7 @@ PKG_CHECK_MODULES(GTK,[gtk+-2.0 >= 2.0.5])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
-AM_CONDITIONAL(INSTALL_WIDGET, test ! -r ../src/SearchCombo.gen_h )
+#AM_CONDITIONAL(INSTALL_WIDGET, test ! -r ../src/SearchCombo.gen_h )
 
 AC_OUTPUT(Makefile src/Makefile tests/Makefile )
 
