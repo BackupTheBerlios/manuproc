@@ -694,8 +694,11 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
          if (!analyse_only) ae.setStatus(OPEN,true,true,false);
       }
    }
-   else if (ae.Instanz()!=ppsInstanzID::Kundenauftraege 
-   	&& ae.getGeliefert()>ae.getStueck())
+   else if (ae.Instanz()!=ppsInstanzID::Kundenauftraege &&
+	    ae.getGeliefert()>ae.getStueck() &&
+	     (!ae.Instanz()->ExterneBestellung() || 
+	      ae.Id() < AuftragBase::handplan_id )
+	   )
    {  alles_ok=false;
       analyse("Geliefert muss kleiner gleich bestellt sein.",ae,ae.getGeliefert(),ae.getStueck());
       if (!analyse_only) 
