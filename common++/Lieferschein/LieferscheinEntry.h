@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.29 2004/01/14 20:10:06 jacek Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.30 2004/02/03 12:25:38 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,6 +27,7 @@
 #include <Auftrag/AufEintragBase.h>
 #include <Misc/fixedpoint.h>
 #include <Misc/compiler_ports.h>
+#include <Auftrag/auftrag_status.h>
 
 class Lieferschein;
 
@@ -36,7 +37,8 @@ class LieferscheinEntry : public LieferscheinEntryBase
  int stueck;
  mengen_t menge;
  int palette;
-
+ AufStatVal status;
+ 
 public:
  struct st_AufEintragMenge{AufEintragBase aeb; AuftragBase::mengen_t menge;
         st_AufEintragMenge()  {};
@@ -58,7 +60,7 @@ private:
    mengen_t Abschreibmenge(int stueck,mengen_t menge) const;
 
 public:
- 	LieferscheinEntry() : stueck(0),palette(0) {};
+ 	LieferscheinEntry() : stueck(0),palette(0),status((AufStatVal)NOSTAT) {};
  	LieferscheinEntry(const LieferscheinEntryBase &lsbase) throw(SQLerror);
 private:
   friend class Lieferschein;
@@ -78,6 +80,7 @@ public:
  int Palette() const { return palette; }
  const ArtikelBase::ID ArtikelID() const { return artikel.Id(); }
  const ArtikelBase Artikel() const { return artikel; }
+ const AufStatVal Status() const { return status; }
  
  const zusaetze_t &getZusatzInfos() const {return VZusatz;}
  // nach Aufträgen summiert (nicht nach Zeilen getrennt)

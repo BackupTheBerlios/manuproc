@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.44 2004/01/14 20:10:06 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.45 2004/02/03 12:25:38 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -207,12 +207,15 @@ void LieferscheinEntry::ZusaetzeLaden()
 FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry& z)
 {bool zusatzinfo;
  AufEintragBase refauftrag;
+ int status;
  is >> z.lieferid >> z.zeilennr >> z.artikel 
  	>> FetchIStream::MapNull(z.stueck)
  	>> FetchIStream::MapNull(z.menge) 
  	>> FetchIStream::MapNull(z.palette)
      >> FetchIStream::MapNull(zusatzinfo) >> refauftrag 
-     >> FetchIStream::MapNull(z.lagerid,1);
+     >> FetchIStream::MapNull(z.lagerid,FertigWarenLager::default_lagerid)
+     >> FetchIStream::MapNull(status,(AufStatVal)NOSTAT);
+ z.status=(AufStatVal)status;
  z.instanz=refauftrag.Instanz();
  // eliminate the valid Instanz
  if (!refauftrag) refauftrag=AufEintragBase();
@@ -232,7 +235,7 @@ LieferscheinEntry::LieferscheinEntry(const LieferscheinEntryBase &lsbase)
 {
   (Query("select lfrsid, zeile,artikelid, stueck, "
 	  " menge, palette, zusatzinfo, instanz, refauftragid, refzeilennr,"
-	  " lagerid "
+	  " lagerid, status "
 	  " from lieferscheinentry ly "
 	  " where (instanz,lfrsid,zeile) = (?,?,?)")
  	<< *this
@@ -251,6 +254,7 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
  LE.stueck=anzahl;
  LE.menge=_menge;
  LE.palette=_palette;
+ LE.status=(AufStatVal)UNCOMMITED;
  if (!_zusatzinfo) LE.VZusatz.push_back(st_AufEintragMenge(auf,LE.menge));
 
  Transaction tr;
@@ -265,7 +269,7 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
 
  Query("insert into lieferscheinentry"
  		"(instanz,lfrsid,zeile, artikelid, refauftragid,refzeilennr, stueck,"
-		"menge,palette,zusatzinfo,lagerid)"
+		"menge,palette,zusatzinfo,lagerid,status)"
  	"values (?,?,?, ?, ?,?, ?,?,?,?,?)").lvalue()
  	<< LE << art.Id() 
  	<< Query::NullIf(auf.Id(),AufEintragBase::none_id)
@@ -273,7 +277,8 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
  	<< LE.Stueck() 
  	<< Query::NullIf(LE.Menge(),0)
  	<< LE.Palette() << _zusatzinfo
-	<< LE.lagerid;
+	<< LE.lagerid
+	<< Query::NullIf(LE.status,(AufStatVal)NOSTAT);
  SQLerror::test(__FILELINE__":LieferscheinEntry: insert into lieferscheinentry");
  
  tr.commit();
