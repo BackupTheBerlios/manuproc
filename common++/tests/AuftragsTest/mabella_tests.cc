@@ -39,21 +39,34 @@ static bool Lieferschein_Kunde(AufEintrag &AE)
 
 	AufEintragBase AEB(EINKAUF,0,1);
 	AufEintrag AE(AEB);
-        AE.Planen(15,auftrag,DATUM);
+        AE.Planen(5,auftrag,DATUM);
         AufEintragBase AEB2(EINKAUF,auftrag.Id(),1);
 
        Lieferschein liefs(EINKAUF,cH_Kunde(LIEFERANT));
 	AufEintrag ae(AEB2);
-       liefs.push_back(ae,ARTIKEL_TRIO,15);
+       liefs.push_back(ae,ARTIKEL_TRIO,5);
        vergleichen(Check::Menge|Check::Lieferschein,"LS_Einkauf","Lieferschein im Einkauf (Mabella) anlegen","VE");
 	}
 
 	{
-       Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
-       liefs.push_back(AE,ARTIKEL_TRIO,12);
-       vergleichen(Check::Lieferschein|Check::Menge,"LS_volllieferung","Lieferschein mit Volllieferung (Mabella) anlegen","V");
+       AufEintragBase auf2=AuftragsVerwaltung().anlegen2();
+	AufEintragBase aeb2(KUNDENINSTANZ,auf2.Id(),1);
+	 AufEintrag ae2(aeb2);
+
+       Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE2));
+       liefs.push_back(ae2,ARTIKEL_TRIO,8);
+	}
+       vergleichen(Check::Lieferschein|Check::Menge,"LS_volllieferung1","Lieferschein mit Volllieferung (Mabella) anlegen","V1");
+	
+/*	{
+       AufEintragBase AEB(KUNDENINSTANZ,30000,1);
+	AufEintrag AE(AEB);
+       Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE));
+       liefs.push_back(AE,ARTIKEL_TRIO,2);
 	}
 
+       vergleichen(Check::Lieferschein|Check::Menge,"LS_volllieferung2","Lieferschein mit Volllieferung (Mabella) anlegen","V2");
+*/
        return true;
 }
 
