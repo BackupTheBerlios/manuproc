@@ -1,4 +1,4 @@
-// $Id: auto_conversion.cc,v 1.10 2003/03/13 08:50:40 christof Exp $
+// $Id: auto_conversion.cc,v 1.11 2003/05/14 11:12:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -77,6 +77,8 @@ void ManuProC::Datum::from_auto(const char *datum,const char **endptr) throw(Dat
     }
 #endif    
     else throw Formatfehler();
+    // conditional?
+    if (jahr<100) { jahr+=1900; if (jahr<1950) jahr+=100; }
     teste();
 }
 
