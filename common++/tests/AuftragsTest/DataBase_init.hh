@@ -1,4 +1,4 @@
-// $Id: DataBase_init.hh,v 1.2 2002/06/27 07:42:51 christof Exp $
+// $Id: DataBase_init.hh,v 1.3 2002/11/25 15:21:52 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -48,6 +48,7 @@
 #define ACETAT_RESTE_KG 3
 
 #define KUPFER_LAGERPLATZ "07D3"
+#define KUPFER_LAGERPLATZ2 "07D4"
 #define KUPFER_KARTONS 2
 #define KUPFER_KG_PRO_KARTON 10
 #define KUPFER_RESTE 3

@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.7 2002/11/22 15:31:05 christof Exp $ */
+/* $Id: Lager.h,v 1.8 2002/11/25 15:21:52 thoma Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -67,38 +67,44 @@ class LagerInhalt
 };
 
 
-class Lager : public cH_ppsInstanz
+class LagerBase : public cH_ppsInstanz
 {
+   public:
+      /// Datum für freie Lagermengen (Aufträge)
+      static ManuProC::Datum Lagerdatum() {return ManuProC::Datum(ManuProC::Datum(1,1,1970));}
    private:
-
       virtual std::vector<class LagerInhalt> LagerInhalt_(const ArtikelBase& artikel)
         const {assert(!"Nicht implementiert für Lager ohne eigene Tabelle");abort();} 
 
-   public:
-      Lager(ppsInstanz::ID instanz) : cH_ppsInstanz(instanz) {}
-      Lager(cH_ppsInstanz  instanz) : cH_ppsInstanz(instanz) {}
+     // die folgenden Methoden müssen einlagern können
+     friend void AufEintrag::setInstanzen(const AufStatVal newstatus,const int uid,const Petig::Datum &lieferdate,const mengen_t &Menge,const int myznr,const int yourznr);
+     friend void ppsInstanz::rekursion(ManuProC::st_produziert &P) const;
 
-      virtual ~Lager(){}
+   protected:
+//      LagerBase(ppsInstanz::ID instanz) : cH_ppsInstanz(instanz) {}
+      LagerBase(cH_ppsInstanz  instanz) : cH_ppsInstanz(instanz) {}
+
+      virtual ~LagerBase(){}
 
    public:
       std::vector<class LagerInhalt> LagerInhalt() const ;
       // Faßt gleiche Artikel des Vektors zusammenen:
       static void LagerInhaltSum(std::vector<class LagerInhalt>& LI);
       class LagerInhalt LagerInhalt(const ArtikelBase& artikel) const ;
-      bool dispo_auftrag_aendern(ArtikelBase artikel,AuftragBase::mengen_t menge);
 
-//   protected:
-      void rein_ins_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int uid);
-      void raus_aus_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int uid);
-   public:
-      /// Datum für freie Lagermengen (Aufträge)
-      static ManuProC::Datum Lagerdatum() {return ManuProC::Datum(ManuProC::Datum(1,1,1970));}
-
-      void menge_neu_verplanen(int uid,
-                  const ArtikelBase& artikel,AuftragBase::mengen_t menge,
-                  const ManuProC::Auftrag::Action reason) throw(SQLerror);
-
+   protected:
+     void rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const;
+     void raus_aus_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const;
 };
 
+class Lager : LagerBase
+{
+  public:  
+      Lager(cH_ppsInstanz  instanz) ;
+      void rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const 
+         {LagerBase::rein_ins_lager(artikel,menge,uid);}
+      void raus_aus_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const
+         {LagerBase::raus_aus_lager(artikel,menge,uid);}
+};
 #endif
 

@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.29 2002/11/22 15:31:05 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.30 2002/11/25 15:21:52 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -180,7 +180,7 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
 }
 
 
-void AufEintrag::setInstanzen(AufStatVal newstatus,int uid,Petig::Datum lieferdate,mengen_t Menge,int myznr,int yourznr)
+void AufEintrag::setInstanzen(const AufStatVal newstatus,const int uid,const Petig::Datum &lieferdate,const mengen_t &Menge,const int myznr,const int yourznr)
 {
  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Status=",newstatus,"Menge=",Menge,"MyZNr=",myznr,"YourZNr=",yourznr);
  std::list<AufEintragZu::st_reflist> KindListe = AufEintragZu(*this).get_Referenz_list(*this,true);
@@ -225,7 +225,7 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,int uid,Petig::Datum lieferda
    if(instanz->LagerInstanz() && Id()==plan_auftrag_id && 
        (newstatus==STORNO || Mauftrag < 0 ))
     {
-      Lager L(instanz);
+      LagerBase L(instanz);
       L.rein_ins_lager(ArtId(),Mauftrag,uid);
     }
    AE.setInstanzen(newstatus,uid,lieferdate,Mauftrag,znr,newznr);

@@ -189,16 +189,15 @@ cout << "\tDispo abziehne "<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<me
 cout << "Endmenge: "<<menge<<'\n';
 
      if(menge!=0 && !set_dispo_to_zero) 
-         DispoAuftraege_anlegen(i->Artikel(),menge);
+         DispoAuftraege_anlegen(uid,i->Artikel(),menge);
    }
 }   
 
 
-void ppsInstanz::DispoAuftraege_anlegen(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge) const
+void ppsInstanz::DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const AuftragBase::mengen_t &menge) const
 {
-   AuftragBase da(this,AuftragBase::dispo_auftrag_id);
-//  da.create_if_not_exists(OPEN);
-   bool alt=Lager(*this).dispo_auftrag_aendern(artikel,menge);  
+//   AuftragBase da(this,AuftragBase::dispo_auftrag_id);
+   bool alt=AuftragBase::dispo_auftrag_aendern(uid,this,artikel,menge);  
    const std::string ab=cH_ArtikelBezeichnung(artikel)->Bezeichnung();
    if(alt) std::cout << "Update von "<<ab<<"\tum "<<menge<<'\n';
    else    std::cout << "Neuanlegen von "<<ab<<"\tmit "<<menge<<'\n';
@@ -217,6 +216,6 @@ std::vector<LagerInhalt> ppsInstanz::getLagerInhalt() const
    { cout << Name()<<' '<<Id()<<' '<<ID()<<'\n';
      assert (!"Lager nicht implementiert\n");
    }
-  Lager::LagerInhaltSum(LI);
+  LagerBase::LagerInhaltSum(LI);
   return LI;
 }

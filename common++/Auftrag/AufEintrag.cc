@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.14 2002/11/22 15:31:05 christof Exp $
+// $Id: AufEintrag.cc,v 1.15 2002/11/25 15:21:52 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -175,9 +175,9 @@ void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,M
      {
       mengen_t mt=i->AEB.updateStkDiffBase__(uid,-M);
 
-      ::Lager L(Instanz()->Id());
-      L.dispo_auftrag_aendern(Artikel(),M);
-      L.menge_neu_verplanen(uid,Artikel(),M,reason);
+//      Lager L(Instanz()->Id());
+      dispo_auftrag_aendern(uid,Instanz(),Artikel(),M);
+      menge_neu_verplanen(uid,Instanz(),Artikel(),M,reason);
 
       assert(mt==mengen_t(-M));
      }

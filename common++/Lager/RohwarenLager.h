@@ -1,4 +1,4 @@
-/* $Id: RohwarenLager.h,v 1.5 2002/09/02 13:04:04 christof Exp $ */
+/* $Id: RohwarenLager.h,v 1.6 2002/11/25 15:21:52 thoma Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -22,7 +22,7 @@
 
 #include "Lager.h"
 
-class RohwarenLager : public Lager
+class RohwarenLager : public LagerBase
 {
    public:
       enum RL_LogTyp { RLNone, RLEntnehmen='E', RLEinlagern='L' };
@@ -39,26 +39,21 @@ class RohwarenLager : public Lager
 
    private:
 
-      void RL_Log(const st_rohlager& rohlager,RL_LogTyp typ,const std::string& misc="");
+      void RL_Log(const st_rohlager& rohlager,RL_LogTyp typ,const int uid,const std::string& misc="");
       virtual std::vector<class LagerInhalt> LagerInhalt_(const ArtikelBase& artikel) const;
 
    public:
 #if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
-      RohwarenLager() : Lager(ppsInstanzID::Rohwarenlager) {}
+      RohwarenLager() : LagerBase(ppsInstanzID::Rohwarenlager) {}
 #else
-      RohwarenLager() : Lager(ppsInstanz::default_id) {}
+      RohwarenLager() : LagerBase(ppsInstanz::default_id) {}
 #endif
 
       st_rohlager RL_Inhalt(const LagerPlatz position) const;
       // force legt fest, ob ein bestehender Inhalt überschrieben weren soll
       // defautmäßig wird nur dann eingelagert, wenn die Lagerposition leer ist.
-      // Damit die 2er Aufträge in 'auftragsentry' aktuell bleiben müßte
-      // beim Einlagern für den Rückgabewert 'true' noch 'rein_ins_lager()' 
-      // aufgerufen werden, aber das machen momentan die Lieferscheine.
-      // beim Auslagern wird 'auftragsentry' durch 'RL_Log()' verwaltet.
-      // aufgerufen werden
-      bool RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager,std::string &os,bool force=false);
-      bool RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force=false,bool ist_leer=false);
+      bool RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager,const int uid,std::string &os,bool force=false);
+      bool RL_Entnahme(st_rohlager& rohlager,const int uid,std::string &os,bool force=false,bool ist_leer=false);
 };
 
 #endif

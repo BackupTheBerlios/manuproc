@@ -1,4 +1,4 @@
-/* $Id: JumboLager.h,v 1.5 2002/11/22 15:31:05 christof Exp $ */
+/* $Id: JumboLager.h,v 1.6 2002/11/25 15:21:52 thoma Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -24,7 +24,7 @@
 #include "JumboRolle.h"
 
 
-class JumboLager : public Lager
+class JumboLager : public LagerBase
 {
   public:
       enum Jumbo_LogTyp {None, Umraeumen='1',SchonDraussen='2',
@@ -36,61 +36,19 @@ class JumboLager : public Lager
 
   private:
       static const float reste_faktor = 0.3;
-/*
-      struct st_menge_sortiert{LagerPlatz position; int meter; int rollen;     
-                               int restmeter;int restrollen;int gesamtmeter;   
-             st_menge_sortiert(LagerPlatz p, int m, int r,int rm,int rr,int gm)
-               :position(p),meter(m),rollen(r),
-                  restmeter(rm),restrollen(rr),gesamtmeter(gm) {}
-            };
-      struct st_wo_ist_wieviel{LagerPlatz position;int meter;bool rest;int code;
-             st_wo_ist_wieviel(LagerPlatz p,int m,bool r, int c)
-              :position(p),meter(m),rest(r),code(c){}};
-      struct st_wo_ist_wieviel_rest{int volleRollen;
-               int volleRollenMeter; int restRollen; int restRollenMeter;
-               int GesamtGewichtetMeter;
-             st_wo_ist_wieviel_rest()
-               :volleRollen(0),volleRollenMeter(0),restRollen(0),
-                  restRollenMeter(0),GesamtGewichtetMeter(0) {}
-               void add_volleRolle() {++volleRollen;}
-               void add_volleRolleMeter(int i) {volleRollenMeter+=i;}
-               void add_restRolle() {++volleRollen;}
-               void add_restRolleMeter(int i) {restRollenMeter+=i;}  
-               void add_gesamtMeter(int i) {GesamtGewichtetMeter+=i;}
-            };
-*/
 
-      void Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string& user,const Zeitpunkt_new *zeit);
-//      std::vector<st_wo_ist_wieviel> getPosition(ArtikelBase artikel);
-//      std::map<LagerPlatz,st_wo_ist_wieviel_rest>  getPositionSorted(ArtikelBase artikel);
-
-/*
-      class Sort{
-           public:
-             Sort(){}
-             bool operator()(const st_menge_sortiert& x,const st_menge_sortiert& y) const
-               { return (x.restrollen<y.restrollen ||
-                        (x.restrollen==y.restrollen && x.rollen<y.rollen));}
-         };
-*/
+      void Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const int uid,const std::string& user,const Zeitpunkt_new *zeit);
       virtual std::vector<class LagerInhalt> LagerInhalt_(const ArtikelBase& artikel=ArtikelBase()) const;
 
   public:
 #if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
-      JumboLager() : Lager(ppsInstanzID::Bandlager) {}
+      JumboLager() : LagerBase(ppsInstanzID::Bandlager) {}
 #else
-	JumboLager() : Lager(ppsInstanzID::None) {}      
+	JumboLager() : LagerBase(ppsInstanzID::None) {}      
 #endif
 
-      void Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string& user,const Zeitpunkt_new *zeit=0);
-      void Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string& user,const Zeitpunkt_new *zeit=0);
-      //alle Codes für eine Lagerposition
-//      std::vector<int> Jumbo_Inhalt(const LagerPlatz position) const;
-//      std::list<JumboLager::st_menge_sortiert>  getMengeSorted(ArtikelBase artikel);
-      //Lagerinhalt
-//      virtual std::vector<class LagerInhalt> LagerInhalt();
-//      class LagerInhalt LagerInhalt(const ArtikelBase& artikel);
-
+      void Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jumbo_LogTyp typ,const int uid,const std::string& user,const Zeitpunkt_new *zeit=0);
+      void Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,const int uid,const std::string& user,const Zeitpunkt_new *zeit=0);
 };
 
 #endif

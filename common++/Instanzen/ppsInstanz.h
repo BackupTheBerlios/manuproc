@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.11 2002/11/22 15:31:05 christof Exp $
+// $Id: ppsInstanz.h,v 1.12 2002/11/25 15:21:52 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -143,7 +143,7 @@ public:
 
       std::vector<LagerInhalt> getLagerInhalt() const;
       void vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt> &LI) const;
-      void DispoAuftraege_anlegen(const ArtikelBase &artikel,const fixedpoint<ManuProC::Precision::AuftragsMenge> &menge) const;
+      void DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const fixedpoint<ManuProC::Precision::AuftragsMenge> &menge) const;
       // 0er und 2er müssen immer offen sein
       void force_open_0er_und_2er() const throw(SQLerror);
       // Alle Aufträge außer Kundenaufträgen und externen Bestellungen 

@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.cc,v 1.6 2002/11/22 15:31:05 christof Exp $
+// $Id: ppsInstanzProduziert.cc,v 1.7 2002/11/25 15:21:52 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -164,7 +164,7 @@ void ppsInstanz::rekursion(ManuProC::st_produziert &P) const
        cH_ppsInstanz(EinlagernIn())->AutomatischEinlagern() &&
        !PlanungsInstanz())
      {
-       Lager L(EinlagernIn()); 
+       LagerBase L(EinlagernIn()); 
        L.rein_ins_lager(P.artikel,P.menge,P.uid);
      }
     else

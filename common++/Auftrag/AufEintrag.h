@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.19 2002/11/22 15:31:05 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.20 2002/11/25 15:21:52 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -47,7 +47,8 @@ class Lager;
 
 class AufEintrag : public AufEintragBase
 {
-     friend class Lager;
+//     friend class LagerBase;
+     friend class AuftragBase;
      friend FetchIStream &operator>>(FetchIStream &is, AufEintrag &ae);
 
 private: 
@@ -130,7 +131,9 @@ public:
  void setLetzteLieferung(const ManuProC::Datum &datum) throw(SQLerror);
  // Ist (uid!=0) wird lasteditdate verändert.
  void setStatus(AufStatVal newstatus,int uid,bool force=false) throw(SQLerror);		
- void setInstanzen(AufStatVal newstatus,int uid,ManuProC::Datum lieferdate,mengen_t part,int myznr=-1,int yourznr=-1);
+// void setInstanzen(AufStatVal newstatus,int uid,ManuProC::Datum lieferdate,mengen_t part,int myznr=-1,int yourznr=-1);
+ void setInstanzen(const AufStatVal newstatus,const int uid,const Petig::Datum &lieferdate,const mengen_t &Menge,const int myznr=-1,const int yourznr=-1);
+
  int split(int uid,mengen_t newmenge, const ManuProC::Datum &newld,bool dispoplanung=false) throw(SQLerror);
  mengen_t getStueck() const { return bestellt;}
  mengen_t getRestStk() const {if(entrystatus==CLOSED)return 0; return bestellt-geliefert;}

@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.7 2002/11/22 15:19:37 thoma Exp $
+// $Id: DataBase_init.cc,v 1.8 2002/11/25 15:21:52 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -80,13 +80,13 @@ void DataBase_init::ArtikelBaum_anlegen_execute(const ArtikelBase &art,
 
 void DataBase_init::RohwarenLager_initalisieren()
 {
+  LagerPlatz LP2=LagerPlatz(ppsInstanzID::Rohwarenlager,KUPFER_LAGERPLATZ);
+  RohwarenLager_initalisieren_execute(ARTIKEL_KUPFER,LP2,KUPFER_KARTONS,KUPFER_KG_PRO_KARTON,KUPFER_RESTE,KUPFER_RESTE_KG);
   LagerPlatz LP(ppsInstanzID::Rohwarenlager,ACETAT_LAGERPLATZ);
   RohwarenLager_initalisieren_execute(ARTIKEL_ACETAT,LP,ACETAT_KARTONS,ACETAT_KG_PRO_KARTON,ACETAT_RESTE,ACETAT_RESTE_KG);
-  LP=LagerPlatz(ppsInstanzID::Rohwarenlager,KUPFER_LAGERPLATZ);
-  RohwarenLager_initalisieren_execute(ARTIKEL_KUPFER,LP,KUPFER_KARTONS,KUPFER_KG_PRO_KARTON,KUPFER_RESTE,KUPFER_RESTE_KG);
 
-  std::string com="../../Programme/adjust_store -d testdb -a A -i "+itos(ppsInstanzID::Rohwarenlager);
-  system(com.c_str());
+//  std::string com="../../Programme/adjust_store -d testdb -a A -i "+itos(ppsInstanzID::Rohwarenlager);
+//  system(com.c_str());
 }
 
 void DataBase_init::RohwarenLager_initalisieren_execute(const ArtikelBase &artikel,
@@ -101,7 +101,7 @@ void DataBase_init::RohwarenLager_initalisieren_execute(const ArtikelBase &artik
   RohwarenLager::st_rohlager rohlager(LP,kartons,kg_pro_karton,reste,kg_reste,
                                       artikel,ManuProC::Datum().today());
 #ifdef MIT_ROHWARENLAGER
-  RL.RL_Einlagern(LP,rohlager,os,true);
+  RL.RL_Einlagern(LP,rohlager,UID,os,true);
   SQLerror::test(__FILELINE__);
 #endif
 }
@@ -127,12 +127,12 @@ void DataBase_init::JumboLager_initalisieren()
   assert(JR.size()==1);
   class JumboLager JL;
   Zeitpunkt_new zp("2002-1-1 12:00");
-  JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"testuser",&zp);
+  JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"testuser",&zp);
   SQLerror::test(__FILELINE__);
 #endif
 
-  std::string com="../../Programme/adjust_store -d testdb -a A -i "+itos(ppsInstanzID::Bandlager);
-  system(com.c_str());
+//  std::string com="../../Programme/adjust_store -d testdb -a A -i "+itos(ppsInstanzID::Bandlager);
+//  system(com.c_str());
 }
 
 #endif

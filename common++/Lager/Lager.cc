@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.17 2002/11/22 15:31:05 christof Exp $
+// $Id: Lager.cc,v 1.18 2002/11/25 15:21:52 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -18,35 +18,34 @@
  */
 
 #include "Lager.h"
-#ifdef PETIG_EXTENSIONS
-#include "JumboLager.h"
-#include "RohwarenLager.h"
-#endif
-#include <Auftrag/AufEintrag.h>
-#include <Auftrag/Auftrag.h>
-#include <Auftrag/AufEintragZu.h>
-#include <Auftrag/selFullAufEntry.h>
-#include <Instanzen/ppsInstanz.h>
 #include <Aux/Transaction.h>
-#include <Artikel/ArtikelStamm.h>
-#include <Artikel/ArtikelImLager.h>
 #include <algorithm>
-#include <unistd.h>
-#include <Aux/AdminProblems.h>
-//#include <Instanzen/Produziert.h>
 #include <Instanzen/ppsInstanzProduziert.h>
 #include <Misc/relops.h>
 #include <Misc/Trace.h>
 
-void Lager::rein_ins_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int uid)
+
+Lager::Lager(cH_ppsInstanz instanz)
+: LagerBase(instanz)
+{
+#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
+   if(instanz==ppsInstanzID::Rohwarenlager) 
+     assert(!"Use class 'RohwarenLager()' instead of 'Lager(ppsInstanzID::Rohwarenlager)'\n");
+   else if(instanz==ppsInstanzID::Bandlager)
+     assert(!"Use class 'JumboLager()' instead of 'Lager(ppsInstanzID::Bandlager)'\n");
+#endif        
+}
+
+
+void LagerBase::rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
      "Lager=",*this,"Artikel=",artikel,"Menge=",menge);
   assert(menge>=0);
   try{
      Transaction tr;
-     dispo_auftrag_aendern(artikel,menge);
-     menge_neu_verplanen(uid,artikel,menge,ManuProC::Auftrag::r_Produziert);     
+     AuftragBase::dispo_auftrag_aendern(uid,*this,artikel,menge);
+     AuftragBase::menge_neu_verplanen(uid,*this,artikel,menge,ManuProC::Auftrag::r_Produziert);     
 
      ManuProC::st_produziert sp(artikel,menge,uid);
      
@@ -61,7 +60,7 @@ void Lager::rein_ins_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int u
      { std::cout << e <<'\n';}
 }
 
-void Lager::raus_aus_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int uid)
+void LagerBase::raus_aus_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const 
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
      "Artikel=",artikel,"Menge=",menge);
@@ -76,29 +75,8 @@ void Lager::raus_aus_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int u
 }
 
 
-bool Lager::dispo_auftrag_aendern(ArtikelBase artikel,AuftragBase::mengen_t menge)
-{
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
-     "Artikel=",artikel,"Menge=",menge);
-   AuftragBase da(*this,AuftragBase::dispo_auftrag_id);
-   int znr=-1,newznr=-1;
-   AuftragBase::mengen_t oldmenge;
-   bool alt=da.existEntry(artikel,Lager::Lagerdatum(),znr,newznr,oldmenge,OPEN);
-   if(alt)
-     {
-      AuftragBase::mengen_t mt=AufEintragBase(da,znr).updateStkDiffBase__(getuid(),menge);
-      assert(mt==menge);
-     }
-   else
-     {
-      Auftrag A(da);
-      A.push_back(menge,Lager::Lagerdatum(),artikel,OPEN,getuid(),false);
-     }
-  return alt;
-}
-
-
-void Lager::menge_neu_verplanen(int uid,
+/*
+void LagerBase::menge_neu_verplanen(int uid,
               const ArtikelBase& artikel,AuftragBase::mengen_t menge,
               const ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
@@ -129,21 +107,21 @@ void Lager::menge_neu_verplanen(int uid,
      if(menge==AuftragBase::mengen_t(0)) return;
    }
 }
+*/
 
-
-std::vector<class LagerInhalt> Lager::LagerInhalt()  const
+std::vector<class LagerInhalt> LagerBase::LagerInhalt()  const
 {
   return LagerInhalt_(ArtikelBase());
 } 
   
-class LagerInhalt Lager::LagerInhalt(const ArtikelBase& artikel) const
+class LagerInhalt LagerBase::LagerInhalt(const ArtikelBase& artikel) const
 {
   std::vector<class LagerInhalt> L=LagerInhalt_(artikel);
   if(L.empty()) return class LagerInhalt(artikel,0,0,0,0);
   return *(L.begin());
 }
         
-void Lager::LagerInhaltSum(std::vector<class LagerInhalt>& LI) 
+void LagerBase::LagerInhaltSum(std::vector<class LagerInhalt>& LI) 
 {
   std::sort(LI.begin(),LI.end());  
   std::vector<class LagerInhalt>::iterator i,j,k;

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.37 2002/11/22 15:31:05 christof Exp $
+// $Id: AufEintragBase.h,v 1.38 2002/11/25 15:21:52 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -81,7 +81,8 @@ public:
             std::vector<AufEintrag> dispo_auftrag,
             AuftragBase::st_tryUpdateEntry st_bool=st_tryUpdateEntry()) const throw(SQLerror);
 private:
- friend class Lager;
+// friend class LagerBase;
+ friend class AuftragBase;
  void AufEintragBase::artikel_vormerken_oder_schnappen(bool schnappen,AuftragBase::mengen_t menge,
       const ArtikelBase &artikel,int uid,ManuProC::Auftrag::Action reason,
       std::vector<AufEintrag> dispo_auftrag) const ;

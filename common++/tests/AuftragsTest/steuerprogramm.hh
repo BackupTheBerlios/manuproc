@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.10 2002/11/22 15:19:37 thoma Exp $
+// $Id: steuerprogramm.hh,v 1.11 2002/11/25 15:21:52 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -41,6 +41,11 @@
 
 #define MIT_ROHWARENLAGER
 #define MIT_BANDLAGER
+#define LagerPlatzKupfer (LagerPlatz(ppsInstanzID::Rohwarenlager,KUPFER_LAGERPLATZ))
+#define LagerPlatzKupfer2 (LagerPlatz(ppsInstanzID::Rohwarenlager,KUPFER_LAGERPLATZ2))
+#define LagerPlatzAcetat (LagerPlatz(ppsInstanzID::Rohwarenlager,ACETAT_LAGERPLATZ))
+#define LagerPlatzJumbo (LagerPlatz(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ))
+
 #define ARTIKEL_ROLLEREI ArtikelBase(124555)
 #define ARTIKEL_FAERBEREI ArtikelBase(124551)
 #define ARTIKEL_BANDLAGER ArtikelBase(123755)

@@ -27,9 +27,12 @@ exec sql include sqlca;
 #include <Aux/itos.h>
 #include <unistd.h>
 #include <Misc/relops.h>
+#include <Misc/Trace.h>
 
-bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force,bool ist_leer)
+
+bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,const int uid,std::string &os,bool force,bool ist_leer)
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
   exec sql begin declare section;
    int KARTONS;
    int RESTE;
@@ -48,6 +51,7 @@ bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force
      os+="           an Position " +rohlager.position.SPosition()+" steht nichts";
      return false;
    }
+
   st_rohlager was_ist_drin = RL_Inhalt(rohlager.position);
   if(!force)
    {
@@ -77,6 +81,7 @@ bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force
             +itos(was_ist_drin.reste)+" Reste("+itos(was_ist_drin.reste_kg) + "kg)\n";
        }
     }
+
   std::string misc;
   if(ist_leer || force)
     {
@@ -100,14 +105,17 @@ bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force
        SQLerror::test(__FILELINE__);                  
     }
    rohlager.kg_pro_karton=was_ist_drin.kg_pro_karton;
-   if (force) RL_Log(was_ist_drin,RLEntnehmen,misc);
-   else       RL_Log(rohlager,RLEntnehmen,misc);
+
+#warning Christof, bist Du sicher, daß 'force' mit 'was_ist_drin' und nicht mit 'rohlager' gekoppelt werden muß?
+   if (force) RL_Log(was_ist_drin,RLEntnehmen,uid,misc);
+   else       RL_Log(rohlager,RLEntnehmen,uid,misc);
    return true;
 }
 
 
-bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager,std::string &os,bool force)
+bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager,const int uid,std::string &os,bool force)
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
   rohlager.setPosition(position);
 
   exec sql begin declare section;
@@ -133,7 +141,7 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
         values (:POSITION, :KARTONS, :MATERIAL, :KG_PER_KARTON,
               nullif(:RESTE,0), nullif(:RESTE_KG,0), :DATUM);
       SQLerror::test(__FILELINE__);
-      RL_Log(rohlager,RLEinlagern);
+      RL_Log(rohlager,RLEinlagern,uid);
       return true;
    }
   else  // ups, auf dieser Position liegt schon etwas
@@ -146,8 +154,8 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
            kg_per_karton=:KG_PER_KARTON, reste=nullif(:RESTE,0), 
            rest_kg=nullif(:RESTE_KG,0), eingelagert=:DATUM where position_=:POSITION;
         SQLerror::test(__FILELINE__);
-        RL_Log(was_ist_drin,RLEntnehmen,"lösc");
-        RL_Log(rohlager,RLEinlagern);
+        RL_Log(was_ist_drin,RLEntnehmen,uid,"lösc");
+        RL_Log(rohlager,RLEinlagern,uid);
         return true;
       }
      else // mal schauen ...
@@ -170,7 +178,7 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
                        reste=nullif(:RESTE,0), rest_kg=nullif(:RESTE_KG,0),
                         eingelagert=:DATUM where position_=:POSITION;
               SQLerror::test(__FILELINE__);
-              RL_Log(rohlager,RLEinlagern);
+              RL_Log(rohlager,RLEinlagern,uid);
               return true;
             }
            else 
@@ -196,8 +204,9 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
  assert(!" RohwarenLager::RL_Einlagern: Fehler");
 }
 
-void RohwarenLager::RL_Log(const st_rohlager& rohlager,RL_LogTyp typ,const std::string& misc)
+void RohwarenLager::RL_Log(const st_rohlager& rohlager,RL_LogTyp typ,const int uid,const std::string& misc)
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
   exec sql begin declare section;
    int KARTONS=rohlager.kartons;
    int KG_PER_KARTON=rohlager.kg_pro_karton;
@@ -232,17 +241,18 @@ void RohwarenLager::RL_Log(const st_rohlager& rohlager,RL_LogTyp typ,const std::
   ///////////////////////////////////////////////////////////////
   // Jetzt die Lagerbewegung mit den offenen Aufträgen verrechen.
   // Einlagern wird durch Lieferscheine geregelt.
-  if(typ==RLEntnehmen)
-   {
-     AuftragBase::mengen_t menge = rohlager.kartons*rohlager.kg_pro_karton 
+  AuftragBase::mengen_t menge = rohlager.kartons*rohlager.kg_pro_karton 
                                     + rohlager.reste_kg;
-     raus_aus_lager(rohlager.artikel,menge,getuid());
-   }
+  if(typ==RLEntnehmen)
+     raus_aus_lager(rohlager.artikel,menge,uid);
+ else if(typ==RLEinlagern)
+     rein_ins_lager(rohlager.artikel,menge,uid);
 }
 
 
 RohwarenLager::st_rohlager RohwarenLager::RL_Inhalt(const LagerPlatz position) const
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
   exec sql begin declare section;
    int KARTONS, KG_PER_KARTON, RESTE, RESTE_KG, MATERIAL;
    char POSITION[5];
@@ -270,6 +280,7 @@ RohwarenLager::st_rohlager RohwarenLager::RL_Inhalt(const LagerPlatz position) c
 
 std::vector<class LagerInhalt> RohwarenLager::LagerInhalt_(const ArtikelBase& artikel) const
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
   exec sql begin declare section;
    int KG, RESTE_KG, MATERIAL,KARTONS,RESTKARTONS;
    char QUERY[1024];

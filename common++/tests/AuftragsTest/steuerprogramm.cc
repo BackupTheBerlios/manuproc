@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.19 2002/11/22 15:19:37 thoma Exp $
+// $Id: steuerprogramm.cc,v 1.20 2002/11/25 15:21:52 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -25,6 +25,8 @@
 #include <Aux/dbconnect.h>
 #include <Aux/exception.h>
 #include <Lager/Lager.h>
+#include <Lager/RohwarenLager.h>
+#include <Lager/JumboLager.h>
 #include <Auftrag/Auftrag.h>
 #include <Instanzen/ppsInstanzProduziert.h>
 #include <Misc/Trace.h>
@@ -33,6 +35,7 @@
 // Jumbo
 #include <Ketten/KettplanKette.h>
 #include <Lager/JumboLager.h>
+#include <Lager/RohwarenLager.h>
 // Lieferschein
 #include <Lieferschein/Lieferschein.h>
 
@@ -185,6 +188,7 @@ int auftragstests(e_mode mode)
      }
     case Mengentest :
      {    
+
       // Menge des Auftrags erhöhen
       auftrag.kunden_bestellmenge_aendern(AEB,500);
       erfolgreich=C.teste(Check::Menge_Plus,mit_reparatur_programm);
@@ -247,7 +251,6 @@ int auftragstests(e_mode mode)
        int weberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Weberei,AuftragBase::ungeplante_id,weberei_znr));
 
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
 
        AEP.Planen(UID,5000,PA,PLANDATUM6);
        erfolgreich=C.teste(Check::Planen_WebereiP,mit_reparatur_programm);
@@ -264,33 +267,46 @@ int auftragstests(e_mode mode)
       erfolgreich=C.teste(Check::Split,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Splitten einer Auftragszeile \n\n";
                return fehler();}
-
 #ifdef PETIG_TEST
-      Lager RL((cH_ppsInstanz(ppsInstanzID::Rohwarenlager)));
-      RL.rein_ins_lager(ARTIKEL_KUPFER,100,UID);
+      RohwarenLager RL;
+      RohwarenLager::st_rohlager stRL(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
+      std::string dummystring;
+      RL.RL_Einlagern(LagerPlatzKupfer2,stRL,UID,dummystring);
+cout << dummystring<<'\n';
+//      RL.rein_ins_lager(ARTIKEL_KUPFER,100,UID);
       erfolgreich=C.teste(Check::Split_Rohwarenlager_einlagern,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Rohwarenlager einlagern\n";
                return fehler();}
 
-      RL.raus_aus_lager(ARTIKEL_KUPFER,100,UID);
+//      RL.raus_aus_lager(ARTIKEL_KUPFER,100,UID);
+      RohwarenLager::st_rohlager stRL2(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
+      RL.RL_Entnahme(stRL2,UID,dummystring);
+cout << dummystring<<'\n';
       erfolgreich=C.teste(Check::Split_Rohwarenlager_auslagern,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Rohwarenlager auslagern\n";
                return fehler();}
       cout << "Split-Test erfolgreich\n";
 #endif
-
       break;
      }
     case Lagertest :
      {    
 #ifdef PETIG_TEST
-      Lager RL((cH_ppsInstanz(ppsInstanzID::Rohwarenlager)));
-      RL.rein_ins_lager(ARTIKEL_KUPFER,100,UID);
+      RohwarenLager RL;
+      RohwarenLager::st_rohlager stRL(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
+      std::string dummystring;
+      RL.RL_Einlagern(LagerPlatzKupfer2,stRL,UID,dummystring);
+cout << dummystring<<'\n';
+//      Lager RL((cH_ppsInstanz(ppsInstanzID::Rohwarenlager)));
+//      RL.rein_ins_lager(ARTIKEL_KUPFER,100,UID);
       erfolgreich=C.teste(Check::Rohwarenlager_einlagern,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Rohwarenlager einlagern\n";
                return fehler();}
 
-      RL.raus_aus_lager(ARTIKEL_KUPFER,120,UID);
+//      RL.raus_aus_lager(ARTIKEL_KUPFER,120,UID);
+      RohwarenLager::st_rohlager stRL2(LagerPlatzKupfer2,120,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
+      RL.RL_Entnahme(stRL2,UID,dummystring);
+cout << dummystring<<'\n';
       erfolgreich=C.teste(Check::Rohwarenlager_auslagern,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Rohwarenlager auslagern\n";
                return fehler();}
@@ -304,8 +320,23 @@ int auftragstests(e_mode mode)
       if(!erfolgreich) { cout << "Planen der Weberei zum späteren Test des Bandlagers \n\n";
                return fehler();}
 
+/*
       Lager BL((cH_ppsInstanz(ppsInstanzID::Bandlager)));
       BL.rein_ins_lager(ARTIKEL_BANDLAGER,12000,UID);
+*/
+      class JumboLager JL;
+      Kette K(MASCHIENE-10,SCHAERDATUM);
+      std::vector <ArtikelGang> artgang;
+      artgang.push_back(ArtikelGang(GAENGE,ARTIKEL_BANDLAGER));
+      KettplanKette KK=KettplanKette::create(K,artgang,12000,12000); 
+      vector<JumboRolle> JR=JumboRolle::create(KK);
+      assert(JR.size()==1);
+      Zeitpunkt_new zp("2002-1-1 12:00");
+
+//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+
+      JL.Jumbo_Einlagern(LagerPlatzJumbo,JR.front(),JumboLager::Einlagern,UID,"testuser",&zp);
+cout << dummystring<<'\n';
       erfolgreich=C.teste(Check::Bandlager_einlagern,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Bandlager einlagern\n";
                return fehler();}
@@ -327,7 +358,6 @@ int auftragstests(e_mode mode)
 
       cout << "Lager-Test erfolgreich\n";
 #endif
-      
       break;
      }
     case ZweiAuftraege:
@@ -662,31 +692,31 @@ int auftragstests(e_mode mode)
        Zeitpunkt_new zp0("2002-3-1 11:00"),
        		zp1("2002-3-1 11:11"),
        		zp0b("2002-3-1 11:02");
-       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp0);
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp1);
+       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1);
        JR=JumboRolle::create(KK);
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0);
-       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,"TEST",&zp1);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0);
+       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1);
        erfolgreich=C.teste(Check::Jumbo_richtig,mit_reparatur_programm);
        JR=JumboRolle::create(KK);
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp1);
-       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp0);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1);
+       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0);
        JR=JumboRolle::create(KK);
-       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,"TEST",&zp1);
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0);
+       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0);
        erfolgreich=C.teste(Check::Jumbo_falsch,mit_reparatur_programm);
        JR=JumboRolle::create(KK);
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0);
        try
-       {JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0b);
+       {JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0b);
         assert(!"Jumbo_Entnahme sollte 100 werfen");
        }catch (SQLerror &e)
        {  assert(e.Code()==100);
        }
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp1);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1);
        JR=JumboRolle::create(KK);
-       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp0);
-       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,"TEST",&zp1);
+       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0);
+       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1);
        erfolgreich=C.teste(Check::Jumbo_doppelt,mit_reparatur_programm);
        break;
 #endif
