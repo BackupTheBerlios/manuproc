@@ -14,6 +14,7 @@
 #include <Misc/itos.h>
 #include "kunden_selector.hh"
 #include <SearchComboContent.h>
+#include "yes_no_dialog.hh"
 
 int main(int argc, char **argv)
 {  
@@ -59,6 +60,8 @@ mpc_agent::mpc_agent()
 
  v[OD_ROW]="row no.";
  v[OD_ARTICLE]="article";
+ v[OD_NAME]="name";
+ v[OD_EAN]="EAN";
  v[OD_AMOUNT]="amount";
 
  order->setTitles(v);
@@ -211,7 +214,7 @@ void mpc_agent::on_artikel_ok_clicked()
 
 
  Query q("insert into auftragentry (aufid,vknr,artnr,breite,farbe,aufmachung,"
- 	"ean,stueck,preis) values (?,?,?,?,?,?,null,?,null)");
+ 	"ean,stueck,preis) values (?,?,?,?,?,?,?,?,null)");
 
   std::cout << orderid->Content() <<"\n";
 
@@ -221,7 +224,7 @@ void mpc_agent::on_artikel_ok_clicked()
  	<< width_entry->Content()
  	<< color_entry->Content()
  	<< makeup_entry->Content()
-// 	<< Query::NullIf(ean_entry->Content())
+ 	<< Query::NullIf(ean_entry->Content())
  	<< menge->get_value_as_int();
  	
  }
@@ -241,6 +244,7 @@ void mpc_agent::on_artikel_ok_clicked()
   }    	
 
  load_order(orderid->Content());   
+ on_artikel_cancel_clicked();
  
 }
 
@@ -251,6 +255,8 @@ void mpc_agent::on_artikel_cancel_clicked()
  width_entry->reset(); 
  color_entry->reset();
  makeup_entry->reset(); 
+ ean_entry->reset();
+ artikel_notebook->set_current_page(0);
  article_entry->set_sensitive(true);
  width_entry->set_sensitive(true); 
  color_entry->set_sensitive(true);
@@ -356,8 +362,68 @@ void mpc_agent::on_color_entry_activate()
 
 void mpc_agent::on_makeup_entry_activate()
 {  
+ std::string ean;
+ Query("select ean from artikel where artnr=? and breite=?"
+	" and farbe=? and aufmachung=?") 
+	<< article_entry->Content()
+	<< width_entry->Content()
+	<< color_entry->Content()
+	<< makeup_entry->Content()
+	>> FetchIStream::MapNull(ean,"");
+
+ ean_entry->set_value(ean,ean);
+
  menge->grab_focus();
  makeup_entry->set_sensitive(false);
 }
 
+
+void mpc_agent::on_artikel_del_clicked()
+{
+ int ret;
+ yes_no_dialog ynd;
+ ynd.set_transient_for(*this);
+ ret=ynd.run();
+
+ if(orderid->sensitive()==true) return; // no order selected
+ 
+ if(ret==Gtk::RESPONSE_NO) return;
+ if(ret==Gtk::RESPONSE_YES)
+   { 
+    std::vector<cH_RowDataBase> selrows;
+    selrows=order->getSelectedRowDataBase_vec();
+    std::vector<cH_RowDataBase>::const_iterator ci=selrows.begin();
+    while(ci!=selrows.end())
+      {
+       std::cout << (*ci)->Value(1,0)->getStrVal();
+       try {
+       Query("delete from auftragentry where aufid=? and vknr=? and"
+	" artnr||'/'||breite||'/'||farbe||'/'||aufmachung = ?")
+	<< orderid->Content() << VERKNR << (*ci)->Value(1,0)->getStrVal();	
+       }
+       catch(SQLerror &e)
+       {
+        MyMessage msg(e);
+        msg.set_transient_for(*this);
+        msg.run();
+        return;
+       } 
+
+      ++ci;
+      }
+    load_order(orderid->Content());   
+    artikel_del->set_sensitive(false);
+   }
+}
+
+
+void mpc_agent::on_order_leaf_selected(cH_RowDataBase leaf)
+{  
+ artikel_del->set_sensitive(true);
+}
+
+void mpc_agent::on_order_leaf_unselected()
+{  
+ artikel_del->set_sensitive(false);
+}
 

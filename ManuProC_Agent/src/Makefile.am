@@ -28,13 +28,15 @@ mpc_agent_SOURCES = \
 	mpc_internal.cc \
 	kunden_selector.cc \
 	kunden_selector_glade.cc \
-	mpc_xml.cc
+	mpc_xml.cc \
+	yes_no_dialog.cc yes_no_dialog_glade.cc
 
 noinst_HEADERS = \
 	mpc_agent_glade.hh \
 	mpc_agent.hh \
 	kunden_selector_glade.hh \
-	kunden_selector.hh
+	kunden_selector.hh \
+	yes_no_dialog.hh yes_no_dialog_glade.hh
 
 AM_CXXFLAGS = @KOMPONENTEN2_INCLUDES@ 
 AM_CPPFLAGS = @KOMPONENTEN2_INCLUDES@ $(WIN_INCLUDES) -I..

@@ -105,7 +105,7 @@ void mpc_agent::load_order(int oid)
 
 
  Query qe("select e.artnr||'/'||e.breite||'/'||e.farbe||'/'||e.aufmachung,"
- 	"b.bezeichnung, e.stueck from auftragentry e left join artikel b"
+ 	"b.bezeichnung, b.ean, e.stueck from auftragentry e left join artikel b"
  	" on (e.artnr=b.artnr and e.breite=b.breite and e.farbe=b.farbe)"
  	" where aufid=? and vknr=?");
  try{
@@ -124,17 +124,17 @@ void mpc_agent::load_order(int oid)
  int count=0;
  while(fs.good())
   {
-   std::string artikel,bez;
+   std::string artikel,bez,ean;
    int stk;
-   fs >> artikel >> bez >> stk;
-   dv.push_back(cH_RowDataStrings(itos(++count),artikel+"   "+bez,itos(stk)));
+   fs >> artikel >> bez >> FetchIStream::MapNull(ean,"") >> stk;
+   dv.push_back(cH_RowDataStrings(itos(++count),artikel,bez,ean,itos(stk)));
    fs=qe.Fetch();
   }
  order->setDataVec(dv);  
 
  label_orderdate->set_text(std::string("dated ")+datum.c_str());
 
- if(kunde->get_value(KDBOX_NR)!=kdnr)
+ if(kunde->sensitive())
    {kunde->set_value(KDBOX_NR,kdnr);
     on_activate_entry(KDBOX_NR);  
    }

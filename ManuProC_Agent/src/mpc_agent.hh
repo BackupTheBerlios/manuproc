@@ -21,7 +21,7 @@
 
 
 typedef enum {KDBOX_NR=0,KDBOX_NAME,KDBOX_ORT} KdEntries;
-typedef enum {OD_ROW,OD_ARTICLE,OD_AMOUNT} OrderEntries;
+typedef enum {OD_ROW,OD_ARTICLE,OD_NAME,OD_EAN,OD_AMOUNT} OrderEntries;
 
 class mpc_agent : public mpc_agent_glade
 {  
@@ -50,6 +50,9 @@ class mpc_agent : public mpc_agent_glade
         void on_color_entry_activate();
         void on_makeup_entry_search(gboolean *cont,GtkSCContext context);
         void on_makeup_entry_activate();
+        void on_artikel_del_clicked();
+        void on_order_leaf_selected(cH_RowDataBase leaf);
+        void on_order_leaf_unselected();
 
 	void clear_order();
 	void load_order(int oid);

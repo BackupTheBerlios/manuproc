@@ -12,7 +12,7 @@
 
  <class name="TreeBase" parent="GtkCList">
     <callback name="leaf_selected" args="cH_RowDataBase leaf"/>
-    <callback name="leaf_unselected" args="cH_RowDataBase leaf"/>
+    <callback name="leaf_unselected" args=""/>
     <callback name="node_selected" args="const TreeRow &amp;node"/>
   </class>
   <class name="SimpleTree" parent="TreeBase" include="SimpleTree.hh"/>
