@@ -24,6 +24,7 @@
 #include<math.h>
 #include <Lieferschein/LieferscheinVoll.h>
 #include <Artikel/Artikelpreis.h>
+#include <Artikel/ArtikelStamm.h>
 exec sql include sqlca;
 
 
@@ -227,6 +228,10 @@ void Rechnung::deleteLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
 #include <sys/types.h>
 #include <unistd.h>
 
+//template <class T>
+// T min(const T &a, const T &b)
+//{ return a<b?a:b; }
+
 void Rechnung::push_back(unsigned &lineno,ArtikelBase art,
 		unsigned lfrsid,unsigned lfrsznr, unsigned stk,
 		mengen_t menge,const Preis &p, AufEintragBase::rabatt_t rabatt,
@@ -243,6 +248,24 @@ void Rechnung::push_back(unsigned &lineno,ArtikelBase art,
 	 	<< Query::NullIf(ek_preis.Wert(Waehrung::default_id,
 						p.BezugsMenge()));
   lineno++;
+#if defined(PETIG_EXTENSIONS) && defined(MANUPROC_DYNAMICENUMS_CREATED)
+  ArtikelStamm as(art);
+  cH_ArtikelBezeichnung ab(art);
+  if (as.Warengruppe()==ArtikelTypID::Ketten)
+  { ArtikelBase lohn,material;
+    Query("select lohn_id,material_id from artbez_"+itos(as.Warengruppe())+"_1 "
+	"where id=?") << art
+	>> Query::Row::MapNull(lohn) >> Query::Row::MapNull(material);
+    if (!!lohn) 
+      push_back(lineno,lohn,lfrsid,lfrsznr,min(50,atoi(ab->Komponente(2).c_str())),
+	  int(stk)*min(menge,mengen_t(10000))/1000.0,Preis(),rabatt,
+	  provsatz,Preis());
+    if (!!material) 
+      push_back(lineno,lohn,lfrsid,lfrsznr,stk,
+	  1.05*atoi(ab->Komponente(1).c_str())*menge/10000.0,Preis(),rabatt,
+	  provsatz,Preis());
+  }
+#endif
 }
 
 void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
