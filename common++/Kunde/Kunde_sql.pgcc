@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.61 2004/08/05 10:31:56 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.62 2004/08/10 10:18:01 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -37,7 +37,7 @@ void Kunde::setVerkNr(Kunde::ID v) throw(SQLerror)
 
  if(v==Kunde::none_id)
    Query("delete from prov_config where kundennr=?") << Id();
- SQLerror::test(__FILELINE__);
+ SQLerror::test(__FILELINE__,100);
 
  tr.commit(); 
 
