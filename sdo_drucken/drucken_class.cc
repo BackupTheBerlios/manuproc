@@ -1061,7 +1061,7 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
      }
   else if (Configuration.combine || Typ()==Extern)
      { tabcolumn += "X"; spaltenzahl++; 
-       ueberschriften+= "&\\mbox{"+ug+"Artikel}";
+       ueberschriften+= "&\\mbox{"+ug+mld->MLT(MultiL_Dict::TXT_ARTIKEL)+"}";
      }
   else
 #ifdef MABELLA_EXTENSIONS
