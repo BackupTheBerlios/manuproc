@@ -1,4 +1,4 @@
-// $Id: TooltipView.cc,v 1.1 2003/12/08 07:39:42 christof Exp $
+// $Id: TooltipView.cc,v 1.2 2004/05/03 14:17:45 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -19,6 +19,9 @@
  */
 
 #include <TooltipView.h>
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/compatibility.h>
+#endif
 
 namespace {
 struct TooltipAssociation_bool : TooltipAssociation
@@ -39,8 +42,12 @@ void TooltipAssociation_bool::changed_cb(gpointer x) const
 void TooltipViewList::Associate(Gtk::Widget &w,const Model_ref<bool> &m,
 		const std::string &falsetip,
 		const std::string &truetip)
-{  TooltipAssociation_bool *tta;
+{  TooltipAssociation_bool *tta=0;
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+   connections.push_back(tta=new TooltipAssociation_bool());
+#else
    connections.push_back(tta=SigC::manage(new TooltipAssociation_bool()));
+#endif
    tta->tips=tips;
    tta->widget=&w;
    tta->model=m;
@@ -52,7 +59,13 @@ void TooltipViewList::Associate(Gtk::Widget &w,const Model_ref<bool> &m,
 
 void TooltipViewList::Disassociate(Gtk::Widget &w)
 {  for (list_t::iterator i=connections.begin();i!=connections.end();++i)
-      if ((*i)->widget==&w) i=connections.erase(i);
+      if ((*i)->widget==&w) 
+      {  
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+	 delete *i;
+#endif
+         i=connections.erase(i);
+      }
    tips->unset_tip(w);
 }
 

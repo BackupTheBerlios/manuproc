@@ -1,4 +1,4 @@
-// $Id: TooltipView.h,v 1.1 2003/12/08 07:39:42 christof Exp $
+// $Id: TooltipView.h,v 1.2 2004/05/03 14:17:45 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -33,7 +33,12 @@ struct TooltipAssociation : SigC::Object
 };
 
 class TooltipViewList
-{	typedef std::list<SigC::Ptr<TooltipAssociation> > list_t;
+{
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+	typedef std::list<TooltipAssociation *> list_t;
+#else
+	typedef std::list<SigC::Ptr<TooltipAssociation> > list_t;
+#endif
         list_t connections;
 	Gtk::Tooltips *tips;
 public:
