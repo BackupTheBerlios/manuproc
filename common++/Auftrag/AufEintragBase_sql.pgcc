@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.4 2001/06/25 08:13:37 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.5 2001/06/25 09:40:42 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,6 +26,7 @@
 
 exec sql include sqlca;
 
+#if 0
 AufEintragBase::AufEintragBase(const SelectedAufentry &aufentry, 
 			const cH_ExtBezSchema schema) throw(SQLerror)
 	: artikel(0,cH_ExtBezSchema(ExtBezSchema::default_ID)),
@@ -115,7 +116,7 @@ AufEintragBase::AufEintragBase(const SelectedAufentry &aufentry,
  preis = Preis(PREIS,IWID ? 1 : WID,RABATT);
  rabatt = RABATT;
 }
-
+#endif
 
 
 void AufEintragBase::setStatus(AufStatVal st) throw(SQLerror)

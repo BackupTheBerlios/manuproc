@@ -1,4 +1,4 @@
-// $Id: selAufEntry.cc,v 1.2 2001/06/22 09:42:44 christof Exp $
+// $Id: selAufEntry.cc,v 1.3 2001/06/25 09:40:42 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,6 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#if 0
 #include"selAufEntry.h"
 
 
@@ -65,5 +66,4 @@ void SelectedAufList::delAuftrag(int instanz,int aid)
     break;
   }
 }
-
-
+#endif

@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.5 2001/06/25 08:13:37 christof Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.6 2001/06/25 09:40:42 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,6 +23,7 @@
 
 exec sql include sqlca;
 
+#if 0
 SelectedAufList::SelectedAufList(const SQLAuftragSelector& selector)
 throw(SQLerror)
 {
@@ -84,7 +85,7 @@ void SelectedAufList::addList(const SQLAuftragSelector &selector) throw(SQLerror
  exec sql close SELAUFENT;
  tr.commit();
 }
-
+#endif
 
 SelectedFullAufList::SelectedFullAufList(const SQLFullAuftragSelector &selector)
 throw(SQLerror)

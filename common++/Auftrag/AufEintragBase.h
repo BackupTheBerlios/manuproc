@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.6 2001/06/25 08:13:37 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.7 2001/06/25 09:40:42 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -148,8 +148,10 @@ public:
 	rabatt(0)
  {}
 
+#if 0
  AufEintragBase(const SelectedAufentry &aufentry, 
  		const cH_ExtBezSchema schema) throw(SQLerror);
+#endif 		
 
  AufEintragBase(ppsInstanz::ppsInstId _instanz,int _auftragid, int _zeilennr, int _bestellt,
 	int _artikel, const Petig::Datum _lieferdatum,

@@ -16,22 +16,25 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: rowdata.h,v 1.2 2001/06/25 08:20:23 christof Exp $
+// $Id: rowdata.h,v 1.3 2001/06/25 09:40:10 christof Exp $
 
 #ifndef KOMPONENTEN_ROWDATA_H
 #define KOMPONENTEN_ROWDATA_H
 
 #include <Aux/Handles.h>
 #include <Aux/EntryValueBase.h>
+#include <glib.h>
 
 class RowDataBase : public HandleContent
 {
 public:
- virtual const cH_EntryValue Value(int _seqnr,gpointer _g) const=0;
-// virtual const cH_EntryValue Value(int _seqnr) const=0;
-// virtual const cH_EntryValue Value(int _seqnr) const { Value(_seqnr,0) ; }
+ virtual const cH_EntryValue Value(int _seqnr,gpointer _g) const
+ { return Value(_seqnr) ; }
 
  virtual ~RowDataBase(){}
+
+ // old interface, deprecated
+ virtual const cH_EntryValue Value(int _seqnr) const=0; 
 };
 
 class cH_RowDataBase : public const_Handle<RowDataBase>

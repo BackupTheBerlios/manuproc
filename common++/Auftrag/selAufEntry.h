@@ -1,4 +1,4 @@
-/* $Id: selAufEntry.h,v 1.13 2001/06/22 09:38:51 cvs_malte Exp $ */
+/* $Id: selAufEntry.h,v 1.14 2001/06/25 09:13:22 cvs_christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,13 +17,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include"Auftrag/sqlAuftragSelector.h"
-#include"Aux/SQLerror.h"
-#include<vector>
-
+#if 0
 #ifndef SELECTEDAUFLIST
 #define SELECTEDAUFLIST
 
+#include"Auftrag/sqlAuftragSelector.h"
+#include"Aux/SQLerror.h"
+#include<vector>
 
 class SelectedAufentry
 {
@@ -57,4 +57,5 @@ public:
  void addList(const SQLAuftragSelector &sel) throw(SQLerror);
 };
 
+#endif
 #endif
