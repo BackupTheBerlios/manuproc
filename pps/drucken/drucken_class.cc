@@ -425,6 +425,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
     catch(SQLerror &e)
       {if(e.Code()!=100) {std::cout << e; exit(1);}
        schema_own = schema_mem;
+	std::cout << "\nNo owner scheme; set to default scheme\n";
     }
 #endif    
     Preis::preismenge_t preismenge_mem;
@@ -465,13 +466,14 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
     for (;j!=end() ;++j) 
       {
         ArtikelBase artikelbase  = (*j).Artikel();
-        cH_ArtikelBezeichnung bez(artikelbase,cH_Kunde(kunden_id)->getSchemaId());
-        cH_ExtBezSchema schema = bez->getExtBezSchema();
+	ExtBezSchema::ID schema_id=cH_Kunde(kunden_id)->getSchemaId();
+//        cH_ArtikelBezeichnung bez(artikelbase,schema_id);
+//        cH_ExtBezSchema schema = bez->getExtBezSchema();
 
 #ifdef MABELLA_EXTENSIONS        
-        if (schema!=schema_own && !Configuration.combine) break; // Schema hat gewechselt
+        if (schema_id!=schema_own->Id() && !Configuration.combine) break; // Schema hat gewechselt
 #else
-        if (schema!=schema_mem && !Configuration.combine) break; // Schema hat gewechselt
+        if (schema_id!=schema_mem->Id() && !Configuration.combine) break; // Schema hat gewechselt
 #endif        
         
         if (Einheit(artikelbase) != einheit_mem && !Configuration.combine) break;  // Einheit wechselt
