@@ -47,10 +47,10 @@ static bool Lieferschein_Kunde(AufEintrag &AE)
 //        AufEintragBase AEB2=auftrag.push_back(10,DATUM,ARTIKEL_TRIO,OPEN,false);
         Auftrag auftrag=Auftrag(Auftrag::Anlegen(EINKAUF),LIEFERANT);
 
-#if 0
-	AufEintrag AE(AufEintragBase AE(EINKAUF,0,1));
+	AufEintragBase AEB_1(EINKAUF,0,1);
+{	AufEintrag AE(AEB_1);
 	AE.Planen(10,auftrag,DATUM);
-
+}
 
 	AufEintragBase AEB(EINKAUF,0,1);
 	AufEintrag AE(AEB);
@@ -75,7 +75,6 @@ static bool Lieferschein_Kunde(AufEintrag &AE)
        liefs.push_back(ae2,ARTIKEL_TRIO,5);
 
        vergleichen(Check::Menge|Check::Lieferschein,"LS_Einkauf","Lieferschein im Einkauf (Mabella) anlegen","VE");
-#endif
 	}
 
 	{

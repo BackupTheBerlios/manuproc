@@ -103,7 +103,7 @@ void FertigWarenLager::Buchen(FertigWaren::e_buchen buchen,
 // we do not accept negativ mount from now on
 
 
-// Wenn Bestand würde <0 sein und es war Auslagern, dann Exception 
+// Wenn Bestand <0 sein würde und es war Auslagern, dann Exception 
 // bei Einlagern ist es OK, weil man sonst nie von den negative Zahlen
 // wegkommt, ohne eine komplette Inventur 
  int bestand=Bestand();

@@ -1,4 +1,4 @@
-// $Id: FertigWaren.h,v 1.15 2004/02/23 13:54:15 jacek Exp $
+// $Id: FertigWaren.h,v 1.16 2004/05/21 12:38:32 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -61,8 +61,8 @@ public:
 	{ uid=getuid(); };
  		
  std::string artBezeichnung() const { return cH_ArtikelBezeichnung(artikel)->Bezeichnung();}
- int Stk(e_buchen e=AsIs) const {if (e==Raus) return -abs(stk);
- 			    if (e==Rein) return abs(stk);
+ int Stk(e_buchen e=AsIs) const {if (e==Raus) return -stk;
+ 			    if (e==Rein) return stk;
  			    return stk;
  			   }
  int Bestand() const { return bestand; }
