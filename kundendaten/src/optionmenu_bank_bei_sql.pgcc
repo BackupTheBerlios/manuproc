@@ -18,7 +18,7 @@ int windowTop::fill_bank_bei(unsigned long int blz)
  exec sql end declare section;
  exec sql select bankindex,
 	case when coalesce(name,'')='' then 'UNBEKANNT' else name end into :BANKINDEX, :BANKNAME
-   from banken where blz = :BLZ;
+   from banken where blz = :BLZ limit 1;
  SQLerror::test(__FILELINE__,100);
  if (sqlca.sqlcode) { bankname_entry->set_text(""); bankid=0; return 0;}
 
