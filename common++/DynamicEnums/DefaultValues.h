@@ -1,4 +1,4 @@
-/* $Id: DefaultValues.h,v 1.19 2004/05/19 12:00:21 christof Exp $ */
+/* $Id: DefaultValues.h,v 1.20 2005/04/11 08:59:14 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -51,18 +51,20 @@ namespace DefaultValues {
   const static int DefaultKundenId=1;
   const static ManuProC::DynamicEnums::Instanzen::enum_t Instanz= ManuProC::DynamicEnums::Instanzen::Kundenauftraege;
   const static ManuProC::DynamicEnums::Instanzen::enum_t KundenInstanz= ManuProC::DynamicEnums::Instanzen::Kundenauftraege;
-  const static ManuProC::DynamicEnums::Kundengruppen::enum_t Kunden= ManuProC::DynamicEnums::Kundengruppen::Kunden;
 
 
 #ifdef MABELLA_EXTENSIONS
   const static ManuProC::DynamicEnums::ArtikelTyp::enum_t  ArtikelTyp=ManuProC::DynamicEnums::ArtikelTyp::defaultArtikelTyp;
   const static ManuProC::DynamicEnums::Prozesse::enum_t  Prozess=ManuProC::DynamicEnums::Prozesse::Verarbeitung;
+  const static ManuProC::DynamicEnums::Kundengruppen::enum_t Kunden= ManuProC::DynamicEnums::Kundengruppen::Kunden;
 #elif defined PETIG_EXTENSIONS
   const static ManuProC::DynamicEnums::ArtikelTyp::enum_t  ArtikelTyp=ManuProC::DynamicEnums::ArtikelTyp::Band;
   const static ManuProC::DynamicEnums::Prozesse::enum_t  Prozess=ManuProC::DynamicEnums::Prozesse::Verarbeitung;
+  const static ManuProC::DynamicEnums::Kundengruppen::enum_t Kunden= ManuProC::DynamicEnums::Kundengruppen::None;
 #else
   const static ManuProC::DynamicEnums::ArtikelTyp::enum_t  ArtikelTyp = ManuProC::DynamicEnums::ArtikelTyp::Schraubenzieher;
   const static ManuProC::DynamicEnums::Prozesse::enum_t  Prozess=ManuProC::DynamicEnums::Prozesse::Verarbeitung_Irgendetwas;
+  const static ManuProC::DynamicEnums::Kundengruppen::enum_t Kunden= ManuProC::DynamicEnums::Kundengruppen::None;
 #endif
 #else
   const static int EigeneKundenId=1;
