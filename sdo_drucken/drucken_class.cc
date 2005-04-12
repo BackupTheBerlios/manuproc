@@ -1322,15 +1322,19 @@ void LR_Abstraktion::page_header(std::ostream &os)
 		os << "\\smallskip\n";   
 		}		
 
-	if(!kunde_an->isInGrp(KundengruppeID::Rechnungsadresse) && Typ()==Rechnung)
+	if(
+	  //!kunde_an->isInGrp(KundengruppeID::Rechnungsadresse) && 
+	   Typ()==Rechnung && kunde_an->Lfran()!=kunde_an->Id()
+	  )
 		{
+		cH_Kunde kunde_lfr(kunde_an->Lfran());
 		os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_LIEFADRESSE)<<":\\rm\\\\\n"
-		   << string2TeX(kunde_an->firma())+"\\\\\n";
-		   if(kunde_an->name2()!="")
-		     os << string2TeX(kunde_an->name2())+"\\\\\n";
-		   os << string2TeX(kunde_an->strasse())+" "
-		   << string2TeX(kunde_an->hausnr())+"\\\\\n"		   
-		   << string2TeX(kunde_an->plz()+" "+kunde_an->ort())+"\\\\\n\n";
+		   << string2TeX(kunde_lfr->firma())+"\\\\\n";
+		   if(kunde_lfr->name2()!="")
+		     os << string2TeX(kunde_lfr->name2())+"\\\\\n";
+		   os << string2TeX(kunde_lfr->strasse())+" "
+		   << string2TeX(kunde_lfr->hausnr())+"\\\\\n"		   
+		   << string2TeX(kunde_lfr->plz()+" "+kunde_lfr->ort())+"\\\\\n\n";
 		os << "\\smallskip\n";   
 		}
 	else	

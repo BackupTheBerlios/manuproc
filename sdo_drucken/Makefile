@@ -45,10 +45,10 @@ pkgincludedir = $(includedir)/auftrag
 
 top_builddir = ..
 
-ACLOCAL = aclocal-1.4 -I macros 
-AUTOCONF = autoconf
-AUTOMAKE = automake-1.4
-AUTOHEADER = autoheader
+ACLOCAL = ${SHELL} /home/jacek/cvs/pps/missing --run aclocal-1.7 -I macros 
+AUTOCONF = ${SHELL} /home/jacek/cvs/pps/missing --run autoconf
+AUTOMAKE = ${SHELL} /home/jacek/cvs/pps/missing --run automake-1.7
+AUTOHEADER = ${SHELL} /home/jacek/cvs/pps/missing --run autoheader
 
 INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL} $(AM_INSTALL_PROGRAM_FLAGS)
@@ -115,8 +115,8 @@ LIBDL = @LIBDL@
 LIBMICO = @LIBMICO@
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LN_S = ln -s
-MAINT = #
-MAKEINFO = makeinfo
+MAINT = 
+MAKEINFO = ${SHELL} /home/jacek/cvs/pps/missing --run makeinfo
 MICO_CFLAGS = @MICO_CFLAGS@
 MICO_GTKLIBS = @MICO_GTKLIBS@
 MICO_IDLFLAGS = @MICO_IDLFLAGS@
@@ -153,11 +153,11 @@ auftrag_drucken_SOURCES =     $(BUILT_SOURCES)    auftrag_drucken.cc    drucken.
 noinst_HEADERS =     drucken.hh    drucken_class.hh
 
 
-AM_CXXFLAGS = -DUSE_POSTGRES -I/usr/lib/gtkmm/include -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/X11R6/include -I/usr/lib/sigc++-1.0/include -I/usr/include/sigc++-1.0 -I/home/jacek/cvs/GtkmmAddons/src  -I. -I/usr/include/postgresql -I/home/jacek/cvs/c++ -I/usr/lib/sigc++-1.0/include -I/usr/include/sigc++-1.0 -I/home/jacek/cvs/Komponenten/src
+AM_CXXFLAGS = -DUSE_POSTGRES -I/usr/lib/gtkmm/include -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/X11R6/include -I/usr/lib/sigc++-1.0/include -I/usr/include/sigc++-1.0 -I/home/jacek/cvs/GtkmmAddons/src -I/home/jacek/cvs/c++ -I/usr/lib/sigc++-1.0/include -I/usr/include/sigc++-1.0  -I. -I/usr/include/postgresql -I/home/jacek/cvs/Komponenten/src
 
 LDFLAGS =    -L/home/jacek/cvs/GtkmmAddons/src   
 
-LDADD =  /home/jacek/cvs/c++/libcommon++.a -lecpg -lpq -lcrypt -lsigc -lpthread -lGtkmmAddons 
+LDADD =  /home/jacek/cvs/c++/libcommon++.a -lsigc -lpthread -lecpg -lpq -lcrypt -lGtkmmAddons 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
@@ -173,7 +173,7 @@ drucken_class.$(OBJEXT)
 auftrag_drucken_LDADD = $(LDADD)
 auftrag_drucken_DEPENDENCIES = 
 auftrag_drucken_LDFLAGS = 
-CXXFLAGS = -g -O2
+CXXFLAGS = -Wall -g -O0
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -195,7 +195,7 @@ OBJECTS = $(auftrag_drucken_OBJECTS)
 all: all-redirect
 .SUFFIXES:
 .SUFFIXES: .S .c .cc .lo .o .obj .s
-$(srcdir)/Makefile.in: # Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+$(srcdir)/Makefile.in:  Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu sdo_drucken/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
