@@ -306,7 +306,7 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
     // ohne Auftrag, nur Lieferschein: z.B. Gutschrift
     if(i->getZusatzInfos().empty() || !(i->getZusatzInfos()[0].aeb.valid()))
        provsatz=lv.getKunde()->getProvSatz_Artikel(
-				ArtikelBase(i->Artikel()));
+				ArtikelBase(i->Artikel()),rabatt);
 
     ArtikelTyp at(i->Artikel());
     ek_preis=Artikelpreis(at.EK_PL(),i->Artikel(),

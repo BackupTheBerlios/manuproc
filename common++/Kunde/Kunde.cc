@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.52 2005/04/12 15:37:17 jacek Exp $
+// $Id: Kunde.cc,v 1.53 2005/04/12 17:16:19 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,7 @@
 #include <Kunde/Telefon.h>
 #include <DynamicEnums/DynamicEnums.h>
 #include <algorithm> // find on 2.95
+#include <Artikel/ArtikelStamm.h>
 
 std::ostream &operator<<(std::ostream &o,const cH_Kunde &k)
 {return o<<k->firma()<<"("<<k->Id()<<")";}

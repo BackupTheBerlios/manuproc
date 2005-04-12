@@ -1,4 +1,4 @@
-// $Id: KundenBox2.cc,v 1.5 2004/02/17 12:48:50 christof Exp $
+// $Id: KundenBox2.cc,v 1.6 2005/04/12 17:16:03 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -22,7 +22,7 @@
 KundenBox2::KundenBox2()
 {
   _tabelle_="kunden";
-  _string1_="coalesce(sortname,firma)";
+  _string1_="coalesce(sortname,firma||coalesce(' '||name2,''))";
   _string2_="coalesce(ort,'')";
   _int_="kundennr";
   _none_id_=Kunde::none_id;  

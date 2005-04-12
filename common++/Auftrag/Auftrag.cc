@@ -1,4 +1,4 @@
-// $Id: Auftrag.cc,v 1.15 2005/02/08 11:27:45 jacek Exp $
+// $Id: Auftrag.cc,v 1.16 2005/04/12 17:16:19 jacek Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -106,7 +106,7 @@ void Auftrag::insert(unsigned zeilennr, const mengen_t bestellt,
 #ifdef MABELLA_EXTENSIONS
     cH_Kunde kd(kundennr);
     fixedpoint<2> provsatz;
-    provsatz = kd->getProvSatz_Artikel(artikel);
+    provsatz = kd->getProvSatz_Artikel(artikel,rabatt);
     Query("update auftragentry set provsatz=?"
       	" where (instanz,auftragid,zeilennr)=(?,?,?)")
 	<< provsatz
