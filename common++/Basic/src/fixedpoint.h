@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.23 2004/07/26 16:21:43 christof Exp $
+// $Id: fixedpoint.h,v 1.24 2005/04/13 22:57:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -260,7 +260,7 @@ template <int decimals,class Ftype,class Itype>
 }
 #endif
 
-#ifdef DEFAULT_DB // actually we should test for database support
+#if defined(DEFAULT_DB) && defined(MANUPROC_WITH_DATABASE)
 #include <Misc/FetchIStream.h>
 
 static inline FetchIStream &operator>>(FetchIStream &is, fixedpoint<0> &v)
