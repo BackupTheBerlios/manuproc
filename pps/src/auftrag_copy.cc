@@ -118,7 +118,7 @@ void auftrag_copy::on_copy_ok_clicked()
          fixedpoint<2> ps;
          AuftragFull::AufEintragList::iterator i=full->begin();
          for(;i!=full->end();++i)
-           {ps=k->getProvSatz_Artikel((*i).Artikel());
+           {ps=k->getProvSatz_Artikel((*i).Artikel(),(*i).Rabatt());
             Query("update auftragentry set provsatz=? where " 
             	" (auftragid,instanz,zeilennr)=(?,?,?)")
             	<< ps << auftrag->Id() << auftrag->Instanz()

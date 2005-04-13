@@ -18,20 +18,20 @@ extern MyMessage *meldung;
 #include <Aux/dbcapability.h>
 extern DBCapability *dbcapability;
 
-auftrag_provision::auftrag_provision(AuftragFull *auftrag) :
-auf(auftrag)
+
+void auftrag_provision::init_prov_dialog()
 {
- prov_aufnr->set_text(itos(auftrag->Id()));
- prov_aufdatum->set_value(auftrag->getDatum());
+ prov_aufnr->set_text(itos(Id()));
+ prov_aufdatum->set_value(getDatum());
  prov_aufdatum->setLabel("");
- prov_aufkunde->set_value(auftrag->getKundennr());
+ prov_aufkunde->set_value(getKundennr());
 
 #ifdef MABELLA_EXTENSIONS
  prov_verkaeufer->EinschraenkenKdGr(KundengruppeID::Verkaeufer);
 
  fillProvEntryList();
 
- if(auftrag->getVerknr()==Kunde::none_id)
+ if(getVerknr()==Kunde::none_id)
    {
     verkprov_frame->set_sensitive(false);
     prov_enable->set_active(false);
@@ -40,16 +40,28 @@ auf(auftrag)
    {
     prov_enable->set_active(true);
     verkprov_frame->set_sensitive(true);   
-    try {prov_verkaeufer->set_value(auftrag->getVerknr());
+    try {prov_verkaeufer->set_value(getVerknr());
     }
     catch(SQLerror &e)
     { if(e.Code()==100) meldung->Show(
 	std::string("Der Verkäufer mit der Nr.:")+
-	itos(auftrag->getVerknr())+" nicht gefunden");
+	itos(getVerknr())+" nicht gefunden");
     }
    }
 #endif
 
+
+}
+
+
+
+auftrag_provision::auftrag_provision(RechnungVoll *rechnung) :
+aufp(NULL),rngp(rechnung)
+{
+ main_frame->set_label("Rechnung");
+ run_mode=RECHNUNG;
+ init_prov_dialog();
+ 
  DBCapability::WhiteColumn wc("auftrag","verknr");
 
  verkprov_frame->set_sensitive(
@@ -57,23 +69,53 @@ auf(auftrag)
 		);
 }
 
+auftrag_provision::auftrag_provision(AuftragFull *auftrag) :
+aufp(auftrag),rngp(NULL)
+{
+ main_frame->set_label("Auftrag");
+ run_mode=AUFTRAG;
+ init_prov_dialog();
+ 
+ DBCapability::WhiteColumn wc("rechnung","verknr");
+
+ verkprov_frame->set_sensitive(
+		dbcapability->isWhite(DBCapability::ColAct(wc,DBCapability::UPDATE)) 
+		);
+}
+
+
 void auftrag_provision::fillProvEntryList()
 {
  prov_aufentries->clear();
 
  Gtk::OStream os(prov_aufentries);
  
- for(AuftragFull::const_iterator i=auf->begin(); i!=auf->end(); ++i)
+ assert(run_mode!=UNKNOWN);
+ if(run_mode==AUFTRAG)
+ for(AuftragFull::const_iterator i=aufp->begin(); i!=aufp->end(); ++i)
    {
     os << (*i).getZnr() << "\t";
     os << (*i).getStueck() << "\t";
-    cH_ArtikelBezeichnung ab(ArtikelBase((*i).ArtId()));
+    cH_ArtikelBezeichnung ab((*i).Artikel());
     os << ab->Bezeichnung() << "\t";
     os << (*i).EPreis().Wert().String() << "\t";
     os << (*i).Rabatt().String() << "\t";
     os << (*i).GPreis().Wert().String() << "\t";
     os << (*i).ProvSatz().String() << "\n";
    }
+ else  
+ if(run_mode==RECHNUNG)
+ for(RechnungVoll::const_iterator i=rngp->begin(); i!=rngp->end(); ++i)
+   {
+    os << (*i).Zeile() << "\t";
+    os << (*i).Stueck() << "\t";
+    cH_ArtikelBezeichnung ab((*i).Artikel());
+    os << ab->Bezeichnung() << "\t";
+    os << (*i).getPreis().Wert().String() << "\t";
+    os << (*i).Rabatt().String() << "\t";
+    os << (*i).GPreis().Wert().String() << "\t";
+    os << (*i).ProvSatz().String() << "\n";
+   } 
 
  for(guint i=0; i<prov_aufentries->columns().size(); i++)
    prov_aufentries->set_column_auto_resize(i,true);
@@ -97,7 +139,10 @@ void auftrag_provision::on_prov_apply_clicked()
  if(ret!=0) return;
 
 #ifdef MABELLA_EXTENSIONS
-  for(Gtk::CList::SelectionList::iterator s=prov_aufentries->selection().begin();
+  assert(run_mode!=UNKNOWN);
+  if(run_mode==AUFTRAG)
+  {
+   for(Gtk::CList::SelectionList::iterator s=prov_aufentries->selection().begin();
 	s!=prov_aufentries->selection().end(); ++s)
     {
      int znr(atoi((*s)->begin()->get_text().c_str()));
@@ -105,29 +150,55 @@ void auftrag_provision::on_prov_apply_clicked()
      Query("update auftragentry set provsatz=? where "
 	" (instanz,auftragid,zeilennr)=(?,?,?)")
 	<< prov_provsatz->get_value_as_float()
-	<< auf->InstanzID()
-	<< auf->Id()
+	<< aufp->InstanzID()
+	<< aufp->Id()
 	<< znr;
      SQLerror::test(__FILELINE__);
     }
+   } 
+  else  
+  if(run_mode==RECHNUNG)
+  {
+   for(Gtk::CList::SelectionList::iterator s=prov_aufentries->selection().begin();
+	s!=prov_aufentries->selection().end(); ++s)
+    {
+     int znr(atoi((*s)->begin()->get_text().c_str()));
+
+     Query("update rechnungentry set provsatz=? where "
+	" (rngid,zeilennr)=(?,?)")
+	<< prov_provsatz->get_value_as_float()
+	<< Id()
+	<< znr;
+     SQLerror::test(__FILELINE__);
+    }
+   } 
 #endif
 
- auf->loadEntries();
+ assert(run_mode!=UNKNOWN);
+ LoadEntries();
  fillProvEntryList();
  prov_provsatz->set_value(0);
 }
 
-void auftrag_provision::on_prov_cancel_clicked()
+void auftrag_provision::LoadEntries()
+{
+ if(run_mode==AUFTRAG) aufp->loadEntries();
+ else if(run_mode==RECHNUNG) rngp->loadEntries();
+}
+
+
+/*void auftrag_provision::on_prov_cancel_clicked()
 {  
 }
+*/
 
 void auftrag_provision::on_prov_enable_toggled()
 {  
  if(prov_enable->get_active())
    {
-    cH_Kunde kunde(auf->getKundennr());
+    cH_Kunde kunde(getKundennr());
     try {
-    	auf->setVerknr(kunde->VerkNr());
+    	 setVerknr(kunde->VerkNr());
     }
     catch(SQLerror &e)
     {
@@ -136,18 +207,18 @@ void auftrag_provision::on_prov_enable_toggled()
     prov_verkaeufer->grab_focus();
     verkprov_frame->set_sensitive(true);
 
-    try {prov_verkaeufer->set_value(auf->getVerknr());
+    try {prov_verkaeufer->set_value(getVerknr());
     }
     catch(SQLerror &e)
     { if(e.Code()==100) meldung->Show(
 	std::string("Der Verkäufer mit der Nr.:")+
-	itos(auf->getVerknr())+" nicht gefunden");
+	itos(getVerknr())+" nicht gefunden");
     }
    }
  else
   {
     try {
-    	auf->setVerknr(Kunde::none_id);
+    	 setVerknr(Kunde::none_id);
     }
     catch(SQLerror &e)
     {
@@ -166,7 +237,7 @@ void auftrag_provision::on_prov_verk_activate()
  cH_Kunde verkaeufer(prov_verkaeufer->get_value());
 
  try {
-   auf->setVerknr(verkaeufer->Id());
+     setVerknr(verkaeufer->Id());
  }
  catch(SQLerror &e)
    { meldung->Show(e); }
@@ -184,3 +255,36 @@ void auftrag_provision::on_prov_provsatz_changed()
 {
  prov_apply->set_sensitive(true);  
 }
+
+
+
+ManuProcEntity<>::ID auftrag_provision::ID() const 
+{if(run_mode==AUFTRAG) return aufp->Id();
+ if(run_mode==RECHNUNG) return rngp->Id();
+ return ManuProcEntity<>::none_id;
+}
+
+
+ManuProC::Datum auftrag_provision::getDatum() const
+{
+ if(run_mode==AUFTRAG) return aufp->getDatum();
+ if(run_mode==RECHNUNG) return rngp->getDatum();
+ return ManuProC::Datum();
+}
+
+Kunde::ID auftrag_provision::getKundennr() const
+{
+ if(run_mode==AUFTRAG) return aufp->getKundennr();
+ if(run_mode==RECHNUNG) return rngp->KdNr();
+ return ManuProcEntity<>::none_id;
+}
+
+Kunde::ID auftrag_provision::getVerknr() const
+{
+ if(run_mode==AUFTRAG) return aufp->getVerknr();
+ if(run_mode==RECHNUNG) return rngp->getVerknr();
+ return ManuProcEntity<>::none_id;
+}
+
+
+
