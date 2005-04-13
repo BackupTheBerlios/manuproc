@@ -1,4 +1,4 @@
-/* $Id: RechnungEntry.h,v 1.27 2005/01/12 14:52:09 jacek Exp $ */
+/* $Id: RechnungEntry.h,v 1.28 2005/04/13 14:44:07 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -83,6 +83,7 @@ class RechnungEntry : public RechnungEntryBase
  AuftragBase auftrag;
 // LieferscheinBase::ID lfrsid;
 // int lieferzeile;
+ mutable fixedpoint<2> provsatz;
  
 public:
 
@@ -91,7 +92,8 @@ public:
                         ManuProC::Datum ld, const LieferscheinEntryBase ls,
                         const AuftragBase &ab)
   		: RechnungEntryBase(l,z),artikel(a),stueck(s),menge(m),preis(p),
-                        rabatt(r),lieferdatum(ld),lfrs(ls),auftrag(ab)
+                        rabatt(r),lieferdatum(ld),lfrs(ls),auftrag(ab),
+                        provsatz(-1)
                 {};
 
  mengen_t Menge() const { return menge; }
@@ -135,6 +137,9 @@ public:
  const Preis::geldbetrag_t Gesamtpreis() const { 
 	 	return preis.Gesamtpreis(preis.getWaehrung(),
  			stueck,menge.as_float(),rabatt); }	
+ 			
+ fixedpoint<2> ProvSatz() const throw(SQLerror);
+ void setProvSatz(const fixedpoint<2> ps) throw(SQLerror); 			
  
 };
 

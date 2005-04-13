@@ -26,7 +26,7 @@ exec sql include sqlca;
 std::map<int,struct RechnungEntryBase::rng_payoff> RechnungEntryBase::rgdata;
 
 RechnungEntry::RechnungEntry(const RechnungEntryBase& rechnung)
-throw(SQLerror)	:RechnungEntryBase(rechnung)
+throw(SQLerror)	:RechnungEntryBase(rechnung),provsatz(-1)
 {
  exec sql begin declare section;
    int ARTIKELID, STUECK, LFRSID, LFRSZN;
@@ -139,4 +139,27 @@ cH_Kunde RechnungEntry::Kunde() const
  return rgdata[rngid].kunde;
 }
 
+
+fixedpoint<2> RechnungEntry::ProvSatz() const throw(SQLerror)
+{
+ if(provsatz!=-1) return provsatz;
+
+ Query q("select provsatz from rechnungentry where"
+        " (rngid,zeilennr) = (?,?)");
+
+ q << Id() << Zeile() >> FetchIStream::MapNull(provsatz,0);
+ SQLerror::test(__FILELINE__);
+
+ return provsatz;
+}
+
+void RechnungEntry::setProvSatz(const fixedpoint<2> ps) throw(SQLerror)
+{
+ Query q("update rechnungentry set provsatz=? where"
+        " (rngid,zeilennr) = (?,?)");
+
+ q << ps << Id() << Zeile();
+ SQLerror::test(__FILELINE__);
+ provsatz=ps;
+}
 
