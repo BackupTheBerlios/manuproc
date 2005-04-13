@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.84 2004/12/16 08:20:31 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.85 2005/04/13 22:58:57 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -206,7 +206,7 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
 	  auffuellen_bool(), expandieren_bool(), block_save(),
 	  color_bool(),
 	  sortierspalte(invisible_column), invert_sortierspalte(), 
-	  stamp(reinterpret_cast<unsigned>(this)),
+	  stamp(reinterpret_cast<long>(this)),
 	  m_columns(max_col)
 {  
 #ifndef OLD_MODEL
