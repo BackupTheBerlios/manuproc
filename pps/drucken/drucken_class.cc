@@ -858,9 +858,9 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
      	 bool erste_spalte=true;
      	 
 #ifdef MABELLA_EXTENSIONS
-	if(zeilen_passen_noch%2) os << "\\shaderow";
+	if(zeilen_passen_noch%2) os << "\\shaderow{}";
 #endif
-         if (zusatzinfo) linecolor = "\\mygray";
+         if (zusatzinfo) linecolor = "\\mygray{}";
          
          
          if (stueck_bool)
