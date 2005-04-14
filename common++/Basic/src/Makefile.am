@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.52 2004/11/09 12:01:46 christof Exp $
+# $Id: Makefile.am,v 1.53 2005/04/14 12:00:06 christof Exp $
 
 if WINDOWS
 WIN_LDFLAGS=-no-undefined -export-symbols libManuProC_Base@DATABASE_TYPE@.def 
@@ -6,7 +6,7 @@ DLL_LDADD=libManuProC_Base_res.lo @SIGC_LIBS@ @ECPG_LIBS@
 DLL_DEF=libManuProC_Base@DATABASE_TYPE@.def
 else
 WIN_LDFLAGS=
-DLL_LDADD=
+DLL_LDADD=@SIGC_LIBS@ @ECPG_LIBS@
 DLL_DEF=
 endif
 
