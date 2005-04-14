@@ -50,14 +50,17 @@ bool ppsInstanzReparatur::Reparatur_MindestMenge(bool analyse_only,ArtikelBase a
       { ae.MengeAendern(fehlt,false,AufEintragBase());
         // eigentlich ... mit Datum des 1. 1ers der noch nicht
         // hier als Zeiger existiert nachbestellen (aber ich nehme mal
-        // das auffällige Lagerdatum (epoch))
+        // das auffÃ¤llige Lagerdatum (epoch))
         ppsInstanz::ID next=ae.Instanz()->NaechsteInstanz(artstamm);
         assert(next!=ppsInstanzID::None);
         AufEintrag::ArtikelInternNachbestellen(next,fehlt,
                                       LagerBase::Lagerdatum(),art,zweier);
       }
     }
-   else if (ae.getRestStk()>=artstamm.getMindBest())
+    else if (ae.getRestStk()==artstamm.getMindBest())
+    { std::cerr << "Reparatur_MindestMenge fÃ¼r " << art << " nicht erforderlich?\n";
+    }
+   else if (ae.getRestStk()>artstamm.getMindBest())
    {  // etwas nachbestellt obwohl nicht notwendig?
    ManuProC::Trace t2(AuftragBase::trace_channel, function+":MABELLA_DEBUG: Rest,MindBest"
                    ,ae.getRestStk(),artstamm.getMindBest());
@@ -65,7 +68,7 @@ bool ppsInstanzReparatur::Reparatur_MindestMenge(bool analyse_only,ArtikelBase a
              = AufEintragZu::get_Referenz_list(ae,AufEintragZu::list_kinder,
                    AufEintragZu::list_Artikel,AufEintragZu::list_unsorted);
       if (!nachbestellt.empty())
-      {  // einfach soviel wie nötig abbestellen
+      {  // einfach soviel wie nÃ¶tig abbestellen
          // das geht doch bestimmt auch per funktor ...
          AuftragBase::mengen_t zuviel=ae.getRestStk()-artstamm.getMindBest();
 //         AufEintrag::ArtikelInternAbbestellen_cb cb(ae);
@@ -73,7 +76,7 @@ bool ppsInstanzReparatur::Reparatur_MindestMenge(bool analyse_only,ArtikelBase a
          { AuftragBase::mengen_t M=AuftragBase::min(zuviel,i->Menge);
          
    ManuProC::Trace t1(AuftragBase::trace_channel, function+" MABELLA_DEBUG: zuviel"
-                    ,zuviel,nachbestellt.size());         
+                    ,zuviel,nachbestellt.size());
          
            if (!M) continue;
            ae.MengeAendern(-i->Menge,false,AufEintragBase());
@@ -92,7 +95,7 @@ bool ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al,
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,analyse_only);
    assert(Instanz() != ppsInstanzID::Kundenauftraege);
    
-   // Vorsicht, dass al hiernach nicht verändert wird (remove/push)
+   // Vorsicht, dass al hiernach nicht verÃ¤ndert wird (remove/push)
    std::vector<SelectedFullAufList::iterator> zweier;
    for(SelectedFullAufList::iterator i=al.begin();i!=al.end();++i)
    {  if (i->Id()==AuftragBase::dispo_id)
@@ -139,7 +142,7 @@ bool ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al,
                 M_rest-=M2;
                 if(!M_rest) break;
              }
-             if (!!M_rest) analyse("Fehler: Der 0er hat nicht genügend Eltern",*i,M_rest);
+             if (!!M_rest) analyse("Fehler: Der 0er hat nicht genÃ¼gend Eltern",*i,M_rest);
              assert(AuftragBase::tolerate_inconsistency || !M_rest);
           }
          menge0er-=M;
@@ -188,11 +191,11 @@ bool ppsInstanzReparatur::Lagermenge_setzen(bool analyse_only, const ArtikelBase
 
      bool set_dispo_to_zero=false;
      AuftragBase::mengen_t menge=gesmenge;
-     // Vorgemerkte Menge (1er Aufträge) wieder abziehen
+     // Vorgemerkte Menge (1er AuftrÃ¤ge) wieder abziehen
      // Schon eingetragene Menge wieder abziehen
      SelectedFullAufList auftraglist1=SelectedFullAufList(SQLFullAuftragSelector::
        sel_Artikel_Planung_id(Instanz()->Id(),ManuProC::DefaultValues::EigeneKundenId,art,AuftragBase::plan_id));
-     // der Selector holt nur die Aufträge mit dem Status OPEN
+     // der Selector holt nur die AuftrÃ¤ge mit dem Status OPEN
      for (SelectedFullAufList::iterator j=auftraglist1.begin();j!=auftraglist1.end();++j)
        {
          assert(j->Id()==AuftragBase::plan_id);
@@ -211,7 +214,7 @@ bool ppsInstanzReparatur::Lagermenge_setzen(bool analyse_only, const ArtikelBase
              {  AuftragBase::mengen_t M2=AuftragBase::min(k->Menge,M_rest);
                 if (!M2) continue;
 
-		// eine Rekursion würde die Menge neu verplanen ...
+		// eine Rekursion wÃ¼rde die Menge neu verplanen ...
                 j->MengeAendern(-M2,false,k->AEB);
                 AufEintrag::ArtikelInternNachbestellen(Instanz(),M2,j->getLieferdatum(),
                 		j->Artikel(),k->AEB);
@@ -240,7 +243,7 @@ bool ppsInstanzReparatur::Lagermenge_setzen(bool analyse_only, const ArtikelBase
       {
          if(j->Id()!=AuftragBase::dispo_id) assert(!"never get here");
          assert(j->getStueck()==j->getRestStk());
-         // Zuordnungen addieren (die sind ja nicht verfügbar)
+         // Zuordnungen addieren (die sind ja nicht verfÃ¼gbar)
          AufEintragZu::list_t nachbestellt
              = AufEintragZu::get_Referenz_list(*j,AufEintragZu::list_kinder,
                    AufEintragZu::list_ohneArtikel,AufEintragZu::list_unsorted);
@@ -256,7 +259,7 @@ bool ppsInstanzReparatur::Lagermenge_setzen(bool analyse_only, const ArtikelBase
             { j->MengeAendern(fehlt,false,AufEintragBase());
               // eigentlich ... mit Datum des 1. 1ers der noch nicht
               // hier als Zeiger existiert nachbestellen (aber ich nehme mal
-              // das auffällige Lagerdatum (epoch))
+              // das auffÃ¤llige Lagerdatum (epoch))
               ppsInstanz::ID next=j->Instanz()->NaechsteInstanz(artstamm);
               assert(next!=ppsInstanzID::None);
               AufEintrag::ArtikelInternNachbestellen(next,fehlt,
@@ -264,7 +267,7 @@ bool ppsInstanzReparatur::Lagermenge_setzen(bool analyse_only, const ArtikelBase
             }
          }
          
-         if(set_dispo_to_zero && !!j->getStueck())
+         if(set_dispo_to_zero && !!(j->getRestStk()-Summe(nachbestellt)))
           { analyse("set_dispo_to_zero",*j,j->getStueck());
             alles_ok=false;
             if(!analyse_only)
@@ -274,7 +277,7 @@ bool ppsInstanzReparatur::Lagermenge_setzen(bool analyse_only, const ArtikelBase
       
      if(menge>0 && !set_dispo_to_zero) 
       { alles_ok=false;
-        analyse("DispoAufträge_anlegen",AufEintragBase(Instanz(),2,-1),cH_ArtikelBezeichnung(art)->Bezeichnung(),menge.String());
+        analyse("DispoAuftrÃ¤ge_anlegen",AufEintragBase(Instanz(),2,-1),cH_ArtikelBezeichnung(art)->Bezeichnung(),menge.String());
         if (!analyse_only)
             DispoAuftraege_anlegen(art,menge);
       }
@@ -292,7 +295,7 @@ try_again:
   {  try
      {  
 	int lmenge=i->GesamtMenge() < 0 ? 0 : i->GesamtMenge();
-	// lmenge muß auf 0 gesetzt werden bei <0; sonst endlose Reparatur
+	// lmenge muÃŸ auf 0 gesetzt werden bei <0; sonst endlose Reparatur
         alles_ok&=Lagermenge_setzen(analyse_only,i->Artikel(),
      						lmenge,retry);
      }
@@ -309,7 +312,7 @@ void ppsInstanzReparatur::DispoAuftraege_anlegen(const ArtikelBase &artikel,cons
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Instanz());
    assert(Instanz()->EigeneLagerKlasseImplementiert());
-std::cout << "Mengenänderung im Lager "<<Instanz()<<'\t'<<menge<<" von " << artikel.Id() << '\n';
+std::cout << "MengenÃ¤nderung im Lager "<<Instanz()<<'\t'<<menge<<" von " << artikel.Id() << '\n';
    if(menge>=0)
       LagerBase(make_value(Instanz())).rein_ins_lager(artikel,menge,false);
 }
@@ -390,11 +393,11 @@ void ppsInstanzReparatur::KinderErniedrigen(AufEintrag &ae,
 }
 
 bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, bool analyse_only, bool raise_prodselbst) const
-{  // 2er und Kundenaufträge dürfen keine Eltern haben!
+{  // 2er und KundenauftrÃ¤ge dÃ¼rfen keine Eltern haben!
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,ae,/*eltern.size(),*/analyse_only);
    if (ae.Id()==AuftragBase::dispo_id || ae.Instanz()==ppsInstanzID::Kundenauftraege)
    {  if (!eltern.empty())
-      {  analyse("2er und Kundenaufträge dürfen keine Eltern haben!",ae);
+      {  analyse("2er und KundenauftrÃ¤ge dÃ¼rfen keine Eltern haben!",ae);
        alle_weg:
          for (AufEintragZu::list_t::iterator i=eltern.begin();i!=eltern.end();)
          {  if (!analyse_only) AufEintragZu::remove(i->AEB,ae);
@@ -406,14 +409,14 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
    }
    if (ae.getCombinedStatus()==UNCOMMITED)
    {  if (!eltern.empty())
-      {  analyse("unbestätigte Aufträge dürfen keine Eltern haben!",ae);
+      {  analyse("unbestÃ¤tigte AuftrÃ¤ge dÃ¼rfen keine Eltern haben!",ae);
          goto alle_weg;
       }
       return true;
    }
    if (in(ae.getCombinedStatus(),STORNO,CLOSED) && !ae.getGeliefert())
    {  if (!eltern.empty())
-      {  analyse("stornierte/geschlossene Aufträge ohne Lieferungen sollten keine Eltern haben!",ae);
+      {  analyse("stornierte/geschlossene AuftrÃ¤ge ohne Lieferungen sollten keine Eltern haben!",ae);
          if (!not_strict) goto alle_weg;
       }
       return true;
@@ -429,7 +432,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
       {  if (i->AEB.Id()!=AuftragBase::dispo_id)
          {  if (!silence_warnings)
 // Vorerst deaktiviert   
-               analyse("Eltern auf gleicher Instanz müssen 2er sein",ae,i->AEB,i->Menge);
+               analyse("Eltern auf gleicher Instanz mÃ¼ssen 2er sein",ae,i->AEB,i->Menge);
             goto inst_compare_end;
            weg:
             if (!analyse_only) AufEintragZu::remove(i->AEB,ae);
@@ -446,12 +449,12 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
       }
       else
       {  if (i->AEB.Id()==AuftragBase::dispo_id && !i->AEB.Instanz()->LagerInstanz()) 
-         {  analyse("2er müssen auf der gleichen instanz liegen",ae,i->AEB,i->Menge);
+         {  analyse("2er mÃ¼ssen auf der gleichen instanz liegen",ae,i->AEB,i->Menge);
             goto weg;
          }
          // schadet nicht ... ist aber wohl eher die Angelegenheit des 1ers
          if (i->AEB.Id()==AuftragBase::plan_id && !!i->Menge)
-         {  analyse("1er können keine Menge bestellen",ae,i->AEB,i->Menge);
+         {  analyse("1er kÃ¶nnen keine Menge bestellen",ae,i->AEB,i->Menge);
             if (!analyse_only) AufEintragZu(i->AEB).setMengeDiff__(ae,-i->Menge);
             i->Menge=0;
             alles_ok=false;
@@ -463,7 +466,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
       {  if (i->AEB.Id()==AuftragBase::dispo_id 
       		|| ae.Id()==AuftragBase::ungeplante_id
       	        || i->AEB.Id()==AuftragBase::ungeplante_id)
-      	 {  analyse("Zuordnung unnötig",ae,i->AEB,i->Menge);
+      	 {  analyse("Zuordnung unnÃ¶tig",ae,i->AEB,i->Menge);
       	   nur_der_weg:
             if (!analyse_only) AufEintragZu::remove(i->AEB,ae,i->Pri);
             i=eltern.erase(i);
@@ -471,7 +474,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
             continue;      	    
       	 }
       	 if (ae.Id()==AuftragBase::plan_id && !ae.getGeliefert())
-      	 {  analyse("Zuordnungen zu leeren 1ern können weg",ae,i->AEB,i->Menge);
+      	 {  analyse("Zuordnungen zu leeren 1ern kÃ¶nnen weg",ae,i->AEB,i->Menge);
       	    if (really_delete) goto nur_der_weg;
       	 }
       	 unsigned count=0;
@@ -507,14 +510,14 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
    }
    if (menge>ae.getRestStk()
    	&& (!ae.Instanz()->ProduziertSelbst() || raise_prodselbst))
-   {  analyse("mehr v.o. benötigt als noch offen",ae,menge,ae.getRestStk());
+   {  analyse("mehr v.o. benÃ¶tigt als noch offen",ae,menge,ae.getRestStk());
       alles_ok=false;
       if (!analyse_only)
       {if (ae.Id()==AuftragBase::ungeplante_id) 
          ae.MengeAendern(menge-ae.getRestStk(),true,AufEintragBase());
        else
        { // Zuordnung erniedrigen, Reihenfolge: 2,0,1,3)
-         // danach müssen die Eltern neu bestellen (Reparatur)!
+         // danach mÃ¼ssen die Eltern neu bestellen (Reparatur)!
          AuftragBase::mengen_t m=menge-ae.getRestStk(); // positiv
          Zuordnung_erniedrigen(ae,eltern,m,AuftragBase::dispo_id);
          if (!!m) Zuordnung_erniedrigen(ae,eltern,m,AuftragBase::ungeplante_id);
@@ -527,16 +530,16 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
        }
       }
    }
-   // Sum zu groß: nachbestellen (kann nur bei ProduziertSelbst passieren)
+   // Sum zu groÃŸ: nachbestellen (kann nur bei ProduziertSelbst passieren)
    else if (menge>ae.getStueck())
-   {  analyse("mehr v.o. benötigt als jemals bestellt",ae,menge,ae.getStueck());
+   {  analyse("mehr v.o. benÃ¶tigt als jemals bestellt",ae,menge,ae.getStueck());
       alles_ok=false;
       if (!analyse_only)
       {if (ae.Id()==AuftragBase::ungeplante_id) 
          ae.MengeAendern(menge-ae.getStueck(),true,AufEintragBase());
        else
        { // Zuordnung erniedrigen, Reihenfolge: 2,0,1,3)
-         // danach müssen die Eltern neu bestellen (Reparatur)!
+         // danach mÃ¼ssen die Eltern neu bestellen (Reparatur)!
          AuftragBase::mengen_t m=menge-ae.getStueck(); // positiv
          Zuordnung_erniedrigen(ae,eltern,m,AuftragBase::dispo_id);
          if (!!m) Zuordnung_erniedrigen(ae,eltern,m,AuftragBase::ungeplante_id);
@@ -547,7 +550,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
    }
    // Sum zu klein: abbestellen (falls 0er, bei 1er 2er erzeugen)
    else if (menge<ae.getRestStk())
-   {  analyse("mehr offen als nun v.o. benötigt",ae,menge,ae.getStueck());
+   {  analyse("mehr offen als nun v.o. benÃ¶tigt",ae,menge,ae.getStueck());
       alles_ok=false;
       if (!analyse_only)
       {if (in(ae.Id(),AuftragBase::ungeplante_id,AuftragBase::plan_id))
@@ -559,7 +562,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
        }
        else 
        { assert(ae.Id()>=AuftragBase::handplan_id);
-         // 2er erhöhen
+         // 2er erhÃ¶hen
          AuftragBase(ae.Instanz(),AuftragBase::dispo_id).
               BestellmengeAendern(ae.getRestStk()-menge,ae.getLieferdatum(),
               		ae.Artikel(),OPEN,ae);
@@ -567,7 +570,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
       }
    }
 
-   // höchstens so viel geliefert wie ausgeliefert   
+   // hÃ¶chstens so viel geliefert wie ausgeliefert   
    if (ae.Id()==AuftragBase::plan_id && !!ae.getGeliefert()
     	&& !ae.Instanz()->ProduziertSelbst())
    {  AuftragBase::mengen_t geliefert_eltern;
@@ -583,7 +586,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
    }
 
    if (eltern.empty() && ae.Id()==AuftragBase::ungeplante_id && !ae.getStueck())
-   {  analyse("0er ohne Eltern können ganz weg",ae);
+   {  analyse("0er ohne Eltern kÃ¶nnen ganz weg",ae);
       if (really_delete) 
       {  Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
       		<< ae;
@@ -652,7 +655,7 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
       if (menge2>astamm.getMindBest())
       { for (AufEintragZu::map_t::iterator i=kinder.begin();i!=kinder.end();++i)
         {  for (AufEintragZu::list_t::iterator j=i->second.begin();j!=i->second.end();)
-           { analyse("Die Nachbestellungen Ã¼bertreffen die Mindesmenge",ae,j->AEB,menge2);
+           { analyse("Die Nachbestellungen Ãœbertreffen die Mindesmenge",ae,j->AEB,menge2);
              if (!analyse_only) AufEintragZu::remove(ae,j->AEB);
              j=i->second.erase(j);
              alles_ok=false;
@@ -709,7 +712,7 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
             }
             else // Instanz ist schon mal richtig ...
             {  if (ae.Artikel()!=i->first)
-               {  analyse("Nächste Instanz mit anderem Artikel "+itos(ab.Id())+" "+itos(i->first.Id()),ae,j->AEB,j->Menge);
+               {  analyse("NÃ¤chste Instanz mit anderem Artikel "+itos(ab.Id())+" "+itos(i->first.Id()),ae,j->AEB,j->Menge);
                   artikel_passt_nicht=true;
                   goto weg1;
                }
@@ -725,14 +728,14 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
             }
             if (ae.getCombinedStatus()!=OPEN)
             {  if (!!j->Menge)
-               {  analyse("Nichtoffene Aufträge dürfen nichts (mehr) bestellen",ae,j->AEB,j->Menge);
+               {  analyse("Nichtoffene AuftrÃ¤ge dÃ¼rfen nichts (mehr) bestellen",ae,j->AEB,j->Menge);
                   goto weg1;
                }
             }
 
             AufEintrag ae2(j->AEB);
             if (ae2.getLieferdatum()>newdate 
-                // Ausnahme für unbestellte aber doch gelieferte Mengen
+                // Ausnahme fÃ¼r unbestellte aber doch gelieferte Mengen
             	&& !(ae.Id()==AuftragBase::plan_id 
             		&& !ae.Instanz()->LagerInstanz()
             		&& ae.getLieferdatum()==LagerBase::Lagerdatum()))
@@ -778,13 +781,13 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
       if (ae.Id()==AuftragBase::plan_id && ae.Instanz()->LagerInstanz())
          goto exit;
       if (ae.getCombinedStatus()!=OPEN) goto exit;
-      // kam der Artikel überhaupt vor ?
+      // kam der Artikel Ã¼berhaupt vor ?
       if (next!=ppsInstanzID::None)
       {  AufEintragZu::map_t::const_iterator f=kinder.find(ae.Artikel());
          AuftragBase::mengen_t M=ae.getRestStk();
          if (f==kinder.end() && !!M)
          {  alles_ok=false;
-            analyse("Artikel fehlt intern völlig",ae,itos(ae.Artikel().Id()),M.String(true));
+            analyse("Artikel fehlt intern vÃ¶llig",ae,itos(ae.Artikel().Id()),M.String(true));
             if (!analyse_only)
             {  AufEintrag::ArtikelInternNachbestellen(next,M,newdate,
             				ae.Artikel(),ae);
@@ -801,7 +804,7 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
              && !ae.Instanz()->ExterneBestellung()
 	     ) // Artikel nie bestellt
          {  alles_ok=false;
-            analyse("Rohartikel fehlt völlig",ae,itos(i->rohartikel.Id()),M.String(true));
+            analyse("Rohartikel fehlt vÃ¶llig",ae,itos(i->rohartikel.Id()),M.String(true));
             if (!analyse_only)
             {  AufEintrag::ArtikelInternNachbestellen(
             		ppsInstanz::getBestellInstanz(i->rohartikel),
@@ -811,7 +814,7 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
       }
    }
    if (kinder.empty() && ae.Id()==AuftragBase::dispo_id && !ae.getStueck())
-   {  analyse("2er ohne Kinder können ganz weg",ae);
+   {  analyse("2er ohne Kinder kÃ¶nnen ganz weg",ae);
       if (really_delete) 
       {  Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
       		<< ae;
@@ -840,12 +843,12 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
       }
       if (ae.getAufStatus()!=OPEN)
       {  alles_ok=false;
-         analyse("0/2er Aufträge müssen offen sein",ae,AuftragBase::getStatusStr(ae.getAufStatus()));
+         analyse("0/2er AuftrÃ¤ge mÃ¼ssen offen sein",ae,AuftragBase::getStatusStr(ae.getAufStatus()));
          if (!analyse_only) Auftrag(ae).setStatusAuftrag_(OPEN);
       }
       if (ae.getCombinedStatus()!=OPEN)
       {  alles_ok=false;
-         analyse("0/2er Einträge müssen offen sein",ae);
+         analyse("0/2er EintrÃ¤ge mÃ¼ssen offen sein",ae);
          if (!analyse_only) ae.setStatus(OPEN,true,true,false);
       }
    }
@@ -897,7 +900,7 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    {  if (ae.Id()==AuftragBase::dispo_id && !ae.Instanz()->LagerInstanz()
         	&& ae.getStueck()>0)
       { if (!silence_warnings) 
-          analyse("2er zu handgeplanten auf gleicher (falscher) Instanz werden benÃ¶tigt",ae);
+          analyse("2er zu handgeplanten auf gleicher (falscher) Instanz werden benÃƒÂ¶tigt",ae);
         goto continue_with_wrong_instance;
       }
       if (!silence_warnings || ae.Id() < AuftragBase::handplan_id)
@@ -923,23 +926,23 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
 		<< ae.Instanz()->Id() << ',' << ae.Id() << ',' << ae.ZNr() << ");\n";
 
       return alles_ok;
-      // besser: Kinder für diesen Auftrag nicht aufrufen
+      // besser: Kinder fÃ¼r diesen Auftrag nicht aufrufen
    }
    continue_with_wrong_instance: ;
    
    if (ae.Id()==AuftragBase::plan_id)
    {  if (ae.Instanz()==ppsInstanzID::Kundenauftraege)
-      {  analyse("Es darf keine 1er bei den Kundenaufträgen geben",ae);
+      {  analyse("Es darf keine 1er bei den KundenauftrÃ¤gen geben",ae);
          goto loeschen;
       }
       else if (!!ae.getRestStk() && !ae.Instanz()->LagerInstanz())
       {  alles_ok=false;
-         analyse("ausgelieferte 1er Aufträge sollten CLOSED sein",ae,AuftragBase::getStatusStr(ae.getCombinedStatus()));
+         analyse("ausgelieferte 1er AuftrÃ¤ge sollten CLOSED sein",ae,AuftragBase::getStatusStr(ae.getCombinedStatus()));
          if (!analyse_only) ae.abschreiben(ae.getRestStk());
       }
       if (ae.getCombinedStatus()!=CLOSED && !ae.Instanz()->LagerInstanz())
       {  alles_ok=false;
-         analyse("1er Aufträge sollten CLOSED sein",ae,AuftragBase::getStatusStr(ae.getCombinedStatus()));
+         analyse("1er AuftrÃ¤ge sollten CLOSED sein",ae,AuftragBase::getStatusStr(ae.getCombinedStatus()));
          if (!analyse_only) ae.setStatus(CLOSED,true,true,false);
       }
    }
@@ -947,7 +950,7 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    	&& ae.Id()<AuftragBase::handplan_id
    	&& !in(ae.getCombinedStatus(),OPEN,CLOSED))
    {  alles_ok=false;
-      analyse("Interne Aufträge müssen OPEN/CLOSED sein",ae,AuftragBase::getStatusStr(ae.getCombinedStatus()));
+      analyse("Interne AuftrÃ¤ge mÃ¼ssen OPEN/CLOSED sein",ae,AuftragBase::getStatusStr(ae.getCombinedStatus()));
       if (!analyse_only) ae.setStatus(CLOSED,true,true,false);
    }
    if (ae.getGeliefert()>=ae.getStueck()
@@ -956,7 +959,7 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    	    && in(ae.Id(),AuftragBase::dispo_id,AuftragBase::ungeplante_id))
    	&& !(ae.Id()==AuftragBase::plan_id && !ae.getStueck()))
    {  alles_ok=false;
-      analyse("Erfüllte Aufträge müssen CLOSED sein",ae,ae.getGeliefert(),ae.getStueck());
+      analyse("ErfÃ¼llte AuftrÃ¤ge mÃ¼ssen CLOSED sein",ae,ae.getGeliefert(),ae.getStueck());
       if (!analyse_only) ae.setStatus(CLOSED,true,true,false);
    }
    else if (ae.Instanz()!=ppsInstanzID::Kundenauftraege
@@ -965,7 +968,7 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    	&& ae.getGeliefert()!=ae.getStueck()
    	&& ae.getCombinedStatus()!=OPEN)
    {  // alles_ok=false;
-      analyse("Warnung: Offene interne Aufträge sollten OPEN sein",ae,ae.getGeliefert(),ae.getStueck());
+      analyse("Warnung: Offene interne AuftrÃ¤ge sollten OPEN sein",ae,ae.getGeliefert(),ae.getStueck());
       // if (!analyse_only) ae.setStatus(OPEN,true,true,false);
    }
    

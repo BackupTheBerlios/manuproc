@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.14 2005/02/23 09:34:12 jacek Exp $
+// $Id: auftrag_repair.cc,v 1.15 2005/04/14 11:54:30 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -64,6 +64,7 @@ static void usage(const std::string &s)
            "\t-s Warnungen unterdrücken\n"
            "\t-l Reparatur wiederholen bis keine Fehler mehr auftreten\n"
 	   "\t-A nur für den Artikel mit der Id durchführen\n"
+	   "\t-L Anzahl der Wiederholungen (99)\n"
            "\t-I führt die Tests für alle Instanzen durch\n\n"
            "most common use:\n"
            "\t./auftrag_repair -l -I -a\\*\trepair all (-aD to delete unneeded)\n";
@@ -200,10 +201,10 @@ int main(int argc,char *argv[])
   bool analyse_only=false;
   bool all_instanz=false;
   bool loop=false;
-  int loops=0;
+  int loops=0,limit=99;
 
   if(argc==1) usage(argv[0]);
-  while ((opt=getopt_long(argc,argv,"h:d:i:a:yItlsA:",options,NULL))!=EOF)
+  while ((opt=getopt_long(argc,argv,"h:d:i:a:yItlsA:L:",options,NULL))!=EOF)
    {
     switch(opt)
      {
@@ -222,6 +223,7 @@ int main(int argc,char *argv[])
        case 'h' : dbhost=optarg;break;
        case 'y' : analyse_only=true;break;
        case 'l' : loop=true; break;
+       case 'L' : limit=atoi(optarg); break;
        case 's' : ppsInstanzReparatur::silence_warnings=true; break;
        case 't' : ManuProC::Tracer::Enable(AuftragBase::trace_channel); break;
        case 'A' : artikelid=atoi(optarg);break;
@@ -282,7 +284,7 @@ restart:
          actions=save;
         }
      }
-    if (loop && !alles_ok && loops < 99)
+    if (loop && !alles_ok && loops < limit)
     {  std::cout << "adjust_store: repairing again\n";
        goto restart;
     }
