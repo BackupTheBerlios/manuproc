@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.54 2005/04/13 14:44:07 jacek Exp $
+// $Id: Kunde.cc,v 1.55 2005/04/14 13:39:34 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -384,9 +384,9 @@ fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art,
        fixedpoint<2> ps1=0.0,ps2=0.0;
 
        Query q("select provsatz1, provsatz2, "
-          " rabatt2, rabatt_satz1, "
+          " rabatt1, rabatt_satz1, "
           " rabatt2, rabatt_satz2, "
-          " rabatt3, rabatt_satz3, "
+          " rabatt3, rabatt_satz3 "
           " from prov_verkaeufer where"
 	  " verknr=? and kundennr=?");
        q << verk->Rngan() << Id(); // provsatz vom mainvertreter
