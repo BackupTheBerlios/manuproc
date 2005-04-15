@@ -58,7 +58,8 @@ bool ppsInstanzReparatur::Reparatur_MindestMenge(bool analyse_only,ArtikelBase a
       }
     }
     else if (ae.getRestStk()==artstamm.getMindBest())
-    { std::cerr << "Reparatur_MindestMenge für " << art << " nicht erforderlich?\n";
+    { if (!silence_warnings)
+        std::cerr << "Reparatur_MindestMenge für " << art << " nicht erforderlich?\n";
     }
    else if (ae.getRestStk()>artstamm.getMindBest())
    {  // etwas nachbestellt obwohl nicht notwendig?
