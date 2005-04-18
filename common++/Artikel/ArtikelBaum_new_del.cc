@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum_new_del.cc,v 1.8 2004/10/18 12:32:49 jacek Exp $
+// $Id: ArtikelBaum_new_del.cc,v 1.9 2005/04/18 16:18:56 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, 
  *  written by Malte Thoma and Christof Petig
@@ -70,6 +70,7 @@ void ArtikelBaum::delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artike
    << fuer_artikel.Id() << von_artikel.Id();
  SQLerror::test(__FILELINE__,100);
 
+ ArtikelBaum::UnCache(fuer_artikel);
 // delete_from_zuordnung(fuer_artikel,von_artikel);
  tr.commit();
 }
