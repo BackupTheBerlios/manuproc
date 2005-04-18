@@ -1,3 +1,4 @@
+ln -s Aux Misc
 libtoolize --force --copy
 autoheader
 aclocal-1.7
