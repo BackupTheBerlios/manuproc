@@ -9,6 +9,22 @@
 #include "ManuProc_Starter.hh"
 #include <gtkmm/main.h>
 
+
+
+ManuProc_Starter::ManuProc_Starter(void) throw(SQLerror)
+{
+ dbcapability=new DBCapability();
+ 
+ DBCapability::WhiteColumn wc("fibu","");
+ fibu_start->set_sensitive(
+     dbcapability->isWhite(DBCapability::ColAct(wc,DBCapability::EXECUTE)));
+     
+ DBCapability::WhiteColumn wc1("vertrieb","");
+ vertrieb_start->set_sensitive(
+     dbcapability->isWhite(DBCapability::ColAct(wc1,DBCapability::EXECUTE)));     
+}
+
+
 void ManuProc_Starter::on_pps_start_clicked()
 {  
  std::string cmd("/bin/sh -c pps &");
@@ -46,3 +62,10 @@ void ManuProc_Starter::on_preise_start_clicked()
 }
 
 
+void ManuProc_Starter::on_fibu_start_clicked()
+{  
+}
+
+void ManuProc_Starter::on_vertrieb_start_clicked()
+{  
+}

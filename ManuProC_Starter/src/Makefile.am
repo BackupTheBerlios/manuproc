@@ -13,6 +13,8 @@ noinst_HEADERS = \
 	ManuProc_Starter_glade.hh \
 	ManuProc_Starter.hh 
 
-AM_CXXFLAGS = @GTKMM_CFLAGS@ 
+AM_CXXFLAGS = @GTKMM_CFLAGS@  @KOMPONENTEN_INCLUDES@
 
-manuproc_starter_LDADD = @LIBS@ @GTKMM_LIBS@ 
+LDFLAGS= @KOMPONENTEN_LDFLAGS@
+
+manuproc_starter_LDADD = @KOMPONENTEN_LIBS@ @LIBS@ @GTKMM_LIBS@ 

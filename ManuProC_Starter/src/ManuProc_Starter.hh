@@ -12,8 +12,12 @@
 #ifndef _MANUPROC_STARTER_HH
 #  include "ManuProc_Starter_glade.hh"
 #  define _MANUPROC_STARTER_HH
+#include <Aux/dbcapability.h>
+
 class ManuProc_Starter : public ManuProc_Starter_glade
 {  
+ DBCapability *dbcapability;        
+        
         
         void on_pps_start_clicked();
         void on_kunden_start_enter();
@@ -21,5 +25,10 @@ class ManuProc_Starter : public ManuProc_Starter_glade
         void on_artikel_start_clicked();
         void on_preise_start_clicked();
         void on_quit_clicked();
+        void on_fibu_start_clicked();
+        void on_vertrieb_start_clicked();        
+        
+public:
+ ManuProc_Starter(void) throw(SQLerror);    
 };
 #endif
