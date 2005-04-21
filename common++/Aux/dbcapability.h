@@ -9,7 +9,7 @@ class DBCapability
 {
 
 public:
- typedef enum {UPDATE='U', INSERT='I', DELETE='D', SELECT='S'} Action;
+ typedef enum {UPDATE='U', INSERT='I', DELETE='D', SELECT='S', EXECUTE='X'} Action;
  typedef std::multimap<std::string,Action> WhiteTableAction;
  typedef std::pair<std::string,std::string> WhiteColumn;
  typedef std::multimap<WhiteColumn,Action> WhiteColumnAction;
