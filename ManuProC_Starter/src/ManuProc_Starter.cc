@@ -64,8 +64,14 @@ void ManuProc_Starter::on_preise_start_clicked()
 
 void ManuProc_Starter::on_fibu_start_clicked()
 {  
+ std::string cmd("/bin/sh -c fibu &");
+ system(cmd.c_str());
+
 }
 
 void ManuProc_Starter::on_vertrieb_start_clicked()
-{  
+{
+ std::string cmd("/bin/sh -c vertrieb &");
+ system(cmd.c_str());
+  
 }
