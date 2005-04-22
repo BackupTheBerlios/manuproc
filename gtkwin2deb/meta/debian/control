@@ -6,8 +6,8 @@ Build-Depends-Indep: cdbs, debhelper (>= 4.1.51)
 
 Package: mingw32-gtkmm-meta-dev
 Architecture: all
-Depends: mingw32-gtkmm-dev (>= 2.4.5), mingw32-runtime (>= 3.3), mingw32 (>= 3.3), mingw32-glib-dev (>= 2.4.7)
-Conflicts: mingw32-sigc, mingw32-atk, mingw32-glib, mingw32-glibmm, mingw32-gtk+, mingw32-gtkmm, mingw32-pango, mingw32-sigc, mingw32-zlib-lib, mingw32-gtk-la, mingw32-libpng-lib, mingw32-atk-dev-exe, mingw32-glib-dev-doc, mingw32-glib-dev-exe, mingw32-gtk+-dev-doc, mingw32-gtk+-dev-exe, mingw32-pango-dev-doc, mingw32-pango-dev-exe
+Depends: mingw32-gtkmm-dev (>= 2.6.1), mingw32-runtime (>= 3.7), mingw32 (>= 3.4), mingw32-glib-dev (>= 2.6.3), mingw32-atk-dev (>= 1.9.0), mingw32-gtk+-dev (>= 2.6.4), mingw32-pango-dev (>= 1.8.0), mingw32-libiconv-dev
+Conflicts: mingw32-sigc, mingw32-atk, mingw32-glib, mingw32-glibmm, mingw32-gtk+, mingw32-gtkmm, mingw32-pango, mingw32-sigc, mingw32-zlib-lib, mingw32-gtk-la, mingw32-libpng-lib, mingw32-atk-dev-exe, mingw32-glib-dev-doc, mingw32-glib-dev-exe, mingw32-gtk+-dev-doc, mingw32-gtk+-dev-exe, mingw32-pango-dev-doc, mingw32-pango-dev-exe, mingw32-sigc++-dev, mingw32-glibmm-dev
 Recommends: mingw32-zlib-dev, mingw32-libpng-dev, mingw32-libiconv-dev, mingw32-jpeg-lib, 
 Suggests: mingw32-gtkmm-meta-runtime
 Description: MinGW Gtkmm 2.4 cross development environment
@@ -18,8 +18,8 @@ Description: MinGW Gtkmm 2.4 cross development environment
 
 Package: mingw32-gtkmm-meta-runtime
 Architecture: all
-Depends: mingw32-atk-runtime (>= 1.6.0), mingw32-zlib-runtime (>= 1.2.1), mingw32-jpeg-bin, mingw32-glib-runtime, mingw32-glibmm-runtime, mingw32-gtkmm-runtime, mingw32-gtk+-runtime, mingw32-libiconv.bin, mingw32-libintl, mingw32-libpng-runtime (>= 1.2.7), mingw32-pango-runtime, mingw32-sigc++-runtime, mingw32-tiff
-Conflicts: mingw32-zlib-bin, mingw32-libpng-bin
+Depends: mingw32-atk-runtime (>= 1.9.0), mingw32-zlib-runtime (>= 1.2.1), mingw32-jpeg-bin, mingw32-glib-runtime (>= 2.6.3), mingw32-gtkmm-runtime (>= 2.6.1), mingw32-gtk+-runtime (>= 2.6.4), mingw32-libiconv.bin, mingw32-libintl, mingw32-libpng-runtime (>= 1.2.7), mingw32-pango-runtime (>= 1.8.0), mingw32-tiff
+Conflicts: mingw32-zlib-bin, mingw32-libpng-bin, mingw32-sigc++-runtime, mingw32-glibmm-runtime
 Suggests: mingw32-gtk-ms-windows-engine-runtime, mingw32-librsvg-runtime
 # mingw32-glib-exe, 
 Description: Gtkmm for Windows 2.4: shared libraries

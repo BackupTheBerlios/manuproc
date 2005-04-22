@@ -1,3 +1,16 @@
+mingw32-gtkmm-meta (6) experimental; urgency=low
+
+  * we also need mingw32-libiconv-dev (e.g. for glibmm)
+
+ -- Christof Petig <christof@petig-baender.de>  Fri, 18 Mar 2005 00:34:54 +0100
+
+mingw32-gtkmm-meta (5) experimental; urgency=low
+
+  * insist on new glib,atk,pango,gtk,gtkmm
+    conflict with older packages
+
+ -- Christof Petig <christof@petig-baender.de>  Fri, 18 Mar 2005 00:34:54 +0100
+
 mingw32-gtkmm-meta (4) experimental; urgency=low
 
   * insist on new glib-dev
