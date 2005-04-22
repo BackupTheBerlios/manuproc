@@ -155,7 +155,7 @@
 		      <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 		      <property name="toolbar_style">GTK_TOOLBAR_BOTH</property>
 		      <property name="tooltips">True</property>
-		      <property name="show_arrow">True</property>
+		      <property name="show_arrow">False</property>
 
 		      <child>
 			<widget class="GtkToolButton" id="customer_search">
@@ -880,7 +880,7 @@
 		  <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 		  <property name="toolbar_style">GTK_TOOLBAR_BOTH</property>
 		  <property name="tooltips">True</property>
-		  <property name="show_arrow">True</property>
+		  <property name="show_arrow">False</property>
 
 		  <child>
 		    <widget class="GtkToolButton" id="artikel_ok">
@@ -933,7 +933,7 @@
 		  <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 		  <property name="toolbar_style">GTK_TOOLBAR_BOTH</property>
 		  <property name="tooltips">True</property>
-		  <property name="show_arrow">True</property>
+		  <property name="show_arrow">False</property>
 
 		  <child>
 		    <widget class="GtkToolButton" id="artikel_del">
