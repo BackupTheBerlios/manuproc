@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.53 2005/04/14 12:00:06 christof Exp $
+# $Id: Makefile.am,v 1.54 2005/04/22 17:11:23 christof Exp $
 
 if WINDOWS
 WIN_LDFLAGS=-no-undefined -export-symbols libManuProC_Base@DATABASE_TYPE@.def 
@@ -10,7 +10,7 @@ DLL_LDADD=@SIGC_LIBS@ @ECPG_LIBS@
 DLL_DEF=
 endif
 
-libManuProC_Base_sqlite.def: libManuProC_Base.def libManuProC_Base_sqlite.defadd \
+libManuProC_Base_sqlite3.def: libManuProC_Base.def libManuProC_Base_sqlite.defadd \
 		libManuProC_Base_sigc@SIGC_MAJOR@.defadd
 	cat >$@ $^
 libManuProC_Base_res.lo: libManuProC_Base.rc
