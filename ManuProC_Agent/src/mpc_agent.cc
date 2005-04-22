@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 
       mpca=new mpc_agent();
 
-      m.run(mpca);
+      m.run(*mpca);
       
       delete mpca;
       ManuProC::dbdisconnect();
