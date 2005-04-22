@@ -38,11 +38,12 @@ int main(int argc, char **argv)
       conn.setDbase("mpc.data");
       ManuProC::dbconnect(conn);  
 
-      mpca=manage(new mpc_agent());
+      mpca=new mpc_agent();
 
-      m.run();
-
-      Petig::dbdisconnect();
+      m.run(mpca);
+      
+      delete mpca;
+      ManuProC::dbdisconnect();
    } catch (SQLerror &e)
    {  std::cerr << e << '\n';
       return 1;
