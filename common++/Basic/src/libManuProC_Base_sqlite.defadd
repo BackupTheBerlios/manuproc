@@ -80,3 +80,4 @@
 	_ZrsR12FetchIStreamR13Zeitpunkt_new 
 	_ZrsR12FetchIStreamRN8ManuProC5DatumE 
 	_ZN8ManuProC10ConnectionC1ERKSsS2_S2_S2_i
+	_ZNK12FetchIStream4goodEv
