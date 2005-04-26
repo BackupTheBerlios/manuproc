@@ -213,7 +213,6 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 	skontobetrag,einzugbetrag,u.r->getZahlziel(),getDatum(),kunde_an,*mld);
     zeilen_passen_noch-=passende_zeilen;
 
-//    os << "\\\\Erfüllungsort und Gerichtsstand ist Wuppertal";
 
     if(kunde_an->land()->Auslaender())
          {if(zeilen_passen_noch<(passende_zeilen)) {  os << "\\newpage\n";++page_counter; page_header(os);}
@@ -338,10 +337,22 @@ catch(SQLerror &e) { std::cout << e; return; }
 	os << "~" << string2TeX(Notiz(),sf)<<"~" << "\\\\\n";
 	}
 
+ if(Typ()==Rechnung)
+    if(kunde_an->land()->Auslaender())
+      if(kunde_an->land()->EU())
+        {os << "~\\\\";
+	 os << "Die Lieferung ist gem. § 4 Nr. 1b) i.V.m. § 6a Abs. 1 UStG steuerbefreit";
+	}
+      else
+        {os << "~\\\\";
+	 os << "Die Lieferung ist gem. § 4 Nr. 1a) i.V.m. § 6 Abs. 1 UStG steuerbefreit";
+	}
+
+
  if(Typ()==Rechnung && !gutschrift() && !storniert())
    if(kunde_an->land()->LKZ()=="A")
         {os << "~\\\\";
-	 os << mld->MLT((MultiL_Dict::LangTXT)1000,"Liegerng nach § 6a UStG / Art. 28c Teil A der 6. EU-Richtlinie");
+	 os << mld->MLT((MultiL_Dict::LangTXT)1000,"Lieferung nach § 6a UStG / Art. 28c Teil A der 6. EU-Richtlinie");
 	}
 
   Gtk2TeX::Footer(os);
