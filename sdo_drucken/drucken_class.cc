@@ -185,6 +185,7 @@ if(!firmenpapier)
 void LR_Abstraktion::drucken_footer(std::ostream &os)
 {
   cH_Kunde kunde_an(KdNr());
+  cH_Kunde kunde(KdNr());
   cH_Kunde kunde_von(Kunde::eigene_id);
 
   if(! kunde_an->isInGrp(KundengruppeID::Rechnungsadresse))
@@ -337,9 +338,9 @@ catch(SQLerror &e) { std::cout << e; return; }
 	os << "~" << string2TeX(Notiz(),sf)<<"~" << "\\\\\n";
 	}
 
- if(Typ()==Rechnung)
-    if(kunde_an->land()->Auslaender())
-      if(kunde_an->land()->EU())
+ if(Typ()==Rechnung)// nicht kunde_an, da hierfür die Lieferung massgebend
+    if(kunde->land()->Auslaender())
+      if(kunde->land()->EU())
         {os << "~\\\\";
 	 os << "Die Lieferung ist gem. § 4 Nr. 1b) i.V.m. § 6a Abs. 1 UStG steuerbefreit";
 	}
