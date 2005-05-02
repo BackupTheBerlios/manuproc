@@ -1279,18 +1279,12 @@ void LR_Abstraktion::page_header(std::ostream &os)
     {
      cH_Kunde kunde_von(Kunde::default_id);
 
-#ifdef MABELLA_EXTENSIONS
-	os << "\\raisebox{-2.5cm}[0pt][5cm]{\\begin{minipage}[t]{0.6\\linewidth}\n"
+     os << "\\raisebox{-2.5cm}[0pt][5cm]{\\begin{minipage}[t]{0.6\\linewidth}\n"
 	   << "\\begin{flushleft}\n";
-#endif
+
      os << kunde_von->LaTeX_von()<<"\n\n"  ;
      TelArt telart=TEL_NONE;
 
-#ifdef PETIG_EXTENSIONS
-     if(Typ()==Lieferschein || Typ()==Auftrag ) 
-         telart=TEL_FAX; // Im Moment werden alle Telefonnummern angezeigt
-     os << kunde_an->LaTeX_an(Typ()==Lieferschein,telart)<<"\n\n";
-#elif MABELLA_EXTENSIONS
      if( (Typ()==Rechnung && !kunde_an->isInGrp(KundengruppeID::Rechnungsadresse)) ||
          (Typ()==Auftrag && kunde_an->AB_an_rngadresse())
 	)
@@ -1303,7 +1297,6 @@ void LR_Abstraktion::page_header(std::ostream &os)
      else
 	os << kunde_an->LaTeX_an(Typ()==Lieferschein,telart,"1\\textwidth")<<"\n\n";       
 
-#endif     
 
 #ifdef MABELLA_EXTENSIONS
 	os << "\\end{flushleft}\\end{minipage}}\\hfill"
@@ -1336,7 +1329,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
 
 	if(
 	  //!kunde_an->isInGrp(KundengruppeID::Rechnungsadresse) && 
-	   Typ()==Rechnung && kunde_an->Lfran()!=kunde_an->Id()
+	   Typ()==Rechnung && kunde_rng->Id()!=kunde_an->Id()
 	  )
 		{
 		cH_Kunde kunde_lfr(kunde_an->Lfran());
