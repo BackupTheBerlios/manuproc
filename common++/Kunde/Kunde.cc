@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.56 2005/05/02 12:42:04 jacek Exp $
+// $Id: Kunde.cc,v 1.57 2005/05/02 14:20:59 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -376,7 +376,7 @@ fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art,
 #if defined(MABELLA_EXTENSIONS) && defined(MANUPROC_DYNAMICENUMS_CREATED)
  int signatur=1;
  int bezkomptype=1;
- fixedpoint<2> r1,rs1,r2,rs2,r3,rs3;
+ fixedpoint<2> rab;
        
     if(VerkNr()!=Kunde::none_id &&
        ArtikelTyp::hasAttribute(at,ArtikelTypAttr::provision))
@@ -384,14 +384,14 @@ fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art,
        fixedpoint<2> ps1=0.0,ps2=0.0;
 
        Query q("select provsatz1, provsatz2, "
-          " rabatt, "
+          " rabatt "
           " from prov_verkaeufer where"
 	  " verknr=? and kundennr=? and rabatt>=? order by rabatt asc limit 1");
        q << verk->Rngan() << Id() << rabatt; // provsatz vom mainvertreter
        SQLerror::test(__FILELINE__,100);
 
        if(q.Result()!=100)
-         q  >> ps1 >> ps2 >> r1 >> rs1 >> r2 >> rs2 >> r3 >> rs3;
+         q  >> ps1 >> ps2 >> rab;
 
        if(ps1==ps2) to_set=ps1;
        else
@@ -421,16 +421,6 @@ fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art,
        	
       }
 
- if(to_set>0 && rabatt>0)
-   {
-    if(r1>=rabatt) to_set=rs1;
-    else
-    if(r2>=rabatt) to_set=rs2;
-    else
-    if(r3>=rabatt) to_set=rs3;    
-     else to_set=0;
-    // to much rabatt; es gibt keine Provision
-   }  
 #endif      
 
  return to_set;
