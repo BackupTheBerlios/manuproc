@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.42 2005/04/12 17:16:19 jacek Exp $
+// $Id: db_upgrade.cc,v 1.43 2005/05/02 15:12:56 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -260,12 +260,7 @@ int main(int argc,char *argv[])
   check_column("ku_preisliste","add_parent","numeric(8,3)");
 
   // für Vertrieb-Modul, Provisionen, etc.
-  check_column("prov_verkaeufer","rabatt1","numeric(5,2)");
-  check_column("prov_verkaeufer","rabatt_satz1","numeric(5,2)");  
-  check_column("prov_verkaeufer","rabatt2","numeric(5,2)");
-  check_column("prov_verkaeufer","rabatt_satz2","numeric(5,2)");
-  check_column("prov_verkaeufer","rabatt3","numeric(5,2)");  
-  check_column("prov_verkaeufer","rabatt_satz3","numeric(5,2)");  
+  check_column("prov_verkaeufer","rabatt","numeric(5,2)");
 
   ManuProC::dbdisconnect();
   return 0;

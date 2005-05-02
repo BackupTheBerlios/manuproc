@@ -184,8 +184,7 @@ void auftrag_provision::on_prov_apply_clicked()
 void auftrag_provision::LoadEntries()
 {
  if(run_mode==AUFTRAG) aufp->loadEntries();
- // not needed, allready loaded
-// else if(run_mode==RECHNUNG) rngp->loadEntries();
+ else if(run_mode==RECHNUNG) rngp->loadEntries(true);
 }
 
 

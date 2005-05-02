@@ -83,7 +83,7 @@ class auftrag_rechnung : public auftrag_rechnung_glade
    bool checkVerkConsist(const cH_Lieferschein &chl);
 
    void showBetraege();
-
+   void on_provisionierung_activate();
 // TreeRow *selectedrow_lief;
 // TreeRow *selectedrow_rng;
 // cH_Kunde kunde;

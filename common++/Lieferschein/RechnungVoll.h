@@ -44,6 +44,7 @@ public:
  	RechnungVoll() : Rechnung() {};
  	RechnungVoll(int lid, bool order_by_artikel=false) throw(SQLerror) ;
  	void deleteRow(const RechnungEntry &le);
+ void loadEntries(bool order_by_artikel) throw(SQLerror);
 
  const std::vector<RechnungEntry> &REntries() { return rentry; }
 

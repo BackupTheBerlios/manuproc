@@ -840,3 +840,19 @@ void auftrag_rechnung::on_storno_activate()
 }
 
 
+#include "auftrag_provision.hh"
+void auftrag_rechnung::on_provisionierung_activate()
+{
+ if(rechnung.Id()==RechnungBase::none_id) return;
+ 
+ RechnungVoll rv(rechnung.Id(),true);
+ 
+ auftrag_provision ap(&rv);
+ 
+ ap.set_transient_for(*this);
+ 
+ gint ret;
+ ret=ap.run();
+}
+
+

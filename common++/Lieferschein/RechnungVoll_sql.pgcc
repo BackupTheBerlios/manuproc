@@ -1,4 +1,4 @@
-/* $Id: RechnungVoll_sql.pgcc,v 1.20 2004/04/20 07:30:43 jacek Exp $ */
+/* $Id: RechnungVoll_sql.pgcc,v 1.21 2005/05/02 15:09:14 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,38 +22,18 @@
 #include<Misc/Transaction.h>
 exec sql include sqlca;
 
-RechnungVoll::RechnungVoll(int rid, bool order_by_artikel) throw(SQLerror)
-: Rechnung(rid)
+
+void RechnungVoll::loadEntries(bool order_by_artikel) throw(SQLerror)
 {
- if(rid==none_id) return;
- exec sql begin declare section;
-  int ARTIKELID, STUECK, ZEILE;
-  int LFRSID,LIEFERZEILE;
-  int AUFTRAGID;
-  float MENGE,RABATT,PREISMENGE,PREIS;
-  char LIEFERDATUM[11];
-  int ILIEFERDATUM,INSTANZ;
-  char *QU;
- exec sql end declare section;
- INSTANZ=ppsInstanzID::Kundenauftraege;
-
-
-// std::string tabelle="artbez_"+
-//        itos(ExtBezSchema::default_Typ)+"_"+
-//        itos(ExtBezSchema::default_id);
-
-
-// cH_ExtBezSchema exbz(ExtBezSchema::default_id,ExtBezSchema::default_Typ);
+ int INSTANZ=ppsInstanzID::Kundenauftraege;
  std::string sortstr;
-// int signifikanz=1;
+ 
+ rentry.erase(rentry.begin(),rentry.end());
 
  if(order_by_artikel)
    {
     sortstr=" l.lfrsid,e.refauftragid ";
     sortstr+=",artikelbezeichnung(e.artikelid)";
-//    for(ExtBezSchema::const_sigiterator l=exbz->sigbegin(signifikanz);
-//				l!=exbz->sigend(signifikanz); ++l)
-//    sortstr+=std::string(",")+l->spaltenname;
    }
  else
     sortstr=" zeilennr ";
@@ -70,16 +50,39 @@ RechnungVoll::RechnungVoll(int rid, bool order_by_artikel) throw(SQLerror)
    	"left join lieferscheinentry e on (l.instanz,l.lfrsid,ry.lfrszeile)"
 	"=(e.instanz,e.lfrsid,e.zeile) ";
 
-// if(order_by_artikel)
-//((   qu=qu+" left join "+tabelle+" b on b.id=e.artikelid";
-
- qu=qu+" where ry.rngid ="+itos(rid);
+ qu=qu+" where ry.rngid ="+itos(rngid);
 
  qu+=std::string(" order by ") + sortstr;
 
- QU=(char*)qu.c_str();
+ Query query(qu);
+ 
+ FetchIStream fi=query.Fetch();
+ while(fi.good())
+   {
+    int ARTIKELID, STUECK, ZEILE;
+    int LFRSID,LIEFERZEILE;
+    int AUFTRAGID;
+    float MENGE,RABATT,PREISMENGE,PREIS;
+    ManuProC::Datum LIEFERDATUM;
 
- Transaction tr;
+    fi >> ARTIKELID >> ZEILE >> STUECK >> MENGE >> RABATT >> LFRSID
+       >> LIEFERZEILE >> PREISMENGE 
+       >> FetchIStream::MapNull(LIEFERDATUM,ManuProC::Datum()) 
+       >> PREIS >> AUFTRAGID;
+       
+    Preis p(PREIS,getWaehrung(),PREISMENGE);       
+    rentry.push_back(RechnungEntry(rngid,ZEILE,
+         ARTIKELID,STUECK,MENGE,p,RABATT,LIEFERDATUM,
+         LieferscheinEntryBase(ppsInstanz::ID(INSTANZ),LFRSID,LIEFERZEILE),
+	 AuftragBase(ppsInstanz::ID(INSTANZ),AUFTRAGID)));       
+       
+    fi = query.Fetch();
+   }
+
+/*
+// QU=(char*)qu.c_str();
+
+// Transaction tr;
  exec sql prepare LQU from :QU;
  exec sql declare lein cursor for LQU;
  exec sql open lein;
@@ -101,7 +104,30 @@ RechnungVoll::RechnungVoll(int rid, bool order_by_artikel) throw(SQLerror)
 	 AuftragBase(ppsInstanz::ID(INSTANZ),AUFTRAGID)));
    }
  exec sql close lein;
- tr.close();
+
+
+// tr.close();
+*/
+
+}
+
+RechnungVoll::RechnungVoll(int rid, bool order_by_artikel) throw(SQLerror)
+: Rechnung(rid)
+{
+ if(rid==none_id) return;
+ /*
+ exec sql begin declare section;
+  int ARTIKELID, STUECK, ZEILE;
+  int LFRSID,LIEFERZEILE;
+  int AUFTRAGID;
+  float MENGE,RABATT,PREISMENGE,PREIS;
+  char LIEFERDATUM[11];
+  int ILIEFERDATUM,INSTANZ;
+  char *QU;
+ exec sql end declare section;
+ */
+
+ loadEntries(order_by_artikel);
 }
 
 
