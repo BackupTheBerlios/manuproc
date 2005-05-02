@@ -40,6 +40,7 @@ class auftrag_provision : public auftrag_provision_glade
  Kunde::ID getKundennr() const;
  Kunde::ID getVerknr() const;
  void LoadEntries();
+ void setVerknr(const Kunde::ID) throw(SQLerror);
  
 public:
  auftrag_provision(AuftragFull *auftrag);

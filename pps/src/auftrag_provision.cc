@@ -62,7 +62,7 @@ aufp(NULL),rngp(rechnung)
  run_mode=RECHNUNG;
  init_prov_dialog();
  
- DBCapability::WhiteColumn wc("auftrag","verknr");
+ DBCapability::WhiteColumn wc("rechnung","verknr");
 
  verkprov_frame->set_sensitive(
 		dbcapability->isWhite(DBCapability::ColAct(wc,DBCapability::UPDATE)) 
@@ -76,7 +76,8 @@ aufp(auftrag),rngp(NULL)
  run_mode=AUFTRAG;
  init_prov_dialog();
  
- DBCapability::WhiteColumn wc("rechnung","verknr");
+
+ DBCapability::WhiteColumn wc("auftrag","verknr");
 
  verkprov_frame->set_sensitive(
 		dbcapability->isWhite(DBCapability::ColAct(wc,DBCapability::UPDATE)) 
@@ -183,7 +184,8 @@ void auftrag_provision::on_prov_apply_clicked()
 void auftrag_provision::LoadEntries()
 {
  if(run_mode==AUFTRAG) aufp->loadEntries();
- else if(run_mode==RECHNUNG) rngp->loadEntries();
+ // not needed, allready loaded
+// else if(run_mode==RECHNUNG) rngp->loadEntries();
 }
 
 
@@ -241,11 +243,19 @@ void auftrag_provision::on_prov_verk_activate()
  }
  catch(SQLerror &e)
    { meldung->Show(e); }
-  
- for(AuftragFull::const_iterator i=auf->begin(); i!=auf->end(); ++i)
-   {
-//    (*i).setProvSatz();
-   }
+ 
+ cH_Kunde kunde(getKundennr());
+ 
+ if(run_mode==AUFTRAG)
+ for(AuftragFull::iterator i=aufp->begin(); i!=aufp->end(); ++i)
+    {fixedpoint<2> p=kunde->getProvSatz_Artikel((*i).Artikel(),(*i).Rabatt());
+     (*i).setProvSatz(p);
+    }
+ else if(run_mode==RECHNUNG)
+ for(RechnungVoll::iterator i=rngp->begin(); i!=rngp->end(); ++i)
+    {fixedpoint<2> p=kunde->getProvSatz_Artikel((*i).Artikel(),(*i).Rabatt());
+     (*i).setProvSatz(p);
+    }
 
  fillProvEntryList();
 }
@@ -258,7 +268,7 @@ void auftrag_provision::on_prov_provsatz_changed()
 
 
 
-ManuProcEntity<>::ID auftrag_provision::ID() const 
+ManuProcEntity<>::ID auftrag_provision::Id() const 
 {if(run_mode==AUFTRAG) return aufp->Id();
  if(run_mode==RECHNUNG) return rngp->Id();
  return ManuProcEntity<>::none_id;
@@ -284,6 +294,14 @@ Kunde::ID auftrag_provision::getVerknr() const
  if(run_mode==AUFTRAG) return aufp->getVerknr();
  if(run_mode==RECHNUNG) return rngp->getVerknr();
  return ManuProcEntity<>::none_id;
+}
+
+
+
+void auftrag_provision::setVerknr(const Kunde::ID) throw(SQLerror)
+{
+ if(run_mode==AUFTRAG) return aufp->setVerknr(prov_verkaeufer->get_value());
+ if(run_mode==RECHNUNG) return rngp->setVerknr(prov_verkaeufer->get_value());
 }
 
 
