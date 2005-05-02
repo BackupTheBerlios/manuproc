@@ -146,25 +146,47 @@ void windowTop::scc_verkaeufer_activate()
 		" where provsatznr=0)") << kundendaten->Id();
    }
 
-
- Query q("update kunden set stand=now(), verknr=? where kundennr=?");
-   q << Query::NullIf(scc_verkaeufer->get_value(),Kunde::none_id) << kundendaten->Id();
-
  cH_Kunde new_verk(scc_verkaeufer->get_value());
- if(new_verk->Rngan() != kundendaten->VerkNr())
+ if(new_verk->Id() != kundendaten->VerkNr())
  {
+  kundendaten->setVerkNr(scc_verkaeufer->get_value());
+ 
   Query("delete from prov_verkaeufer where kundennr=?") << kundendaten->Id();
-  Query("insert into prov_verkaeufer (SELECT ?,?,provsatz1,provsatz2 from"
-    " prov_verkaeufer where verknr=? group by provsatz1,provsatz2 order by "
-    " count(*) desc limit 1)") << scc_verkaeufer->get_value()
-				<< kundendaten->Id()
-				<< scc_verkaeufer->get_value();
+  
+  Query qi("SELECT p.provsatz1,p.provsatz2,p.rabatt from"
+    " prov_verkaeufer p join kunden k on (p.kundennr=k.kundennr and "
+    "  k.verknr=?) "
+    " where p.verknr=? group by p.rabatt,p.provsatz1,p.provsatz2 "
+    " order by rabatt,count(*) desc");
+    
+  qi << new_verk->Id()
+	<< new_verk->Rngan();
   SQLerror::test(__FILELINE__,100);
+	
+  FetchIStream fi=qi.Fetch();
+  fixedpoint<2> p1,p2,rab_old=-1,rab=0;  
+  while(fi.good())
+    {
+    fi >> p1 >> p2 >> rab;
+    if(rab!=rab_old)
+      {Query("insert into prov_verkaeufer "
+            " (verknr,kundennr,provsatz1,provsatz2,rabatt) values "
+              "(?,?,?,?,?)")
+              << new_verk->Rngan()
+              << kundendaten->Id()
+              << p1 << p2 << rab;
+       rab_old=rab; 
+      }
+    fi=qi.Fetch();
+    }
+
+  
+  Query q("update kunden set stand=now(), verknr=? where kundennr=?");
+   q << Query::NullIf(scc_verkaeufer->get_value(),Kunde::none_id) << kundendaten->Id();
  }
  
  tr.commit();
 
- kundendaten->setVerkNr(scc_verkaeufer->get_value());
 //  changedFktS(Kunde::FVerknrku);
 }
 
