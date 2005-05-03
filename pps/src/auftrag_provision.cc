@@ -206,7 +206,7 @@ void auftrag_provision::on_prov_enable_toggled()
     	meldung->Show(e); return;
     }
     prov_verkaeufer->grab_focus();
-    verkprov_frame->set_sensitive(true);
+//    verkprov_frame->set_sensitive(true);
 
     try {prov_verkaeufer->set_value(getVerknr());
     }
@@ -225,7 +225,7 @@ void auftrag_provision::on_prov_enable_toggled()
     {
     	meldung->Show(e); return;
     }
-    verkprov_frame->set_sensitive(false);
+//    verkprov_frame->set_sensitive(false);
     prov_verkaeufer->reset();
   }
 
@@ -297,10 +297,10 @@ Kunde::ID auftrag_provision::getVerknr() const
 
 
 
-void auftrag_provision::setVerknr(const Kunde::ID) throw(SQLerror)
+void auftrag_provision::setVerknr(const Kunde::ID vkid) throw(SQLerror)
 {
- if(run_mode==AUFTRAG) return aufp->setVerknr(prov_verkaeufer->get_value());
- if(run_mode==RECHNUNG) return rngp->setVerknr(prov_verkaeufer->get_value());
+ if(run_mode==AUFTRAG) return aufp->setVerknr(vkid);
+ if(run_mode==RECHNUNG) return rngp->setVerknr(vkid);
 }
 
 
