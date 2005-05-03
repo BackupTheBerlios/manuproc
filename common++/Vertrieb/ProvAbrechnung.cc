@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.cc,v 1.8 2003/12/19 14:44:42 jacek Exp $ */
+/* $Id: ProvAbrechnung.cc,v 1.9 2005/05/03 15:52:51 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,9 +26,18 @@ const ProvAbrechnung::ID ProvAbrechnung::getNextAbrNr(
  ProvAbrechnung::ID abrid;
  int jahr=vom.Jahr();
 
- Query("select coalesce(max(provnr),?*100+0)+1 from prov_abrechnung"
+ cH_Kunde verk(verkid);
+ if(verkid!=verk->Rngan())
+   {Query("select max(provnr) from prov_abrechnung"
+ 	" where verknr=?")
+	<< itos(verk->Rngan()) >> abrid; 
+   }	
+ else
+    {   
+    Query("select coalesce(max(provnr),?*100+0)+1 from prov_abrechnung"
  	" where verknr=? and date_part('y',vom)=?")
-	<< jahr << itos(verkid) << jahr >> abrid;
+	<< jahr << itos(verkid) << jahr >> abrid;    
+    }
 
  return abrid;
 }

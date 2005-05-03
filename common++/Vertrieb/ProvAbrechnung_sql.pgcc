@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung_sql.pgcc,v 1.8 2003/12/16 15:36:47 jacek Exp $ */
+/* $Id: ProvAbrechnung_sql.pgcc,v 1.9 2005/05/03 15:52:51 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -105,13 +105,27 @@ void ProvAbrechnung::loadEntries(std::string sql_order) throw(SQLerror)
  
  std::vector<FetchStruct> st;
 
- Query Q("select p.rngid,p.zeilennr,coalesce(e.provsatz,0), "
+ cH_Kunde vk(verkaeufer);
+ Kunde::ID obervk=vk->Rngan();
+ std::string txt=
+        "select p.rngid,p.zeilennr,coalesce(e.provsatz,0), "
 	" coalesce(r.rabatt,0) from prov_entry p"
 	" join rechnung r using (rngid) "
-	" join rechnungentry e on (e.rngid=r.rngid and e.zeilennr=p.zeilennr"
-	" and (p.provnr,p.verknr)=(?,?)) "+sql_order);
+	" join rechnungentry e on (e.rngid=r.rngid and e.zeilennr=p.zeilennr";
+ if(obervk==verkaeufer)
+    txt+=" and p.provnr=? and p.verknr in "
+        " (select kundennr from kunden where rechnung_an=? ))";
+ else       
+    txt+=" and (p.provnr,p.verknr)=(?,?)) "; 
+        
+ txt+=sql_order;
 
- Q << itos(Id()) << itos(verkaeufer);
+ Query Q(txt);
+
+ if(obervk==verkaeufer)
+   Q << itos(Id()) << itos(obervk);
+ else
+   Q << itos(Id()) << itos(verkaeufer);
 
  SQLerror::test(__FILELINE__,100);
 
