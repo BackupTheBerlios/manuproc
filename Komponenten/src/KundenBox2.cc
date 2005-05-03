@@ -1,4 +1,4 @@
-// $Id: KundenBox2.cc,v 1.6 2005/04/12 17:16:03 jacek Exp $
+// $Id: KundenBox2.cc,v 1.7 2005/05/03 09:54:03 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -26,13 +26,13 @@ KundenBox2::KundenBox2()
   _string2_="coalesce(ort,'')";
   _int_="kundennr";
   _none_id_=Kunde::none_id;  
-  setLabel("Id","Firma","Ort");
+  setLabel("Id","Name","Ort");
   show_string2(true);
 }
 
 void KundenBox2::set_value(int i)
 {  cH_Kunde PL(i);
-   IntStringBox::set_value(PL->Id(),PL->firma(),PL->ort());
+   IntStringBox::set_value(PL->Id(),PL->getFullName(),PL->ort());
 }
 /*
 cH_Kunde KundenBox2::get_value() const 
