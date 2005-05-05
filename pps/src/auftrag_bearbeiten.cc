@@ -183,7 +183,7 @@ void auftrag_bearbeiten::onSelArtikel()
 #else
     // hmmm die Menge beeinflusst den Preis, also vielleicht später nochmal 
     // nachsehen
-    Artikelpreis ap(kunde->preisliste(),artikelbox->get_value());
+    Artikelpreis ap(cH_PreisListe(kunde->preisliste()),artikelbox->get_value());
 #endif
 
     Preis p(ap.In(auftrag->getWaehrung(),ap.PreisMenge() ));
@@ -368,7 +368,7 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
 
        Rabatt_setzen(cH_PreisListe(preislisten->get_value()));
 #else
-       Artikelpreis ap(kunde->preisliste(),artikelbox->get_value(),
+       Artikelpreis ap(cH_PreisListe(kunde->preisliste()),artikelbox->get_value(),
 			stkmtr_spinbutton->get_value_as_int());	
 #endif
 
