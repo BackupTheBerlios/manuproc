@@ -100,12 +100,14 @@ void bestell_plan::load_data(const ArtikelBase a) throw(SQLerror)
     << ppsInstanzID::Kundenauftraege << OPEN << UNCOMMITED << a.Id() 
     << AuftragBase::handplan_auftrag_id >> offauf;
 
+#ifdef MABELLA_EXTENSIONS
  Query("SELECT coalesce(sum(bestellt-geliefert),0) from auftrag a join auftragentry e"
     " on (a.instanz=e.instanz and a.auftragid=e.auftragid and "
     "a.instanz=? and a.stat=e.status and a.stat in (?,?) and "
     " bestellt>geliefert and e.artikelid=? and a.auftragid>=?)")
     << ppsInstanzID::Einkauf << OPEN << UNCOMMITED << a.Id() 
     << AuftragBase::handplan_auftrag_id >> bestellt;     
+#endif
 
  int abverkauf=0;
 
@@ -121,12 +123,14 @@ void bestell_plan::load_data(const ArtikelBase a) throw(SQLerror)
   fi=q2.Fetch();
  if(fi.good())
    {fi >> rohart;
+#ifdef MABELLA_EXTENSIONS
     Query("SELECT coalesce(sum(bestellt-geliefert),0) from auftrag a join auftragentry e"
     " on (a.instanz=e.instanz and a.auftragid=e.auftragid and "
     "a.instanz=? and a.stat=e.status and a.stat in (?,?) and "
     " bestellt>geliefert and e.artikelid=? and a.auftragid>=?)")
     << ppsInstanzID::Einkauf << OPEN << UNCOMMITED << rohart 
     << AuftragBase::handplan_auftrag_id >> rohbestellt;
+#endif
    }
   
     
@@ -148,7 +152,7 @@ void bestell_plan::load_data(const ArtikelBase a) throw(SQLerror)
  bp_rohbestellt->set_text(itos(rohbestellt));
  abverk_12m->set_text(itos(abverkauf)); 
  
- KumVal kv=KumVal(reinterpret_cast<int>(abverkauf_kumul->
+ KumVal kv=KumVal(reinterpret_cast<long>(abverkauf_kumul->
                    get_menu()->get_active()->get_user_data()));
  load_abverkauf(a,kv);
  
@@ -170,7 +174,7 @@ void bestell_plan::load_abverkauf(const ArtikelBase a,KumVal kv)
  FetchIStream fi=q.Fetch();
  ManuProC::Datum ld;
  int m;
- KumVal ldk=KumVal(reinterpret_cast<int>(liefdate_kumul->
+ KumVal ldk=KumVal(reinterpret_cast<long>(liefdate_kumul->
                     get_menu()->get_active()->get_user_data()));
  while(fi.good())
    {
@@ -279,7 +283,7 @@ void bestell_plan::clear_all()
 
 void bestell_plan::on_abverkauf_reload_clicked()
 {  
- KumVal kv=KumVal(reinterpret_cast<int>(abverkauf_kumul->
+ KumVal kv=KumVal(reinterpret_cast<long>(abverkauf_kumul->
                    get_menu()->get_active()->get_user_data()));
  load_abverkauf(akt_artikel,kv);
 }
