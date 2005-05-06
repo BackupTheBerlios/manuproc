@@ -1,4 +1,4 @@
-// $Id: Artikeleingabe_classes.hh,v 1.7 2004/11/29 10:43:40 christof Exp $
+// $Id: Artikeleingabe_classes.hh,v 1.8 2005/05/06 00:11:53 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -66,13 +66,14 @@ class Data_Node : public TreeRow
 
     Data_Node::Data_Node(const Handle<const TreeRow> &suminit)
 //        :TreeRow(deep,v,child_s_deep,expand)
-    {  if (suminit) cumulate(suminit.cast_dynamic<const RowDataBase>());
+    {  if (suminit) // cumulate(suminit.cast_dynamic<const RowDataBase>());
 #if 0    
        else 
-       {  artbase=dynamic_cast<const Data_Node&>(suminit).artbase;
-          artbase2=dynamic_cast<const Data_Node&>(suminit).artbase2;
-       }
 #endif       
+       {  artbase=suminit.cast_dynamic<const Data_Node>()->artbase;
+          artbase2=suminit.cast_dynamic<const Data_Node>()->artbase2;
+       }
+//#endif       
     }
 
     static Handle<TreeRow> create(const Handle<const TreeRow> &suminit)
