@@ -19,4 +19,4 @@ AC_LANG_CPLUSPLUS
 
 PETIG_CHECK_KOMPONENTEN2
 
-AC_OUTPUT(Makefile src/Makefile AufArtKonsistenz/Makefile macros/Makefile)
+AC_OUTPUT(Makefile src/Makefile AufArtKonsistenz/Makefile)
