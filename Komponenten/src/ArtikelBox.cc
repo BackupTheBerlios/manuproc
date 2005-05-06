@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.30 2004/11/29 16:25:38 christof Exp $
+// $Id: ArtikelBox.cc,v 1.31 2005/05/06 00:08:52 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -196,7 +196,7 @@ std::vector<cH_EntryValue> ArtikelBox::expand_kombi_Artikel(unsigned l,std::stri
 std::vector<cH_EntryValue> ArtikelBox::get_content(unsigned l,unsigned spmax) const
 {std::vector<cH_EntryValue> v;
  if(!kombiniertbool)
-  { spmax=std::min(combos[l].size(),spmax+1);
+  { spmax=std::min<size_t>(combos[l].size(),spmax+1);
     for (unsigned i=0;i<spmax;++i)
      v.push_back(cH_EntryValueIntString(combos[l][i]->get_text()));
   }
@@ -230,7 +230,7 @@ std::string ArtikelBox::Kombinieren(cH_ExtBezSchema schema, unsigned sig,const s
 void ArtikelBox::set_content(const std::vector<cH_EntryValue> &v,unsigned l)
 {   unsigned grenze=v.size();
     if (!kombiniertbool)
-    {  grenze=std::min(grenze,combos[l].size());
+    {  grenze=std::min<size_t>(grenze,combos[l].size());
        for (unsigned i=0; i<grenze; ++i)
          { combos[l][i]->set_text(v[i]->getStrVal());
          }
