@@ -152,7 +152,7 @@ void windowTop::scc_verkaeufer_activate()
  cH_Kunde new_verk(scc_verkaeufer->get_value());
  if(new_verk->Id() != kundendaten->VerkNr())
  {
-  kundendaten->setVerkNr(new_verk);
+  kundendaten->setVerkNr(new_verk->Id());
  
   Query q_del("delete from prov_verkaeufer where kundennr=?");
   q_del << kundendaten->Id();
@@ -187,7 +187,7 @@ void windowTop::scc_verkaeufer_activate()
 
   
   Query q("update kunden set stand=now(), verknr=? where kundennr=?");
-   q << Query::NullIf(scc_verkaeufer->get_value(),Kunde::none_id) << kundendaten->Id();
+   q << Query::NullIf(scc_verkaeufer->get_value()->Id(),Kunde::none_id) << kundendaten->Id();
  }
  
  }

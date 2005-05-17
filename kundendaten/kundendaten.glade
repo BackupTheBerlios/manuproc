@@ -1714,10 +1714,10 @@
 		      <handler>scc_verkaeufer_activate</handler>
 		      <last_modification_time>Sun, 25 Jan 2004 20:26:48 GMT</last_modification_time>
 		    </signal>
-		    <creation_function>KundenBox2</creation_function>
+		    <creation_function>PersonenBox</creation_function>
 		    <int1>0</int1>
 		    <int2>0</int2>
-		    <last_modification_time>Sun, 25 Jan 2004 20:31:25 GMT</last_modification_time>
+		    <last_modification_time>Tue, 17 May 2005 09:54:03 GMT</last_modification_time>
 		    <child>
 		      <padding>0</padding>
 		      <expand>True</expand>
