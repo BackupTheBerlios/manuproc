@@ -137,6 +137,9 @@ void windowTop::scc_verkaeufer_activate()
 
  Transaction tr;
 
+ Kunde::ID old_verk=kundendaten->VerkNr();
+
+ try {
  // initial setting for new customers in prov_config table
  if(kundendaten->VerkNr()==Kunde::none_id)
    {
@@ -151,7 +154,9 @@ void windowTop::scc_verkaeufer_activate()
  {
   kundendaten->setVerkNr(scc_verkaeufer->get_value());
  
-  Query("delete from prov_verkaeufer where kundennr=?") << kundendaten->Id();
+  Query q_del("delete from prov_verkaeufer where kundennr=?");
+  q_del << kundendaten->Id();
+  SQLerror::test(__FILELINE__);
   
   Query qi("SELECT p.provsatz1,p.provsatz2,p.rabatt from"
     " prov_verkaeufer p join kunden k on (p.kundennr=k.kundennr and "
@@ -185,6 +190,12 @@ void windowTop::scc_verkaeufer_activate()
    q << Query::NullIf(scc_verkaeufer->get_value(),Kunde::none_id) << kundendaten->Id();
  }
  
+ }
+
+ catch(SQLerror &e)
+	{ MyMessage *m=manage(new MyMessage()); m->Show(e); 
+          scc_verkaeufer->set_value(old_verk);
+          return;}
  tr.commit();
 
 //  changedFktS(Kunde::FVerknrku);
