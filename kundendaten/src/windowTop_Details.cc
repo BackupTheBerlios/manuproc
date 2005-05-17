@@ -156,7 +156,7 @@ void windowTop::scc_verkaeufer_activate()
  
   Query q_del("delete from prov_verkaeufer where kundennr=?");
   q_del << kundendaten->Id();
-  SQLerror::test(__FILELINE__);
+  SQLerror::test(__FILELINE__,100);
   
   Query qi("SELECT p.provsatz1,p.provsatz2,p.rabatt from"
     " prov_verkaeufer p join kunden k on (p.kundennr=k.kundennr and "
