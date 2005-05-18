@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.25 2005/05/18 12:48:52 christof Exp $ */
+/* $Id: Datum.h,v 1.26 2005/05/18 14:35:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,6 +24,7 @@
 #include <exception>
 #include <Misc/Kalenderwoche.h>
 #include <string>
+#include <Misc/compiler_ports.h>
 
 namespace ManuProC
 {
@@ -46,7 +47,7 @@ public:
    static const int monatfalsch=2;
    static const int jahrfalsch=4;
    Datumsfehler(int _falsch) throw();
-   friend std::ostream &::operator<<(std::ostream&,const Datumsfehler &);
+   friend std::ostream &NOTGCC295(::)operator<<(std::ostream&,const Datumsfehler &);
    virtual const char* what() const throw() { return "ManuProC::Datumsfehler"; }
 };
 
@@ -177,7 +178,7 @@ public:
 			 }
 	std::string MonatName() const { return monate[monat-1];}
 	
-	friend std::ostream &::operator<<(std::ostream&,const Datum&) throw();
+	friend std::ostream &NOTGCC295(::)operator<<(std::ostream&,const Datum&) throw();
 	
 	bool valid() const throw();
 	
