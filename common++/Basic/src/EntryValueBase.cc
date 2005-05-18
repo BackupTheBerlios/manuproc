@@ -1,4 +1,4 @@
-/* $Id: EntryValueBase.cc,v 1.7 2002/09/02 13:04:03 christof Exp $ */
+/* $Id: EntryValueBase.cc,v 1.8 2005/05/18 12:14:16 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -42,3 +42,7 @@ bool EntryValueBase::operator<(const EntryValueBase &v) const
    return getStrVal()<v.getStrVal();
 }
 
+#if defined(__GNUC__) && __GNUC__>=3
+// needed for g++ 4.0
+const double EntryValueBase::double_NaN;
+#endif
