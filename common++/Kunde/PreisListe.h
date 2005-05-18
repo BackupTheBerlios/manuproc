@@ -1,4 +1,4 @@
-// $Id: PreisListe.h,v 1.15 2005/03/15 16:21:47 jacek Exp $
+// $Id: PreisListe.h,v 1.16 2005/05/18 12:40:50 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -66,6 +66,9 @@ public:
   bool isDepending() const { return (pl_parent!=none_id); }       
   PreisListe::ID RealId() const;
   const std::string getPreisSelClausel() const;
+  fixedpoint<3> Faktor() const { return fkt_parent; }
+  fixedpoint<3> Aufschlag() const { return add_parent; }
+  
 };
 
 
