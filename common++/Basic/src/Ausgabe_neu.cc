@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.cc,v 1.19 2005/01/21 09:31:34 jacek Exp $ */
+/* $Id: Ausgabe_neu.cc,v 1.20 2005/05/18 12:48:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,8 +21,13 @@
 #include <iostream>
 //#include <cmath>
 
+#ifdef __GNUC__ && __GNUC_MAJOR__ >=4
+# define TEMPLATEltgt template<>
+#else
+# define TEMPLATEltgt 
+#endif
 
-#define FP_STR(D,F,I) \
+#define FP_STR(D,F,I) TEMPLATEltgt \
 std::string fixedpoint<D,F,I>::String(bool _short, unsigned int Ziellaenge, \
 		const char *TausenderTrennzeichen,const char *Komma,\
 		char fuehrendesZeichen) const\

@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.24 2004/03/08 16:12:41 christof Exp $ */
+/* $Id: Datum.h,v 1.25 2005/05/18 12:48:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,6 +34,8 @@ class Datum;
 #include <iosfwd>
 //namespace std { class ostream; }
 
+std::ostream &operator<<(std::ostream&,const ManuProC::Datumsfehler&);
+
 /// Ein Datum ist ungültig
 class ManuProC::Datumsfehler : public std::exception
 {  /// eine Kombination aus tagfalsch, monatfalsch, jahrfalsch
@@ -44,12 +46,11 @@ public:
    static const int monatfalsch=2;
    static const int jahrfalsch=4;
    Datumsfehler(int _falsch) throw();
-   friend std::ostream &operator<<(std::ostream&,const Datumsfehler &);
+   friend std::ostream &::operator<<(std::ostream&,const Datumsfehler &);
    virtual const char* what() const throw() { return "ManuProC::Datumsfehler"; }
 };
 
-std::ostream &operator<<(std::ostream&,const ManuProC::Datumsfehler&);
-
+std::ostream &operator<<(std::ostream&,const ManuProC::Datum&) throw();
 
 
 class ManuProC::Datum
@@ -176,13 +177,12 @@ public:
 			 }
 	std::string MonatName() const { return monate[monat-1];}
 	
-	friend std::ostream &operator<<(std::ostream&,const Datum&) throw();
+	friend std::ostream &::operator<<(std::ostream&,const Datum&) throw();
 	
 	bool valid() const throw();
 	
 };
 
-std::ostream &operator<<(std::ostream&,const ManuProC::Datum&) throw();
 class FetchIStream;
 FetchIStream &operator>>(FetchIStream &is, ManuProC::Datum &v);
 class ArgumentList;

@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.31 2004/10/07 16:34:28 christof Exp $
+// $Id: Datum.cc,v 1.32 2005/05/18 12:48:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.31 2004/10/07 16:34:28 christof Exp $ */
+/* $Id: Datum.cc,v 1.32 2005/05/18 12:48:52 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -240,14 +240,22 @@ ManuProC::Datum ManuProC::Datum::operator-(unsigned int tage) const throw(Datums
    return ret;
 }
 
+#if 1 // defined( __GNUC__) && __GNUC__<4
 std::ostream &operator<<(std::ostream&o,const ManuProC::Datum&d) throw()
+#else
+std::ostream &ManuProC::operator<<(std::ostream&o,const ManuProC::Datum&d) throw()
+#endif
 {  int w=o.width(); 
    char f=o.fill(); 
    o << d.tag << "." << std::setfill(f) << std::setw(w) << d.monat << "." << d.jahr;
    return o;
 }
 
+#if 1 // defined( __GNUC__) && __GNUC__<4
 std::ostream &operator<<(std::ostream&o,const ManuProC::Datumsfehler &df)
+#else
+std::ostream &ManuProC::operator<<(std::ostream&o,const ManuProC::Datumsfehler &df)
+#endif
 {  if (df.falsch&ManuProC::Datumsfehler::tagfalsch) o << "d";
    if (df.falsch&ManuProC::Datumsfehler::monatfalsch) o << "m";
    if (df.falsch&ManuProC::Datumsfehler::jahrfalsch) o << "y";
