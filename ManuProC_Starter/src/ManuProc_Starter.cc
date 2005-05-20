@@ -82,7 +82,7 @@ void ManuProc_Starter::on_vertrieb_start_clicked()
 
 void ManuProc_Starter::on_ooo_clicked()
 {
- std::string cmd("/bin/sh -c openoffice &");
+ std::string cmd("/bin/sh -l -c openoffice &");
  system(cmd.c_str());
   
 }
