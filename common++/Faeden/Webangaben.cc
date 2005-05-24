@@ -1,4 +1,4 @@
-// $Id: Webangaben.cc,v 1.14 2004/02/26 11:18:40 christof Exp $
+// $Id: Webangaben.cc,v 1.15 2005/05/24 07:02:45 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -122,4 +122,8 @@ void Webangaben::set_schussdichte(const fixedpoint<1> &f) throw(SQLerror)
 	<< f
 	<< Artikel().Id();
    schussdichte=f;
+}
+
+void Webangaben::LoadSchussfaeden() throw(SQLerror)
+{ schussfaeden.Load(artikel);
 }
