@@ -8,7 +8,7 @@
 #include "config.h"
 #include "ManuProc_Starter.hh"
 #include <gtkmm/main.h>
-
+#include <unistd.h>
 
 
 ManuProc_Starter::ManuProc_Starter(void) throw(SQLerror)
@@ -25,7 +25,10 @@ ManuProc_Starter::ManuProc_Starter(void) throw(SQLerror)
 
  DBCapability::WhiteColumn wc2("OOo","");
  ooo->set_sensitive(
-     dbcapability->isWhite(DBCapability::ColAct(wc2,DBCapability::EXECUTE)));  
+     dbcapability->isWhite(DBCapability::ColAct(wc2,DBCapability::EXECUTE)));
+     
+ if (access("/usr/local/bin/pps.preview",X_OK))
+     preview->hide();
 }
 
 
