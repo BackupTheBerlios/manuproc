@@ -16,6 +16,7 @@
   <property name="skip_pager_hint">False</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
+  <property name="focus_on_map">True</property>
 
   <child>
     <widget class="GtkVBox" id="vbox1">
@@ -171,6 +172,23 @@
 	      <property name="visible_vertical">True</property>
 	      <property name="is_important">False</property>
 	      <signal name="clicked" handler="on_ooo_clicked" last_modification_time="Mon, 16 May 2005 13:09:45 GMT"/>
+	    </widget>
+	    <packing>
+	      <property name="expand">False</property>
+	      <property name="homogeneous">True</property>
+	    </packing>
+	  </child>
+
+	  <child>
+	    <widget class="GtkToolButton" id="preview">
+	      <property name="visible">True</property>
+	      <property name="label" translatable="yes">(vorab)</property>
+	      <property name="use_underline">True</property>
+	      <property name="stock_id">gtk-dialog-error</property>
+	      <property name="visible_horizontal">True</property>
+	      <property name="visible_vertical">True</property>
+	      <property name="is_important">False</property>
+	      <signal name="clicked" handler="on_preview_clicked" last_modification_time="Wed, 25 May 2005 10:39:12 GMT"/>
 	    </widget>
 	    <packing>
 	      <property name="expand">False</property>

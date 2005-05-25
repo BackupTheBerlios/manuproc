@@ -88,3 +88,10 @@ void ManuProc_Starter::on_ooo_clicked()
 }
 
 
+void ManuProc_Starter::on_preview_clicked()
+{
+ std::string cmd("/bin/sh -l -c pps.preview &");
+ system(cmd.c_str());
+  
+}
+
