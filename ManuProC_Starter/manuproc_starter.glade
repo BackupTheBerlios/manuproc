@@ -181,6 +181,7 @@
 
 	  <child>
 	    <widget class="GtkToolButton" id="preview">
+	      <property agent="glademm" name="cxx_visibility">protected</property>
 	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">(vorab)</property>
 	      <property name="use_underline">True</property>
