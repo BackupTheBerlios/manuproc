@@ -489,7 +489,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
 	// unde deswegen auf default Schema umgesprungen
         if (schema!=schema_own && schema_id==schema->Id() && !Configuration.combine) break; 
 #else
-        if (schema_id!=schema_mem->Id() && !Configuration.combine) break; // Schema hat gewechselt
+        if (schema!=schema_mem && !Configuration.combine) break; // Schema hat gewechselt
 #endif        
         
         if (Einheit(artikelbase) != einheit_mem && !Configuration.combine) break;  // Einheit wechselt
@@ -544,6 +544,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
         if ((Typ()==Lieferschein || Typ()==Wareneingang) && !palette_bool && (*j).Palette())
           palette_bool=true;
       }
+      assert(i!=j);
 //******** die Tabelle die wir ausgeben können endet bei j *****************
 
      bool neue_seite=false;
