@@ -1,8 +1,8 @@
-# $Id: Makefile.am,v 1.12 2004/03/26 13:55:33 jacek Exp $
+# $Id: Makefile.am,v 1.13 2005/06/13 09:57:50 christof Exp $
 
 includedir=@includedir@/DynamicEnums
 
-include_HEADERS=DynamicEnums.h DynamicDescr.h
+include_HEADERS=DynamicEnums.h DynamicDescr.h DynamicConfig.h
 
 DynamicEnums.h: DynEnums_default.h
 	if [ -x ../Programme/createDynEnums ] ; \
@@ -15,12 +15,19 @@ DynamicDescr.h: DynDescr_default.h
 	then ../Programme/createDynDescr >DynamicDescr.h ; \
 	else cp DynDescr_default.h DynamicDescr.h ; \
 	fi
+
+DynamicConfig.h:
+	if [ -x ../Programme/createDynConfig ] ; \
+	then ../Programme/createDynConfig >DynamicConfig.h ; \
+	else touch DynamicConfig.h ; \
+	fi
 	
 recreate:
-	-rm DynamicEnums.h DynamicDescr.h
+	-rm DynamicEnums.h DynamicDescr.h DynamicConfig.h
 	make DynamicEnums.h
 	make DynamicDescr.h
+	make DynamicConfig.h
 
 CLEANFILES= *~
 
-MAINTAINERCLEANFILES = DynamicEnums.h DynamicDescr.h
+MAINTAINERCLEANFILES = DynamicEnums.h DynamicDescr.h DynamicConfig.h
