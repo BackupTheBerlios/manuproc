@@ -27,7 +27,9 @@
 #include <unistd.h>
 #include <Misc/multi_lang.h>
 #include <Misc/relops.h>
+#include <Auftrag/Auftrag.h>
 #include "Configuration.h"
+#include <DynamicEnums/DynamicConfig.h>
 
 #ifdef PETIG_EXTENSIONS
 #define TABW	"17.8"
@@ -405,7 +407,15 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
 
  Kunde::ID kunden_id = KdNr();
  
-
+ cH_Kunde chk(kunden_id);
+#ifdef HAS_ADDR_GROUP_RechnungMitAuftrag
+ if (Typ()==Rechnung && chk->isInGrp(KundengruppeID::RechnungMitAuftrag)) 
+   order_on_bill=true;
+#endif
+#ifdef HAS_ADDR_GROUP_Kombiniert
+ if (Typ()==Rechnung && chk->isInGrp(KundengruppeID::Kombiniert)) 
+   Configuration.combine=true;
+#endif
 
  drucken_header(os);
  page_counter = 1;
@@ -474,6 +484,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
     rabatt_bool=false;
     palette_bool=false;
     notice_column_bool=false;
+    
     bool notice_column_possible=true;
 //******** wieviele Zeilen passen denn maximal in diese Tabelle ************
     LR_Abstraktion::const_iterator j=i ;
@@ -635,12 +646,28 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
            YourAuftrag=Auftrag::getYourAufNr(auftragmenge[0].ab);
         if (!(*k).getRefOrder().empty())
            YourAuftrag=(*k).getRefOrder();
+        std::string orders;
+        // collect the orders fulfilled by this delivery
+        if (Typ()==Rechnung && order_on_bill)
+        { LieferscheinEntry lse((*k).Lfrs());
+          for (LieferscheinEntry::zusaetze_t::const_iterator l=lse.getZusatzInfos().begin();
+                l!=lse.getZusatzInfos().end();++l)
+          { if (!orders.empty()) orders+=",";
+            if (!l->aeb) orders+="*";
+            else
+            { class Auftrag auftr(l->aeb);
+              if (!auftr.getYourAufNr().empty()) 
+                orders+=auftr.getYourAufNr();
+              else orders+=auftr.getAuftragidToStr();
+            }
+          }
+        }
         Zeile_Ausgeben(os,preismenge_mem,einheit_mem,einheitsize,
             (*k).Rest(),(*k).Artikel(),false,(*k).Stueck(),
             (*k).Menge(),(*k).getPreis(true),(*k).getPreis(false),
             (*k).Rabatt(),(*k).getLieferdatum(),(*k).Palette(),YourAuftrag,
 	    (*k).getPreisliste(),
-            AEB,(*k).Text());
+            AEB,(*k).Text(),orders);
         if (!(*k).Text().empty() && !notice_column_bool)
         { os << "\\multicolumn{" << spaltenzahl << "}{l}"
              "{\\hspace*{1cm}\\begin{minipage}{16.5cm}" << string2TeX((*k).Text()) 
@@ -656,7 +683,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
                0,(*k).Artikel(),true,einheit_mem.hatMenge()?1:l->menge.as_int(),
                einheit_mem.hatMenge()?l->menge:0,Preis(),Preis(),
                0,ManuProC::Datum(),0,Auftrag::getYourAufNr(l->ab),
-		(*k).getPreisliste(), AEB,std::string());
+		(*k).getPreisliste(), AEB,std::string(),std::string());
             }           
          }
       }
@@ -818,6 +845,9 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
   drucken_footer(os);
 }
 
+// CP: TODO: Diese ganzen Argumente sind idiotisch, das sollte neu
+// ueberarbeitet werden!
+
 //////////////////////////////////////////////////////////////////////////////
 void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
    const Preis::preismenge_t &preismenge_mem,
@@ -828,7 +858,8 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
    const AuftragBase::rabatt_t &rabatt, const ManuProC::Datum &lieferdatum,
    const int palette, const std::string &your_auftrag,
    const cH_PreisListe pl,
-   const AufEintragBase AEB, const std::string &notice)
+   const AufEintragBase AEB, const std::string &notice,
+   const std::string &orders)
 {
 #ifdef MABELLA_EXTENSIONS // gelieferte Zeilen nicht anzeigen beim Rückstand     
        if(Rueckstand() && rest==0) return;
@@ -955,6 +986,10 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
               }
             }
            
+        if (Typ()==Rechnung && order_on_bill)
+        { neue_spalte(erste_spalte,os);
+          os << linecolor << orders;
+        }
          if (preise_addieren)       
           { 
            neue_spalte(erste_spalte,os);
@@ -1233,6 +1268,10 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
     }
   }
 #endif
+  if (order_on_bill)
+  { tabcolumn+="l"; spaltenzahl++; 
+    ueberschriften += "&\\multicolumn{1}{l}{"+ug+"Auftrag}";
+  }
 
   if (preise_addieren)  // Einzelpreis, Gesamtpreis
   { 

@@ -236,6 +236,7 @@ class LR_Abstraktion: public LR_Base
   // PETIG_EXTENSIONS
  bool palette_bool:1; // whether palette is used
  bool notice_column_bool:1; // whether there is space for inline 
+ bool order_on_bill:1; // whether the order no should get printed on the bill
 
  cH_ppsInstanz instanz;
  
@@ -288,6 +289,7 @@ private:
 	stueck_bool(), menge_bool(), \
 	rabatt_bool(), preise_addieren(), ean_code(), \
 	palette_bool(), notice_column_bool(), \
+	order_on_bill(), \
 	instanz(ppsInstanz::default_id), \
 	zeilen_passen_noch(), page_counter(1), \
 	preisspalte(), \
@@ -401,7 +403,8 @@ private:
         const AuftragBase::rabatt_t &rabatt, const ManuProC::Datum &lieferdatum,
         const int palette, const std::string &your_auftrag,
         const cH_PreisListe pl,
-        const AufEintragBase AEB,const std::string &notice
+        const AufEintragBase AEB,const std::string &notice,
+        const std::string &billorders
         );
 
    void drucken_header(std::ostream &os);
