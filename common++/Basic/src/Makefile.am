@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.55 2005/04/23 14:24:59 christof Exp $
+# $Id: Makefile.am,v 1.56 2005/06/14 10:29:09 christof Exp $
 
 if WINDOWS
 WIN_LDFLAGS=-no-undefined -export-symbols libManuProC_Base@DATABASE_TYPE@.def 
@@ -17,7 +17,7 @@ libManuProC_Base_res.lo: libManuProC_Base.rc
 	WINDRES=i586-mingw32msvc-windres $(top_srcdir)/build/win32/lt-compile-resource $< $@
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @SIGC_CFLAGS@ -DlibManuProC_Base_COMPILATION \
-	-I/usr/include/postgresql/server
+	-I/usr/include/postgresql/server -I/usr/include/postgresql/8.0/server
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
