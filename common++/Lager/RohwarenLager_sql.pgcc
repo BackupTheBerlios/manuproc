@@ -323,7 +323,7 @@ std::vector<class LagerInhalt> RohwarenLager::LagerInhalt_(const ArtikelBase& ar
      exec sql fetch r_summe into :MATERIAL,:KARTONS,:RESTKARTONS,:KG,:RESTE_KG;
      SQLerror::test(__FILELINE__,100);
      if(sqlca.sqlcode) break;
-     V.push_back(class LagerInhalt(ArtikelBase(MATERIAL),KARTONS,RESTKARTONS,KG,RESTE_KG));
+     V.push_back(::LagerInhalt(ArtikelBase(MATERIAL),KARTONS,RESTKARTONS,KG,RESTE_KG));
    }
  return V;
 }

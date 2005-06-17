@@ -1,11 +1,13 @@
-// $Id: compiler_ports.h,v 1.6 2003/07/30 11:16:55 christof Exp $
+// $Id: compiler_ports.h,v 1.7 2005/06/17 15:35:48 christof Exp $
 
 // this macros cater for the various incompatible compilers
 
 #if !defined(__GNUC__) || __GNUC__>=3
 #  define NOTGCC295(x) x
+#  define GCC295(x)
 #else
 #  define NOTGCC295(x)
+#  define GCC295(x) x
 #endif
 
 /*

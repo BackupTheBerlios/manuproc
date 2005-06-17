@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.51 2004/03/11 20:43:18 jacek Exp $
+// $Id: Lager.cc,v 1.52 2005/06/17 15:35:49 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -200,7 +200,7 @@ std::vector<class LagerInhalt> LagerBase::LagerInhalt()  const
 class LagerInhalt LagerBase::LagerInhalt(const ArtikelBase& artikel) const
 {
   std::vector<class LagerInhalt> L=LagerInhalt_(artikel);
-  if(L.empty()) return class LagerInhalt(artikel,0,0,0,0);
+  if(L.empty()) return GCC295(class) ::LagerInhalt(artikel,0,0,0,0);
   return *(L.begin());
 }
         
