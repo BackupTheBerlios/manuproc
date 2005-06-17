@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.75 2005/06/17 15:47:19 christof Exp $
+dnl $Id: petig.m4,v 1.76 2005/06/17 15:58:08 christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -202,6 +202,7 @@ dnl omit these standard paths even though ecpg mentions them
       AC_MSG_RESULT($ECPG_INCLUDES)
     fi
     ECPG_LIBS='-lecpg -lpq -lcrypt'
+    AC_CHECK_LIB(pgtypes,PGTYPESnumeric_add,[ECPG_LIBS="-lecpg -lpgtypes -lpq -lcrypt"]);
   fi
   
   AC_SUBST(ECPG)
@@ -397,7 +398,7 @@ then
 	COMMONXX_LIBS="$COMMONXX_LIBS $ECPG_LIBS"
 else
 	AC_MSG_RESULT("SQLite") 
-	COMMONXX_LDFLAGS="$COMMONXX_LDFLAGS -lsqlite"
+	COMMONXX_LDFLAGS="$COMMONXX_LDFLAGS -lsqlite3"
 fi
 
 ])
