@@ -8,7 +8,7 @@ template <class T> FetchIStream &operator>>
 {
  int _id;
  is >> _id;
- me_id.setId((ManuProcEntity<T>::ID)_id);
+ me.setId((ManuProcEntity<T>::ID)_id);
  return is;
 }
 
