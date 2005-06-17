@@ -1,4 +1,4 @@
-// $Id: Kundengruppe.cc,v 1.9 2005/06/17 15:17:07 christof Exp $
+// $Id: Kundengruppe.cc,v 1.10 2005/06/17 15:28:34 christof Exp $
 #include "Kundengruppe.h"
 #include <BaseObjects/ManuProcEntity_FetchIStream.h>
 
@@ -47,7 +47,7 @@ FetchIStream &operator>>(FetchIStream &is,Kundengruppe &kg)
  } 
  
 FetchIStream &operator>>(FetchIStream &is,Kundengruppe::ID &kgid)
- {  return is >> (int)kgid; 
+ {  return is >> (int&)kgid; 
  }  
 
 cH_Kundengruppe::cH_Kundengruppe(Kundengruppe::ID _id,
