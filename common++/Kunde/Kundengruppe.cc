@@ -1,3 +1,4 @@
+// $Id: Kundengruppe.cc,v 1.9 2005/06/17 15:17:07 christof Exp $
 #include "Kundengruppe.h"
 #include <BaseObjects/ManuProcEntity_FetchIStream.h>
 
@@ -76,9 +77,3 @@ FetchIStream &operator>>(FetchIStream &is,cH_Kundengruppe &kg)
    kg=ch_kg;
    return is;
  } 
- 
- 
-
- 
- 
- 

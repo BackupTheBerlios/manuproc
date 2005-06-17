@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.23 2004/08/24 14:06:14 jacek Exp $
+// $Id: ArtikelBezeichnung.h,v 1.24 2005/06/17 15:17:06 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -81,14 +81,9 @@ private:
 	std::vector<cH_EntryValue> value;
 
  // eigentlich nicht so toll wird aber ab und an intern verwendet
- const ArtikelBezeichnung &operator=(const ArtikelBezeichnung &b)
- {  *(ArtikelBase*)this=(const ArtikelBase&)b;
-    schema=b.schema;
-    value=b.value;
-    return *this;
- }
- void setID(const ArtikelBase &id) throw(SQLerror)
- {  *this=ArtikelBezeichnung(id,schema->Id()); }
+ const ArtikelBezeichnung &operator=(const ArtikelBezeichnung &b);
+ ArtikelBezeichnung(const ArtikelBezeichnung &b);
+ void setID(const ArtikelBase &id) throw(SQLerror);
 
 // nur über cH_ArtikelBezeichnung verwenden !!!
  ArtikelBezeichnung(const ArtikelBase &artikel,

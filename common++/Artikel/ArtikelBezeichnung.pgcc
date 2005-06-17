@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.28 2004/08/24 14:06:14 jacek Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.29 2005/06/17 15:17:06 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -183,7 +183,7 @@ ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const std::vector<cH_Ent
  std::string query = squery.str(); 
    
  try
- {  (const char*)QUERY=query.c_str();
+ {  QUERY=const_cast<char*>(query.c_str());
     Transaction tr;
     exec sql prepare QUERY2 from :QUERY;
     exec sql declare loadart cursor for QUERY2;
@@ -270,5 +270,20 @@ void ArtikelBezeichnung::Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase
    SQLerror::test(__FILELINE__,100);
 }
 
+const ArtikelBezeichnung &ArtikelBezeichnung::operator=(const ArtikelBezeichnung &b)
+ {  *(ArtikelBase*)this=(const ArtikelBase&)b;
+    schema=b.schema;
+    value=b.value;
+    return *this;
+ }
 
-
+void ArtikelBezeichnung::setID(const ArtikelBase &id) throw(SQLerror)
+#if 0
+ {  *(ArtikelBase*)this=id;
+    schema=b.schema;
+    value=b.value;
+    return *this;
+ }
+#endif
+// this->operator=(ArtikelBezeichnung(id,schema->Id())); }
+{ *this=ArtikelBezeichnung(id,schema->Id()); }
