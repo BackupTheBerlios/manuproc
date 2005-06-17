@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.44 2004/11/18 16:45:44 christof Exp $
+# $Id: configure.in,v 1.45 2005/06/17 15:59:51 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(libcommon++, 0.0, [manuproc-developer-de@berlios.de])
@@ -158,7 +158,7 @@ fi
 
 COMMONXX_INCLUDES="$ECPG_INCLUDES -I\$(top_srcdir) $SIGC_CFLAGS"
 COMMONXX_LDFLAGS="$ECPG_LDFLAGS -L\$(top_srcdir)"
-COMMONXX_LIBS="$ECPG_LIBS -lcommon++ $SIGC_LIBS"
+COMMONXX_LIBS="-lcommon++ $ECPG_LIBS $SIGC_LIBS"
 AC_SUBST(COMMONXX_INCLUDES)
 AC_SUBST(COMMONXX_LDFLAGS)
 AC_SUBST(COMMONXX_LIBS)
