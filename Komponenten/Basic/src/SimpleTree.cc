@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.54 2004/12/04 10:53:34 christof Exp $
+// $Id: SimpleTree.cc,v 1.55 2005/06/17 16:26:32 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -86,7 +86,9 @@ void SimpleTree_Basic::on_column_edited(const Glib::ustring &path,const Glib::us
 void SimpleTree_Basic::on_spaltenzahl_geaendert()
 {  remove_all_columns();
    for (unsigned int i=0;i<Cols();++i)
-   {  CellRendererSimpleTree *crst = Gtk::manage(new CellRendererSimpleTree(i));
+   {
+#if 0   
+      CellRendererSimpleTree *crst = Gtk::manage(new CellRendererSimpleTree(i));
       Gtk::CellRendererText *crt = Gtk::manage(new Gtk::CellRendererText());
       Gtk::TreeView::Column* pColumn = Gtk::manage(new Gtk::TreeView::Column(getColTitle(i)));
       pColumn->pack_start(*crst, false);
@@ -106,6 +108,9 @@ void SimpleTree_Basic::on_spaltenzahl_geaendert()
          crt->signal_edited().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_column_edited),idx));
       }
       append_column(*pColumn);
+#else
+      append_column(getColTitle(i),sts->m_columns.cols[i]);
+#endif      
    }
 // (gtk_tree_view_set_headers_clickable): assertion `tree_view->priv->model != NULL'
 //   set_headers_clickable(); 
