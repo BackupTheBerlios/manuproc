@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.h,v 1.23 2004/10/21 13:43:42 jacek Exp $
+// $Id: Zahlungsart.h,v 1.24 2005/06/17 14:48:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -106,11 +106,8 @@ class cH_Zahlungsart : public Handle<const Zahlungsart>
         typedef CacheStatic<Zahlungsart::ID,cH_Zahlungsart> cache_t;
         static cache_t cache;
         cH_Zahlungsart(const Zahlungsart *p) : Handle<const Zahlungsart>(p) {}	
-#if __GNUC__ > 2
-        friend class cache_t::stl_type;
-#else
-        friend cache_t::stl_type;
-#endif
+
+        friend class std::map<Zahlungsart::ID,cH_Zahlungsart>;
         cH_Zahlungsart() {}
 public:
 	typedef Zahlungsart::ID ID;

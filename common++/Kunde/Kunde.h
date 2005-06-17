@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.70 2005/04/12 17:16:19 jacek Exp $
+// $Id: Kunde.h,v 1.71 2005/06/17 14:48:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -457,12 +457,8 @@ class cH_Kunde : public Handle<const Kunde>
         typedef CacheStatic<Kunde::ID,cH_Kunde> cache_t;
         static cache_t cache;
         cH_Kunde(const Kunde *p) : Handle<const Kunde>(p) {}	
-#if __GNUC__ > 2
-        friend class cache_t::stl_type;
-#else
-        friend cache_t::stl_type;
-#endif        
-//	friend class std::map<int, cH_Kunde>;
+        
+        friend class std::map<Kunde::ID,cH_Kunde>;
         cH_Kunde() {}
 public:
 	typedef Kunde::ID ID;
@@ -479,12 +475,8 @@ class H_Kunde : public Handle<Kunde>
 {
         typedef CacheStatic<Kunde::ID,H_Kunde> cache_t;
         static cache_t cache;
-//	friend class CacheStatic<Kunde::ID, H_Kunde>;
-#if __GNUC__ > 2
-        friend class cache_t::stl_type;
-#else
-        friend cache_t::stl_type;
-#endif
+
+	friend class std::map<Kunde::ID, H_Kunde>;
 	H_Kunde(Kunde *p) : Handle<Kunde>(p) {}	
 	H_Kunde() {}
 public:

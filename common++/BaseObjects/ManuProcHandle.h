@@ -1,4 +1,4 @@
-/* $Id: ManuProcHandle.h,v 1.3 2003/04/25 10:27:26 christof Exp $ */
+/* $Id: ManuProcHandle.h,v 1.4 2005/06/17 14:48:18 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -32,7 +32,7 @@ template <class T=long int> class ManuProcHandle
 { 
 public:
  typedef NOTGCC295(typename) ManuProcEntity<T>::ID ID;
- ManuProcHandle() : ManuProcEntity<T>(none_id) {}
+ ManuProcHandle() : ManuProcEntity<T>(ManuProcEntity<T>::none_id) {}
  ManuProcHandle(const ID i) : ManuProcEntity<T>(i) {}
 };
 

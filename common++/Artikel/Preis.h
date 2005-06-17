@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.21 2004/01/30 14:04:09 christof Exp $
+// $Id: Preis.h,v 1.22 2005/06/17 14:48:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -42,7 +42,7 @@ private:
     	bool short_shl:1;
 
     	const static float DM_EURO=1.95583;
-    	const static float EURO_DM=1.0/DM_EURO;
+    	const static float EURO_DM=1.0/1.95583; // DM_EURO;
     	
 public:
 	Preis(float dm_euro, cP_Waehrung w,preismenge_t pmenge=1)

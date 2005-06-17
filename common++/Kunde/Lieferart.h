@@ -1,4 +1,4 @@
-// $Id: Lieferart.h,v 1.2 2003/04/24 13:44:37 jacek Exp $
+// $Id: Lieferart.h,v 1.3 2005/06/17 14:48:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -61,12 +61,9 @@ class cH_Lieferart : public Handle<const Lieferart>
 {	// cache
         typedef CacheStatic<Lieferart::ID,cH_Lieferart> cache_t;
         static cache_t cache;
-        cH_Lieferart(const Lieferart *p) : Handle<const Lieferart>(p) {}	
-#if __GNUC__ > 2
-        friend class cache_t::stl_type;
-#else
-        friend cache_t::stl_type;
-#endif
+        cH_Lieferart(const Lieferart *p) : Handle<const Lieferart>(p) {}
+
+	friend class std::map<Lieferart::ID,cH_Lieferart>;
         cH_Lieferart() {}
 public:
 	typedef Lieferart::ID ID;
