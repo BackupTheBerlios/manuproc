@@ -1,4 +1,4 @@
-/* $Id: ManuProcEntity.cc,v 1.3 2005/06/17 15:17:06 christof Exp $ */
+/* $Id: ManuProcEntity.cc,v 1.4 2005/06/17 16:12:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -30,5 +30,7 @@ bool ManuProcEntity::Valid(ID i) //const
 
 #if __GNUC__ <4
 const ManuProcEntity<>::ID ManuProcEntity<>::none_id;
+#else
+template<> const ManuProcEntity<>::ID ManuProcEntity<>::none_id;
 #endif
 const ManuProcEintrag::ID ManuProcEintrag::none_znr;
