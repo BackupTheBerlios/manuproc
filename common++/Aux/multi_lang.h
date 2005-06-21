@@ -13,6 +13,7 @@ class MultiL_Dict
 {
  int sprid;
  int def_sprid;
+ bool show_id;
  
  std::map<int,std::string> textmap;
  std::map<int,std::string> defaultmap; 
@@ -129,10 +130,11 @@ public:
 	     
 
  MultiL_Dict(int sprache, int default_spr=DEFAULT_SPRACHE);
- MultiL_Dict() : sprid(-1) {}
+ MultiL_Dict() : sprid(-1),show_id(false) {}
  std::string MLT(const LangTXT textid, std::string def_string="UNKNOWN");
  bool valid() const { return sprid!=-1; }
  int getSprId() const { return sprid; }
+ void ShowId(bool flag) { show_id=flag; }
 };
 
 

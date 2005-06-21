@@ -5,7 +5,7 @@
 #include <Misc/itos.h>
 
 MultiL_Dict::MultiL_Dict(int sprache, int default_spr) : 
-	sprid(sprache), def_sprid(default_spr)
+	sprid(sprache), def_sprid(default_spr),show_id(false)
 {
  (Query("select textid,text_lang from text_bausteine "
  	"where sprid=?") << sprid).FetchArray(textmap); 		
@@ -54,6 +54,9 @@ std::string MultiL_Dict::MLT(const LangTXT textid, std::string def_str)
           ret=def_str;//ret="MLD-"+itos(textid);
       }
  }
- return ret;
+ if(show_id)
+   return std::string("[")+ret+"["+itos(textid)+"]]";
+ else
+   return ret;
 }
 
