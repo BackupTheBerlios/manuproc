@@ -55,7 +55,7 @@ std::string MultiL_Dict::MLT(const LangTXT textid, std::string def_str)
       }
  }
  if(show_id)
-   return std::string("[")+ret+"["+itos(textid)+"]]";
+   return std::string("<")+ret+"<"+itos(textid)+"> >";
  else
    return ret;
 }
