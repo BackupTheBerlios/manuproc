@@ -69,6 +69,7 @@ void windowTop::changedFktB(Kunde::UpdateBitsBank e)
      else if (e==Kunde::FZahlungsart ) { kundendaten->set_Zahlungsart(zahlungsartbox->get_value()); show_zahlungsziel();}
      else if (e==Kunde::FLieferantenkonto ) kundendaten->set_Lieferantenkonto(atoi(spinbutton_lieferantenkonto->get_text().c_str()));
      else if (e==Kunde::FGegenkonto  ) kundendaten->set_Gegenkonto(atoi(spinbutton_gegenkonto->get_text().c_str()));
+     else if (e==Kunde::FDebitorenkonto  ) kundendaten->set_Debitorenkonto(atoi(spinbutton_debitorenkonto->get_text().c_str()));
      else std::cerr<< "Falsche Funktion konektiert\n";
 
   if(e==Kunde:: FWaehrungid || e==Kunde::FBankindex ||
@@ -136,7 +137,8 @@ void windowTop::activateFktB(Kunde::UpdateBitsBank e)
 //     else if (e==Kunde::FSkontosatz  ) entryVerein->grab_focus();
 //     else if (e==Kunde::FSkontofrist ) spinbutton_skontosatz->grab_focus();
      else if (e==Kunde::FZahlungsart ) spinbutton_Rabatt->grab_focus();
-     else if (e==Kunde::FLieferantenkonto ) spinbutton_gegenkonto->grab_focus();
+     else if (e==Kunde::FLieferantenkonto ) spinbutton_debitorenkonto->grab_focus();
+     else if (e==Kunde::FDebitorenkonto ) spinbutton_gegenkonto->grab_focus();
      else if (e==Kunde::FGegenkonto  ) ;
      else std::cerr<< "Falsche Funktion konektiert\n";
 }
@@ -340,6 +342,10 @@ void windowTop::connectFkt()
   spinbutton_gegenkonto->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FGegenkonto));
   spinbutton_gegenkonto->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktB),Kunde::FGegenkonto));
   spinbutton_gegenkonto->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktB),Kunde::FGegenkonto));
+
+  spinbutton_debitorenkonto->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FDebitorenkonto));
+  spinbutton_debitorenkonto->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktB),Kunde::FDebitorenkonto));
+  spinbutton_debitorenkonto->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktB),Kunde::FDebitorenkonto));  
 
   Waehrung->activate.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FWaehrungid));
 

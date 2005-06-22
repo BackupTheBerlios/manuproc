@@ -29,6 +29,7 @@ void windowTop::show_details()
    entry_eigene_kundennr->set_text(kundendaten->UnsereKundenNr());
    spinbutton_lieferantenkonto->set_value(kundendaten->getLieferantenkonto());
    spinbutton_gegenkonto->set_value(kundendaten->getGegenkonto());
+   spinbutton_debitorenkonto->set_value(kundendaten->getDebitorenkonto());   
 	entryVerein->set_text(kundendaten->verein());
 	entryBankKonto->set_text(ulltos(kundendaten->getKtnr()));
 	entry_blz->set_text(itos(kundendaten->getblz()));
