@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.69 2005/03/10 15:38:38 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.70 2005/06/22 15:04:00 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -86,7 +86,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    int WAEHRUNGID;
    int VERKNR;
    int BETREUER;
-   int LIEFERANTENKONTO,GEGENKONTO;
+   int LIEFERANTENKONTO,GEGENKONTO,DEBITORENKONTO;
    char UNSERE_KUNDENNR[128];
    int ANZFIRMA,ANZWEISS;
    bool FREIHAUS;
@@ -130,7 +130,8 @@ Kunde::Kunde(ID _id) throw(SQLerror)
 	 coalesce(waehrungid,:WAEHRUNGID),
 	 coalesce(entsorgung,false),
     coalesce(verknr,-1),coalesce(lieferantenkonto,0),
-    coalesce(gegenkonto,0),coalesce(unsere_kundennr,''),
+    coalesce(gegenkonto,0),coalesce(debitorenkonto,rechnung_an),
+    coalesce(unsere_kundennr,''),
 	coalesce(betreuer,-1),coalesce(anz_firmenpapier,1),
 	coalesce(anz_weissespapier,1),coalesce(lieferung_frei_haus,'t'),
 	coalesce(aktiv,true), coalesce(preisauto,true),
@@ -146,7 +147,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
            :FLAECHE,:MITARBEITER,:KUNDENUMSATZ,:PLANUMSATZ,:UMSATZ,
 	   :RABATT,:ZEILENRABATT,:ZAHLUNGSART, :VEREIN, 
 	   :NOTIZ,:STAND, :LANDESID, :WAEHRUNGID, :ENTSORGUNG, :VERKNR,
-      :LIEFERANTENKONTO,:GEGENKONTO,:UNSERE_KUNDENNR,:BETREUER,
+      :LIEFERANTENKONTO,:GEGENKONTO,:DEBITORENKONTO,:UNSERE_KUNDENNR,:BETREUER,
       :ANZFIRMA,:ANZWEISS,:FREIHAUS,:AKTIV,:PREISAUTO,:SHOWEAN,
 	:MWST
    	from kunden k left join banken b using(bankindex)
@@ -183,6 +184,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    bankverb.bankindex=BANKINDEX;
    bankverb.lieferantenkonto=LIEFERANTENKONTO;
    bankverb.gegenkonto=GEGENKONTO;
+   bankverb.debitorenkonto=DEBITORENKONTO;
    try{
    bankverb.zahlungsart=cH_Zahlungsart(ZAHLUNGSART);
    }catch(SQLerror &e) 
@@ -534,7 +536,8 @@ void Kunde::update_e(UpdateBitsBank e)
 //     else if (i==B_Skontosatz  ) query += "skontosatz  = "+skontosatz().String()+",";
      else if (i==B_Zahlungsart ) query += "zahlungsart = "+itos(zahlungsart()->Id())+",";
      else if (i==B_Lieferantenkonto ) query += "lieferantenkonto = "+itos(getLieferantenkonto())+",";
-     else if (i==B_Gegenkonto  ) query += "gegenkonto = "+itos(getGegenkonto())+",";
+     else if (i==B_Gegenkonto  ) query += "gegenkonto = "+itos(getGegenkonto())+",";     
+     else if (i==B_Debitorenkonto  ) query += "debitorenkonto = "+itos(getDebitorenkonto())+",";
    }
  query += "stand  = now() where kundennr = "+itos(Id());
  Query::Execute(query);

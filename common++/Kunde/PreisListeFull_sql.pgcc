@@ -29,6 +29,7 @@ void PreisListeFull::load_preisliste(bool with_artbez,
 {
  std::string bezkomps;
  std::string beztable;
+ ManuProC::Datum cd;
  int signifikanz=1;
  cH_ExtBezSchema ebz(ExtBezSchema::default_id,at);
  if(with_artbez)
@@ -51,7 +52,7 @@ void PreisListeFull::load_preisliste(bool with_artbez,
    {qu=std::string("select ");
 	if(with_artbez)
           qu+=bezkomps;
-	qu+=" artikelid,"+preis_sel+",preismenge,coalesce(mindestmenge,1),"
+	qu+=" max(c.zeitpunkt),artikelid,"+preis_sel+",preismenge,coalesce(mindestmenge,1),"
 	" coalesce(k.pl_parent,-1) as parent"
         " from artikelpreise p join ku_preisliste k on "
         " (k.prlsnr=p.kundennr and p.kundennr="+plid+")"
@@ -59,6 +60,12 @@ void PreisListeFull::load_preisliste(bool with_artbez,
 	" s.warengruppe="+itos(at.Id())+") ";
     if(with_artbez)
       qu+=" join "+beztable+" b using (id) ";
+// join with change log to show last time of change
+    qu=+" left join preis_change_journal c on "
+    " (c.artikelid=p.artikelid and "
+    " c.prlsnr=p.kundennr)  group by "+bezkomps+
+    " p.artikelid,p.preis,p.preismenge,coalesce(p.mindestmenge,1), parent";
+
     if(isDepending())
       {  
        qu+=" UNION ";
@@ -74,6 +81,7 @@ void PreisListeFull::load_preisliste(bool with_artbez,
         if(with_artbez)
           qu+=" join "+beztable+" b using (id) ";
       qu+=") order by artikelid,parent"; // UNION end 
+      
       }
    }
  else
@@ -115,10 +123,11 @@ void PreisListeFull::load_preisliste(bool with_artbez,
           po.b.push_back(cH_EntryValueIntString(beztext));
          }
       }
-    is >> ARTIKELID >> PREIS >> PREISMENGE >> MINDMENGE >> PARENT;  
+    is >> cd >> ARTIKELID >> PREIS >> PREISMENGE >> MINDMENGE >> PARENT;  
 
     po.p=Preis(PREIS,getWaehrung(),PREISMENGE);
     po.pl_parent=PARENT;
+    po.changetime=cd;
     payoff[UniqPreis(ARTIKELID,MINDMENGE)]=po;
 
     is=q.Fetch();
