@@ -86,7 +86,7 @@ void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned sp,unsig
  if (eingeschraenkt && !einschraenkung.empty())
  	squery += (!constraint.empty()?" AND ":" WHERE ") + einschraenkung;
  
-    (const char*)QUERY=squery.c_str();
+    QUERY=const_cast<char*>(squery.c_str());
     tr.open();
     exec sql prepare QUERY from :QUERY;
     exec sql declare extbezfeld cursor for QUERY;

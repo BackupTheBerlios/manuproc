@@ -1,4 +1,4 @@
-// $Id: Optionmenu_Einheit.cc,v 1.4 2004/11/08 14:35:52 christof Exp $
+// $Id: Optionmenu_Einheit.cc,v 1.5 2005/06/23 15:18:24 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -29,7 +29,7 @@ Optionmenu_Einheit::Optionmenu_Einheit()
 
 Einheit Optionmenu_Einheit::get_value() const
 {
-  int i=int(const_cast<Gtk::MenuItem*>(get_menu()->get_active())->get_data("user_data"));
+  int i=long(const_cast<Gtk::MenuItem*>(get_menu()->get_active())->get_data("user_data"));
   return Einheit(Einheit::ID(i));
 //  return static_cast<Einheit*>(get_menu()->get_active()->get_user_data());
 }
@@ -47,7 +47,7 @@ void Optionmenu_Einheit::fuelle_menu()
 
 static bool operator==(gpointer data,const Einheit &i)
 { // return *(static_cast<Einheit*>(data))==*i;
-  return (int)(data)==i.Id();
+  return (long)(data)==i.Id();
 }
 
 void Optionmenu_Einheit::set_value(const Einheit &i)
