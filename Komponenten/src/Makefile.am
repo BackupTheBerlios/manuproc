@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.52 2004/11/16 14:10:05 christof Exp $
+# $Id: Makefile.am,v 1.53 2005/06/24 10:40:04 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -67,7 +67,8 @@ libKomponenten_a_SOURCES= \
         CellRendererSimpleTree.cc ArtikelBox.cc \
         KundenBox2.cc int_ImageButton.cc \
         Optionmenu_Instanz.cc Artikel_Bestellen.cc \
-        Optionmenu_Einheit.cc WPreis.cc PreisBox.cc
+        Optionmenu_Einheit.cc WPreis.cc PreisBox.cc \
+        Optionmenu_Kundengruppe.cc 
 
 lateron= \
 		KundenBox_glade.cc \
