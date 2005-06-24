@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.53 2005/06/24 10:40:04 christof Exp $
+# $Id: Makefile.am,v 1.54 2005/06/24 11:04:53 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -84,7 +84,8 @@ lateron= \
 BUILT_SOURCES_L= $(LINKS) \
 	IntStringBox_sql.cc ArtikelBox_sql.cc AB_Breitensuche_sql.cc \
 	StringBox_sql.cc Optionmenu_Warengruppe_sql.cc ProzessBox_sql.cc \
-	WWaehrung_sql.cc WAuftragStatus_sql.cc 
+	WWaehrung_sql.cc WAuftragStatus_sql.cc \
+	WTelefon_glade.cc WTelefon.cc
 
 lateron2 = KundenBox_sql.cc 
 
