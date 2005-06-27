@@ -1,4 +1,4 @@
-// $Id: WTelefon.hh,v 1.8 2005/06/24 11:04:53 christof Exp $
+// $Id: WTelefon.hh,v 1.9 2005/06/27 16:26:14 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -52,6 +52,8 @@ class WTelefon : public WTelefon_glade
    
    std::list<cH_Telefon> TelList;
 
+   SigC::Signal1<void,cH_Telefon> _add;
+   SigC::Signal1<void,cH_Telefon> _remove;
  public:
    WTelefon();
    
@@ -64,8 +66,10 @@ class WTelefon : public WTelefon_glade
 
    void clear(bool withtree=true) const;
 
-   SigC::Signal1<void,cH_Telefon> add;
-   SigC::Signal1<void,cH_Telefon> remove;
+   SigC::Signal1<void,cH_Telefon> &signal_add()
+   { return _add; }
+   SigC::Signal1<void,cH_Telefon> &signal_remove()
+   { return _remove; }
 };
 
 

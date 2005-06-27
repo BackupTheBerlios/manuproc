@@ -1,4 +1,4 @@
-// $Id: WTelefon.cc,v 1.9 2005/06/24 11:04:53 christof Exp $
+// $Id: WTelefon.cc,v 1.10 2005/06/27 16:26:14 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig
@@ -134,7 +134,7 @@ void WTelefon::on_buttonNumLoeschen_clicked()
      Telefon::delTelefon(T->Id());
      TelList.remove(T);
      showTel();
-     remove(T);
+     _remove(T);
    }
 std::cout << "loschen\n";   
 }
@@ -221,7 +221,7 @@ void WTelefon::text_activate()
   cH_Telefon ct=Telefon::create(get_value());
   TelList.push_back(ct);
   showTel();
-  add(ct);  
+  _add(ct);  
   }catch(SQLerror &e){std::cerr << e<<'\n';}
 }
 
