@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.55 2005/06/17 16:26:32 christof Exp $
+// $Id: SimpleTree.cc,v 1.56 2005/06/28 13:58:16 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -87,7 +87,7 @@ void SimpleTree_Basic::on_spaltenzahl_geaendert()
 {  remove_all_columns();
    for (unsigned int i=0;i<Cols();++i)
    {
-#if 0   
+#if 1
       CellRendererSimpleTree *crst = Gtk::manage(new CellRendererSimpleTree(i));
       Gtk::CellRendererText *crt = Gtk::manage(new Gtk::CellRendererText());
       Gtk::TreeView::Column* pColumn = Gtk::manage(new Gtk::TreeView::Column(getColTitle(i)));
