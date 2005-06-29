@@ -1,4 +1,4 @@
-// $Id: PreisListeFull.h,v 1.18 2005/06/22 15:04:00 jacek Exp $
+// $Id: PreisListeFull.h,v 1.19 2005/06/29 14:59:26 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -41,7 +41,6 @@ public:
        Preis p;
        ID pl_parent;
        std::vector<cH_EntryValueIntString> b;
-       ManuProC::Datum changetime;
      };
      
 private:
