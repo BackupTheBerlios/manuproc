@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.h,v 1.14 2004/02/06 14:33:14 christof Exp $
+// $Id: Zeitpunkt_new.h,v 1.15 2005/06/29 16:27:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -96,6 +96,7 @@ public:
    // convert to string
    std::string write() const;
    
+   long diff(const Zeitpunkt_new &b, precision prec) const throw();
    /// Differenz in min(Precision)
    int operator-(const Zeitpunkt_new &b) const throw();
    bool operator<(const Zeitpunkt_new &b) const throw();

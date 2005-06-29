@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.cc,v 1.10 2004/02/06 14:33:14 christof Exp $
+// $Id: Zeitpunkt_new.cc,v 1.11 2005/06/29 16:27:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,9 +26,8 @@
 #include <Misc/FetchIStream.h>
 #endif
 
-int Zeitpunkt_new::operator-(const Zeitpunkt_new &b) const throw()
-{  int prec2=prec<b.prec?prec:b.prec;
-   switch (prec2)
+long Zeitpunkt_new::diff(const Zeitpunkt_new &b, precision destprec) const throw()
+{  switch (destprec)
    {  case days: return datum-b.datum;
       case hours: return (datum-b.datum)*24+hour-b.hour+(b.minutes_from_gmt-minutes_from_gmt)/60;
       case minutes: return ((datum-b.datum)*24+hour-b.hour)*60+minute-b.minute+(b.minutes_from_gmt-minutes_from_gmt);
@@ -38,6 +37,10 @@ int Zeitpunkt_new::operator-(const Zeitpunkt_new &b) const throw()
          return ((((datum-b.datum)*24+hour-b.hour)*60+minute-b.minute+(b.minutes_from_gmt-minutes_from_gmt))*60+second-b.second)*1000000+millisecond-b.millisecond;
       default: assert(0);
    }
+}
+
+int Zeitpunkt_new::operator-(const Zeitpunkt_new &b) const throw()
+{  return diff(b,prec<b.prec?prec:b.prec);
 }
 
 // not tested with different time zones
