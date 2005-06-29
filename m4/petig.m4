@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.77 2005/06/17 16:03:22 christof Exp $
+dnl $Id: petig.m4,v 1.78 2005/06/29 09:18:37 christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -144,7 +144,7 @@ AC_SUBST(MICO_GTKLIBS)
 
 AC_DEFUN([PETIG_CHECK_ECPG],
 [
-if test "x$ECPG_INCLUDES" == "x"
+if test -z "$ECPG_INCLUDES"
 then
   AC_MSG_CHECKING(for PostgreSQL ECPG)
   AC_ARG_WITH(postgresdir,
@@ -221,48 +221,52 @@ AC_DEFUN([PETIG_CHECK_POSTGRES],
 [ PETIG_CHECK_ECPG
 ])
 
-dnl PETIG_CHECK_LIB(lib name,dir name,define name,alt.lib+dir name,dep1,dep2)
+dnl MPC_CHECK_LIB(lib name,dir name,define name,alt.lib+dir name,dep1,dep2,dir)
 
-AC_DEFUN([PETIG_CHECK_LIB],
+AC_DEFUN([MPC_CHECK_LIB],
 [
 dnl only if not already checked
-if test "x$$3_INCLUDES" == "x" 
+if test -z "$$3_INCLUDES"
 then
+  _mpc_dir="$7"
+  if test -z "$_mpc_dir" ; then _mpc_dir=.. ; fi
   dnl dependancies
-  if test "x$5" != "x" -a "x$$5_INCLUDES" == "x"
-  then
-    PETIG_CHECK_$5
-  fi
-  if test "x$6" != "x" -a "x$$6_INCLUDES" == "x"
-  then
-    PETIG_CHECK_$6
-  fi
+  ifelse($5,,,[if test -z "$$5_INCLUDES"
+    then
+      PETIG_CHECK_$5([$_mpc_dir])
+    fi
+  ])
+  ifelse($6,,,[if test -z "$$6_INCLUDES"
+    then
+      PETIG_CHECK_$6([$_mpc_dir])
+    fi
+  ])
   
   AC_MSG_CHECKING(for $1 library)
-  if test -r "../$2/lib$1.a"
+  if test -r "$_mpc_dir/$2/lib$1.a"
   then
-    TEMP=`cd ../$2 ; pwd` 
+    TEMP=`cd $_mpc_dir/$2 ; pwd` 
     $3_INCLUDES="-I$TEMP"
     $3_LDFLAGS=""
     $3_LIBS="$TEMP/lib$1.a"
     AC_MSG_RESULT($$3_INCLUDES)
-  elif test -r "../$2/src/lib$1.a"
+  elif test -r "$_mpc_dir/$2/src/lib$1.a"
   then 
-    TEMP=`cd ../$2/src ; pwd` 
+    TEMP=`cd $_mpc_dir/$2/src ; pwd` 
     $3_INCLUDES="-I$TEMP"
     $3_LDFLAGS=""
     $3_LIBS="$TEMP/lib$1.a"
     AC_MSG_RESULT($$3_INCLUDES)
-  elif test -r "../$4/lib$4.a" -o -r "../$4/lib$4.la"
+  elif test -r "$_mpc_dir/$4/lib$4.a" -o -r "$_mpc_dir/$4/lib$4.la"
   then 
-    TEMP=`cd ../$4 ; pwd` 
+    TEMP=`cd $_mpc_dir/$4 ; pwd` 
     $3_INCLUDES="-I$TEMP"
     $3_LDFLAGS="-L$TEMP"
     $3_LIBS="-l$4"
     AC_MSG_RESULT($$3_INCLUDES)
-  elif test -r "../$4/src/lib$4.a" -o -r "../$4/src/lib$4.la"
+  elif test -r "$_mpc_dir/$4/src/lib$4.a" -o -r "$_mpc_dir/$4/src/lib$4.la"
   then 
-    TEMP=`cd ../$4/src ; pwd` 
+    TEMP=`cd $_mpc_dir/$4/src ; pwd` 
     $3_INCLUDES="-I$TEMP"
     $3_LDFLAGS="-L$TEMP"
     $3_LIBS="-l$4"
@@ -272,33 +276,33 @@ then
     then mytmp="$ac_default_prefix"
     else mytmp="$prefix"
     fi
-    if test "(" "x$4" != "x" -a -d $mytmp/include/$4 ")" -a -r $mytmp/lib/lib$4.a
-    then
-      $3_INCLUDES="-I$mytmp/include/$4"
-      AC_MSG_RESULT($$3_INCLUDES)
-      $3_LIBS="-L$mytmp/lib -l$4"
-      $3_LDFLAGS=""
-    else 
-      AC_MSG_ERROR([not found])
-    fi
+    ifelse($4,,AC_MSG_ERROR([not found]),[
+      if test -d "$mytmp/include/$4" -a -r "$mytmp/lib/lib$4.a"
+      then
+        $3_INCLUDES="-I$mytmp/include/$4"
+        AC_MSG_RESULT($$3_INCLUDES)
+        $3_LIBS="-L$mytmp/lib -l$4"
+        $3_LDFLAGS=""
+      else 
+        AC_MSG_ERROR([not found])
+      fi
+    ])
   fi
   $3_NODB_LIBS="$$3_LIBS"
 
   dnl dependancies
-  if test "x$5" != "x"
-  then
+  ifelse($5,,,[
     $3_INCLUDES="$$5_INCLUDES $$3_INCLUDES"
     $3_LIBS="$$3_LIBS $$5_LIBS"
     $3_NODB_LIBS="$$3_NODB_LIBS $$5_NODB_LIBS"
     $3_LDFLAGS="$$3_LDFLAGS $$5_LDFLAGS" 
-  fi
-  if test "x$6" != "x"
-  then
+  ])
+  ifelse($6,,,[
     $3_INCLUDES="$$6_INCLUDES $$3_INCLUDES"
     $3_LIBS="$$3_LIBS $$6_LIBS"
     $3_NODB_LIBS="$$3_NODB_LIBS $$6_NODB_LIBS"
     $3_LDFLAGS="$$3_LDFLAGS $$6_LDFLAGS"
-  fi
+  ])
 
   $3_CFLAGS=$$3_INCLUDES
   AC_SUBST($3_INCLUDES)
@@ -311,7 +315,7 @@ fi
 
 AC_DEFUN([PETIG_CHECK_GTKMM],
 [
-if test "x$GTKMM_CFLAGS" == "x"
+if test -z "$GTKMM_CFLAGS"
 then
   m4_ifdef([AM_PATH_GTKMM],[AM_PATH_GTKMM(1.2.0,,AC_MSG_ERROR(Cannot find Gtk-- Version 1.2.x))],[])
 fi
@@ -351,7 +355,7 @@ AC_DEFUN([MPC_CHECK_COMMONXX_SIGC],
 
 AC_DEFUN([PETIG_CHECK_COMMONXX],
 [
-PETIG_CHECK_LIB(common++,c++,COMMONXX,ManuProC_Base)
+MPC_CHECK_LIB(common++,c++,COMMONXX,ManuProC_Base,,,[$1])
 # check which sigc was used to configure ManuProC_Base
 AC_MSG_CHECKING(which sigc++ was used to configure ManuProC_Base)
 MPC_CHECK_COMMONXX_SIGC(0x200)
@@ -389,7 +393,7 @@ AC_COMPILE_IFELSE(
 		])],[MPC_SQLITE=1],[])
 CXXFLAGS="$old_cxxflags"
 
-if test "x$MPC_SQLITE" = x
+if test -z "$MPC_SQLITE"
 then
 	AC_MSG_RESULT("PostgreSQL") 
 	PETIG_CHECK_ECPG
@@ -412,27 +416,31 @@ fi
 
 AC_DEFUN([PETIG_CHECK_KOMPONENTEN],
 [
-PETIG_CHECK_LIB(Komponenten,Komponenten,KOMPONENTEN,ManuProC_Widgets,COMMONXX,COMMONGTK)
+MPC_CHECK_LIB(Komponenten,Komponenten,KOMPONENTEN,ManuProC_Widgets,COMMONXX,COMMONGTK,[$1])
 MPC_CHECK_SIGC_MATCH
 ])
 
 AC_DEFUN([PETIG_CHECK_COMMONGTK],
 [
-PETIG_CHECK_LIB(GtkmmAddons,gtk,COMMONGTK,GtkmmAddons,GTKMM)
+MPC_CHECK_LIB(GtkmmAddons,gtk,COMMONGTK,GtkmmAddons,GTKMM,,[$1])
 ])
 
 AC_DEFUN([PETIG_CHECK_COMMONGTK2],
 [
-PETIG_CHECK_LIB(GtkmmAddons,gtk2,COMMONGTK2,GtkmmAddons,GTKMM2)
+MPC_CHECK_LIB(GtkmmAddons,gtk2,COMMONGTK2,GtkmmAddons,GTKMM2,,[$1])
+])
+
+AC_DEFUN([MPC_CHECK_KOMPONENTEN2],
+[
+MPC_CHECK_LIB(Komponenten,Komponenten2,KOMPONENTEN2,ManuProC_Widgets,COMMONXX,COMMONGTK2,[$1])
+MPC_CHECK_SIGC_MATCH
 ])
 
 AC_DEFUN([PETIG_CHECK_KOMPONENTEN2],
-[
-PETIG_CHECK_LIB(Komponenten,Komponenten2,KOMPONENTEN2,ManuProC_Widgets,COMMONXX,COMMONGTK2)
-MPC_CHECK_SIGC_MATCH
+[ MPC_CHECK_KOMPONENTEN2([$1])
 ])
 
 AC_DEFUN([PETIG_CHECK_BARCOLIB],
 [
-PETIG_CHECK_LIB(barco,barcolib,BARCOLIB) 
+MPC_CHECK_LIB(barco,barcolib,BARCOLIB,,,,[$1]) 
 ])
