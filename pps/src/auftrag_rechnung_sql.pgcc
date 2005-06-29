@@ -50,7 +50,7 @@ void auftrag_rechnung::on_rngnr_search(int *_continue, GtkSCContext newsearch)
        		from rechnung where
        		ltrim(to_char(rngid,'000000')) like :PAT
        		and (:KUNDE<1 or kundennr=:KUNDE)
-       		order by rngid;
+       		order by datum desc;
        	
        exec sql open RNGNR_CURSOR;
        SQLerror::test(__FILELINE__":on_rngnr_search: open cursor","RNGNR_CURSOR");

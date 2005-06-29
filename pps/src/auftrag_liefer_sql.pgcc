@@ -1,4 +1,4 @@
-// $Id: auftrag_liefer_sql.pgcc,v 1.7 2004/10/12 08:12:52 christof Exp $
+// $Id: auftrag_liefer_sql.pgcc,v 1.8 2005/06/29 20:53:10 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -52,7 +52,7 @@ void auftrag_lieferschein::on_liefnr_search(int *_continue,
                 ltrim(to_char(lfrsid,'000000')) like :PAT 
                 and (:KUNDE<1 or kundennr=:KUNDE)
                 and instanz=:INSTANZ
-                order by lfrsid;
+                order by datum desc;
        exec sql open LFSNR_CURSOR;
        SQLerror::test(__FILELINE__":on_lfrsnr_search: open cursor","LFSNR_CURSOR");
 	}

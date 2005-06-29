@@ -144,7 +144,7 @@ void auftrag_lieferschein::display2(int kdnr)
 {
 try{
  liefer_kunde->set_value(kdnr);
- set_tree_offen_content();
+// set_tree_offen_content();
  cH_Kunde k(kdnr);
  vbox_eingabe->show();
 
@@ -191,12 +191,12 @@ void auftrag_lieferschein::on_lieferkunde_activate()
 datavec_liefdata.clear();
 try{display2(liefer_kunde->get_value());
  liefernr->reset();
+ set_tree_offen_content();
  } catch(SQLerror &e) {meldung->Show(e);}
 #ifdef EAN_AUSDRUCKEN_IN_PPS
  cH_Kunde k(liefer_kunde->get_value());
  checkbutton_ean_drucken->set_active(k->showEAN());   
 #endif 
-// set_tree_offen_content();
 }
 
 void auftrag_lieferschein::on_liefdate_activate()

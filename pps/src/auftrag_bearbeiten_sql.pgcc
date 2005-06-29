@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten_sql.pgcc,v 1.16 2004/09/28 13:32:22 jacek Exp $
+// $Id: auftrag_bearbeiten_sql.pgcc,v 1.17 2005/06/29 20:53:10 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -55,7 +55,7 @@ throw(SQLerror)
                 and (:KUNDE<1 or kundennr=:KUNDE)
                 and instanz = :INSTANZ
 		and auftragid not in (0,1,2)
-       		order by auftragid;
+       		order by datum desc;
        	
        exec sql open AUFNR_CURSOR;
        SQLerror::test(__FILELINE__":on_aufnrscombo_search: open cursor");
