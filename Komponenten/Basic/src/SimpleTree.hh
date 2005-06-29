@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.40 2004/12/04 10:53:34 christof Exp $
+// $Id: SimpleTree.hh,v 1.41 2005/06/29 13:46:56 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -81,6 +81,7 @@ private:
 	SigC::Signal0<void> _reorder;
 	
 	std::vector<gfloat> alignment;
+	std::vector<bool> resizeable;	
 	
 	void on_title_changed(guint nr);
 	void on_selection_changed();
@@ -121,6 +122,8 @@ public:
 	void Collapse();
 	void setTitles(const std::vector<std::string> &T);
 	void setAlignment(const std::vector<gfloat> &A);
+	void setResizeable(const std::vector<bool> &R);	
+	void setResizeable(const bool b);		
 	
 	void debug();
 };

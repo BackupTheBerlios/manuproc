@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.56 2005/06/28 13:58:16 jacek Exp $
+// $Id: SimpleTree.cc,v 1.57 2005/06/29 13:46:56 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -103,6 +103,10 @@ void SimpleTree_Basic::on_spaltenzahl_geaendert()
       {  pColumn->set_alignment(alignment[idx]);
          crt->property_xalign()=alignment[idx];
       }
+      
+      if (!resizeable.empty())
+       pColumn->set_resizable(resizeable[idx]);
+      
       if (getModel().is_editable(idx))
       {  crt->property_editable()=true;
          crt->signal_edited().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_column_edited),idx));
@@ -389,6 +393,18 @@ void SimpleTree_Basic::setAlignment(const std::vector<gfloat> &A)
 {  assert(A.size()==sts->MaxCol());
    alignment=A;
    on_spaltenzahl_geaendert();
+}
+
+void SimpleTree_Basic::setResizeable(const std::vector<bool> &R)
+{  assert(R.size()==sts->MaxCol());
+   resizeable=R;
+   on_spaltenzahl_geaendert();
+}
+
+void SimpleTree_Basic::setResizeable(const bool b)
+{
+ std::vector<bool> vb(sts->MaxCol(),b);
+ SimpleTree_Basic::setResizeable(vb);
 }
 
 static void sig0(const char * const x)
