@@ -1,4 +1,4 @@
-// $Id: Waehrung.h,v 1.18 2004/08/31 09:00:17 christof Exp $
+// $Id: Waehrung.h,v 1.19 2005/06/30 11:59:34 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -60,7 +60,7 @@ public:
  ID get_enum() const { return wid; } 
  
  static double Umrechnung(const Waehrung &von, const Waehrung &nach)
- { return von.faktor/nach.faktor; }
+ { return nach.faktor/von.faktor; }
  const std::string Kurzbezeichnung() const { return kurz; }
  const std::string Langbezeichnung() const { return lang; }
  const std::string TeXsymbol() const  { return tex; }
