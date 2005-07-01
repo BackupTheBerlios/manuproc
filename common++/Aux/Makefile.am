@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.64 2005/06/17 14:48:18 christof Exp $
+# $Id: Makefile.am,v 1.65 2005/07/01 06:37:58 christof Exp $
 
 # this is needed for FetchIStream's Fake hack on debian sid
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@  \
@@ -29,7 +29,7 @@ libMisc_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		EntryValueSort.cc create_parse.cc dbconnect_shared.cc \
 		FetchIStream_common.cc SQLerror_sqlite.cc \
 		Global_Settings_db.cc ExtraColumns.cc \
-		TS_base64.cc
+		TS_base64.cc Interval.cc
 
 libMisc.a: $(libMisc_a_OBJECTS) $(libMisc_a_DEPENDENCIES) Makefile
 	(for i in $(libMisc_a_OBJECTS) ; do echo Misc/$$i ; done ) >$@
@@ -58,7 +58,7 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
    EntryValueInvert.h create_parse.cc create_parse.h \
    dbconnect_shared.cc SQLerror_sqlite.h FetchIStream_common.cc \
    SQLerror_sqlite.cc algorithm.h ExtraColumns.cc ExtraColumns.h \
-   Query.h TS_base64.cc
+   Query.h TS_base64.cc Interval.h Interval.cc
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .

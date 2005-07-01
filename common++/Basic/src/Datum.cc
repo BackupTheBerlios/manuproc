@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.32 2005/05/18 12:48:52 christof Exp $
+// $Id: Datum.cc,v 1.33 2005/07/01 06:37:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.32 2005/05/18 12:48:52 christof Exp $ */
+/* $Id: Datum.cc,v 1.33 2005/07/01 06:37:59 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -179,6 +179,7 @@ ManuProC::Datum &ManuProC::Datum::operator--()
       }
       tag=Tage_in_Monat();
    }
+   woche=0;
    return *this;
 }
 
@@ -199,6 +200,7 @@ ManuProC::Datum &ManuProC::Datum::operator++()
          monat=1;
       }
    }
+   woche=0;
    return *this;
 }
 
@@ -221,6 +223,7 @@ ManuProC::Datum ManuProC::Datum::operator+(unsigned int tage) const throw(Datums
       }
    }
    ret.tag=ret_tag;
+   ret.woche=0;
    return ret;
 }
 
@@ -237,6 +240,7 @@ ManuProC::Datum ManuProC::Datum::operator-(unsigned int tage) const throw(Datums
       ret_tag+=ret.Tage_in_Monat();
    }
    ret.tag=ret_tag;
+   ret.woche=0;
    return ret;
 }
 
