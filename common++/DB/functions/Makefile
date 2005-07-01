@@ -4,7 +4,7 @@ CFLAGS=-Wall -fPIC  \
 	-I/usr/lib/postgresql/include 
 
 ALL=auftrag_status.so artikelbezeichnung.so kw2date.so \
-	atoi.so artikelid.so artikelkomponente.so
+	atoi.so artikelid.so artikelkomponente.so ean_check.so
 
 all: auftrag_status.h $(ALL)
 
