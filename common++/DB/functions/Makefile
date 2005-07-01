@@ -4,11 +4,13 @@ CFLAGS=-Wall -fPIC  \
 	-I/usr/lib/postgresql/include 
 
 ALL=auftrag_status.so artikelbezeichnung.so kw2date.so \
-	atoi.so artikelid.so
+	atoi.so artikelid.so artikelkomponente.so
 
-all: $(ALL)
+all: auftrag_status.h $(ALL)
 
-links:
+links: auftrag_status.h
+
+auftrag_status.h:
 	ln -s ../../Auftrag/auftrag_status.h
 
 %.so: %.o

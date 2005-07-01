@@ -46,4 +46,8 @@ create function ean_check(text) returns int4 as
 	'/usr/lib/postgresql/lib/ean_check.so','ean_check' language 'c';
 update pg_proc set provolatile='i' where proname='ean_check';
 
-
+drop function artikelkomponente(int4,int4,int4,int4);
+create function artikelkomponente(int4,int4,int4,int4) returns text as
+        '/usr/lib/postgresql/lib/artikelkomponente.so',
+        'artikelkomponente' language 'c';
+update pg_proc set provolatile='i' where proname='artikelkomponente';
