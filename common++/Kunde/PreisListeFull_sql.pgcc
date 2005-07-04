@@ -52,6 +52,8 @@ void PreisListeFull::load_preisliste(bool with_artbez,
        bez_columns.push_back((*bezit).bezkomptext);
       }
     beztable = " artbez_"+itos(at)+"_"+itos(ebz->Id());
+
+#ifdef GLOB_SET_EAN_SIGN_BASENAME    
     if(mit_ean)
       {ean_sign=at.SpecialSignifikanz(
             std::string(GLOB_SET_EAN_SIGN_BASENAME)+itos(at.Id()));
@@ -63,6 +65,8 @@ void PreisListeFull::load_preisliste(bool with_artbez,
           mit_ean=true;
           bez_columns.push_back((*eanit).bezkomptext);}
       }
+#endif
+#ifdef GLOB_SET_BEZ_SIGN_BASENAME          
     if(mit_bez)
       {bez_sign=at.SpecialSignifikanz(
             std::string(GLOB_SET_BEZ_SIGN_BASENAME)+itos(at.Id()));
@@ -73,7 +77,9 @@ void PreisListeFull::load_preisliste(bool with_artbez,
          {bezkomps+=" b."+(*bezit).spaltenname+",";      
           mit_bez=true;
           bez_columns.push_back((*bezit).bezkomptext);}
-      }      
+      }
+#endif
+      
    }
 
    
