@@ -1,4 +1,4 @@
-// $Id: Interval.h,v 1.1 2005/07/01 06:38:00 christof Exp $
+// $Id: Interval.h,v 1.2 2005/07/04 14:21:02 christof Exp $
 
 #include <string>
 
@@ -10,7 +10,7 @@ struct Interval
   
   Interval(const std::string &i);
   Interval() : days(), seconds(), microseconds() {}
-  
+  std::string str() const;
 };
 }
 

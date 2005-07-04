@@ -1,4 +1,4 @@
-// $Id: Interval.cc,v 1.1 2005/07/01 06:38:00 christof Exp $
+// $Id: Interval.cc,v 1.2 2005/07/04 14:21:02 christof Exp $
 
 #include <ManuProCConfig.h>
 #include <Misc/Interval.h>
@@ -15,6 +15,14 @@ ManuProC::Interval::Interval(const std::string &_s) : days(), seconds(), microse
   assert(s[2]==':' && s[5]==':');
   seconds=(atoi(s.substr(0,2).c_str())*60*60) + (atoi(s.substr(3,2).c_str())*60)
     + atoi(s.substr(6,2).c_str());
+}
+
+std::string ManuProC::Interval::str() const
+{  assert(!days);
+   assert(!microseconds); // not implemented yet
+   std::string s=itos(seconds/(60*60))+":"+itos((seconds/60)%60);
+   if (seconds%60 || microseconds) s+=":"+itos(seconds%60);
+   return s;
 }
 
 #ifdef DEFAULT_DB // actually we should test for database support
