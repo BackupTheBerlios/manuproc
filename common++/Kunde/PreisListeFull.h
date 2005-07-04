@@ -1,4 +1,4 @@
-// $Id: PreisListeFull.h,v 1.19 2005/06/29 14:59:26 jacek Exp $
+// $Id: PreisListeFull.h,v 1.20 2005/07/04 14:51:08 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -45,6 +45,8 @@ public:
      
 private:
  std::map<UniqPreis,struct PayOff> payoff;
+ std::vector<struct PayOff> sorted_payoff; 
+ std::vector<std::string> bez_columns;
  
  void load_preisliste(bool with_artbez,ID id, bool art_in_list, ArtikelTyp at);
 
@@ -55,6 +57,8 @@ public:
 	ArtikelTyp at=ArtikelTyp::default_ID) throw(SQLerror); 
   PreisListeFull() {}
   const std::map<UniqPreis,struct PayOff > &PayOff() const { return payoff; }
+  const std::vector<struct PayOff > &Sort_PayOff() const { return sorted_payoff; }  
+  const std::vector<std::string> &Bez_Columns() const { return bez_columns; }  
 };
 
 

@@ -42,11 +42,14 @@ void PreisListeFull::load_preisliste(bool with_artbez,
  
  if(with_artbez)
    {
+    bez_columns.erase(bez_columns.begin(),bez_columns.end());
+    
     ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(signifikanz);
     ExtBezSchema::const_sigiterator bezend=ebz->sigend(signifikanz);    
     for(;bezit!=bezend;++bezit)
-      {bezkomps+=" b."+(*bezit).spaltenname+",";
-       bezorder+=" b."+(*bezit).spaltenname+",";
+      {bezkomps+=" atoi(b."+(*bezit).spaltenname+") as "+(*bezit).spaltenname+",";
+       bezorder+=" "+(*bezit).spaltenname+",";
+       bez_columns.push_back((*bezit).bezkomptext);
       }
     beztable = " artbez_"+itos(at)+"_"+itos(ebz->Id());
     if(mit_ean)
@@ -54,16 +57,22 @@ void PreisListeFull::load_preisliste(bool with_artbez,
             std::string(GLOB_SET_EAN_SIGN_BASENAME)+itos(at.Id()));
        ExtBezSchema::const_sigiterator eanit=ebz->sigbegin(ean_sign);
        ExtBezSchema::const_sigiterator eanend=ebz->sigend(ean_sign);    
+       mit_ean=false;
        for(;eanit!=eanend;++eanit)
-         bezkomps+=" b."+(*bezit).spaltenname+",";      
+         {bezkomps+=" b."+(*eanit).spaltenname+",";
+          mit_ean=true;
+          bez_columns.push_back((*eanit).bezkomptext);}
       }
     if(mit_bez)
       {bez_sign=at.SpecialSignifikanz(
             std::string(GLOB_SET_BEZ_SIGN_BASENAME)+itos(at.Id()));
        ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(bez_sign);
        ExtBezSchema::const_sigiterator bezend=ebz->sigend(bez_sign);    
+       mit_bez=false;
        for(;bezit!=bezend;++bezit)
-         bezkomps+=" b."+(*bezit).spaltenname+",";      
+         {bezkomps+=" b."+(*bezit).spaltenname+",";      
+          mit_bez=true;
+          bez_columns.push_back((*bezit).bezkomptext);}
       }      
    }
 
@@ -104,11 +113,11 @@ void PreisListeFull::load_preisliste(bool with_artbez,
         if(with_artbez)
           qu+=" join "+beztable+" b using (id) ";
       qu+=") "; // UNION end 
-      qu+="order by "+bezorder" ,parent";
+      qu+="order by "+bezorder+" parent";
       }
     else
      if(with_artbez) 
-       qu+="order by "+bezorder+"artikelid,parent";
+       qu+=" order by "+bezorder+" artikelid";
       
    }
  else
@@ -129,7 +138,7 @@ void PreisListeFull::load_preisliste(bool with_artbez,
     qu+=itos(id)+") and s.warengruppe="+itos(at.Id())+" order by zeitpunkt";
    }
  
- Query q(qu);
+ Query q(qu); 
 
  FetchIStream is=q.Fetch();
 
@@ -149,12 +158,17 @@ void PreisListeFull::load_preisliste(bool with_artbez,
          {is >> FetchIStream::MapNull(beztext);
           po.b.push_back(cH_EntryValueIntString(beztext));
          }
+       if(mit_ean) {is >> FetchIStream::MapNull(beztext);
+                    po.b.push_back(cH_EntryValueIntString(beztext));}
+       if(mit_bez) {is >> FetchIStream::MapNull(beztext);
+                    po.b.push_back(cH_EntryValueIntString(beztext));}
       }
     is  >> ARTIKELID >> PREIS >> PREISMENGE >> MINDMENGE >> PARENT;  
 
     po.p=Preis(PREIS,getWaehrung(),PREISMENGE);
     po.pl_parent=PARENT;
     payoff[UniqPreis(ARTIKELID,MINDMENGE)]=po;
+    sorted_payoff.push_back(po);
 
     is=q.Fetch();
    }
