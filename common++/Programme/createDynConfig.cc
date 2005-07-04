@@ -1,4 +1,4 @@
-// $Id: createDynConfig.cc,v 1.2 2005/07/04 11:47:25 jacek Exp $
+// $Id: createDynConfig.cc,v 1.3 2005/07/04 16:09:43 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynConfig.cc,v 1.2 2005/07/04 11:47:25 jacek Exp $
+// $Id: createDynConfig.cc,v 1.3 2005/07/04 16:09:43 jacek Exp $
 
 
 #include <Misc/dbconnect.h>
@@ -166,7 +166,7 @@ int main()
          {  std::string name,wert;
             is >> name >> wert;
             std::cout << "#define GLOB_SET_" + toIdentifier(name)
-                      << '\t' << wert << '\n';
+                      << '\t' << '"' << wert << '"' << '\n';
          }
       }      
       
