@@ -35,11 +35,21 @@ void PreisListeFull::load_preisliste(bool with_artbez,
  int bez_sign=ArtikelTyp::none_id; 
  
  cH_ExtBezSchema ebz(ExtBezSchema::default_id,at);
- bool mit_ean = ArtikelTyp::hasAttribute(at.Id(),
+ bool mit_ean = 
+#ifdef HAS_WG_ATTRIB_mit_ean
+       ArtikelTyp::hasAttribute(at.Id(),
            ManuProC::DynamicEnums::ArtikelTyp_Attributes::mit_ean);
- bool mit_bez = ArtikelTyp::hasAttribute(at.Id(),
+#else
+       false;
+#endif
+ bool mit_bez = 
+#ifdef HAS_WG_ATTRIB_mit_bezeichnung
+       ArtikelTyp::hasAttribute(at.Id(),
            ManuProC::DynamicEnums::ArtikelTyp_Attributes::mit_bezeichnung);
- 
+#else
+       false;
+#endif
+
  if(with_artbez)
    {
     bez_columns.erase(bez_columns.begin(),bez_columns.end());
