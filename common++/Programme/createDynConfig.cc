@@ -1,4 +1,4 @@
-// $Id: createDynConfig.cc,v 1.1 2005/06/13 09:57:50 christof Exp $
+// $Id: createDynConfig.cc,v 1.2 2005/07/04 11:47:25 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynConfig.cc,v 1.1 2005/06/13 09:57:50 christof Exp $
+// $Id: createDynConfig.cc,v 1.2 2005/07/04 11:47:25 jacek Exp $
 
 
 #include <Misc/dbconnect.h>
@@ -156,9 +156,27 @@ int main()
       
       std::cout << "\n";
 
+      tr.close();
+      tr.open();      
+      
+      //--- global common++ settings
+      {  Query q("select name,coalesce(wert,'') from global_settings where userid=0"
+                 " and program='' order by name");
+         while ((q >> is).good())
+         {  std::string name,wert;
+            is >> name >> wert;
+            std::cout << "#define GLOB_SET_" + toIdentifier(name)
+                      << '\t' << wert << '\n';
+         }
+      }      
+      
+      std::cout << "\n";
+
       // ------------------
             
-      tr.close();
+      tr.close();      
+      
+      
       std::cout << "#endif\n";
       ManuProC::dbdisconnect();
       return 0;

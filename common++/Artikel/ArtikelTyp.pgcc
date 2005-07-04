@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.pgcc,v 1.16 2004/11/29 15:55:37 jacek Exp $
+// $Id: ArtikelTyp.pgcc,v 1.17 2005/07/04 11:47:24 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,6 +26,7 @@
 exec sql include sqlca;
 
 std::map<ArtikelTyp::ID,std::vector<bool> > ArtikelTyp::attributes;
+std::map<std::string, int> spez_signifikanz;
 
 bool ArtikelTyp::hasAttribute(ID typ, AttrID attrid)
 {
@@ -109,6 +110,30 @@ cH_PreisListe ArtikelTyp::EK_PL() const throw(SQLerror)
  return cH_PreisListe(pid);    
 }
 
+
+int ArtikelTyp::SpecialSignifikanz(const std::string setting_name) const throw(SQLerror)
+{
+ std::string wert;
+ FetchIStream is;
+ int spez_sign=none_id;
+ 
+ std::map<std::string, int>::const_iterator f=
+     spez_signifikanz.find(setting_name);
+ if(f!=spez_signifikanz.end())    
+   return (*f).second;
+   
+ Query q("select coalesce(wert,'-1')::integer from global_settings "
+       " where userid=0 and program='' and name=?");
+ q << setting_name;      
+ if((q >> is).good())
+   { is >> wert;
+     spez_sign=atoi(wert.c_str());
+   }
+   
+ spez_signifikanz[setting_name]=spez_sign;  
+   
+ return spez_sign;
+}
 
 // to be honest this belongs into ArtikelBase.cc
 #if __GNUC__>2

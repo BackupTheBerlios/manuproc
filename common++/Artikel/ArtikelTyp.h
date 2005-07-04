@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.h,v 1.23 2004/11/29 15:55:37 jacek Exp $
+// $Id: ArtikelTyp.h,v 1.24 2005/07/04 11:47:24 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -44,6 +44,7 @@ private:
 	ID t;
 	
 	static std::map<ID, std::vector<bool> > attributes;
+	static std::map<std::string, int> spez_signifikanz;
 	
 public:
 	ArtikelTyp(ID a) : t(a) {}
@@ -65,5 +66,7 @@ public:
         static std::string get_string(ID t);
         
         static bool hasAttribute(ID typ, AttrID attrid);
+        
+        int SpecialSignifikanz(const std::string setting_name) const throw(SQLerror);
 };
 #endif

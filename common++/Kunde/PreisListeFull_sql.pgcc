@@ -23,22 +23,51 @@
 #include <Misc/Transaction.h>
 #include <ExtBezSchema/ExtBezSchemaHandle.h>
 #include <ExtBezSchema/ExtBezSchema.h>
+#include <DynamicEnums/DynamicConfig.h>
 
 void PreisListeFull::load_preisliste(bool with_artbez,
 	ID id, bool art_in_list, ArtikelTyp at)
 {
- std::string bezkomps;
+ std::string bezkomps,bezorder;
  std::string beztable;
  int signifikanz=1;
+ int ean_sign=ArtikelTyp::none_id;
+ int bez_sign=ArtikelTyp::none_id; 
+ 
  cH_ExtBezSchema ebz(ExtBezSchema::default_id,at);
+ bool mit_ean = ArtikelTyp::hasAttribute(at.Id(),
+           ManuProC::DynamicEnums::ArtikelTyp_Attributes::mit_ean);
+ bool mit_bez = ArtikelTyp::hasAttribute(at.Id(),
+           ManuProC::DynamicEnums::ArtikelTyp_Attributes::mit_bezeichnung);
+ 
  if(with_artbez)
    {
     ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(signifikanz);
     ExtBezSchema::const_sigiterator bezend=ebz->sigend(signifikanz);    
     for(;bezit!=bezend;++bezit)
-      bezkomps+=" b."+(*bezit).spaltenname+",";
+      {bezkomps+=" b."+(*bezit).spaltenname+",";
+       bezorder+=" b."+(*bezit).spaltenname+",";
+      }
     beztable = " artbez_"+itos(at)+"_"+itos(ebz->Id());
+    if(mit_ean)
+      {ean_sign=at.SpecialSignifikanz(
+            std::string(GLOB_SET_EAN_SIGN_BASENAME)+itos(at.Id()));
+       ExtBezSchema::const_sigiterator eanit=ebz->sigbegin(ean_sign);
+       ExtBezSchema::const_sigiterator eanend=ebz->sigend(ean_sign);    
+       for(;eanit!=eanend;++eanit)
+         bezkomps+=" b."+(*bezit).spaltenname+",";      
+      }
+    if(mit_bez)
+      {bez_sign=at.SpecialSignifikanz(
+            std::string(GLOB_SET_BEZ_SIGN_BASENAME)+itos(at.Id()));
+       ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(bez_sign);
+       ExtBezSchema::const_sigiterator bezend=ebz->sigend(bez_sign);    
+       for(;bezit!=bezend;++bezit)
+         bezkomps+=" b."+(*bezit).spaltenname+",";      
+      }      
    }
+
+   
 
  std::string qu;
  payoff.erase(payoff.begin(),payoff.end());
@@ -74,9 +103,13 @@ void PreisListeFull::load_preisliste(bool with_artbez,
 	" s.warengruppe="+itos(at.Id())+") ";
         if(with_artbez)
           qu+=" join "+beztable+" b using (id) ";
-      qu+=") order by artikelid,parent"; // UNION end 
-      
+      qu+=") "; // UNION end 
+      qu+="order by "+bezorder" ,parent";
       }
+    else
+     if(with_artbez) 
+       qu+="order by "+bezorder+"artikelid,parent";
+      
    }
  else
    {
