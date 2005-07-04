@@ -1,4 +1,4 @@
-/* $Id: EntryValueTimeStamp.cc,v 1.1 2003/03/19 08:27:03 christof Exp $ */
+/* $Id: EntryValueTimeStamp.cc,v 1.2 2005/07/04 18:02:22 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -49,5 +49,12 @@ const std::string EntryValueTimeStamp::getStrVal() const
    std::ostringstream os;
    os << ts;
    return os.str();
+}
+
+#else
+
+const std::string EntryValueTimeStamp::getStrVal() const
+{  if (!ts.valid()) return "";
+   return "not implemented";
 }
 #endif
