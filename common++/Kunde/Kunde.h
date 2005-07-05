@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.72 2005/06/22 15:04:00 jacek Exp $
+// $Id: Kunde.h,v 1.73 2005/07/05 16:36:53 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -246,7 +246,7 @@ public:
         bool Rng_an_postfach() const {return rng_an_postfach;}
         bool AB_an_rngadresse() const {return ab_an_rngadresse;}        
         bool Auslaender() const { return adresse.land->Auslaender(); }
-        bool MwSt() const;
+        bool MwSt(const RechnungBase::ID rngid=RechnungBase::none_id) const throw(SQLerror);
         bool EU() const { return adresse.land->EU(); }
 	bool Preisautomatik() const { return preisautomatik;}
 	void Preisautomatik(bool pa) throw(SQLerror);
