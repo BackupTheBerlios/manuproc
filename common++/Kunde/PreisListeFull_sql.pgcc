@@ -158,6 +158,7 @@ void PreisListeFull::load_preisliste(bool with_artbez,
 
  FetchIStream is=q.Fetch();
 
+ int sort_sequence=0;
  while(is.good())
    {
     int ARTIKELID;
@@ -183,11 +184,15 @@ void PreisListeFull::load_preisliste(bool with_artbez,
 
     po.p=Preis(PREIS,getWaehrung(),PREISMENGE);
     po.pl_parent=PARENT;
+    po.sort_sequence=sort_sequence++;
     payoff[UniqPreis(ARTIKELID,MINDMENGE)]=po;
-    sorted_payoff.push_back(po);
-
     is=q.Fetch();
    }
+
+ std::map<UniqPreis,struct PayOff>::const_iterator itb=payoff.begin();
+ std::map<UniqPreis,struct PayOff>::const_iterator ite=payoff.end(); 
+ for(; itb!=ite; ++itb)
+   sorted_payoff[(*itb).second.sort_sequence]=(*itb).second;
 
 }
 
