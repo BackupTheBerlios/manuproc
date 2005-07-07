@@ -188,7 +188,7 @@ gtk_searchcombo_class_init (GtkSearchComboClass * klass)
 		    GTK_TYPE_NONE, 
 		    2,
 		    GTK_TYPE_POINTER,
-		    GTK_TYPE_BOOL);
+		    GTK_TYPE_INT);
 //  gtk_object_class_add_signals (object_class, searchcombo_signals, LAST_SIGNAL);
   
   klass->search=NULL;
