@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.h,v 1.15 2005/06/29 16:27:34 christof Exp $
+// $Id: Zeitpunkt_new.h,v 1.16 2005/07/07 07:39:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -95,6 +95,7 @@ public:
    void write(PostgresTimestamp a) const;
    // convert to string
    std::string write() const;
+   std::string Short(const ManuProC::Datum &d=ManuProC::Datum()) const;
    
    long diff(const Zeitpunkt_new &b, precision prec) const throw();
    /// Differenz in min(Precision)

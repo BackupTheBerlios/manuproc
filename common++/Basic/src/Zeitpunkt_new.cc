@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.cc,v 1.11 2005/06/29 16:27:34 christof Exp $
+// $Id: Zeitpunkt_new.cc,v 1.12 2005/07/07 07:39:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,8 @@
 #include <Misc/Zeitpunkt_new.h>
 #include <cassert>
 #include <ManuProCConfig.h>
+#include <Misc/itos.h>
+#include <Misc/Ausgabe_neu.h>
 #ifdef DEFAULT_DB // actually we should test for database support
 #include <Misc/FetchIStream.h>
 #endif
@@ -161,6 +163,15 @@ std::string Zeitpunkt_new::write() const
    char buf[64];
    write(PostgresTimestamp(buf,sizeof buf));
    return buf;
+}
+
+std::string Zeitpunkt_new::Short(const ManuProC::Datum &d) const
+{ std::string res;
+  if (datum!=d) res+=datum.Short()+" ";
+  res+=itos(hour)+":"+(minute<10?"0":"")+itos(minute);
+  if (second || millisecond) res+=std::string(":")+(second<10?"0":"")+itos(second);
+  if (millisecond) res+=","+Formatiere((unsigned long)millisecond,0,6,"","",'0');
+  return res;
 }
 
 #ifdef DEFAULT_DB // actually we should test for database support
