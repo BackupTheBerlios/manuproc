@@ -16,17 +16,17 @@ void windowTop::saveKundenKontakt()
  try{
   if(UpdateSonst!=0)
    {
-     std::string s=textPersonenFirmaNotiz->get_chars(0,textPersonenFirmaNotiz->get_length());
+     std::string s=textPersonenFirmaNotiz->get_buffer()->get_text(textPersonenFirmaNotiz->get_buffer()->begin(),textPersonenFirmaNotiz->get_buffer()->end());
      Kunde::st_ansprech P;
      if(!get_selected_person(P)) return;
      Kunde::st_ansprech A(P.Person,entryPersonenPosition->get_text(),s);
      kundendaten->updateKontaktperson(A);
      // Jetzt noch die gespeicherte Struktur ändern
-     Kunde::st_ansprech &B=*(static_cast<Kunde::st_ansprech*>(clistPersonenListe->selection().begin()->get_data()));
+     Kunde::st_ansprech &B=*(static_cast<Kunde::st_ansprech*>(clistPersonenListe->get_selection()->begin()->get_data()));
      B.position=entryPersonenPosition->get_text();
      B.notiz=s;
-     Gtk::CList::SelectionList::iterator b = clistPersonenListe->selection().begin();
-     Gtk::CList::SelectionList::iterator e = clistPersonenListe->selection().end();
+     Gtk::TreeSelection::iterator b = clistPersonenListe->get_selection()->begin();
+     Gtk::TreeSelection::iterator e = clistPersonenListe->get_selection()->end();
      if(b==e) assert(!"Interner Fehler: bitte beim Support melden");
 #warning nach dem Editieren wird in der clist die Position noch nicht richtig gesetzt
 //     b[2];
