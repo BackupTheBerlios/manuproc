@@ -5039,8 +5039,6 @@ löschen</property>
 			  <property name="fixed_height_mode">False</property>
 			  <property name="hover_selection">False</property>
 			  <property name="hover_expand">False</property>
-			  <signal name="select_row" handler="on_clistPersonenListe_select_row"/>
-			  <signal name="unselect_row" handler="on_clistPersonenListe_unselect_row"/>
 			</widget>
 		      </child>
 		    </widget>
@@ -6132,7 +6130,7 @@ löschen</property>
 	      <property name="use_stock">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
-	      <property name="response_id">0</property>
+	      <property name="response_id">-5</property>
 	    </widget>
 	  </child>
 	</widget>
@@ -6185,8 +6183,7 @@ löschen</property>
 	      <property name="use_stock">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
-	      <property name="response_id">0</property>
-	      <signal name="clicked" handler="newrng_ok"/>
+	      <property name="response_id">-5</property>
 	    </widget>
 	  </child>
 
@@ -6199,8 +6196,7 @@ löschen</property>
 	      <property name="use_stock">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
-	      <property name="response_id">0</property>
-	      <signal name="clicked" handler="newrng_cancel"/>
+	      <property name="response_id">-6</property>
 	    </widget>
 	  </child>
 	</widget>
@@ -6341,7 +6337,7 @@ löschen</property>
 	      <property name="use_stock">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
-	      <property name="response_id">0</property>
+	      <property name="response_id">-5</property>
 	    </widget>
 	  </child>
 	</widget>

@@ -90,23 +90,20 @@ void windowTop::on_KontaktPersonTelefon_activate(cH_Telefon ct)
 }
 
 
-void windowTop::on_clistPersonenListe_select_row(gint row, gint column, GdkEvent *event)
+void windowTop::on_clistPersonenListe_selection_changed()
 {
   Kunde::st_ansprech P;
-  if(!get_selected_person(P)) return;
+  if(!get_selected_person(P))
+  { textPersonenFirmaNotiz->delete_text(0,textPersonenFirmaNotiz->get_length());
+    button_kontakt_loeschen->set_sensitive(false);
+    return;
+  }
   KontaktPersonenBox->set_value(P.Person);
   entryPersonenPosition->set_text(P.position);
   KontaktPersonenTel->showTel(kundendaten->getTelefon(P.Person));
   zeige_notiz(P);
   button_kontakt_loeschen->set_sensitive(true);
   KontaktPersonenTel->setKdPer(kundendaten->Id(),P.Person);
-}
-
-void windowTop::on_clistPersonenListe_unselect_row(gint row, gint column, GdkEvent *event)
-{
-//   textPersonenNotiz->delete_text(0,textPersonenNotiz->get_length());
-   textPersonenFirmaNotiz->delete_text(0,textPersonenFirmaNotiz->get_length());
-   button_kontakt_loeschen->set_sensitive(false);
 }
 
 void windowTop::zeige_notiz(Kunde::st_ansprech &P)

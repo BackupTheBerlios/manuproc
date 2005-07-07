@@ -24,7 +24,7 @@ class windowTop : public windowTop_glade
 			PAGE_KONTAKTPERSON,
 			PAGE_NOTIZEN, PAGE_GRUPPEN};
         enum enum_zahl_verfahren{PAGE_DTAUS,PAGE_RIBA,PAGE_LCR};
-        void on_notebook1_switch_page(Gtk::Notebook_Helpers::Page* page,guint pagenr);
+        void on_notebook1_switch_page(GtkNotebookPage* page,guint pagenr);
         void on_gruppenwahl_activate();
 
         Kunde::UpdateBitsAdresse UpdateAdresse;
@@ -115,7 +115,7 @@ class windowTop : public windowTop_glade
         void on_riba_abbruch_clicked();
         void on_iban_save_clicked();
         void on_iban_abbruch_clicked();
-        void on_zahlverfahren_book_switch_page(Gtk::Notebook_Helpers::Page *p0, guint p1);
+        void on_zahlverfahren_book_switch_page(GtkNotebookPage *p0, guint p1);
         void extartbez_activate();
         void preisliste_activate();
         void rng_an_activate();
@@ -149,8 +149,7 @@ class windowTop : public windowTop_glade
         void on_button_kontakt_loeschen_clicked();
 
         //Personen
-        void on_clistPersonenListe_select_row(gint row, gint column, GdkEvent *event);
-        void on_clistPersonenListe_unselect_row(gint row, gint column, GdkEvent *event);
+        void on_clistPersonenListe_selection_changed();
         bool get_selected_person(Kunde::st_ansprech& P);
         void on_buttonPersonNeu_clicked();
         void show_privatpersonen();

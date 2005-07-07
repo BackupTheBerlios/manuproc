@@ -7,7 +7,7 @@
 #include <Kunde/Kundengruppe.h>
 #include "kundendaten_aux.hh"
 
-void windowTop::on_notebook1_switch_page(Gtk::Notebook_Helpers::Page* page,guint pagenr)
+void windowTop::on_notebook1_switch_page(GtkNotebookPage* page,guint pagenr)
 {
   switch (enum_notebook(pagenr))
    {
@@ -81,6 +81,9 @@ windowTop::windowTop()
  scc_verkaeufer->setExpandStr2(true); 
 
  connectFkt();
+ 
+ clistPersonenListe->get_selection()->signal_changed().connect(SigC::slot(*this, 
+       &windowTop::on_clistPersonenListe_selection_changed));
 }
 
 void windowTop::saveAll()
@@ -363,7 +366,7 @@ bool windowTop::on_iban_entry_changed(GdkEventFocus *e)
  return false;  
 }
 
-void windowTop::on_zahlverfahren_book_switch_page(Gtk::Notebook_Helpers::Page *p0, guint pagenr)
+void windowTop::on_zahlverfahren_book_switch_page(GtkNotebookPage *p0, guint pagenr)
 {  
 #ifdef MABELLA_EXTENSIONS 
  try{

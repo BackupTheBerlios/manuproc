@@ -13,12 +13,12 @@
 void window_Dialog_Bestaetigen::on_button_ok_clicked()
 {   
 //  hauptfenster->kunde_loeschen();
-  destroy();
+  delete this;
 }
 
 void window_Dialog_Bestaetigen::on_button_cancel_clicked()
 {   
-  destroy();
+  delete this;
 }
 
 window_Dialog_Bestaetigen::window_Dialog_Bestaetigen(windowTop *h,std::string st)
