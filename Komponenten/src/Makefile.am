@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.55 2005/06/24 11:12:33 christof Exp $
+# $Id: Makefile.am,v 1.56 2005/07/07 08:46:35 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -68,7 +68,7 @@ libKomponenten_a_SOURCES= \
         KundenBox2.cc int_ImageButton.cc \
         Optionmenu_Instanz.cc Artikel_Bestellen.cc \
         Optionmenu_Einheit.cc WPreis.cc PreisBox.cc \
-        Optionmenu_Kundengruppe.cc 
+        Optionmenu_Kundengruppe.cc LandesBox.cc
 
 lateron= \
 		KundenBox_glade.cc \
