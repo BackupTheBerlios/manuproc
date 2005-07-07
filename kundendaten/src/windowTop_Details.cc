@@ -60,9 +60,9 @@ void windowTop::show_details()
    fill_bank_bei(kundendaten->getblz());
     }catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
 //   Gtk::Menu_Helpers::SelectMatching(*optionmenu_bankbei,(gpointer)kundendaten->getindex());
-   textNotiz->delete_text(0,textNotiz->get_length());
-   gint pos=0;
-   textNotiz->insert_text(kundendaten->notiz().c_str(), (kundendaten->notiz()).size(), &pos);
+   textNotiz->get_buffer()->erase(textNotiz->get_buffer()->begin(),textNotiz->get_buffer()->end());
+   Gtk::TextBuffer::iterator pos=textNotiz->get_buffer()->begin();
+   textNotiz->get_buffer()->insert(pos,kundendaten->notiz());
 //   checkbuttonBankeinzug->set_active(kundendaten->bankeinzug());
 //	spinbutton_einzugRabatt->set_value(kundendaten->einzugrabatt());
 //	spinbutton_Skontofrist->set_value(kundendaten->skontofrist());
@@ -245,7 +245,7 @@ void windowTop::on_spreis_leaf_selected(cH_RowDataBase d)
   button_del_preisliste->set_sensitive(true);
 }
 
-void windowTop::on_spreis_unselect_row(gint row, gint column, GdkEvent *event)
+void windowTop::on_spreis_unselect_row()
 {
   button_del_preisliste->set_sensitive(false);
 }

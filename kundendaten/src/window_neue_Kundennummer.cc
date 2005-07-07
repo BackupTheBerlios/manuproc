@@ -30,12 +30,12 @@ void window_neue_Kundennummer::on_button_ok_clicked()
  Kunde::newKunde(kid,entry_firma->get_text(),entry_name2->get_text(),
  		gruppe->get_value()); 
  hauptfenster->neue_kundennmmer(kid);
- destroy();
+ delete this;
 }
 
 void window_neue_Kundennummer::on_button_abbrechen_clicked()
 {   
-  destroy();
+ delete this;
 }
 
 window_neue_Kundennummer::window_neue_Kundennummer(windowTop* h,
