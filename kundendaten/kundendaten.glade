@@ -4907,7 +4907,7 @@ löschen</property>
 			      <property name="int2">0</property>
 			      <property name="last_modification_time">Wed, 06 Mar 2002 18:07:05 GMT</property>
 			      <signal name="leaf_selected" handler="on_spreis_leaf_selected"/>
-			      <signal name="unselect_row" handler="on_spreis_unselect_row"/>
+			      <signal name="leaf_unselected" handler="on_spreis_unselect_row"/>
 			    </widget>
 			  </child>
 			</widget>
@@ -5798,7 +5798,7 @@ löschen</property>
 				  <property name="int2">0</property>
 				  <property name="last_modification_time">Tue, 08 Apr 2003 13:13:25 GMT</property>
 				  <signal name="leaf_selected" handler="on_selectrow_allegruppen"/>
-				  <signal name="unselect_row" handler="on_unselectrow_allegruppen"/>
+				  <signal name="leaf_unselected" handler="on_unselectrow_allegruppen"/>
 				</widget>
 			      </child>
 			    </widget>
@@ -5913,7 +5913,7 @@ löschen</property>
 			      <property name="int2">0</property>
 			      <property name="last_modification_time">Tue, 08 Apr 2003 13:13:25 GMT</property>
 			      <signal name="leaf_selected" handler="on_selectrow_gewaehltegruppen"/>
-			      <signal name="unselect_row" handler="on_unselectrow_gewaehltegruppen"/>
+			      <signal name="leaf_unselected" handler="on_unselectrow_gewaehltegruppen"/>
 			    </widget>
 			  </child>
 			</widget>

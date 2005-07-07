@@ -91,7 +91,7 @@ class windowTop : public windowTop_glade
       void setTitles();
       void fillSPreis();
       void on_spreis_leaf_selected(cH_RowDataBase d);
-      void on_spreis_unselect_row(gint row, gint column, GdkEvent *event);
+      void on_spreis_unselect_row();
         void on_preisautomatik_clicked();
       void on_button_spreis_add_clicked();
       void on_SPreisListe_activate();
@@ -174,9 +174,9 @@ class windowTop : public windowTop_glade
 
         void on_lfran_activate();
         void on_selectrow_allegruppen(cH_RowDataBase leaf);
-        void on_unselectrow_allegruppen(gint row, gint column, GdkEvent *event);
+        void on_unselectrow_allegruppen();
         void on_selectrow_gewaehltegruppen(cH_RowDataBase leaf);
-        void on_unselectrow_gewaehltegruppen(gint row, gint column, GdkEvent *event);
+        void on_unselectrow_gewaehltegruppen();
 public:
 
         windowTop();

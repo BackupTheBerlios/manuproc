@@ -489,7 +489,7 @@ void windowTop::on_selectrow_allegruppen(cH_RowDataBase leaf)
  allgrp=const_cast<Data_Gruppe*>(dynamic_cast<const Data_Gruppe*>(&*leaf)); 
 }
 
-void windowTop::on_unselectrow_allegruppen(gint row, gint column, GdkEvent *event)
+void windowTop::on_unselectrow_allegruppen()
 {  
  gruppe_in->set_sensitive(false);
  allgrp=NULL;
@@ -501,7 +501,7 @@ void windowTop::on_selectrow_gewaehltegruppen(cH_RowDataBase leaf)
  wahlgrp=const_cast<Data_Gruppe*>(dynamic_cast<const Data_Gruppe*>(&*leaf)); 
 }
 
-void windowTop::on_unselectrow_gewaehltegruppen(gint row, gint column, GdkEvent *event)
+void windowTop::on_unselectrow_gewaehltegruppen()
 {  
  gruppe_out->set_sensitive(false);
  wahlgrp=NULL;
