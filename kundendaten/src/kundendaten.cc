@@ -6,7 +6,7 @@
 // This file is for your program, I won't touch it again!
 
 #include<config.h>
-#include <gnome--/main.h>
+#include <gtkmm/main.h>
 
 #include "windowTop.hh"
 #include <Aux/dbconnect.h>
@@ -34,17 +34,19 @@ int main(int argc, char **argv)
 
 
 
-   Gnome::Main m(PACKAGE, VERSION,  1, argv);
+   Gtk::Main m(argc, argv);
    Petig::PrintUncaughtExceptions();
 
    try {
 
       Petig::dbconnect(conn);  
 
-      manage(new class windowTop());
+      class windowTop *w=new class windowTop();
 
-      Message=manage(new MyMessage());
-      m.run();
+      Message=new MyMessage();
+      m.run(*w);
+      delete w;
+      delete Message;
       Petig::dbdisconnect();
    } catch (SQLerror &e)
    {  std::cerr << e << '\n';

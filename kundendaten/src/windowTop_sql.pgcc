@@ -18,11 +18,11 @@ void windowTop::scc_anrede_search(gboolean *_continue, GtkSCContext newsearch)
  
  switch(newsearch)
    {
-    case Gtk::SEARCH_OPEN :
-    case Gtk::SEARCH_REOPEN:
+    case GTK_SEARCH_OPEN :
+    case GTK_SEARCH_REOPEN:
       {
         std::string pat = scc_anrede->get_text() + "%";
-        if (newsearch==Gtk::SEARCH_REOPEN) pat="%";
+        if (newsearch==GTK_SEARCH_REOPEN) pat="%";
         PAT = (char*)pat.c_str();
         exec sql declare ANREDE_CURSOR cursor for
            select branr,briefanrede from ku_briefanr 
@@ -31,14 +31,14 @@ void windowTop::scc_anrede_search(gboolean *_continue, GtkSCContext newsearch)
         exec sql open ANREDE_CURSOR;
         SQLerror::test(__FILELINE__);
       }
-    case Gtk::SEARCH_FETCH:
+    case GTK_SEARCH_FETCH:
         exec sql fetch ANREDE_CURSOR into :BRANR,:NAME;
         SQLerror::test(__FILELINE__,100);
         if (sqlca.sqlcode) return;
         scc_anrede->add_item(NAME,BRANR);
         *_continue=true;
         break;
-     case Gtk::SEARCH_CLOSE:
+     case GTK_SEARCH_CLOSE:
         exec sql close ANREDE_CURSOR;
         SQLerror::test(__FILELINE__,-602);
         transaction.commit();
