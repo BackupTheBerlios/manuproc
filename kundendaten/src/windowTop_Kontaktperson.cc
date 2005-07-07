@@ -2,6 +2,10 @@
 #include <Gtk_OStream.h>
 #include "MyMessage.h"
 
+windowTop::KontaktColumns::KontaktColumns()
+{ add(name); add(name2); add(position); add(ansprech);
+}
+
 void windowTop::on_kontakt_personen_box_activate()
 {
 try{
@@ -22,18 +26,11 @@ void windowTop::saveKundenKontakt()
      Kunde::st_ansprech A(P.Person,entryPersonenPosition->get_text(),s);
      kundendaten->updateKontaktperson(A);
      // Jetzt noch die gespeicherte Struktur ändern
-     Kunde::st_ansprech &B=*(static_cast<Kunde::st_ansprech*>(clistPersonenListe->get_selection()->begin()->get_data()));
+     Gtk::TreeModel::iterator sel=clistPersonenListe->get_selection()->get_selected();
+     Kunde::st_ansprech &B=*static_cast<std::vector<Kunde::st_ansprech>::iterator>((*sel)[kontakt_cols.ansprech]);
      B.position=entryPersonenPosition->get_text();
      B.notiz=s;
-     Gtk::TreeSelection::iterator b = clistPersonenListe->get_selection()->begin();
-     Gtk::TreeSelection::iterator e = clistPersonenListe->get_selection()->end();
-     if(b==e) assert(!"Interner Fehler: bitte beim Support melden");
-#warning nach dem Editieren wird in der clist die Position noch nicht richtig gesetzt
-//     b[2];
-//     Gtk::CList::Row *row;
-//     b->Row(*row);
-//     int row=b->get_row_num();
-          
+     (*sel)[kontakt_cols.position]=B.position;
    }
   }catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
  UpdateSonst=Kunde::UpdateBitsSonst(0);
@@ -48,33 +45,32 @@ void windowTop::show_kontaktpersonen()
    table_kontaktperson->set_sensitive(true);
    // Personen
 
-   clistPersonenListe->clear();
+   KontaktStore->clear();
 //   textPersonenNotiz->delete_text(0,textPersonenNotiz->get_length());
-   textPersonenFirmaNotiz->delete_text(0,textPersonenFirmaNotiz->get_length());
-   Gtk::OStream os(clistPersonenListe);
+   textPersonenFirmaNotiz->get_buffer()->erase(textPersonenFirmaNotiz->get_buffer()->begin(),textPersonenFirmaNotiz->get_buffer()->end());
 
    AnsprechPersonen=kundendaten->getPersonen();
    for (std::vector<Kunde::st_ansprech>::iterator i=AnsprechPersonen.begin();i!=AnsprechPersonen.end();++i)
-      {
-       cH_Kunde p(i->Person);
-         os <<p->getName()<<"\t"<<p->getName2()<<"\t"
-            <<i->position<<"\n";
-         os.flush(gpointer(&*i));
-      }
-  for (unsigned int i=0; i<clistPersonenListe->columns().size(); ++i)
-      clistPersonenListe->set_column_auto_resize(i,true) ;
+   {
+     cH_Kunde p(i->Person);
+     Gtk::TreeModel::iterator iter = KontaktStore->append();
+     (*iter)[kontakt_cols.name]=p->getName();
+     (*iter)[kontakt_cols.name2]=p->getName2();
+     (*iter)[kontakt_cols.position]=i->position;
+     (*iter)[kontakt_cols.ansprech]=i;
+   }
+//  for (unsigned int i=0; i<clistPersonenListe->columns().size(); ++i)
+//      clistPersonenListe->set_column_auto_resize(i,true) ;
   button_kontakt_loeschen->set_sensitive(false);
  }catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
 }
 
 bool windowTop::get_selected_person(Kunde::st_ansprech& P)
 {
-  Gtk::CList::SelectionList::iterator b = clistPersonenListe->selection().begin();
-  Gtk::CList::SelectionList::iterator e = clistPersonenListe->selection().end();
-  if (b==e)  {//Message *m=manage(new Message());
-//     m->Show("Keine Person ausgewählt");
-     return false;}
-  P=*(static_cast<Kunde::st_ansprech*>(clistPersonenListe->selection().begin()->get_data()));
+  Gtk::TreeModel::iterator s=clistPersonenListe->get_selection()->get_selected();
+// if(?) return false;
+  std::vector<Kunde::st_ansprech>::iterator i=(*s)[kontakt_cols.ansprech];
+  P=*i;
   return true;
 }
 
@@ -94,7 +90,7 @@ void windowTop::on_clistPersonenListe_selection_changed()
 {
   Kunde::st_ansprech P;
   if(!get_selected_person(P))
-  { textPersonenFirmaNotiz->delete_text(0,textPersonenFirmaNotiz->get_length());
+  { textPersonenFirmaNotiz->get_buffer()->erase(textPersonenFirmaNotiz->get_buffer()->begin(),textPersonenFirmaNotiz->get_buffer()->end());
     button_kontakt_loeschen->set_sensitive(false);
     return;
   }
@@ -108,12 +104,8 @@ void windowTop::on_clistPersonenListe_selection_changed()
 
 void windowTop::zeige_notiz(Kunde::st_ansprech &P)
 {
-  std::string N=P.notiz;
-//  textPersonenNotiz->delete_text(0,textPersonenNotiz->get_length());
-  textPersonenFirmaNotiz->delete_text(0,textPersonenFirmaNotiz->get_length());
-  gint pos2=0;
-//  textPersonenNotiz->insert_text(P.Person->Notiz().c_str(), P.Person->Notiz().size(),&pos);
-  textPersonenFirmaNotiz->insert_text(N.c_str(), N.size(),&pos2);
+  Gtk::TextBuffer::iterator pos=textPersonenFirmaNotiz->get_buffer()->erase(textPersonenFirmaNotiz->get_buffer()->begin(),textPersonenFirmaNotiz->get_buffer()->end());
+  textPersonenFirmaNotiz->get_buffer()->insert(pos,P.notiz);
 }
 
 void windowTop::on_button_kontakt_loeschen_clicked()

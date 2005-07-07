@@ -81,8 +81,13 @@ windowTop::windowTop()
  scc_verkaeufer->setExpandStr2(true); 
 
  connectFkt();
- 
- clistPersonenListe->get_selection()->signal_changed().connect(SigC::slot(*this, 
+
+  KontaktStore=Gtk::ListStore::create(kontakt_cols);
+  clistPersonenListe->set_model(KontaktStore);
+  clistPersonenListe->append_column("Vorname",kontakt_cols.name);
+  clistPersonenListe->append_column("Name",kontakt_cols.name2);
+  clistPersonenListe->append_column("Position",kontakt_cols.position);
+  clistPersonenListe->get_selection()->signal_changed().connect(SigC::slot(*this, 
        &windowTop::on_clistPersonenListe_selection_changed));
 }
 

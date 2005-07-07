@@ -10,13 +10,22 @@
 #include <Kunde/TelefonArt.h>
 #include<vector>
 #include <gtkmm/notebook.h>
+#include <gtkmm/liststore.h>
 #include "kundendaten_aux.hh"
 
 class windowTop : public windowTop_glade
 {   
        H_Kunde kundendaten;
        std::vector<Kunde::st_ansprech> AnsprechPersonen;
-       cH_Kunde person;        
+       cH_Kunde person;
+       
+       struct KontaktColumns : Gtk::TreeModelColumnRecord
+       { Gtk::TreeModelColumn<Glib::ustring> name,name2,position;
+         Gtk::TreeModelColumn<std::vector<Kunde::st_ansprech>::iterator> ansprech;
+         KontaktColumns();
+       };
+       KontaktColumns kontakt_cols;
+       Glib::RefPtr<Gtk::ListStore> KontaktStore;
 
         Transaction transaction; // Für die SearchCombos
         friend class windowTop_glade;
