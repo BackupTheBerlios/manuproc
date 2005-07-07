@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.59 2005/07/05 17:03:39 jacek Exp $
+// $Id: Kunde.cc,v 1.60 2005/07/07 10:24:46 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -337,10 +337,12 @@ bool Kunde::MwSt(const ManuProcEntity<>::ID rngid) const throw(SQLerror)
  bool ret=true;
  
  if(rngid!=ManuProcEntity<>::none_id)
-   {Query("select case when coalesce(steuersatz,16)>0"
+   {Query("select case when coalesce(steuersatz,-1)>0"
        "  then true else false end from rechnung"
        "  where rngid=?") << rngid >> ret; 
-     return ret;
+
+     if(ret!=-1)
+       return ret;
     }
 
  if(mwst==false) return false; // überhaupt keine MwSt
