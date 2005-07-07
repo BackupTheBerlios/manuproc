@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.70 2005/06/22 15:04:00 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.71 2005/07/07 17:37:02 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -101,9 +101,9 @@ Kunde::Kunde(ID _id) throw(SQLerror)
  
    WAEHRUNGID = WaehrungID::EUR;
 
-   exec sql select firma,
-	coalesce(name2,''),
-	coalesce(sortname,firma),
+   exec sql select ltrim(firma),
+	coalesce(ltrim(name2),''),
+	coalesce(ltrim(sortname),ltrim(firma)),
     coalesce(extartbezid,1),
 	 coalesce(strasse,''),
     coalesce(postanwvor,''),coalesce(postanwnach,''),
