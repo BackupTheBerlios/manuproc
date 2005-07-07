@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.60 2005/07/07 10:24:46 jacek Exp $
+// $Id: Kunde.cc,v 1.61 2005/07/07 13:38:26 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -373,10 +373,7 @@ fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art,
 {
  cH_Kunde verk(VerkNr());
  ArtikelStamm as(art);
-// int t; // ArtikelTyp;
- // Jacek: Warum hast du nicht den Cache von ArtikelStamm genommen?
-// Query("select warengruppe from artikelstamm where id=?")   
-//               << art.Id() >> t;
+
  ArtikelTyp at(as.Warengruppe());
 
  std::string tabelle="artbez_"+
@@ -397,7 +394,7 @@ fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art,
        Query q("select provsatz1, provsatz2, "
           " rabatt "
           " from prov_verkaeufer where"
-	  " verknr=? and kundennr=? and rabatt>=? order by rabatt asc limit 1");
+	  " verknr=? and kundennr=? and rabatt<=? order by rabatt desc limit 1");
        q << verk->Rngan() << Id() << rabatt; // provsatz vom mainvertreter
        SQLerror::test(__FILELINE__,100);
 
