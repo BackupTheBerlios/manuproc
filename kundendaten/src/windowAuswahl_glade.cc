@@ -9,13 +9,13 @@
 
 #include "config.h"
 #include "windowAuswahl.hh"
-#include <gtk--/label.h>
+#include <gtkmm/label.h>
 #include <glademm_support.hh>
-#include <gtk--/table.h>
-#include <gtk--/box.h>
+#include <gtkmm/table.h>
+#include <gtkmm/box.h>
 
 windowAuswahl_glade::windowAuswahl_glade(
-) : Gtk::Window(GTK_WINDOW_TOPLEVEL)
+) : Gtk::Window(Gtk::WINDOW_TOPLEVEL)
 {   
    
    Gtk::Window *windowAuswahl = this;
@@ -28,18 +28,18 @@ windowAuswahl_glade::windowAuswahl_glade(
    Gtk::VBox *vboxAuswahl = manage(new class Gtk::VBox(false, 0));
    clistAuswahl->set_usize(-1, 108);
    clistAuswahl->set_column_title(0, "Sortiername");
-   clistAuswahl->set_column_justification(0, GTK_JUSTIFY_CENTER);
+   clistAuswahl->set_column_justification(0, Gtk::JUSTIFY_CENTER);
    clistAuswahl->set_column_width(0, 80);
    clistAuswahl->set_column_title(1, "Kundennummer");
-   clistAuswahl->set_column_justification(1, GTK_JUSTIFY_CENTER);
+   clistAuswahl->set_column_justification(1, Gtk::JUSTIFY_CENTER);
    clistAuswahl->set_column_width(1, 80);
    clistAuswahl->column_titles_show();
-   scrolledwindow1->set_policy(GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+   scrolledwindow1->set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
    scrolledwindow1->add(*clistAuswahl);
    radiobuttonSortiername->set_active(true);
-   tableAuswahl->attach(*scrolledwindow1, 0, 3, 1, 2, GTK_FILL, GTK_EXPAND|GTK_FILL, 0, 0);
-   tableAuswahl->attach(*radiobuttonSortiername, 0, 1, 0, 1, GTK_FILL, 0, 0, 0);
-   tableAuswahl->attach(*radiobuttonKdNr, 1, 2, 0, 1, GTK_FILL, 0, 0, 0);
+   tableAuswahl->attach(*scrolledwindow1, 0, 3, 1, 2, Gtk::FILL, Gtk::EXPAND|Gtk::FILL, 0, 0);
+   tableAuswahl->attach(*radiobuttonSortiername, 0, 1, 0, 1, Gtk::FILL, 0, 0, 0);
+   tableAuswahl->attach(*radiobuttonKdNr, 1, 2, 0, 1, Gtk::FILL, 0, 0, 0);
    vboxAuswahl->pack_start(*tableAuswahl, false, true, 0);
    windowAuswahl->set_title("Kundenliste");
    windowAuswahl->set_policy(true, true, false);
@@ -51,10 +51,10 @@ windowAuswahl_glade::windowAuswahl_glade(
    tableAuswahl->show();
    vboxAuswahl->show();
    windowAuswahl->show();
-   clistAuswahl->select_row.connect(SigC::slot(static_cast<class windowAuswahl*>(this), &windowAuswahl::on_clistAuswahl_select_row));
-   radiobuttonSortiername->clicked.connect(SigC::slot(static_cast<class windowAuswahl*>(this), &windowAuswahl::on_radiobuttonSortiername_clicked));
-   radiobuttonKdNr->clicked.connect(SigC::slot(static_cast<class windowAuswahl*>(this), &windowAuswahl::on_radiobuttonKdNr_clicked));
-   windowAuswahl->destroy.connect(SigC::slot(static_cast<class windowAuswahl*>(this), &windowAuswahl::on_windowAuswahl_destroy));
+   clistAuswahl->signal_select_row().connect(SigC::slot(*static_cast<class windowAuswahl*>(this), &windowAuswahl::on_clistAuswahl_select_row));
+   radiobuttonSortiername->signal_clicked().connect(SigC::slot(*static_cast<class windowAuswahl*>(this), &windowAuswahl::on_radiobuttonSortiername_clicked));
+   radiobuttonKdNr->signal_clicked().connect(SigC::slot(*static_cast<class windowAuswahl*>(this), &windowAuswahl::on_radiobuttonKdNr_clicked));
+   windowAuswahl->signal_destroy().connect(SigC::slot(*static_cast<class windowAuswahl*>(this), &windowAuswahl::on_windowAuswahl_destroy));
 }
 
 windowAuswahl_glade::~windowAuswahl_glade()

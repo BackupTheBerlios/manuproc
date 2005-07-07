@@ -9,8 +9,8 @@
 #define GLADEMM_SUPPORT_HH
 #include <string>
 #include <map>
-#include <gtk--/radiobutton.h>
-#include <gtk--/radiomenuitem.h>
+#include <gtkmm/radiobutton.h>
+#include <gtkmm/radiomenuitem.h>
 
 Gtk::RadioButton_Helpers::Group & glademm_RadioButtonGroup(const std::string &name);
 Gtk::RadioMenuItem_Helpers::Group & glademm_RadioMenuItemGroup(const std::string &name);

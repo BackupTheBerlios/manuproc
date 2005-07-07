@@ -89,9 +89,9 @@ void windowTop::show_neue_personen_daten(cH_Person &P)
      geburtstag->set_value(Petig::Datum().today());     
 
    scc_anrede->setContent(P->Anrede()->getBrAnrede(),P->Anrede()->Id());
-   std::string N=person->Notiz(); // zwischenspeichern, weil die nächste Zeile
+   std::string N=person->Notiz(); // zwischenspeichern, weil die nÃ¤chste Zeile
                                  // ein 'changed' Signal sendet und damit die 
-                                 // Notiz gelöscht wird.
+                                 // Notiz gelÃ¶scht wird.
    textPersonenPrivatNotiz->delete_text(0,textPersonenPrivatNotiz->get_length());
    gint pos=0;
    textPersonenPrivatNotiz->insert_text(N.c_str(),N.size(),&pos);

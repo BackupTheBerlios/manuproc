@@ -2,8 +2,8 @@
 #include <Aux/SQLerror.h>
 exec sql include sqlca;
 #include "dialogError.hh"
-#include <gtk--/menu.h> 
-#include <gtk--/menuitem.h>
+#include <gtkmm/menu.h> 
+#include <gtkmm/menuitem.h>
 #include "windowTop.hh"
 #include <Gtk_OStream.h>
 

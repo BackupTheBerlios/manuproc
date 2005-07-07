@@ -21,7 +21,7 @@ void windowTop::saveKundenKontakt()
      if(!get_selected_person(P)) return;
      Kunde::st_ansprech A(P.Person,entryPersonenPosition->get_text(),s);
      kundendaten->updateKontaktperson(A);
-     // Jetzt noch die gespeicherte Struktur ändern
+     // Jetzt noch die gespeicherte Struktur Ã¤ndern
      Kunde::st_ansprech &B=*(static_cast<Kunde::st_ansprech*>(clistPersonenListe->selection().begin()->get_data()));
      B.position=entryPersonenPosition->get_text();
      B.notiz=s;
@@ -72,7 +72,7 @@ bool windowTop::get_selected_person(Kunde::st_ansprech& P)
   Gtk::CList::SelectionList::iterator b = clistPersonenListe->selection().begin();
   Gtk::CList::SelectionList::iterator e = clistPersonenListe->selection().end();
   if (b==e)  {//Message *m=manage(new Message());
-//     m->Show("Keine Person ausgewählt");
+//     m->Show("Keine Person ausgewÃ¤hlt");
      return false;}
   P=*(static_cast<Kunde::st_ansprech*>(clistPersonenListe->selection().begin()->get_data()));
   return true;

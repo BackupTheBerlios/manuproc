@@ -10,10 +10,10 @@
 #ifndef _WINDOWAUSWAHL_GLADE_HH
 #  define _WINDOWAUSWAHL_GLADE_HH
 
-#include <gtk--/window.h>
-#include <gtk--/clist.h>
-#include <gtk--/scrolledwindow.h>
-#include <gtk--/radiobutton.h>
+#include <gtkmm/window.h>
+#include <gtkmm/clist.h>
+#include <gtkmm/scrolledwindow.h>
+#include <gtkmm/radiobutton.h>
 
 class windowAuswahl_glade : public Gtk::Window
 {   

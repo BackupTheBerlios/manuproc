@@ -9,7 +9,7 @@
 #include<Kunde/Telefon.h>
 #include <Kunde/TelefonArt.h>
 #include<vector>
-#include <gtk--/notebook.h>
+#include <gtkmm/notebook.h>
 #include "kundendaten_aux.hh"
 
 class windowTop : public windowTop_glade
@@ -18,7 +18,7 @@ class windowTop : public windowTop_glade
        std::vector<Kunde::st_ansprech> AnsprechPersonen;
        cH_Kunde person;        
 
-        Transaction transaction; // Für die SearchCombos
+        Transaction transaction; // FÃ¼r die SearchCombos
         friend class windowTop_glade;
         enum enum_notebook{PAGE_KUNDE,PAGE_DETAILS,PAGE_ZAHLUNG,
 			PAGE_KONTAKTPERSON,
@@ -58,7 +58,7 @@ class windowTop : public windowTop_glade
         void on_landesbox_activate();
         void on_entry_blz_activate();
         void on_load_activate();
-	gint on_delete_event(GdkEventAny*);
+	bool on_delete_event(GdkEventAny*);
         void on_buttonBeenden_clicked();
         void on_buttonAuswaehlen_clicked();
 //        void on_buttonSpeichern_clicked();
@@ -106,10 +106,10 @@ class windowTop : public windowTop_glade
         int fill_bank_bei(unsigned long int blz);
         void on_button_neue_bank_clicked();
 
-	gint on_acc_entry_changed(GdkEventFocus *e);
-        gint on_abi_entry_changed(GdkEventFocus *e);
-        gint on_cab_entry_changed(GdkEventFocus *e);
-        gint on_iban_entry_changed(GdkEventFocus *e);
+	bool on_acc_entry_changed(GdkEventFocus *e);
+        bool on_abi_entry_changed(GdkEventFocus *e);
+        bool on_cab_entry_changed(GdkEventFocus *e);
+        bool on_iban_entry_changed(GdkEventFocus *e);
 
         void on_riba_save_clicked();
         void on_riba_abbruch_clicked();
@@ -162,7 +162,7 @@ class windowTop : public windowTop_glade
         void update_person();
         void clear_PersonenEntrys();
 
-/* faellt alles weg, da Personen über die Hauptmaske bearbeitet werden
+/* faellt alles weg, da Personen Ã¼ber die Hauptmaske bearbeitet werden
         //Neue Personen
         void show_neue_personen_daten(cH_Person &P);
         void on_entryPersonenDatenName_activate();

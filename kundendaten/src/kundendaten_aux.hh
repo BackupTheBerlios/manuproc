@@ -1,7 +1,6 @@
 #ifndef _CLASS_PREISL_HH
 #  define _CLASS_PREISL_HH
 
-#include <rowdata.h>
 #include <Aux/EntryValueIntString.h>
 #include <Kunde/PreisListe.h>
 #include <Kunde/Kundengruppe.h>

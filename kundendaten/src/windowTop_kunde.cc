@@ -79,7 +79,7 @@ std::cout << "activated";
 void windowTop::on_button_kunde_loeschen_clicked()
 {
   std::string st = "Soll der Kunde '"+kundendaten->firma()+"' mit \n"
-   +"der Kundennummer '"+itos(kundendaten->getNummer())+"' wirklich gelˆscht werden?";
+   +"der Kundennummer '"+itos(kundendaten->getNummer())+"' wirklich gel√∂scht werden?";
   manage(new window_Dialog_Bestaetigen(this,st));
 }
 

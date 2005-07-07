@@ -1,15 +1,9 @@
-// generated 2001/2/22 9:59:33 CET by thoma@ig23.
-// using glademm V0.5_11f_cvs
-//
-// newer (non customized) versions of this file go to windowTop.cc_new
+// $Id$
 
-// This file is for your program, I won't touch it again!
-
-//#include "config.h"
 #include "windowTop.hh"
 #include "MyMessage.h"
-#include <gtk--/main.h>
-#include <gtk--/notebook.h>
+#include <gtkmm/main.h>
+#include <gtkmm/notebook.h>
 #include <Kunde/Kundengruppe.h>
 #include "kundendaten_aux.hh"
 
@@ -111,7 +105,7 @@ void windowTop::clear_update_bits()
 //   UpdatePerson=Person::UpdateBits(0);
 }
 
-gint windowTop::on_delete_event(GdkEventAny*)
+bool windowTop::on_delete_event(GdkEventAny*)
 {
  on_buttonBeenden_clicked();
  return true;
@@ -175,7 +169,7 @@ void windowTop::clear_entrys()
    extartbez->reset();
    rng_an->reset();
    lfr_an->reset();
-   textNotiz->delete_text(0,textNotiz->get_length());;
+   textNotiz->get_buffer()->erase(textNotiz->get_buffer()->begin(),textNotiz->get_buffer()->end());
    
    checkbutton_zeilenrabatt->set_active(false);
    checkbuttonBankeinzug->set_active(false);
@@ -203,11 +197,11 @@ void windowTop::clear_entrys()
    iban_abbruch->set_sensitive(false);      
    riba_save->set_sensitive(false);
    riba_abbruch->set_sensitive(false);     
-   zahlverfahren_book->set_page(PAGE_DTAUS); 
+   zahlverfahren_book->set_current_page(PAGE_DTAUS); 
    
-   aufnotiz->delete_text(0,-1);
-   rngnotiz->delete_text(0,-1);
-   liefnotiz->delete_text(0,-1);
+   aufnotiz->get_buffer()->erase(aufnotiz->get_buffer()->begin(),aufnotiz->get_buffer()->end());
+   rngnotiz->get_buffer()->erase(rngnotiz->get_buffer()->begin(),rngnotiz->get_buffer()->end());
+   liefnotiz->get_buffer()->erase(liefnotiz->get_buffer()->begin(),liefnotiz->get_buffer()->end());
    aufnotiz_save->set_sensitive(false);
    rngnotiz_save->set_sensitive(false);   
    liefnotiz_save->set_sensitive(false);   
@@ -265,7 +259,7 @@ void windowTop::on_gruppenwahl_activate()
  kundenauswahl->reset();
  kundenauswahl->EinschraenkenKdGr(gruppenwahl->get_value());
  clear_entrys();
- notebook_main->set_page(PAGE_KUNDE);
+ notebook_main->set_current_page(PAGE_KUNDE);
 }
 
 
@@ -340,21 +334,21 @@ void windowTop::on_iban_save_clicked()
 #endif
 }
 
-gint windowTop::on_acc_entry_changed(GdkEventFocus *e)
+bool windowTop::on_acc_entry_changed(GdkEventFocus *e)
 {
  riba_save->set_sensitive(true);
  riba_abbruch->set_sensitive(true);  
  return false;
 }
 
-gint windowTop::on_abi_entry_changed(GdkEventFocus *e)
+bool windowTop::on_abi_entry_changed(GdkEventFocus *e)
 {
  riba_save->set_sensitive(true);
  riba_abbruch->set_sensitive(true);  
  return false;
 }
 
-gint windowTop::on_cab_entry_changed(GdkEventFocus *e)
+bool windowTop::on_cab_entry_changed(GdkEventFocus *e)
 {  
  riba_save->set_sensitive(true);
  riba_abbruch->set_sensitive(true);  
@@ -362,7 +356,7 @@ gint windowTop::on_cab_entry_changed(GdkEventFocus *e)
 }
 
 
-gint windowTop::on_iban_entry_changed(GdkEventFocus *e)
+bool windowTop::on_iban_entry_changed(GdkEventFocus *e)
 {
  iban_save->set_sensitive(true);
  iban_abbruch->set_sensitive(true);    
@@ -411,7 +405,7 @@ void windowTop::on_button_neue_spl_anlegen_clicked()
   std::string e=entry_new_spreislist_name->get_text();
   if(e=="") 
    { 
-     label_speichern->set_text("FEHLER: Name muß eingegeben werden");
+     label_speichern->set_text("FEHLER: Name muÃŸ eingegeben werden");
      return;
    }
  PreisListe::createPreisliste(spinbutton_new_spreislist->get_value_as_int(),e);
@@ -425,7 +419,7 @@ void windowTop::on_aufnotiz_save_clicked()
  if(kundendaten->getNummer()==Kunde::none_id) return; 
  
  kundendaten->setFixeNotiz(Kunde::AUF_NOTIZ,
- 	aufnotiz->get_chars(0,aufnotiz->get_length()));
+ 	aufnotiz->get_buffer()->get_text(aufnotiz->get_buffer()->begin(),aufnotiz->get_buffer()->end()));
  aufnotiz_save->set_sensitive(false); 
 }
 
@@ -439,7 +433,7 @@ void windowTop::on_liefnotiz_save_clicked()
  if(kundendaten->getNummer()==Kunde::none_id) return; 
  
  kundendaten->setFixeNotiz(Kunde::LIEF_NOTIZ,
- 	liefnotiz->get_chars(0,liefnotiz->get_length()));
+ 	liefnotiz->get_buffer()->get_text(liefnotiz->get_buffer()->begin(),liefnotiz->get_buffer()->end()));
  liefnotiz_save->set_sensitive(false); 
 }
 
@@ -453,7 +447,7 @@ void windowTop::on_rngnotiz_save_clicked()
  if(kundendaten->getNummer()==Kunde::none_id) return; 
  
  kundendaten->setFixeNotiz(Kunde::RNG_NOTIZ,
- 	rngnotiz->get_chars(0,rngnotiz->get_length()));
+ 	rngnotiz->get_buffer()->get_text(rngnotiz->get_buffer()->begin(),rngnotiz->get_buffer()->end()));
  rngnotiz_save->set_sensitive(false); 
 }
 
@@ -466,19 +460,21 @@ void windowTop::load_notizen()
 {
  if(kundendaten->getNummer()==Kunde::none_id) return; 
 
- gint pos=0; 
+ Gtk::TextBuffer::iterator pos=aufnotiz->get_buffer()->begin();
  std::string n;
  
  n=kundendaten->fixeNotiz(Kunde::AUF_NOTIZ);
- aufnotiz->insert_text(n.c_str(),n.size(),&pos);
+ aufnotiz->get_buffer()->insert(pos,n);
  aufnotiz_save->set_sensitive(false);
 
  n=kundendaten->fixeNotiz(Kunde::RNG_NOTIZ); 
- rngnotiz->insert_text(n.c_str(),n.size(),&pos);
+ pos=rngnotiz->get_buffer()->begin();
+ rngnotiz->get_buffer()->insert(pos,n);
  rngnotiz_save->set_sensitive(false);
  
- n=kundendaten->fixeNotiz(Kunde::LIEF_NOTIZ); 
- liefnotiz->insert_text(n.c_str(),n.size(),&pos);
+ n=kundendaten->fixeNotiz(Kunde::LIEF_NOTIZ);
+ pos=liefnotiz->get_buffer()->begin();
+ liefnotiz->get_buffer()->insert(pos,n);
  liefnotiz_save->set_sensitive(false); 
  
 }

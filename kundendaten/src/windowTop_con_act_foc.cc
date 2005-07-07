@@ -1,6 +1,6 @@
 #include "windowTop.hh"
 #include "MyMessage.h"
-#include <gtk--/menu.h>
+#include <gtkmm/menu.h>
 
 //////////////////////////////////////////////////////////////////////
 
@@ -206,201 +206,201 @@ void windowTop::connectFkt()
 {
 #if 0
 #define CF_SPINBUTTON(widget,changedFktA,FGruppennr) \
-  spinbuttonGruppenNr->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FGruppennr));
-  spinbuttonGruppenNr->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FGruppennr));
-  spinbuttonGruppenNr->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FGruppennr));
+  spinbuttonGruppenNr->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FGruppennr));
+  spinbuttonGruppenNr->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktA),Kunde::FGruppennr));
+  spinbuttonGruppenNr->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktA),Kunde::FGruppennr));
 
   CF_SPINBUTTON(spinbuttonGruppenNr,FktA,FGruppennr);
 #endif
 
-//  spinbuttonGruppenNr->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FGruppennr));
-//  spinbuttonGruppenNr->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FGruppennr));
-//  spinbuttonGruppenNr->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FGruppennr));
+//  spinbuttonGruppenNr->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FGruppennr));
+//  spinbuttonGruppenNr->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktA),Kunde::FGruppennr));
+//  spinbuttonGruppenNr->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktA),Kunde::FGruppennr));
 
-  entrySortiername->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FSortname));
-  entrySortiername->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FSortname));
-  entrySortiername->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FSortname));
+  entrySortiername->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FSortname));
+  entrySortiername->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktA),Kunde::FSortname));
+  entrySortiername->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktA),Kunde::FSortname));
 
-  entryFirma->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FFirma));
-  entryFirma->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FFirma));
-  entryFirma->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FFirma));
+  entryFirma->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FFirma));
+  entryFirma->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktA),Kunde::FFirma));
+  entryFirma->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktA),Kunde::FFirma));
 
-  entryName2->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FName2));
-  entryName2->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FName2));
-  entryName2->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FName2));  
+  entryName2->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FName2));
+  entryName2->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktA),Kunde::FName2));
+  entryName2->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktA),Kunde::FName2));  
 
-  entryPostanwVor->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FPostanwvor));
-  entryPostanwVor->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FPostanwvor));
-  entryPostanwVor->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FPostanwvor));
+  entryPostanwVor->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FPostanwvor));
+  entryPostanwVor->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktA),Kunde::FPostanwvor));
+  entryPostanwVor->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktA),Kunde::FPostanwvor));
 
-  entryIdNr->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FIdnr));
-  entryIdNr->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FIdnr));
-  entryIdNr->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FIdnr));
+  entryIdNr->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FIdnr));
+  entryIdNr->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktA),Kunde::FIdnr));
+  entryIdNr->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktA),Kunde::FIdnr));
 
-  entryStrasse->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FStrasse));
-  entryStrasse->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FStrasse));
-  entryStrasse->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FStrasse));
+  entryStrasse->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FStrasse));
+  entryStrasse->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktA),Kunde::FStrasse));
+  entryStrasse->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktA),Kunde::FStrasse));
 
-  entryPostanwNach->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FPostanwnach));
-  entryPostanwNach->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FPostanwnach));
-  entryPostanwNach->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FPostanwnach));
+  entryPostanwNach->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FPostanwnach));
+  entryPostanwNach->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktA),Kunde::FPostanwnach));
+  entryPostanwNach->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktA),Kunde::FPostanwnach));
 
-  entryHausNr->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FHsnr));
-  entryHausNr->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FHsnr));
-  entryHausNr->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FHsnr));
+  entryHausNr->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FHsnr));
+  entryHausNr->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktA),Kunde::FHsnr));
+  entryHausNr->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktA),Kunde::FHsnr));
 
-  entryPLZ->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FPlz));
-  entryPLZ->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FPlz));
-  entryPLZ->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FPlz));
+  entryPLZ->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FPlz));
+  entryPLZ->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktA),Kunde::FPlz));
+  entryPLZ->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktA),Kunde::FPlz));
 
-  entryPostfach->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FPostfach));
-  entryPostfach->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FPostfach));
-  entryPostfach->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FPostfach));
+  entryPostfach->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FPostfach));
+  entryPostfach->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktA),Kunde::FPostfach));
+  entryPostfach->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktA),Kunde::FPostfach));
 
-  entryPostfachPLZ->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FPostfachplz));
-  entryPostfachPLZ->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FPostfachplz));
-  entryPostfachPLZ->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FPostfachplz));
+  entryPostfachPLZ->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FPostfachplz));
+  entryPostfachPLZ->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktA),Kunde::FPostfachplz));
+  entryPostfachPLZ->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktA),Kunde::FPostfachplz));
 
-  entryOrt->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FOrt));
-  entryOrt->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FOrt));
-  entryOrt->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FOrt));
+  entryOrt->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FOrt));
+  entryOrt->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktA),Kunde::FOrt));
+  entryOrt->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktA),Kunde::FOrt));
 
-  checkbuttonLieferAdr->toggled.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FLieferadresse));
-  checkbuttonRchngAdr->toggled.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FRechnungadresse));
-  checkbuttonAuftrAdr->toggled.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FAuftragadresse));
-  checkbutton_rng_an_postfach->toggled.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FRng_an_postfach));
+  checkbuttonLieferAdr->signal_toggled().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FLieferadresse));
+  checkbuttonRchngAdr->signal_toggled().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FRechnungadresse));
+  checkbuttonAuftrAdr->signal_toggled().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FAuftragadresse));
+  checkbutton_rng_an_postfach->signal_toggled().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FRng_an_postfach));
 
-  landesbox->activate.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FLkz));
+  landesbox->signal_activate().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FLkz));
 
-  geburtstag->activate.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktS),Kunde::FGebDatum));
-  scc_anrede->activate.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FBranr));
+  geburtstag->signal_activate().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktS),Kunde::FGebDatum));
+  scc_anrede->signal_activate().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FBranr));
 
   //Kunde::BFirma
 
-  spinbutton_Flaeche->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktF),Kunde::FFlaeche));
-  spinbutton_Flaeche->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktF),Kunde::FFlaeche));
-  spinbutton_Flaeche->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktF),Kunde::FFlaeche));
+  spinbutton_Flaeche->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktF),Kunde::FFlaeche));
+  spinbutton_Flaeche->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktF),Kunde::FFlaeche));
+  spinbutton_Flaeche->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktF),Kunde::FFlaeche));
 
-  spinbutton_Kundenumsatz->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktF),Kunde::FKundenumsatz));
-  spinbutton_Kundenumsatz->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktF),Kunde::FKundenumsatz));
-  spinbutton_Kundenumsatz->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktF),Kunde::FKundenumsatz));
+  spinbutton_Kundenumsatz->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktF),Kunde::FKundenumsatz));
+  spinbutton_Kundenumsatz->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktF),Kunde::FKundenumsatz));
+  spinbutton_Kundenumsatz->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktF),Kunde::FKundenumsatz));
 
-  spinbutton_Planumsatz->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktF),Kunde::FPlanumsatz));
-  spinbutton_Planumsatz->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktF),Kunde::FPlanumsatz));
-  spinbutton_Planumsatz->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktF),Kunde::FPlanumsatz));
+  spinbutton_Planumsatz->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktF),Kunde::FPlanumsatz));
+  spinbutton_Planumsatz->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktF),Kunde::FPlanumsatz));
+  spinbutton_Planumsatz->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktF),Kunde::FPlanumsatz));
 
-  spinbutton_Mitarbeiter->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktF),Kunde::FMitarbeiter));
-  spinbutton_Mitarbeiter->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktF),Kunde::FMitarbeiter));
-  spinbutton_Mitarbeiter->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktF),Kunde::FMitarbeiter));
+  spinbutton_Mitarbeiter->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktF),Kunde::FMitarbeiter));
+  spinbutton_Mitarbeiter->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktF),Kunde::FMitarbeiter));
+  spinbutton_Mitarbeiter->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktF),Kunde::FMitarbeiter));
 
-  spinbutton_Umsatz->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktF),Kunde::FUmsatz));
-  spinbutton_Umsatz->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktF),Kunde::FUmsatz));
-  spinbutton_Umsatz->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktF),Kunde::FUmsatz));
+  spinbutton_Umsatz->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktF),Kunde::FUmsatz));
+  spinbutton_Umsatz->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktF),Kunde::FUmsatz));
+  spinbutton_Umsatz->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktF),Kunde::FUmsatz));
 
-  entryVerein->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktF),Kunde::FVerein));
-  entryVerein->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktF),Kunde::FVerein));
-  entryVerein->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktF),Kunde::FVerein));
+  entryVerein->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktF),Kunde::FVerein));
+  entryVerein->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktF),Kunde::FVerein));
+  entryVerein->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktF),Kunde::FVerein));
 
-  entry_eigene_kundennr->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktF),Kunde::FUnsereKundenNr));
-  entry_eigene_kundennr->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktF),Kunde::FUnsereKundenNr));
-  entry_eigene_kundennr->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktF),Kunde::FUnsereKundenNr));
+  entry_eigene_kundennr->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktF),Kunde::FUnsereKundenNr));
+  entry_eigene_kundennr->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktF),Kunde::FUnsereKundenNr));
+  entry_eigene_kundennr->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktF),Kunde::FUnsereKundenNr));
 
-  zahlungsartbox->activate.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FZahlungsart));
+  zahlungsartbox->signal_activate().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktB),Kunde::FZahlungsart));
 
   //Kunde::BBank
 
-  entryBankKonto->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FKtonr));
-  entryBankKonto->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktB),Kunde::FKtonr));
-  entryBankKonto->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktB),Kunde::FKtonr));
+  entryBankKonto->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktB),Kunde::FKtonr));
+  entryBankKonto->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktB),Kunde::FKtonr));
+  entryBankKonto->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktB),Kunde::FKtonr));
 
-  entry_blz->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FBlz));
-  entry_blz->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktB),Kunde::FBlz));
-  entry_blz->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktB),Kunde::FBlz));
-//  checkbuttonBankeinzug->toggled.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FBankeinzug));
-  checkbutton_zeilenrabatt->toggled.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FZeilenrabatt));
+  entry_blz->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktB),Kunde::FBlz));
+  entry_blz->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktB),Kunde::FBlz));
+  entry_blz->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktB),Kunde::FBlz));
+//  checkbuttonBankeinzug->signal_toggled().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktB),Kunde::FBankeinzug));
+  checkbutton_zeilenrabatt->signal_toggled().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktB),Kunde::FZeilenrabatt));
 
-//  spinbutton_einzugRabatt->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FEinzugrabatt));
-//  spinbutton_einzugRabatt->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktB),Kunde::FEinzugrabatt));
-//  spinbutton_einzugRabatt->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktB),Kunde::FEinzugrabatt));
+//  spinbutton_einzugRabatt->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktB),Kunde::FEinzugrabatt));
+//  spinbutton_einzugRabatt->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktB),Kunde::FEinzugrabatt));
+//  spinbutton_einzugRabatt->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktB),Kunde::FEinzugrabatt));
 
-  spinbutton_Rabatt->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FRabatt));
-  spinbutton_Rabatt->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktB),Kunde::FRabatt));
-  spinbutton_Rabatt->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktB),Kunde::FRabatt));
+  spinbutton_Rabatt->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktB),Kunde::FRabatt));
+  spinbutton_Rabatt->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktB),Kunde::FRabatt));
+  spinbutton_Rabatt->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktB),Kunde::FRabatt));
 
-//  spinbutton_Skontofrist->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FSkontofrist));
-//  spinbutton_Skontofrist->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktB),Kunde::FSkontofrist));
-//  spinbutton_Skontofrist->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktB),Kunde::FSkontofrist));
+//  spinbutton_Skontofrist->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktB),Kunde::FSkontofrist));
+//  spinbutton_Skontofrist->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktB),Kunde::FSkontofrist));
+//  spinbutton_Skontofrist->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktB),Kunde::FSkontofrist));
 
-//  spinbutton_skontosatz->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FSkontosatz));
-//  spinbutton_skontosatz->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktB),Kunde::FSkontosatz));
-//  spinbutton_skontosatz->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktB),Kunde::FSkontosatz));
+//  spinbutton_skontosatz->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktB),Kunde::FSkontosatz));
+//  spinbutton_skontosatz->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktB),Kunde::FSkontosatz));
+//  spinbutton_skontosatz->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktB),Kunde::FSkontosatz));
 
-  spinbutton_lieferantenkonto->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FLieferantenkonto));
-  spinbutton_lieferantenkonto->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktB),Kunde::FLieferantenkonto));
-  spinbutton_lieferantenkonto->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktB),Kunde::FLieferantenkonto));
+  spinbutton_lieferantenkonto->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktB),Kunde::FLieferantenkonto));
+  spinbutton_lieferantenkonto->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktB),Kunde::FLieferantenkonto));
+  spinbutton_lieferantenkonto->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktB),Kunde::FLieferantenkonto));
 
-  spinbutton_gegenkonto->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FGegenkonto));
-  spinbutton_gegenkonto->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktB),Kunde::FGegenkonto));
-  spinbutton_gegenkonto->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktB),Kunde::FGegenkonto));
+  spinbutton_gegenkonto->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktB),Kunde::FGegenkonto));
+  spinbutton_gegenkonto->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktB),Kunde::FGegenkonto));
+  spinbutton_gegenkonto->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktB),Kunde::FGegenkonto));
 
-  spinbutton_debitorenkonto->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FDebitorenkonto));
-  spinbutton_debitorenkonto->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktB),Kunde::FDebitorenkonto));
-  spinbutton_debitorenkonto->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktB),Kunde::FDebitorenkonto));  
+  spinbutton_debitorenkonto->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktB),Kunde::FDebitorenkonto));
+  spinbutton_debitorenkonto->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktB),Kunde::FDebitorenkonto));
+  spinbutton_debitorenkonto->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktB),Kunde::FDebitorenkonto));  
 
-  Waehrung->activate.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FWaehrungid));
+  Waehrung->signal_activate().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktB),Kunde::FWaehrungid));
 
   //Kunde::BSonst  
 
-  textNotiz->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktS),Kunde::FNotiz));
-  textNotiz->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktS),Kunde::FNotiz));
-  textNotiz->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktS),Kunde::FNotiz));
+  textNotiz->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktS),Kunde::FNotiz));
+  textNotiz->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktS),Kunde::FNotiz));
+  textNotiz->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktS),Kunde::FNotiz));
 
-  extartbez->activate.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktS),Kunde::FExtartbezid));
-  rng_an->activate.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktS),Kunde::FRechnungan));
-  lfr_an->activate.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktS),Kunde::FLieferscheinan));
+  extartbez->signal_activate().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktS),Kunde::FExtartbezid));
+  rng_an->signal_activate().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktS),Kunde::FRechnungan));
+  lfr_an->signal_activate().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktS),Kunde::FLieferscheinan));
 
-  checkbutton_entsorgung->toggled.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktS),Kunde::FEntsorgung));
-  checkbutton_lieferung_frei_haus->toggled.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktS),Kunde::Flieferung_frei_haus));
+  checkbutton_entsorgung->signal_toggled().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktS),Kunde::FEntsorgung));
+  checkbutton_lieferung_frei_haus->signal_toggled().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktS),Kunde::Flieferung_frei_haus));
 
-  spinbutton_firmenpapier->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktS),Kunde::FAnzAusFirmenPapier));
-  spinbutton_firmenpapier->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktS),Kunde::FAnzAusFirmenPapier));
-  spinbutton_firmenpapier->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktS),Kunde::FAnzAusFirmenPapier));
+  spinbutton_firmenpapier->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktS),Kunde::FAnzAusFirmenPapier));
+  spinbutton_firmenpapier->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktS),Kunde::FAnzAusFirmenPapier));
+  spinbutton_firmenpapier->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktS),Kunde::FAnzAusFirmenPapier));
 
-  spinbutton_weissespapier->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktS),Kunde::FAnzAusWeissesPapier));
-  spinbutton_weissespapier->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktS),Kunde::FAnzAusWeissesPapier));
-  spinbutton_weissespapier->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktS),Kunde::FAnzAusWeissesPapier));
+  spinbutton_weissespapier->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktS),Kunde::FAnzAusWeissesPapier));
+  spinbutton_weissespapier->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktS),Kunde::FAnzAusWeissesPapier));
+  spinbutton_weissespapier->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktS),Kunde::FAnzAusWeissesPapier));
 
-#warning TODO Verkäufer nummer
-//  entry->changed.connect(SigC::bind(SigC::slot(this,&windowTop::ChangedEnum),Kunde::BSonst));
-//  entry->changed.connect(SigC::bind(SigC::slot(this,&windowTop::ChangedEnum),Kunde::BSonst));
+#warning TODO VerkÃ¤ufer nummer
+//  entry->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::ChangedEnum),Kunde::BSonst));
+//  entry->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::ChangedEnum),Kunde::BSonst));
 
   /////////////////////////////////////////////////////////////////////////
   // Kontaktperson
   ////////////////////////////////////////////////////////////////////////
-  entryPersonenPosition->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktS),Kunde::FKP_Position));
-  entryPersonenPosition->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktS),Kunde::FKP_Position));
-  entryPersonenPosition->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktS),Kunde::FKP_Position));
+  entryPersonenPosition->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktS),Kunde::FKP_Position));
+  entryPersonenPosition->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktS),Kunde::FKP_Position));
+  entryPersonenPosition->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktS),Kunde::FKP_Position));
 
-  textPersonenFirmaNotiz->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktS),Kunde::FKP_Notiz));
-  textPersonenFirmaNotiz->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktS),Kunde::FKP_Notiz));
-  textPersonenFirmaNotiz->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktS),Kunde::FKP_Notiz));
+  textPersonenFirmaNotiz->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktS),Kunde::FKP_Notiz));
+  textPersonenFirmaNotiz->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktS),Kunde::FKP_Notiz));
+  textPersonenFirmaNotiz->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktS),Kunde::FKP_Notiz));
 
   /////////////////////////////////////////////////////////////////////////
   // Person
   ////////////////////////////////////////////////////////////////////////
 /*
-  entryPersonenDatenName->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktP),Person::FName));
-  entryPersonenDatenName->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktP),Person::FName));
-  entryPersonenDatenName->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktP),Person::FName));
+  entryPersonenDatenName->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktP),Person::FName));
+  entryPersonenDatenName->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktP),Person::FName));
+  entryPersonenDatenName->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktP),Person::FName));
 
-  entryPersonenDatenVorname->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktP),Person::FVorname));
-  entryPersonenDatenVorname->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktP),Person::FVorname));
-  entryPersonenDatenVorname->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktP),Person::FVorname));
+  entryPersonenDatenVorname->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktP),Person::FVorname));
+  entryPersonenDatenVorname->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktP),Person::FVorname));
+  entryPersonenDatenVorname->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktP),Person::FVorname));
 
 
-  textPersonenPrivatNotiz->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktP),Person::FNotiz));
-  textPersonenPrivatNotiz->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktP),Person::FNotiz));
-  textPersonenPrivatNotiz->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktP),Person::FNotiz));
+  textPersonenPrivatNotiz->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktP),Person::FNotiz));
+  textPersonenPrivatNotiz->signal_activate().connect_after(SigC::bind(SigC::slot(*this,&windowTop::activateFktP),Person::FNotiz));
+  textPersonenPrivatNotiz->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktP),Person::FNotiz));
 */
 
 
