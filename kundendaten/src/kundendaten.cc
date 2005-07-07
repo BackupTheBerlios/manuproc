@@ -40,6 +40,7 @@ int main(int argc, char **argv)
    try {
 
       Petig::dbconnect(conn);  
+      Query ("set names 'utf-8'");
 
       class windowTop *w=new class windowTop();
 
