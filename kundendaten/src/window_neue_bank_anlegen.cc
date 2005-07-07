@@ -37,12 +37,12 @@ void window_neue_bank_anlegen::on_button_uebernehmen_clicked()
 	{MyMessage *m=manage(new MyMessage()); m->Show(e);}
    }
  hauptfenster->neue_bank_uebernehmen(bank_index);
- destroy();
+ delete this;
 }
 
 void window_neue_bank_anlegen::on_button_abbrechen_clicked()
 {   
-  destroy();
+  delete this;
 }
 
 window_neue_bank_anlegen::window_neue_bank_anlegen(windowTop* h,std::string st, long int blz)

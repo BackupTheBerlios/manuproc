@@ -378,7 +378,7 @@
 				      </child>
 
 				      <child>
-					<widget class="GtkLabel" id="label6">
+					<widget class="GtkLabel" id="label72">
 					  <property name="visible">True</property>
 					  <property name="label" translatable="yes">Postanw. (davor)</property>
 					  <property name="use_underline">False</property>
@@ -1273,7 +1273,7 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkLabel" id="label19">
+		    <widget class="GtkLabel" id="label73">
 		      <property name="visible">True</property>
 		      <property name="label" translatable="yes">Status</property>
 		      <property name="use_underline">False</property>
@@ -1600,7 +1600,7 @@
 			      </child>
 
 			      <child>
-				<widget class="GtkLabel" id="label24">
+				<widget class="GtkLabel" id="label74">
 				  <property name="visible">True</property>
 				  <property name="label" translatable="yes">Planumsatz</property>
 				  <property name="use_underline">False</property>
@@ -1655,7 +1655,7 @@
 			      </child>
 
 			      <child>
-				<widget class="GtkLabel" id="label25">
+				<widget class="GtkLabel" id="label75">
 				  <property name="visible">True</property>
 				  <property name="label" translatable="yes">Umsatz</property>
 				  <property name="use_underline">False</property>
@@ -1781,7 +1781,7 @@
 			      </child>
 
 			      <child>
-				<widget class="GtkLabel" id="label27">
+				<widget class="GtkLabel" id="label79">
 				  <property name="visible">True</property>
 				  <property name="label" translatable="yes">Notiz</property>
 				  <property name="use_underline">False</property>
@@ -1815,7 +1815,7 @@
 		      </child>
 
 		      <child>
-			<widget class="GtkLabel" id="label20">
+			<widget class="GtkLabel" id="label76">
 			  <property name="visible">True</property>
 			  <property name="label" translatable="yes">Firma</property>
 			  <property name="use_underline">False</property>
@@ -1865,7 +1865,7 @@
 		      </child>
 
 		      <child>
-			<widget class="GtkLabel" id="label28">
+			<widget class="GtkLabel" id="label80">
 			  <property name="visible">True</property>
 			  <property name="label" translatable="yes">Geburtstag</property>
 			  <property name="use_underline">False</property>
@@ -2356,7 +2356,7 @@
 			      </child>
 
 			      <child>
-				<widget class="GtkLabel" id="label38">
+				<widget class="GtkLabel" id="label93">
 				  <property name="visible">True</property>
 				  <property name="label" translatable="yes">Verkäufer</property>
 				  <property name="use_underline">False</property>
@@ -2442,7 +2442,7 @@
 		      </child>
 
 		      <child>
-			<widget class="GtkLabel" id="label29">
+			<widget class="GtkLabel" id="label81">
 			  <property name="visible">True</property>
 			  <property name="label" translatable="yes">Eigene Daten</property>
 			  <property name="use_underline">False</property>
@@ -3639,7 +3639,7 @@
 				      <property name="column_spacing">0</property>
 
 				      <child>
-					<widget class="GtkLabel" id="label14">
+					<widget class="GtkLabel" id="label77">
 					  <property name="visible">True</property>
 					  <property name="label" translatable="yes">%</property>
 					  <property name="use_underline">False</property>
@@ -3667,7 +3667,7 @@
 				      </child>
 
 				      <child>
-					<widget class="GtkLabel" id="label26">
+					<widget class="GtkLabel" id="label78">
 					  <property name="visible">True</property>
 					  <property name="label" translatable="yes">%</property>
 					  <property name="use_underline">False</property>
@@ -4263,7 +4263,7 @@
 			      <property name="column_spacing">0</property>
 
 			      <child>
-				<widget class="GtkLabel" id="label32">
+				<widget class="GtkLabel" id="label82">
 				  <property name="visible">True</property>
 				  <property name="label" translatable="yes">ABI</property>
 				  <property name="use_underline">False</property>
@@ -4291,7 +4291,7 @@
 			      </child>
 
 			      <child>
-				<widget class="GtkLabel" id="label33">
+				<widget class="GtkLabel" id="label83">
 				  <property name="visible">True</property>
 				  <property name="label" translatable="yes">CAB</property>
 				  <property name="use_underline">False</property>
@@ -4443,7 +4443,7 @@
 			      </child>
 
 			      <child>
-				<widget class="GtkLabel" id="label36">
+				<widget class="GtkLabel" id="label84">
 				  <property name="visible">True</property>
 				  <property name="label" translatable="yes">Bank</property>
 				  <property name="use_underline">False</property>
@@ -4471,7 +4471,7 @@
 			      </child>
 
 			      <child>
-				<widget class="GtkLabel" id="label41">
+				<widget class="GtkLabel" id="label85">
 				  <property name="visible">True</property>
 				  <property name="label" translatable="yes">ACC</property>
 				  <property name="use_underline">False</property>
@@ -4529,7 +4529,7 @@
 			  </child>
 
 			  <child>
-			    <widget class="GtkLabel" id="label30">
+			    <widget class="GtkLabel" id="label86">
 			      <property name="visible">True</property>
 			      <property name="label" translatable="yes">RIBA</property>
 			      <property name="use_underline">False</property>
@@ -4564,7 +4564,7 @@
 				  <property name="spacing">0</property>
 
 				  <child>
-				    <widget class="GtkLabel" id="label34">
+				    <widget class="GtkLabel" id="label87">
 				      <property name="visible">True</property>
 				      <property name="label" translatable="yes">IBAN</property>
 				      <property name="use_underline">False</property>
@@ -4675,7 +4675,7 @@
 			  </child>
 
 			  <child>
-			    <widget class="GtkLabel" id="label31">
+			    <widget class="GtkLabel" id="label88">
 			      <property name="visible">True</property>
 			      <property name="label" translatable="yes">LCR</property>
 			      <property name="use_underline">False</property>
@@ -4982,7 +4982,7 @@ löschen</property>
 	  </child>
 
 	  <child>
-	    <widget class="GtkLabel" id="label40">
+	    <widget class="GtkLabel" id="label89">
 	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">Zahlung / Preislisten</property>
 	      <property name="use_underline">False</property>
@@ -5306,7 +5306,7 @@ löschen</property>
 	  </child>
 
 	  <child>
-	    <widget class="GtkLabel" id="label21">
+	    <widget class="GtkLabel" id="label90">
 	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">Kontaktpersonen</property>
 	      <property name="use_underline">False</property>
@@ -5710,7 +5710,7 @@ löschen</property>
 	  </child>
 
 	  <child>
-	    <widget class="GtkLabel" id="label37">
+	    <widget class="GtkLabel" id="label91">
 	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">Notizen</property>
 	      <property name="use_underline">False</property>
@@ -5739,7 +5739,7 @@ löschen</property>
 	      <property name="spacing">0</property>
 
 	      <child>
-		<widget class="GtkLabel" id="label39">
+		<widget class="GtkLabel" id="label92">
 		  <property name="visible">True</property>
 		  <property name="label" translatable="yes"></property>
 		  <property name="use_underline">False</property>
@@ -5793,7 +5793,7 @@ löschen</property>
 				<widget class="Custom" id="alle_gruppen">
 				  <property agent="glademm" name="cxx_visibility">protected</property>
 				  <property name="visible">True</property>
-				  <property name="creation_function">SimpleTree(4,0)</property>
+				  <property name="creation_function">SimpleTree(4)</property>
 				  <property name="int1">0</property>
 				  <property name="int2">0</property>
 				  <property name="last_modification_time">Tue, 08 Apr 2003 13:13:25 GMT</property>
@@ -5908,7 +5908,7 @@ löschen</property>
 			    <widget class="Custom" id="gewaehlte_gruppen">
 			      <property agent="glademm" name="cxx_visibility">protected</property>
 			      <property name="visible">True</property>
-			      <property name="creation_function">SimpleTree(4,0)</property>
+			      <property name="creation_function">SimpleTree(4)</property>
 			      <property name="int1">0</property>
 			      <property name="int2">0</property>
 			      <property name="last_modification_time">Tue, 08 Apr 2003 13:13:25 GMT</property>
