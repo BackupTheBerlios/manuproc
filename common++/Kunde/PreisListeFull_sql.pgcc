@@ -25,10 +25,17 @@
 #include <ExtBezSchema/ExtBezSchema.h>
 #include <DynamicEnums/DynamicConfig.h>
 
+#ifdef PETIG_EXTENSIONS
+#define USE_KOMPONENTE
+#endif
+
 void PreisListeFull::load_preisliste(bool with_artbez,
 	ID id, bool art_in_list, ArtikelTyp at)
 {
  std::string bezkomps,bezorder;
+#ifndef USE_KOMPONENTE
+ std::string beztable;
+#endif /* not USE_KOMPONENTE */
  int signifikanz=1;
  int ean_sign=ArtikelTyp::none_id;
  int bez_sign=ArtikelTyp::none_id; 
@@ -57,11 +64,20 @@ void PreisListeFull::load_preisliste(bool with_artbez,
     ExtBezSchema::const_sigiterator bezend=ebz->sigend(signifikanz);    
     unsigned idx=1;
     for(;bezit!=bezend;++bezit,++idx)
-      {bezkomps+="artikelkomponente(id,"+itos(at.Id())+","+itos(signifikanz)
+    {
+#ifndef USE_KOMPONENTE
+       bezkomps+=" atoi(b."+(*bezit).spaltenname+") as "+(*bezit).spaltenname+",";
+       bezorder+=" "+(*bezit).spaltenname+",";
+#else /* USE_KOMPONENTE */
+       bezkomps+="artikelkomponente(id,"+itos(at.Id())+","+itos(signifikanz)
 		+","+itos(idx)+"),";
        bezorder+=itos(idx)+",";
+#endif /* USE_KOMPONENTE */
        bez_columns.push_back((*bezit).bezkomptext);
       }
+#ifndef USE_KOMPONENTE
+    beztable = " artbez_"+itos(at)+"_"+itos(ebz->Id());
+#endif /* not USE_KOMPONENTE */
 
 #ifdef GLOB_SET_EAN_SIGN_BASENAME    
     if(mit_ean)
@@ -70,9 +86,14 @@ void PreisListeFull::load_preisliste(bool with_artbez,
        ExtBezSchema::const_sigiterator eanit=ebz->sigbegin(ean_sign);
        ExtBezSchema::const_sigiterator eanend=ebz->sigend(ean_sign);    
        mit_ean=false;
-       for(idx=1;eanit!=eanend;++eanit,++idx)
-         {bezkomps+="artikelkomponente(id,"+itos(at.Id())+","+itos(ean_sign)
+       for(idx=1;eanit!=eanend;++eanit,++idx) 
+       {
+#ifndef USE_KOMPONENTE
+          bezkomps+=" b."+(*eanit).spaltenname+",";
+#else /* USE_KOMPONENTE */
+          bezkomps+="artikelkomponente(id,"+itos(at.Id())+","+itos(ean_sign)
 		+","+itos(idx)+"),";
+#endif /* USE_KOMPONENTE */
           mit_ean=true;
           bez_columns.push_back((*eanit).bezkomptext);}
       }
@@ -85,8 +106,13 @@ void PreisListeFull::load_preisliste(bool with_artbez,
        ExtBezSchema::const_sigiterator bezend=ebz->sigend(bez_sign);    
        mit_bez=false;
        for(idx=1;bezit!=bezend;++bezit,++idx)
-         {bezkomps+="artikelkomponente(id,"+itos(at.Id())+","+itos(bez_sign)
+       {
+#ifndef USE_KOMPONENTE
+          bezkomps+=" b."+(*bezit).spaltenname+",";      
+#else /* USE_KOMPONENTE */
+          bezkomps+="artikelkomponente(id,"+itos(at.Id())+","+itos(bez_sign)
 		+","+itos(idx)+"),"
+#endif /* USE_KOMPONENTE */
           mit_bez=true;
           bez_columns.push_back((*bezit).bezkomptext);}
       }
@@ -113,6 +139,10 @@ void PreisListeFull::load_preisliste(bool with_artbez,
         " (k.prlsnr=p.kundennr and p.kundennr="+plid+")"
  	" join artikelstamm s on (p.artikelid=s.id and "
 	" s.warengruppe="+itos(at.Id())+") ";
+#ifndef USE_KOMPONENTE
+    if(with_artbez)
+      qu+=" join "+beztable+" b using (id) ";
+#endif /* not USE_KOMPONENTE */
 
     if(isDepending())
       {  
@@ -126,6 +156,10 @@ void PreisListeFull::load_preisliste(bool with_artbez,
         "  (k.prlsnr=p.kundennr and p.kundennr="+itos(id)+")"
         "  join artikelstamm s on (p.artikelid=s.id and "
 	" s.warengruppe="+itos(at.Id())+") ";
+#ifndef USE_KOMPONENTE
+        if(with_artbez)
+          qu+=" join "+beztable+" b using (id) ";
+#endif /* not USE_KOMPONENTE */
       qu+=") "; // UNION end 
       qu+="order by "+bezorder+" parent";
       }
@@ -144,6 +178,10 @@ void PreisListeFull::load_preisliste(bool with_artbez,
 	" left join preis_change_journal c on "
 	" (c.artikelid=s.id and c.prlsnr="+itos(id);
     qu+=" and preis_alt is not null and cast(preis_neu as float) = 0.0) ";
+#ifndef USE_KOMPONENTE
+    if(with_artbez)
+      qu+=" join "+beztable+" b using (id) ";
+#endif /* not USE_KOMPONENTE */
     qu+=" where not exists"
  	" (select p.artikelid from artikelpreise p"
 	"  where p.artikelid=s.id and kundennr = ";
