@@ -29,7 +29,6 @@ void PreisListeFull::load_preisliste(bool with_artbez,
 	ID id, bool art_in_list, ArtikelTyp at)
 {
  std::string bezkomps,bezorder;
- std::string beztable;
  int signifikanz=1;
  int ean_sign=ArtikelTyp::none_id;
  int bez_sign=ArtikelTyp::none_id; 
@@ -56,12 +55,13 @@ void PreisListeFull::load_preisliste(bool with_artbez,
     
     ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(signifikanz);
     ExtBezSchema::const_sigiterator bezend=ebz->sigend(signifikanz);    
-    for(;bezit!=bezend;++bezit)
-      {bezkomps+=" atoi(b."+(*bezit).spaltenname+") as "+(*bezit).spaltenname+",";
-       bezorder+=" "+(*bezit).spaltenname+",";
+    unsigned idx=1;
+    for(;bezit!=bezend;++bezit,++idx)
+      {bezkomps+="artikelkomponente(id,"+itos(at.Id())+","+itos(signifikanz)
+		+","+itos(idx)+"),";
+       bezorder+=itos(idx)+",";
        bez_columns.push_back((*bezit).bezkomptext);
       }
-    beztable = " artbez_"+itos(at)+"_"+itos(ebz->Id());
 
 #ifdef GLOB_SET_EAN_SIGN_BASENAME    
     if(mit_ean)
@@ -70,8 +70,9 @@ void PreisListeFull::load_preisliste(bool with_artbez,
        ExtBezSchema::const_sigiterator eanit=ebz->sigbegin(ean_sign);
        ExtBezSchema::const_sigiterator eanend=ebz->sigend(ean_sign);    
        mit_ean=false;
-       for(;eanit!=eanend;++eanit)
-         {bezkomps+=" b."+(*eanit).spaltenname+",";
+       for(idx=1;eanit!=eanend;++eanit,++idx)
+         {bezkomps+="artikelkomponente(id,"+itos(at.Id())+","+itos(ean_sign)
+		+","+itos(idx)+"),";
           mit_ean=true;
           bez_columns.push_back((*eanit).bezkomptext);}
       }
@@ -83,8 +84,9 @@ void PreisListeFull::load_preisliste(bool with_artbez,
        ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(bez_sign);
        ExtBezSchema::const_sigiterator bezend=ebz->sigend(bez_sign);    
        mit_bez=false;
-       for(;bezit!=bezend;++bezit)
-         {bezkomps+=" b."+(*bezit).spaltenname+",";      
+       for(idx=1;bezit!=bezend;++bezit,++idx)
+         {bezkomps+="artikelkomponente(id,"+itos(at.Id())+","+itos(bez_sign)
+		+","+itos(idx)+"),"
           mit_bez=true;
           bez_columns.push_back((*bezit).bezkomptext);}
       }
@@ -111,8 +113,6 @@ void PreisListeFull::load_preisliste(bool with_artbez,
         " (k.prlsnr=p.kundennr and p.kundennr="+plid+")"
  	" join artikelstamm s on (p.artikelid=s.id and "
 	" s.warengruppe="+itos(at.Id())+") ";
-    if(with_artbez)
-      qu+=" join "+beztable+" b using (id) ";
 
     if(isDepending())
       {  
@@ -126,8 +126,6 @@ void PreisListeFull::load_preisliste(bool with_artbez,
         "  (k.prlsnr=p.kundennr and p.kundennr="+itos(id)+")"
         "  join artikelstamm s on (p.artikelid=s.id and "
 	" s.warengruppe="+itos(at.Id())+") ";
-        if(with_artbez)
-          qu+=" join "+beztable+" b using (id) ";
       qu+=") "; // UNION end 
       qu+="order by "+bezorder+" parent";
       }
@@ -146,8 +144,6 @@ void PreisListeFull::load_preisliste(bool with_artbez,
 	" left join preis_change_journal c on "
 	" (c.artikelid=s.id and c.prlsnr="+itos(id);
     qu+=" and preis_alt is not null and cast(preis_neu as float) = 0.0) ";
-    if(with_artbez)
-      qu+=" join "+beztable+" b using (id) ";
     qu+=" where not exists"
  	" (select p.artikelid from artikelpreise p"
 	"  where p.artikelid=s.id and kundennr = ";
