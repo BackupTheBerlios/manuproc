@@ -1618,7 +1618,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
 
 //   if(!Rueckstand())
    if(Typ()==Auftrag) 
-		{auftrag_von(os,class Auftrag(AuftragBase(
+		{auftrag_von(os,::Auftrag(AuftragBase(
    				instanz->Id(),u.a->Id())),true);
    		}
 
