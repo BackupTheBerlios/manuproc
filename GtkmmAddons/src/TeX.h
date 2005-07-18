@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: TeX.h,v 1.5 2004/12/21 08:17:39 thoma Exp $
+// $Id: TeX.h,v 1.6 2005/07/18 20:37:53 christof Exp $
 
 #include <iostream>
 #include <string>
@@ -27,6 +27,7 @@ namespace TeX
 	typedef void (*Simple_cb)(std::ostream &os,gpointer user_data);
 	struct HeaderFlags
 	{	bool latin1:1;
+	        bool utf8:1;
 		bool longtable:1;
 		bool header:1;
 		bool footer:1;
@@ -48,12 +49,12 @@ namespace TeX
 		std::string preamble;
 		
 		HeaderFlags()
-		: latin1(true), longtable(true), header(false),
+		: latin1(true), utf8(), longtable(true), header(),
 		  footer(true), a4(true), german(true), dense(true),
-		  helvetica(true), landscape(false), twocolumn(false),
+		  helvetica(true), landscape(), twocolumn(),
 		  ptsize(10), topmargin(1*in_cm), leftmargin(1), 
 		  bottommargin(1*in_cm), rightmargin(1.5*in_cm),
-		  preamble_cb(0), user_data(0)
+		  preamble_cb(), user_data()
 		{}
 	};
 	struct StringFlags
