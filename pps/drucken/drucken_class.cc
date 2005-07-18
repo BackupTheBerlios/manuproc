@@ -234,7 +234,16 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
     zeilen_passen_noch-=passende_zeilen; // CP: korrekt?
 
     if(kunde_an->land()->Auslaender())
-         {if(zeilen_passen_noch<(passende_zeilen)) {  os << "\\newpage\n";++page_counter; page_header(os);}
+         {if(zeilen_passen_noch<(passende_zeilen)) 
+	  {  os << "\\newpage\n";++page_counter; page_header(os);
+	     os << "\\begin{flushright}\n" 
+     	    // auf Wunsch von Frau Will für die Schweiz
+     	    // Ok von Gudrun (auch wenn ich es für überflüssig halte ...)
+     	        << mld->MLT(MultiL_Dict::TXT_UEBERTRAG) << " " << FormatiereTeX(betrag) << "\\\\\n";
+             os << mld->MLT(MultiL_Dict::TXT_SUMME) << " " <<  getWaehrung()->TeXsymbol() << " "
+                 << FormatiereTeX(betrag) << "\\\\\n";
+             os << "\\end{flushright}\n";
+          }
 
 	  if(!getZahlungsart()->getBankeinzug())
 	    {
