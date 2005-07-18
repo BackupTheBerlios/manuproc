@@ -220,13 +220,18 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 	++page_counter; 
 	page_header(os);
 	os << "\\bigskip\n";
+	os << "\\begin{flushright}\n" 
+	    // auf Wunsch von Frau Will für die Schweiz
+	    // Ok von Gudrun (auch wenn ich es für überflüssig halte ...)
+	   << mld->MLT(MultiL_Dict::TXT_UEBERTRAG) << " " << FormatiereTeX(betrag) << "\\\\\n";
+        os << mld->MLT(MultiL_Dict::TXT_SUMME) << " " <<  getWaehrung()->TeXsymbol() << " "
+            << FormatiereTeX(betrag) << "\\\\\n";
+        os << "\\end{flushright}\n";
 	}
     os << mld->MLT(MultiL_Dict::TXT_ZAHLUNG) << ": ";
     getZahlungsart()->TeX_out(os,getWaehrung(),
 	skontobetrag,einzugbetrag,u.r->getZahlziel(),getDatum(),kunde_an,*mld);
-    zeilen_passen_noch-=passende_zeilen;
-
-//    os << "\\\\Erf�llungsort und Gerichtsstand ist Wuppertal";
+    zeilen_passen_noch-=passende_zeilen; // CP: korrekt?
 
     if(kunde_an->land()->Auslaender())
          {if(zeilen_passen_noch<(passende_zeilen)) {  os << "\\newpage\n";++page_counter; page_header(os);}
@@ -244,10 +249,7 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 	    os << "~\\\\~\\\\\n";
 
 	  os << mld->MLT(MultiL_Dict::TXT_BTN)<<": 58063210\n";
-	 }
-
-  if(kunde_an->land()->Auslaender())
-    { os << "~\\\\\\footnotesize - "<<mld->MLT(MultiL_Dict::TXT_WARE_ZOLL)<<"\\\\\\\\\n";
+      os << "~\\\\\\footnotesize - "<<mld->MLT(MultiL_Dict::TXT_WARE_ZOLL)<<"\\\\\\\\\n";
       os << "\\bigskip "<< mld->MLT(MultiL_Dict::TXT_MADEINGER) <<"\n";
 
    try{u.r->setGewicht();}
@@ -261,7 +263,9 @@ catch(SQLerror &e) { std::cout << e; return; }
      os << mld->MLT(MultiL_Dict::TXT_GEWBRUTTO)<<": " <<FormatiereTeX(u.r->BruttoGew()) << " kg\\hfill\n";
    if(u.r->NettoGew().as_float())
      os << mld->MLT(MultiL_Dict::TXT_GEWNETTO)<<": " <<FormatiereTeX(u.r->NettoGew()) << " kg\\\\\n";
-   }
+   os << (mld->getSprId()!=DEFAULT_SPRACHE ? mld->MLT(MultiL_Dict::TXT_BTN) 
+       : "Zoll-Tarif-Nr.") << ": 58063210\\\\\n";
+   } // Ausland
 
 
 
