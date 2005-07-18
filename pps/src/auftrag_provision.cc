@@ -58,6 +58,7 @@ void auftrag_provision::init_prov_dialog()
 auftrag_provision::auftrag_provision(RechnungVoll *rechnung) :
 aufp(NULL),rngp(rechnung)
 {
+ entry_frame->set_label("Rechnungspositionen");
  main_frame->set_label("Rechnung");
  run_mode=RECHNUNG;
  init_prov_dialog();
@@ -72,6 +73,7 @@ aufp(NULL),rngp(rechnung)
 auftrag_provision::auftrag_provision(AuftragFull *auftrag) :
 aufp(auftrag),rngp(NULL)
 {
+ entry_frame->set_label("Aftragspositionen");
  main_frame->set_label("Auftrag");
  run_mode=AUFTRAG;
  init_prov_dialog();

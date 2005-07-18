@@ -263,8 +263,9 @@ catch(SQLerror &e) { std::cout << e; return; }
      os << mld->MLT(MultiL_Dict::TXT_GEWBRUTTO)<<": " <<FormatiereTeX(u.r->BruttoGew()) << " kg\\hfill\n";
    if(u.r->NettoGew().as_float())
      os << mld->MLT(MultiL_Dict::TXT_GEWNETTO)<<": " <<FormatiereTeX(u.r->NettoGew()) << " kg\\\\\n";
-   os << (mld->getSprId()!=DEFAULT_SPRACHE ? mld->MLT(MultiL_Dict::TXT_BTN) 
-       : "Zoll-Tarif-Nr.") << ": 58063210\\\\\n";
+   if (mld->getSprId()!=DEFAULT_SPRACHE) os << mld->MLT(MultiL_Dict::TXT_BTN);
+   else os << "Zoll-Tarif-Nr.";
+   os << ": 58063210\\\\\n";
    } // Ausland
 
 
@@ -1622,7 +1623,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
 
 //   if(!Rueckstand())
    if(Typ()==Auftrag) 
-		{auftrag_von(os,::Auftrag(AuftragBase(
+		{auftrag_von(os,GCC295(class )NOTGCC295(::)Auftrag(AuftragBase(
    				instanz->Id(),u.a->Id())),true);
    		}
 
