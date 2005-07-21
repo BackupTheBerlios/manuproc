@@ -16,9 +16,10 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: TeX.cc,v 1.9 2005/07/21 08:57:16 christof Exp $
+// $Id: TeX.cc,v 1.10 2005/07/21 09:04:44 christof Exp $
 
 #include <TeX.h>
+#include <cassert>
 
 std::ostream &TeX::Header(std::ostream &os, HeaderFlags fl)
 {  // adjust default values
@@ -34,7 +35,7 @@ std::ostream &TeX::Header(std::ostream &os, HeaderFlags fl)
    }
 
    // now output it
-   os << "% created using $Id: TeX.cc,v 1.9 2005/07/21 08:57:16 christof Exp $\n";
+   os << "% created using $Id: TeX.cc,v 1.10 2005/07/21 09:04:44 christof Exp $\n";
    os << "\\documentclass["<< fl.ptsize << "pt";
    if (fl.a4) os << ",a4paper";
    if (fl.twocolumn) os << ",twocolumn";
