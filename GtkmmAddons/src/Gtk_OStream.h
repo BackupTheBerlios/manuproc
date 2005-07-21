@@ -1,4 +1,4 @@
-// $Id: Gtk_OStream.h,v 1.5 2004/04/29 14:24:40 christof Exp $
+// $Id: Gtk_OStream.h,v 1.6 2005/07/21 09:06:26 christof Exp $
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 1998-2002  Adolf Petig GmbH. & Co. KG
     Developed by Christof Petig <christof.petig@wtal.de>
@@ -23,6 +23,7 @@
 #include <callbackbuf.h> 
 #include <gtk/gtktypeutils.h> // for gpointer, GtkDestroyNotify
 #include <sigc++/signal.h>
+#include <string.h>
 
 namespace Gtk {
 class OptionMenu;
