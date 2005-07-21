@@ -21,5 +21,6 @@ clean:
 	rm -f *~ *.o $(ALL)
 
 install:
+	mkdir -p /usr/lib/postgresql/lib
 	cp $(ALL) /usr/lib/postgresql/lib
 

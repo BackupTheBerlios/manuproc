@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.cc,v 1.20 2005/05/18 12:48:52 christof Exp $ */
+/* $Id: Ausgabe_neu.cc,v 1.21 2005/07/21 08:48:28 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -147,7 +147,7 @@ std::ostream &Formatiere(std::ostream &os,unsigned long long Zahl,
    return os;
 }
 
-
+bool Ausgabe_neu::TeX_uses_UTF8=true;
 
 std::string string2TeX(const std::string s, int flags) throw()
 {  unsigned int i;
@@ -157,7 +157,12 @@ std::string string2TeX(const std::string s, int flags) throw()
    for (i = 0; i<s.size() ; i++)
    {  int value=(unsigned char)(s[i]);
       // UTF-8 umwandeln
-      if ((value&0xe0)==0xc0 && i+1<s.size() && (s[i+1]&0xc0)==0x80)
+      if (Ausgabe_neu::TeX_uses_UTF8 && (value&0xf0)==0xe0 && i+2<s.size() && (s[i+1]&0xc0)==0x80 && (s[i+2]&0xc0)==0x80)
+      {  ++i; 
+         value=((value&0xf)<<12)|((s[i]&0x3f)<<6)|(s[i+1]&0x3f);
+         ++i;
+      }
+      else if (Ausgabe_neu::TeX_uses_UTF8 && (value&0xe0)==0xc0 && i+1<s.size() && (s[i+1]&0xc0)==0x80)
       {  ++i; value=((value&0x1f)<<6)|(s[i]&0x3f);
       }
       switch (value)
@@ -203,10 +208,19 @@ std::string string2TeX(const std::string s, int flags) throw()
 	 default:
 	    if (value<0x80 || value==(unsigned char)(s[i]))
                ret+= s[i];
-            else // UTF-8 2 byte
-            {  ret+=char(0xc0|((value>>6)&0x1f));
-               ret+=char(0x80|(value&0x3f));
+            else if (Ausgabe_neu::TeX_uses_UTF8) // UTF-8 2 byte
+            {  if (value<0x800)
+               { ret+=char(0xc0|((value>>6)&0x1f));
+                 ret+=char(0x80|(value&0x3f));
+               }
+               else
+               { assert(value<0x10000); // BMP ;-)
+                 ret+=char(0xe0|((value>>12)&0xf));
+                 ret+=char(0x80|((value>>6)&0x3f));
+                 ret+=char(0x80|(value&0x3f));
+               }
             }
+            else ret+=char(value);
 	    in_line=true;
 	    break;
       }

@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.h,v 1.18 2003/11/07 11:12:50 jacek Exp $ */
+/* $Id: Ausgabe_neu.h,v 1.19 2005/07/21 08:48:28 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -51,6 +51,10 @@ extern inline const std::string FormatiereTeX(unsigned long long Zahl,
 
 static const int NEEDCHAR=1;
 static const int BARISNEWLINE=2;
+// set this flag to false  if you have not yet changed TeX output to utf-8 
+namespace Ausgabe_neu {
+extern bool TeX_uses_UTF8;
+}
 std::string string2TeX(const std::string s, int flags=0) throw();
 
 template <int decimals,class Ftype,class Itype>
