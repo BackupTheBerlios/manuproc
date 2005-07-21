@@ -16,11 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Aux/dbconnect.h>
+#include <Misc/dbconnect.h>
 #include "drucken.hh"
 #include "getopt.h"
-#include <Aux/itos.h>
+#include <Misc/itos.h>
 #include "Configuration.h"
+#include <Misc/Ausgabe_neu.h>
 
 struct Configuration Configuration;
 
@@ -48,7 +49,7 @@ const static struct option options[]=
 
 void usage(std::string n,ppsInstanz::ID instanz,std::string database,std::string dbhost)
 {
-   std::cout << "$Id: auftrag_drucken.cc,v 1.24 2005/02/03 12:49:30 jacek Exp $\n\n"
+   std::cout << "$Id: auftrag_drucken.cc,v 1.25 2005/07/21 08:47:47 christof Exp $\n\n"
               "USAGE:" << n << " -n <Nr> [-a <Typ>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
 		"\n\t-t<file>\t nur TeX file erzeugen und uneter <file> speichern("<< (Configuration.toTeX?"an":"aus")<< ")\n"
 		"\n\t-B<printer>\t batch mode on <printer>; kein GUI ("<< (Configuration.batch?"an":"aus")<< ")\n"
@@ -124,6 +125,7 @@ int main (int argc, char *argv[])
       conn.setDbase(database);
       conn.setHost(dbhost);
       ManuProC::dbconnect(conn);  
+      Ausgabe_neu::TeX_uses_UTF8=false;
 
       // Lieferschein ist bei Einkauf eigentlich ein Wareneingang 
       if(was==LR_Base::Lieferschein)
