@@ -1,8 +1,13 @@
-// $Id: artikelkomponente.c,v 1.1 2005/07/01 08:57:16 christof Exp $
+// $Id: artikelkomponente.c,v 1.2 2005/07/21 08:48:25 christof Exp $
 
 #include "postgres.h"
 #include "executor/spi.h"	/* this is what you need to work with SPI */
 #include "fmgr.h"
+#if defined(__GNUC__) && __GNUC__>3
+#define __FUNC_OLD__
+#else
+#define __FUNC_OLD__ __FUNCTION__
+#endif
 
 #define MAXSPALTEN 20
 
@@ -25,7 +30,7 @@ static Datum artikelkomponente5_int(int4 artikelid,int4 artikeltyp,int4 schema,i
    char spaltennamen[40];
 
    if ((qresult = SPI_connect()) < 0)
-   {  elog(ERROR, __FUNCTION__": SPI_connect returned %d", qresult);
+   {  elog(ERROR, __FUNC_OLD__": SPI_connect returned %d", qresult);
       return (Datum) 0;
    }
       snprintf(query, sizeof query, 
@@ -60,7 +65,7 @@ static Datum artikelkomponente5_int(int4 artikelid,int4 artikeltyp,int4 schema,i
    len = VARHDRSZ + strlen(result) + 1;
    ret = (text*)palloc(len);
    if (ret == NULL)
-      elog(ERROR, "unable to allocate memory in "__FUNCTION__);
+      elog(ERROR, "unable to allocate memory in "__FUNC_OLD__);
    VARATT_SIZEP(ret) = len-1;
    strncpy(VARDATA(ret), result, len-VARHDRSZ);
    PG_RETURN_TEXT_P(ret);
@@ -72,7 +77,7 @@ static int warengruppe(int artikelid, int *schema)
    int qresult;
 
       if ((qresult = SPI_connect()) < 0)
-      {  elog(ERROR, __FUNCTION__": SPI_connect returned %d", qresult);
+      {  elog(ERROR, __FUNC_OLD__": SPI_connect returned %d", qresult);
          return -1;
       }
       snprintf(query, sizeof query, "select %s,defaultschema from artikelstamm where id=%d",
@@ -80,7 +85,7 @@ static int warengruppe(int artikelid, int *schema)
       			:"warengruppe",artikelid);
       qresult = SPI_exec(query, 1);
       if (qresult != SPI_OK_SELECT)
-         elog(ERROR, __FUNCTION__": SPI_exec returned %d", qresult);
+         elog(ERROR, __FUNC_OLD__": SPI_exec returned %d", qresult);
       if (SPI_processed<1) 
       {  elog(NOTICE, "Artikel %d nicht in artikelstamm",artikelid);
       }

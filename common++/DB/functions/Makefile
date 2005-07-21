@@ -1,7 +1,8 @@
 CFLAGS=-Wall -fPIC  \
 	-I/usr/include/postgresql/server \
+	-I/usr/include/postgresql/8.0/server \
 	-I/usr/include/postgresql \
-	-I/usr/lib/postgresql/include 
+	-I/usr/lib/postgresql/include
 
 ALL=auftrag_status.so artikelbezeichnung.so kw2date.so \
 	atoi.so artikelid.so artikelkomponente.so ean_check.so

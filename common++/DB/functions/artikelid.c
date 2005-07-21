@@ -1,9 +1,9 @@
-// $Id: artikelid.c,v 1.2 2004/10/13 10:43:52 jacek Exp $
+// $Id: artikelid.c,v 1.3 2005/07/21 08:48:25 christof Exp $
 
 #include "postgres.h"
 #include "executor/spi.h"	/* this is what you need to work with SPI */
 #include "fmgr.h"
-#include <server/catalog/pg_type.h> /* for various oids */
+#include <catalog/pg_type.h> /* for various oids */
 
 #define MAXSPALTEN 40
 
