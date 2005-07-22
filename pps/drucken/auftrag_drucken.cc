@@ -22,6 +22,7 @@
 #include <Misc/itos.h>
 #include "Configuration.h"
 #include <Misc/Ausgabe_neu.h>
+#include <TeX.h>
 
 struct Configuration Configuration;
 
@@ -49,7 +50,7 @@ const static struct option options[]=
 
 void usage(std::string n,ppsInstanz::ID instanz,std::string database,std::string dbhost)
 {
-   std::cout << "$Id: auftrag_drucken.cc,v 1.25 2005/07/21 08:47:47 christof Exp $\n\n"
+   std::cout << "$Id: auftrag_drucken.cc,v 1.26 2005/07/22 08:02:49 christof Exp $\n\n"
               "USAGE:" << n << " -n <Nr> [-a <Typ>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
 		"\n\t-t<file>\t nur TeX file erzeugen und uneter <file> speichern("<< (Configuration.toTeX?"an":"aus")<< ")\n"
 		"\n\t-B<printer>\t batch mode on <printer>; kein GUI ("<< (Configuration.batch?"an":"aus")<< ")\n"
@@ -126,6 +127,7 @@ int main (int argc, char *argv[])
       conn.setHost(dbhost);
       ManuProC::dbconnect(conn);  
       Ausgabe_neu::TeX_uses_UTF8=false;
+      TeX::TeX_uses_UTF8=false;
 
       // Lieferschein ist bei Einkauf eigentlich ein Wareneingang 
       if(was==LR_Base::Lieferschein)
