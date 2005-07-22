@@ -664,12 +664,13 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
         // collect the orders fulfilled by this delivery
         if (Typ()==Rechnung && order_on_bill)
         { LieferscheinEntry lse((*k).Lfrs());
-          for (LieferscheinEntry::zusaetze_t::const_iterator l=lse.getZusatzInfos().begin();
-                l!=lse.getZusatzInfos().end();++l)
+          std::vector<LieferscheinEntry::st_AuftragMenge> orderlist=lse.getAuftragsMenge();
+          for (std::vector<LieferscheinEntry::st_AuftragMenge>::const_iterator l=orderlist.begin();
+                l!=orderlist.end();++l)
           { if (!orders.empty()) orders+=",";
-            if (!l->aeb) orders+="*";
+            if (!l->ab) orders+="*";
             else
-            { class Auftrag auftr(l->aeb);
+            { class Auftrag auftr(l->ab);
               if (!auftr.getYourAufNr().empty()) 
                 orders+=auftr.getYourAufNr();
               else orders+=auftr.getAuftragidToStr();
