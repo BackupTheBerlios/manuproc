@@ -18,6 +18,8 @@ ManuProc_Starter::ManuProc_Starter(void) throw(SQLerror)
  DBCapability::WhiteColumn wc("fibu","");
  fibu_start->set_sensitive(
      dbcapability->isWhite(DBCapability::ColAct(wc,DBCapability::EXECUTE)));
+ fibu_alt_start->set_sensitive(
+     dbcapability->isWhite(DBCapability::ColAct(wc,DBCapability::EXECUTE)));     
      
  DBCapability::WhiteColumn wc1("vertrieb","");
  vertrieb_start->set_sensitive(
@@ -74,6 +76,13 @@ void ManuProc_Starter::on_fibu_start_clicked()
  std::string cmd("/bin/sh -c fibu &");
  system(cmd.c_str());
 
+}
+
+void ManuProc_Starter::on_fibu_alt_start_clicked()
+{
+ std::string cmd("/bin/sh -c 'fibu -d old_fibu' &");
+ system(cmd.c_str());
+  
 }
 
 void ManuProc_Starter::on_vertrieb_start_clicked()

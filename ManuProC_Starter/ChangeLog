@@ -25,6 +25,11 @@
 
 2005/5/16 15:09:49 CEST
 	update files from .glade file
+<<<<<<< ChangeLog
+
+2005/7/25 15:35:16 CEST
+	update files from .glade file
+=======
 
 2005/5/25 12:39:19 CEST
 	update files from .glade file
@@ -36,4 +41,8 @@
 	update files from .glade file
 
 2005/5/25 13:50:06 CEST
+	update files from .glade file
+>>>>>>> 1.8
+
+2005/7/25 15:39:58 CEST
 	update files from .glade file

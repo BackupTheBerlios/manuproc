@@ -26,6 +26,7 @@ class ManuProc_Starter : public ManuProc_Starter_glade
         void on_preise_start_clicked();
         void on_quit_clicked();
         void on_fibu_start_clicked();
+        void on_fibu_alt_start_clicked();        
         void on_vertrieb_start_clicked();        
         void on_ooo_clicked();
         void on_preview_clicked();

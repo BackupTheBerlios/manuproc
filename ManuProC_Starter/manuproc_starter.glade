@@ -142,6 +142,25 @@
 	  </child>
 
 	  <child>
+	    <widget class="GtkToolButton" id="fibu_alt_start">
+	      <property agent="glademm" name="cxx_visibility">protected</property>
+	      <property name="visible">True</property>
+	      <property name="sensitive">False</property>
+	      <property name="label" translatable="yes">FiBu (ALT)</property>
+	      <property name="use_underline">True</property>
+	      <property name="stock_id">gtk-sort-ascending</property>
+	      <property name="visible_horizontal">True</property>
+	      <property name="visible_vertical">True</property>
+	      <property name="is_important">False</property>
+	      <signal name="clicked" handler="on_fibu_alt_start_clicked" last_modification_time="Mon, 25 Jul 2005 13:34:44 GMT"/>
+	    </widget>
+	    <packing>
+	      <property name="expand">False</property>
+	      <property name="homogeneous">True</property>
+	    </packing>
+	  </child>
+
+	  <child>
 	    <widget class="GtkToolButton" id="vertrieb_start">
 	      <property agent="glademm" name="cxx_visibility">protected</property>
 	      <property name="visible">True</property>
