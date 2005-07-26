@@ -695,6 +695,7 @@ void auftrag_lieferschein::liefzeile_delete()
  try {
  if(rngnr->get_text().empty())
    if(lieferschein->Id()!=LieferscheinBase::none_id)
+      if(tree_daten->selection().size()) 
 	if(deleteLiefEntry())
 	  {set_tree_daten_content(lieferschein->Id());
            set_tree_offen_content();

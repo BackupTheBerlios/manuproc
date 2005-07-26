@@ -41,6 +41,7 @@ class auftrag_rechnung : public auftrag_rechnung_glade
         void newRechnung(const Kunde::ID kid);
         void on_rng_close();
         void on_rng_neu();
+        void on_clear_all();        
         void on_rng_save();
         void on_rng_preview();
         gint on_rng_print(GdkEventButton *ev);
@@ -61,6 +62,7 @@ class auftrag_rechnung : public auftrag_rechnung_glade
         void on_checkbutton_ean_drucken_clicked();
 
         void waehrung_geaendert();
+        void on_lieferkunde_reset();        
 	void rabatt_geaendert();
         gint on_bezahlt_toggled(GdkEventButton *ev);
 	void on_radiobutton_preiseingabe_toggled();

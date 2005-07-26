@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.33 2004/10/28 17:02:00 christof Exp $ */
+/* $Id: Rechnung.h,v 1.34 2005/07/26 11:07:29 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2000-2004 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski
@@ -53,6 +53,7 @@ private:
  mutable bool notiz_valid;
  fixedpoint<5> kurs;  
  int einzug_refnr;
+ int fibu_buchid;
   
  void push_back(unsigned &lineno,ArtikelBase art,
 		unsigned lfrsid,unsigned lfrsznr, unsigned stk,
@@ -69,6 +70,7 @@ public:
               entsorgung(false),notiz_valid(false),kurs(1)
 #ifdef MABELLA_EXTENSIONS
 		,einzug_refnr(0)
+		,fibu_buchid(0)
 #endif
                {} 
 
@@ -104,6 +106,8 @@ public:
  const std::string Notiz() const throw(SQLerror);
  void Notiz(const std::string _notiz) throw(SQLerror);
  int getEinzugRefnr() const { return einzug_refnr; }
+ int getFiBuBuchid() const { return fibu_buchid; } 
+ void setFiBuBuchid(int fid) throw(SQLerror);
  int size() const throw(SQLerror);
  
  static geldbetrag_t MwStProz;

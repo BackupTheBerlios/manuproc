@@ -146,7 +146,7 @@ gint auftrag_rechnung::on_rng_print(GdkEventButton *ev)
 void auftrag_rechnung::rngzeile_delete()
 {
  try{   
-   if(!(rechnung.Bezahlt()))
+   if(!(rechnung.Bezahlt()) && rechnung.getFiBuBuchid()==0)
 	{
     try{
      cH_Data_Rechnung dt(rtree_daten->getSelectedRowDataBase_as<cH_Data_Rechnung>());
@@ -183,23 +183,26 @@ void auftrag_rechnung::redisplay()
   set_rtree_daten_content(rngnr->Content());
  }
  catch(SQLerror &e) {meldung->Show(e); return; }
+ 
+ std::string gebucht;
+ if(rechnung.getFiBuBuchid()>0) gebucht="gebucht in FiBu - ";
  if(rechnung.rngArt()==Rechnung::RART_GUT)
    {
-     frame_rechnung->set_label("Gutschrift");
+     frame_rechnung->set_label(gebucht+"Gutschrift");
      frame_rechnungsdaten->set_label("Gutschriftsdaten");
      set_title("Gutschrift");
      gutschrift->set_sensitive(false);
    }
  else if(rechnung.rngArt()==Rechnung::RART_RNG)
    {
-     frame_rechnung->set_label("Rechnung");
+     frame_rechnung->set_label(gebucht+"Rechnung");
      frame_rechnungsdaten->set_label("Rechnungsdaten");
      set_title("Rechnung");
      gutschrift->set_sensitive(true);     
    }
  else if(rechnung.rngArt()==Rechnung::RART_STORNO)
    {
-     frame_rechnung->set_label("Rechnung (Storniert)");
+     frame_rechnung->set_label(gebucht+"Rechnung (Storniert)");
      frame_rechnungsdaten->set_label("Rechnungsdaten");
      set_title("Rechnung");
      gutschrift->set_sensitive(true);     
@@ -246,8 +249,17 @@ void auftrag_rechnung::on_rngnr_activate()
 
  bezahlt->set_active(rechnung.Bezahlt());
  storno->set_sensitive(!bezahlt->get_active() &&
-			rechnung.rngArt()==RechnungBase::RART_RNG);
+			rechnung.rngArt()==RechnungBase::RART_RNG &&
+			rechnung.getFiBuBuchid()==0);
+ gutschrift->set_sensitive(!bezahlt->get_active() &&
+                           rechnung.getFiBuBuchid()==0);
+ rngdatum->set_sensitive(rechnung.getFiBuBuchid()==0);
+ optionmenu_zahlart->set_sensitive(rechnung.getFiBuBuchid()==0);
+ rabatt_wert->set_sensitive(rechnung.getFiBuBuchid()==0);
+ rabatt_typ->set_sensitive(rechnung.getFiBuBuchid()==0);
+ rng_WWaehrung->set_sensitive(rechnung.getFiBuBuchid()==0);
 
+ 
  rtree_daten->show();
 // vbox_n_b_lieferscheine->show();
  frame_rechnungsdaten->show(); 
@@ -261,36 +273,56 @@ void auftrag_rechnung::on_rngnr_activate()
 void auftrag_rechnung::showBetraege()
 {
  bool as_brutto(true);
- Preis::geldbetrag_out brutto(rechnung.Betrag(as_brutto));
- rgbetrag_warenwert->set_value(brutto.as_float());
- as_brutto=false;
- Preis::geldbetrag_out netto(rechnung.Betrag(as_brutto));
- rgbetrag_netto->set_value(netto.as_float());
+ if(rechnung.Valid())
+   {
+    Preis::geldbetrag_out brutto(rechnung.Betrag(as_brutto));
+    rgbetrag_warenwert->set_value(brutto.as_float());
+    as_brutto=false;
+    Preis::geldbetrag_out netto(rechnung.Betrag(as_brutto));
+     rgbetrag_netto->set_value(netto.as_float());
 
- Preis::geldbetrag_out rabatt(brutto-netto);
- rgbetrag_rabatt->set_value(rabatt.as_float());
- 
- bool with_update_on_db=false;
- Preis::geldbetrag_out endnetto(rechnung.Endbetrag(with_update_on_db));
- Preis::geldbetrag_out zuschl(endnetto-netto);
- rgbetrag_zusabs->set_value(zuschl.as_float());
- rgbetrag_zwsumme->set_value(endnetto.as_float());
+     Preis::geldbetrag_out rabatt(brutto-netto);
+     rgbetrag_rabatt->set_value(rabatt.as_float());
+     
+     bool with_update_on_db=false;
+     Preis::geldbetrag_out endnetto(rechnung.Endbetrag(with_update_on_db));
+     Preis::geldbetrag_out zuschl(endnetto-netto);
+     rgbetrag_zusabs->set_value(zuschl.as_float());
+     rgbetrag_zwsumme->set_value(endnetto.as_float());
 
- Preis::geldbetrag_out mwst(0);
- if(rechnung.getKunde()->MwSt())
-   mwst=(rechnung.MwStProz.as_float()/100.0)*endnetto.as_float();
- rgbetrag_mwst->set_value(mwst.as_float());
+     Preis::geldbetrag_out mwst(0);
+     if(rechnung.getKunde()->MwSt())
+       mwst=(rechnung.MwStProz.as_float()/100.0)*endnetto.as_float();
+     rgbetrag_mwst->set_value(mwst.as_float());
 
- rgbetrag_endsumme->set_value((mwst+endnetto).as_float());
+     rgbetrag_endsumme->set_value((mwst+endnetto).as_float());
 
- cP_Waehrung w(rechnung.getWaehrung());
- label_waehrung1->set_text(w->Kurzbezeichnung());
- label_waehrung2->set_text(w->Kurzbezeichnung());
- label_waehrung3->set_text(w->Kurzbezeichnung());
- label_waehrung4->set_text(w->Kurzbezeichnung());
- label_waehrung5->set_text(w->Kurzbezeichnung());
- label_waehrung6->set_text(w->Kurzbezeichnung());
- label_waehrung7->set_text(w->Kurzbezeichnung());
+     cP_Waehrung w(rechnung.getWaehrung());
+     label_waehrung1->set_text(w->Kurzbezeichnung());
+     label_waehrung2->set_text(w->Kurzbezeichnung());
+     label_waehrung3->set_text(w->Kurzbezeichnung());
+     label_waehrung4->set_text(w->Kurzbezeichnung());
+     label_waehrung5->set_text(w->Kurzbezeichnung());
+     label_waehrung6->set_text(w->Kurzbezeichnung());
+     label_waehrung7->set_text(w->Kurzbezeichnung());
+  }else
+  {
+    rgbetrag_warenwert->set_value(0);
+     rgbetrag_netto->set_value(0);
+     rgbetrag_rabatt->set_value(0);
+     rgbetrag_zusabs->set_value(0);
+     rgbetrag_zwsumme->set_value(0);
+     rgbetrag_mwst->set_value(0);
+     rgbetrag_endsumme->set_value(0);
+     cP_Waehrung w(Waehrung::default_id);
+     label_waehrung1->set_text(w->Kurzbezeichnung());
+     label_waehrung2->set_text(w->Kurzbezeichnung());
+     label_waehrung3->set_text(w->Kurzbezeichnung());
+     label_waehrung4->set_text(w->Kurzbezeichnung());
+     label_waehrung5->set_text(w->Kurzbezeichnung());
+     label_waehrung6->set_text(w->Kurzbezeichnung());
+     label_waehrung7->set_text(w->Kurzbezeichnung());  
+  }
 }
 
 void auftrag_rechnung::on_lieferkunde_activate()
@@ -343,7 +375,7 @@ void auftrag_rechnung::lieferschein_uebernehmen()
       if(rechnung.Id()<1)
         return;
      }
-   if(!(rechnung.Bezahlt()))
+   if(!(rechnung.Bezahlt()) && rechnung.getFiBuBuchid()==0)
 	{
     try {
       cH_Data_RLieferoffen dt(rtree_offen->getSelectedRowDataBase_as<cH_Data_RLieferoffen>());
@@ -418,8 +450,14 @@ void auftrag_rechnung::lieferschein_uebernehmen()
 
 }
 
+
+
 void auftrag_rechnung::on_rdaten_leaf_selected(cH_RowDataBase d)
 {
+ if(rechnung.Valid())
+   if(rechnung.getFiBuBuchid() > 0)
+     return;
+
 try{
   const Data_Rechnung *dt=dynamic_cast<const Data_Rechnung*>(&*d);
   rngentry_del->set_sensitive(true);
@@ -490,11 +528,15 @@ void auftrag_rechnung::on_roffen_leaf_selected(cH_RowDataBase d)
  const Data_RLieferoffen *dt=dynamic_cast<const Data_RLieferoffen*>(&*d);
 
  if(!rechnung.Valid())
-    lieferkunde->set_value(dt->get_Lieferschein()->getKunde()->Id());
-
+    {lieferkunde->set_value(dt->get_Lieferschein()->getKunde()->Id());
+     lief_uebernehmen->set_sensitive(true);
+    }
+ else   
+    lief_uebernehmen->set_sensitive(rechnung.getFiBuBuchid()==0);
+    
  lieferscheinnr->set_text(itos(dt->get_Lieferschein()->Id()));   
  lieferscheindatum->set_value(dt->get_Lieferschein()->LsDatum());
- lief_uebernehmen->set_sensitive(true);
+
 }
 
 /*
@@ -855,4 +897,17 @@ void auftrag_rechnung::on_provisionierung_activate()
  ret=ap.run();
 }
 
+
+void auftrag_rechnung::on_lieferkunde_reset()
+{  
+ clear_rng();
+ lieferkunde->grab_focus();
+ showBetraege();
+}
+
+
+void auftrag_rechnung::on_clear_all()
+{  
+ lieferkunde->reset();
+}
 

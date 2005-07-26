@@ -5543,6 +5543,19 @@ Fertig</label>
 	<widget>
 	  <class>GtkButton</class>
 	  <child_name>Toolbar:button</child_name>
+	  <name>button42</name>
+	  <signal>
+	    <name>clicked</name>
+	    <handler>on_clear_all</handler>
+	    <last_modification_time>Tue, 05 Dec 2000 21:01:50 GMT</last_modification_time>
+	  </signal>
+	  <label>alles leeren</label>
+	  <stock_pixmap>GNOME_STOCK_PIXMAP_CLEAR</stock_pixmap>
+	</widget>
+
+	<widget>
+	  <class>GtkButton</class>
+	  <child_name>Toolbar:button</child_name>
 	  <name>button25</name>
 	  <sensitive>False</sensitive>
 	  <signal>
@@ -6168,6 +6181,11 @@ Zuschlag
 	      <name>activate</name>
 	      <handler>on_lieferkunde_activate</handler>
 	      <last_modification_time>Fri, 26 Jan 2001 09:17:25 GMT</last_modification_time>
+	    </signal>
+	    <signal>
+	      <name>reset_signal</name>
+	      <handler>on_lieferkunde_reset</handler>
+	      <last_modification_time>Tue, 26 Jul 2005 10:51:35 GMT</last_modification_time>
 	    </signal>
 	    <creation_function>KundenBox2</creation_function>
 	    <int1>0</int1>

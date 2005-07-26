@@ -48,6 +48,7 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
    bool BEZAHLT;
    bool ENTSORGUNG=false;
    int EINZUG_REFNR=0;
+   int FIBUBUCHID=0;
  exec sql end declare section;
 
  Transaction tr;
@@ -58,10 +59,11 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
  			coalesce(waehrung,1), coalesce(rabatt,0), bezahlt,
 			coalesce(entsorgung,false),
 			coalesce(kurs,1),
-			coalesce(einzug_refnr,0)::int
+			coalesce(einzug_refnr,0)::int,
+			coalesce(fibu_buchid,0)::int			
 		into :KDNR, :DATUM, :RNGART, :ZAHLART, :ZAHLZIEL:IZAHLZIEL,
 		   :WAEHRUNG, :RABATT, :BEZAHLT, :ENTSORGUNG,
-		   :KURS, :EINZUG_REFNR
+		   :KURS, :EINZUG_REFNR, :FIBUBUCHID
  	from rechnung r where r.rngid = :RNGID ;
  #else
  exec sql select r.kundennr, date(r.datum), r.rngart, 
@@ -84,6 +86,7 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
  zahlziel= IZAHLZIEL ? ManuProC::Datum() : ManuProC::Datum(ZAHLZIEL);
  entsorgung=ENTSORGUNG;
  einzug_refnr=EINZUG_REFNR;
+ fibu_buchid=FIBUBUCHID;
 }
 
 Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
@@ -429,5 +432,14 @@ int Rechnung::size() const throw(SQLerror)
  Query("select count(*) from rechnungentry where rngid=?")
 	<< Id() >> ret;
  return ret;
+}
+
+void Rechnung::setFiBuBuchid(int fid) throw(SQLerror)
+{
+ #ifdef MABELLA_EXTENSIONS
+ Query("update rechnung set fibu_buchid=? where rngid=?")
+   << Query::NullIf(fid,0) << Id();
+ #endif
+ fibu_buchid=fid;  
 }
 
