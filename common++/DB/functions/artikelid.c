@@ -1,4 +1,4 @@
-// $Id: artikelid.c,v 1.4 2005/07/27 08:57:49 christof Exp $
+// $Id: artikelid.c,v 1.5 2005/07/27 09:07:28 christof Exp $
 
 #include "postgres.h"
 #include "executor/spi.h"	/* this is what you need to work with SPI */
@@ -8,16 +8,18 @@
 #define MAXSPALTEN 40
 
 #define DEBUG_IT(x...) 
-// elog(NOTICE,x)
+//elog(NOTICE,x)
 
 #ifdef DEBUG
 #define DEBUG1 DEBUG
 #endif
 
 // sep (if set) overrides the separator if space
-static long try_to_find(char *buf,int artikeltyp,int kunde,int signifikanz,char sep)
+static long try_to_find(const char *_buf,int artikeltyp,int kunde,int signifikanz,char sep)
 {  const char *komponenten[MAXSPALTEN];
    int qresult;
+   char buffer[1024];
+   char *buf;
    char query[1024];
    char query2[1024];
    static char spaltennamen[MAXSPALTEN][40];
@@ -27,6 +29,8 @@ static long try_to_find(char *buf,int artikeltyp,int kunde,int signifikanz,char 
    int len,len2,i;
    char tableoid[256];
 
+   strncpy(buffer,_buf,sizeof buffer);
+   buf=buffer;
    snprintf(query, sizeof query, "select oid from pg_class where relname='artbez_%d_%d'",
    		artikeltyp,kunde);
    qresult = SPI_exec(query, 1);
