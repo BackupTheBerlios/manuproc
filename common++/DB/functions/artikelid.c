@@ -1,4 +1,4 @@
-// $Id: artikelid.c,v 1.3 2005/07/21 08:48:25 christof Exp $
+// $Id: artikelid.c,v 1.4 2005/07/27 08:57:49 christof Exp $
 
 #include "postgres.h"
 #include "executor/spi.h"	/* this is what you need to work with SPI */
@@ -14,8 +14,8 @@
 #define DEBUG1 DEBUG
 #endif
 
-
-static long try_to_find(char *buf,int artikeltyp,int kunde,int signifikanz)
+// sep (if set) overrides the separator if space
+static long try_to_find(char *buf,int artikeltyp,int kunde,int signifikanz,char sep)
 {  const char *komponenten[MAXSPALTEN];
    int qresult;
    char query[1024];
@@ -56,7 +56,8 @@ static long try_to_find(char *buf,int artikeltyp,int kunde,int signifikanz)
          res1=SPI_getvalue(SPI_tuptable->vals[i],SPI_tuptable->tupdesc,2);
          DEBUG_IT("%d: %s %s %s",i,res,res1,
          	SPI_getvalue(SPI_tuptable->vals[i],SPI_tuptable->tupdesc,3));
-         separatoren[i]=res?*res:0;
+         // try to replace space by different separator
+         separatoren[i]=res?((*res!=' ')?*res:(sep?sep:' ')):0;
          if (!res1) spaltennamen[i][0]=0;
          else strncpy(spaltennamen[i],res1,sizeof spaltennamen[0]);
       }
@@ -160,7 +161,11 @@ Datum artikelid(PG_FUNCTION_ARGS)
       int id;
       memcpy(buf,VARDATA(t),len);
       buf[len]=0;
-      id=try_to_find(buf,artikeltyp[i],kunde[i],signifikanz[i]);
+      id=try_to_find(buf,artikeltyp[i],kunde[i],signifikanz[i],0);
+      if (!id)
+        id=try_to_find(buf,artikeltyp[i],kunde[i],signifikanz[i],'_');
+      if (!id)
+        id=try_to_find(buf,artikeltyp[i],kunde[i],signifikanz[i],'|');
       if (id) 
       {  SPI_finish();
          PG_RETURN_INT32(id);
