@@ -29,6 +29,14 @@ ManuProc_Starter::ManuProc_Starter(void) throw(SQLerror)
  ooo->set_sensitive(
      dbcapability->isWhite(DBCapability::ColAct(wc2,DBCapability::EXECUTE)));
      
+ DBCapability::WhiteColumn wc2("lagerwert","");
+ lagerwert->set_sensitive(
+     dbcapability->isWhite(DBCapability::ColAct(wc2,DBCapability::EXECUTE)));     
+     
+ DBCapability::WhiteColumn wc2("offpos","");
+ offeneposten->set_sensitive(
+     dbcapability->isWhite(DBCapability::ColAct(wc2,DBCapability::EXECUTE)));          
+     
  if (access("/usr/local/bin/pps.preview",X_OK))
      preview->hide();
 }
@@ -105,5 +113,17 @@ void ManuProc_Starter::on_preview_clicked()
  std::string cmd("/bin/sh -l -c pps.preview &");
  system(cmd.c_str());
   
+}
+
+void ManuProc_Starter::on_lagerwert_clicked()
+{  
+ std::string cmd("/bin/sh -l -c lagerwert_bis &");
+ system(cmd.c_str());
+}
+
+void ManuProc_Starter::on_offeneposten_clicked()
+{  
+ std::string cmd("/bin/sh -l -c mk_offene_rngs &");
+ system(cmd.c_str());
 }
 
