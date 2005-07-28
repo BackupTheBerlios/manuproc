@@ -29,11 +29,11 @@ ManuProc_Starter::ManuProc_Starter(void) throw(SQLerror)
  ooo->set_sensitive(
      dbcapability->isWhite(DBCapability::ColAct(wc2,DBCapability::EXECUTE)));
      
- DBCapability::WhiteColumn wc2("lagerwert","");
+ DBCapability::WhiteColumn wc3("lagerwert","");
  lagerwert->set_sensitive(
      dbcapability->isWhite(DBCapability::ColAct(wc2,DBCapability::EXECUTE)));     
      
- DBCapability::WhiteColumn wc2("offpos","");
+ DBCapability::WhiteColumn wc4("offpos","");
  offeneposten->set_sensitive(
      dbcapability->isWhite(DBCapability::ColAct(wc2,DBCapability::EXECUTE)));          
      
