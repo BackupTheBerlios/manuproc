@@ -31,11 +31,11 @@ ManuProc_Starter::ManuProc_Starter(void) throw(SQLerror)
      
  DBCapability::WhiteColumn wc3("lagerwert","");
  lagerwert->set_sensitive(
-     dbcapability->isWhite(DBCapability::ColAct(wc2,DBCapability::EXECUTE)));     
+     dbcapability->isWhite(DBCapability::ColAct(wc3,DBCapability::EXECUTE)));     
      
  DBCapability::WhiteColumn wc4("offpos","");
  offeneposten->set_sensitive(
-     dbcapability->isWhite(DBCapability::ColAct(wc2,DBCapability::EXECUTE)));          
+     dbcapability->isWhite(DBCapability::ColAct(wc4,DBCapability::EXECUTE)));          
      
  if (access("/usr/local/bin/pps.preview",X_OK))
      preview->hide();
