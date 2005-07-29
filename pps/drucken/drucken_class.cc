@@ -220,6 +220,8 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 	++page_counter; 
 	page_header(os);
 	os << "\\bigskip\n";
+// ich dachte das sollte nur f�r Schweiz rein, warum steht das hier?
+if(0) {
 	os << "\\begin{flushright}\n" 
 	    // auf Wunsch von Frau Will für die Schweiz
 	    // Ok von Gudrun (auch wenn ich es für überflüssig halte ...)
@@ -227,6 +229,8 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
         os << mld->MLT(MultiL_Dict::TXT_SUMME) << " " <<  getWaehrung()->TeXsymbol() << " "
             << FormatiereTeX(betrag) << "\\\\\n";
         os << "\\end{flushright}\n";
+}
+
 	}
     os << mld->MLT(MultiL_Dict::TXT_ZAHLUNG) << ": ";
     getZahlungsart()->TeX_out(os,getWaehrung(),
@@ -236,6 +240,8 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
     if(kunde_an->land()->Auslaender())
          {if(zeilen_passen_noch<(passende_zeilen)) 
 	  {  os << "\\newpage\n";++page_counter; page_header(os);
+	// dann eben nur f�r die Schweiz
+	   if(kunde_an->land()->LKZ()=="CH") {
 	     os << "\\begin{flushright}\n" 
      	    // auf Wunsch von Frau Will für die Schweiz
      	    // Ok von Gudrun (auch wenn ich es für überflüssig halte ...)
@@ -243,6 +249,8 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
              os << mld->MLT(MultiL_Dict::TXT_SUMME) << " " <<  getWaehrung()->TeXsymbol() << " "
                  << FormatiereTeX(betrag) << "\\\\\n";
              os << "\\end{flushright}\n";
+	     }
+	    
           }
 
 	  if(!getZahlungsart()->getBankeinzug())
