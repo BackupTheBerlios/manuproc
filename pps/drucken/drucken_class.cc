@@ -241,7 +241,8 @@ if(0) {
          {if(zeilen_passen_noch<(passende_zeilen)) 
 	  {  os << "\\newpage\n";++page_counter; page_header(os);
 	// dann eben nur f�r die Schweiz
-	   if(kunde_an->land()->LKZ()=="CH") {
+	   if(kunde_an->land()->LKZ()=="CH" ||
+              kunde_an->land()->LKZ()=="N") {
 	     os << "\\begin{flushright}\n" 
      	    // auf Wunsch von Frau Will für die Schweiz
      	    // Ok von Gudrun (auch wenn ich es für überflüssig halte ...)
