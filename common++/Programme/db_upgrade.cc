@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.43 2005/05/02 15:12:56 jacek Exp $
+// $Id: db_upgrade.cc,v 1.44 2005/08/18 09:01:12 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -157,6 +157,10 @@ int main(int argc,char *argv[])
      Query_nt("alter table buchung alter buchungid set default nextval('buchung_id_seq')");
      Query_nt("create unique index buchung_uniq on buchung (buchungid)");
     }
+  check_column("buchung","waehrung","numeric(2)");
+  check_column("buchung","kurs","numeric(12,5)");
+  check_column("buchung","buchung_grp","integer");
+  check_column("buchung","belegref","text");
      
 
   // neue definitive Priorität bei den Zuordnungen
