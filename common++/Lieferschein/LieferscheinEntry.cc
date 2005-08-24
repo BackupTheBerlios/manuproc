@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.81 2005/08/24 14:46:09 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.82 2005/08/24 15:05:15 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -231,7 +231,7 @@ void LieferscheinEntry::change_status(AufStatVal new_status)
 
 
 void LieferscheinEntry::changeMenge(int _stueck, mengen_t _menge,
-				bool ein_auftrag) throw(SQLerror)
+		bool ein_auftrag, const AuftragBase &restrict) throw(SQLerror)
 { ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
 	NV("stueck",_stueck),NV("menge",_menge),NV("ein_auftrag",ein_auftrag));
   if(_stueck==Stueck() && _menge==Menge()) return ; //nichts geändert
@@ -241,7 +241,7 @@ void LieferscheinEntry::changeMenge(int _stueck, mengen_t _menge,
   Transaction tr;
   Query::Execute("lock table lieferscheinentry in exclusive mode");
 
-  if(status==OPEN) changeStatus((AufStatVal)OPEN,ein_auftrag,_stueck,_menge);
+  if(status==OPEN) changeStatus((AufStatVal)OPEN,ein_auftrag,_stueck,_menge,restrict);
   updateLieferscheinMenge(_stueck,_menge);
 
   tr.commit();
