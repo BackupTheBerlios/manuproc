@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.32 2004/02/18 17:38:02 jacek Exp $
+// $Id: SelectedFullAufList.cc,v 1.1 2005/08/24 14:46:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Auftrag/selFullAufEntry.h>
+#include <Auftrag/SelectedFullAufList.h>
 #include <Misc/Transaction.h>
 #include <Misc/Datum.h>
 
@@ -95,4 +95,12 @@ void SelectedFullAufList::insert(const AufEintragBase& aeb) throw(SQLerror)
 {	SQLFullAuftragSelector sel((SQLFullAuftragSelector::sel_AufidZnr(aeb)));
         Query q(sel.getClausel()); 
         q.FetchArray(aufidliste);
+}
+
+void SelectedFullAufList::Restrict(const AuftragBase &rest)
+{ for (iterator i=aufidliste.begin(); i!=aufidliste.end(); )
+  { if (!(static_cast<const AuftragBase &>(*i)==rest))
+      i=aufidliste.erase(i);
+    else ++i;
+  }
 }

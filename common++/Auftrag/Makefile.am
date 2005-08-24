@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.30 2004/02/02 16:59:02 jacek Exp $
+# $Id: Makefile.am,v 1.31 2005/08/24 14:46:08 christof Exp $
 
 ENDUSER=-DPETIG
 
@@ -16,18 +16,18 @@ libAuftrag_a_SOURCES=AufEintrag.cc AufEintragBase.cc AuftragBase.cc \
    AufEintragZuMengenAenderung.cc AufEintragZu.cc VerfuegbareMenge.cc \
    ppsInstanzReparatur.cc AufEintrag_ro.cc AufEintrag_loops.cc \
    AufEintrag_Lager.cc AufEintrag_Produktion.cc AufEintrag_Menge.cc \
-   delayed_reclaim.cc Verfuegbarkeit.cc
+   delayed_reclaim.cc Verfuegbarkeit.cc SelectedFullAufList.cc
 
 libAuftrag.a: $(libAuftrag_a_OBJECTS) $(libAuftrag_a_DEPENDENCIES) Makefile
 	(for i in $(libAuftrag_a_OBJECTS) ; do echo Auftrag/$$i ; done ) >$@
 
-BUILT_SOURCES_P= AuftragBase_sql.cc selAufEntry_sql.cc\
+BUILT_SOURCES_P= AuftragBase_sql.cc \
 		Auftrag_sql.cc AuftragFull_sql.cc 
 		
 BUILT_SOURCES=$(BUILT_SOURCES_P)
 
 include_HEADERS=AufEintrag.h AuftragBase.h \
-	sqlAuftragSelector.h AufEintragBase.h selFullAufEntry.h \
+	sqlAuftragSelector.h AufEintragBase.h SelectedFullAufList.h \
 	auftrag_status.h auftrag_enums.h AuftragsBaum.h AufEintragZu.h \
    AufEintragZuMengenAenderung.h
 

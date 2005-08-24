@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.42 2004/10/21 08:44:49 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.43 2005/08/24 14:46:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig
@@ -106,7 +106,8 @@ public:
  void changeMenge(int stueck,mengen_t menge, bool ein_auftrag) throw(SQLerror);
 // void changeMenge(int stueck,mengen_t menge) throw(SQLerror); 
  void changeStatus(AufStatVal new_status, 
- 		bool ein_auftrag, int _stk, mengen_t _mng) 
+ 		bool ein_auftrag, int _stk, mengen_t _mng, 
+ 		const AuftragBase &rest=AuftragBase()) 
  				throw(SQLerror,LagerError);
  void changeStatus(AufStatVal new_status, bool ein_auftrag);
  static void deleteEntry(LieferscheinEntry &lse) throw(SQLerror);

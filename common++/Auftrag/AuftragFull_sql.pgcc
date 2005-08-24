@@ -93,8 +93,8 @@ void AuftragFull::loadEntries(bool with_storno) throw(SQLerror)
    sl.setOrderClausel(sort_clausel);
  SelectedFullAufList aufids(sl);
 
- for(SelectedFullAufList::iterator i = aufids.aufidliste.begin();
-				 	 i!=aufids.aufidliste.end(); ++i)
+ for(SelectedFullAufList::iterator i = aufids.begin();
+				 	 i!=aufids.end(); ++i)
  {  try { eintragliste.push_back(*i);
     } catch (SQLerror &e)
     {  if(e.Code() != 100) throw;

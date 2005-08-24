@@ -1,4 +1,4 @@
-// $Id: AufEintrag_ro.cc,v 1.11 2004/02/04 19:43:30 jacek Exp $
+// $Id: AufEintrag_ro.cc,v 1.12 2005/08/24 14:46:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -112,10 +112,8 @@ AufEintrag::AufEintrag(const AufEintragBase &aebb) throw (SQLerror,NoAEB_Error)
   SelectedFullAufList aufids((SQLFullAuftragSelector)
     (SQLFullAuftragSelector::sel_AufidZnr(aebb)));
 
-  if ( aufids.aufidliste.size()!=1 ) throw NoAEB_Error(aufids.aufidliste.size());
+  if ( aufids.size()!=1 ) throw NoAEB_Error(aufids.size());
 
-  *this=*(aufids.aufidliste.begin());
+  *this=*(aufids.begin());
  } catch (SQLerror &e) {std::cerr << e <<'\n';}
 }
-
-

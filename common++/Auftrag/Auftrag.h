@@ -1,4 +1,4 @@
-/* $Id: Auftrag.h,v 1.30 2005/02/08 11:27:45 jacek Exp $ */
+/* $Id: Auftrag.h,v 1.31 2005/08/24 14:46:08 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -81,11 +81,17 @@ public:
         Auftrag(Anlegen2 Auftragsnr, long kundennr, const std::string &yaufnr="") throw(SQLerror);
         Auftrag(Anlegen instanz, long kundennr, const std::string &yaufnr="") throw(SQLerror);
    
-        Auftrag::ID Copy(AuftragCopy &ac) throw(SQLerror);
+        ID Copy(AuftragCopy &ac) throw(SQLerror);
+
+        // please prefer the second, static variant 
+        // (creating an Auftrag just to ask for a different one is nonsense)
+	ID getIdFromYourAufId(const char *youraufid) throw(SQLerror);
+	static ID getIdFromYourAufId(ppsInstanz::ID instanz, 
+			const std::string &youraufid, 
+			Kunde::ID kundennr=Kunde::none_id) throw(SQLerror);
         
         void deleteAuftrag() throw(SQLerror);
 	void deleteEintrag(int zeilennr) throw(SQLerror);
-	int getIdFromYourAufId(const char *youraufid) throw(SQLerror);
 	void setBemerkung(const std::string &bem) throw(SQLerror);
 	void setYourAufNr(const std::string &yanr) throw(SQLerror);
 	void setStatusAuftrag_(AufStatVal st) throw(SQLerror);

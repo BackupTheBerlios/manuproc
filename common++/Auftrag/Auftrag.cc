@@ -1,4 +1,4 @@
-// $Id: Auftrag.cc,v 1.16 2005/04/12 17:16:19 jacek Exp $
+// $Id: Auftrag.cc,v 1.17 2005/08/24 14:46:08 christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -238,12 +238,20 @@ void Auftrag::setYourAufNr(const std::string &yanr) throw(SQLerror)
 */
 }
 
-int Auftrag::getIdFromYourAufId(const char *youraufid) throw(SQLerror)
+Auftrag::ID Auftrag::getIdFromYourAufId(ppsInstanz::ID instanz, 
+			const std::string &youraufid, 
+			Kunde::ID kundennr) throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
- int AUFTRAGID;
- Query("select auftragid from auftrag where (instanz,youraufnr)=(?,?)")
-	<< Instanz() << youraufid
-	>> AUFTRAGID;
- return AUFTRAGID;
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,instanz,youraufid,kundennr);
+ if (kundennr==Kunde::none_id)
+   return (Query("select auftragid from auftrag where (instanz,youraufnr)=(?,?)")
+	<< instanz << youraufid)
+	.FetchOne<int>();
+ return (Query("select auftragid from auftrag where (instanz,kundennr,youraufnr)=(?,?,?)")
+	<< instanz << kundennr << youraufid)
+	.FetchOne<int>();
+}
+
+Auftrag::ID Auftrag::getIdFromYourAufId(const char *youraufid) throw(SQLerror)
+{ return getIdFromYourAufId(Instanz(),youraufid);
 }

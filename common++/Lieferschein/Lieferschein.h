@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.28 2003/10/06 10:15:16 jacek Exp $ */
+/* $Id: Lieferschein.h,v 1.29 2005/08/24 14:46:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -109,7 +109,9 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  		const ArtikelBase &artikel, int anzahl, mengen_t menge=0, int palette=0);
  // DB: Menge verteilt auf mehrere Aufträge abschreiben
  int push_back(const ArtikelBase &artikel, int anzahl, mengen_t menge=0, int palette=0);
-
+ // DB: Menge von einem Auftrag (evtl. mehrere Zeilen) abschreiben
+ int push_back(const AuftragBase &order, 
+ 		const ArtikelBase &artikel, int anzahl, mengen_t menge=0, int palette=0);
 
  // Rechnungsnummer von Lieferscheinen ohne Entrys auf '0' setzen
  static void aufraumen() throw(SQLerror);

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.80 2004/10/21 13:09:25 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.81 2005/08/24 14:46:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -92,13 +92,15 @@ namespace { struct stornoliste
 }; }
 
 void LieferscheinEntry::changeStatus(AufStatVal new_status, 
-		bool ein_auftrag,
-		int _stueck, mengen_t _menge) throw(SQLerror,LagerError)
+		bool ein_auftrag, int _stueck, mengen_t _menge,
+		const AuftragBase &restriction) throw(SQLerror,LagerError)
 { ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
 	NV("new_status",new_status),
 	NV("status",status),NV("ein_auftrag",ein_auftrag),
 	NV("stueck",_stueck),NV("menge",_menge));
 
+  // if one_order then no restriction possible
+  assert(!(ein_auftrag && !!restriction));
 
   if(status==CLOSED || status==STORNO) 
   {  ManuProC::Trace(trace_channel,"=","status not changeable any more",status);
@@ -140,15 +142,17 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
         {  assert(abmenge==AuftragBase::Gesamtmenge(_stueck,_menge));
            VZusatz.clear();
         }
+        // lock auftragentry, so that the data does not change under us
+        Query("lock table auftragentry in exclusive mode");
         // was ist mit 0ern im Einkauf, diese werden auch bei Überproduktion nicht
         // direkt erledigt - allerdings beim Einlagern ??? CP
         SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Artikel_Planung_id
         			(instanz->Id(),KdID(),artikel,AuftragBase::handplan_auftrag_id));
         SelectedFullAufList auftraglist(psel);
+        if (!!restriction) auftraglist.Restrict(restriction);
 
-
-        for (SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
-       	        !!abmenge2 && i!=auftraglist.aufidliste.end(); ++i)
+        for (SelectedFullAufList::iterator i=auftraglist.begin();
+       	        !!abmenge2 && i!=auftraglist.end(); ++i)
         {  AuftragBase::mengen_t abmenge3=AuftragBase::min(abmenge2,i->getRestStk());
            if (!abmenge3) continue;
              
@@ -170,7 +174,7 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
        else
        {//showZusatzInfos();
         zusaetze_t VZ=getZusatzInfos();
-  #warning in dieser Reihenfolge Menge ermitteln aber umgekehrt abschreiben,
+  // in dieser Reihenfolge Menge ermitteln aber umgekehrt abschreiben,
   //	damit der Erste eventuelle Lagerbestände reservieren kann!
   	typedef std::vector<stornoliste> list_t;
   	list_t liste;
@@ -582,8 +586,8 @@ fixedpoint<1> LieferscheinEntry::DurchAuftraegeAbgedeckt() const
            	(instanz->Id(),KdID(),artikel,AuftragBase::handplan_auftrag_id));
       SelectedFullAufList auftraglist(psel);
 
-      for (SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
-          	        i!=auftraglist.aufidliste.end(); ++i)
+      for (SelectedFullAufList::iterator i=auftraglist.begin();
+          	        i!=auftraglist.end(); ++i)
          m+=i->getRestStk();
       m=AuftragBase::min(m,AuftragBase::Gesamtmenge(Stueck(),Menge()));
    }
