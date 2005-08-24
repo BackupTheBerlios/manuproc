@@ -521,7 +521,7 @@ void auftrag_lieferschein::clear_input()
  auftragnr->set_sensitive(true);
 }
 
-
+// this logic really should go into common++ and get covered by a test!
 void auftrag_lieferschein::on_Palette_activate()
 { 
  ManuProC::Tracer::Enable(AuftragBase::trace_channel);
@@ -550,18 +550,33 @@ void auftrag_lieferschein::on_Palette_activate()
   if(artikel.Id() == 0) return;
 
   Einheit e(artikel);
+  Lieferschein::mengen_t menge=e.hatMenge()?liefermenge->get_value_as_float():0.0;
  try 
  {Transaction tr;
   if (!tree_offen->selection().size())
-  {  // Menge verteilen
-    int zeile=lieferschein->push_back(artikel,anzahl->get_value_as_int(),
-                  e.hatMenge()?liefermenge->get_value_as_float():0.0,
-                  Palette->get_value_as_int());
-    if (!auftragnr->get_text().empty())
-      LieferscheinEntry(make_value(LieferscheinEntryBase(*lieferschein,zeile)))
-        .setRefOrder(auftragnr->get_text());
-    if(!checkVerkConsist())
+  { if(!checkVerkConsist())
       return;
+      
+    // in case an order no is given only try to satisfy this one
+    if (!auftragnr->get_text().empty())
+      try 
+      { Auftrag::ID aid=Auftrag::getIdFromYourAufId(lieferschein->Instanz()->Id(),
+                auftragnr->get_text(),lieferschein->lieferschein->KdNr());
+        AuftragBase order(lieferschein->Instanz(),aid);
+        lieferschein->push_back(order,artikel,anzahl->get_value_as_int(),
+                  menge, Palette->get_value_as_int());
+      }
+      catch (...)
+      { int zeile=lieferschein->push_back(artikel,anzahl->get_value_as_int(),
+                  menge, Palette->get_value_as_int());
+        LieferscheinEntry(make_value(LieferscheinEntryBase(*lieferschein,zeile)))
+           .setRefOrder(auftragnr->get_text());
+      }
+    else
+    // Menge verteilen
+    { lieferschein->push_back(artikel,anzahl->get_value_as_int(),
+                  menge, Palette->get_value_as_int());
+    }
   }
   else
   {
@@ -570,8 +585,7 @@ void auftrag_lieferschein::on_Palette_activate()
     if(!checkVerkConsist(auftragentry))
       return;
     lieferschein->push_back(auftragentry, artikel, anzahl->get_value_as_int(),
-     		e.hatMenge()?liefermenge->get_value_as_float():0.0,
-     		Palette->get_value_as_int());
+     		menge, Palette->get_value_as_int());
     dt->getAufEintrag().tmp_geliefert+=anzahl->get_value_as_int();
   } 
 
