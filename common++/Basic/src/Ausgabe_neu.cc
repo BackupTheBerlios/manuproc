@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.cc,v 1.22 2005/07/21 08:50:28 christof Exp $ */
+/* $Id: Ausgabe_neu.cc,v 1.23 2005/08/24 07:56:22 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,7 +21,7 @@
 #include <iostream>
 #include <cassert>
 
-#ifdef __GNUC__ && __GNUC_MAJOR__ >=4
+#if defined(__GNUC__) && __GNUC_MAJOR__ >=4
 # define TEMPLATEltgt template<>
 #else
 # define TEMPLATEltgt 
