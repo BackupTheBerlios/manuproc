@@ -302,7 +302,7 @@ static bool Rep_KundenProgramm(AufEintrag &AE)
                          " (altauftragid) = (3)";
        Query::Execute(q2);
        SQLerror::test(__FILELINE__);
-       AufEintrag AE=AufEintrag(class AufEintragBase(class AuftragBase(ROLLEREI,AuftragBase::ungeplante_id),2));
+       AufEintrag AE=AufEintrag(GCC295(class) AufEintragBase(GCC295(class) AuftragBase(ROLLEREI,AuftragBase::ungeplante_id),2));
        AE.MengeAendern(-100,true,AufEintragBase(),false);
 
        vergleichen(Check::Menge,"reparatur_kunde_menge","Reparatur Kundenaufträge (Menge)","",true);
@@ -601,7 +601,7 @@ static bool ZweiKundenMengeFreigebenTest(AufEintrag &AE)
          int znrvon=1;
          AufEintragBase Von(AuftragBase(I,AuftragBase::plan_auftrag_id),znrvon);
          int znrnach=2;
-         AufEintrag Fuer((class AufEintragBase(AuftragBase(I,AuftragBase::ungeplante_id),znrnach)));
+         AufEintrag Fuer((GCC295(class) AufEintragBase(AuftragBase(I,AuftragBase::ungeplante_id),znrnach)));
 // hmmm was sollte das tun?         
 //#warning Test neu designen
 //         AufEintrag(Von).menge_fuer_aeb_freigeben(3000,Fuer);
