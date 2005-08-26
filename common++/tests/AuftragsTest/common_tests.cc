@@ -120,3 +120,34 @@ static bool Funktionstest(AufEintrag &AE)
 }
 
 static TestReihe Funktionstest_(&Funktionstest,"korrekte Funktion","fun");
+
+static bool LieferscheinRestrict(AufEintrag &AE)
+{ Auftrag(AE).setYourAufNr("A#");
+#ifdef PETIG_TEST 
+  Auftrag(AE).push_back(400,NEWDATUM,ARTIKEL_ROLLEREI,OPEN,true);
+
+  Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
+  auftrag.push_back(400,DATUM,ARTIKEL_ROLLEREI,OPEN,true);
+#endif
+  
+  AuftragsVerwaltung  automat;
+  AufEintragBase AEB2=automat.anlegenK(); // ARTIKEL_ROLLEREI
+  Auftrag(AEB2).setYourAufNr("A#");
+  assert(Auftrag::getIdFromYourAufId(ppsInstanzID::Kundenauftraege,"A#",AE.getKdNr())==AE.Id());
+  assert(Auftrag::getIdFromYourAufId(ppsInstanzID::Kundenauftraege,"A#",Auftrag(AEB2).getKundennr())==AEB2.Id());
+  try
+  { Auftrag::getIdFromYourAufId(ppsInstanzID::Kundenauftraege,"A#");
+    assert(!"this should throw");
+  }
+  catch (...) {}
+  vergleichen(Check::Menge,"LSR_anlegen","Anlegen mehrerer offener Aufträge","");
+  Lieferschein LS(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
+#ifdef PETIG_TEST 
+  LieferscheinEntryBase lsb(LS,LS.push_back(AuftragBase(AE),ARTIKEL_ROLLEREI,1000));
+  LieferscheinEntry(lsb).changeStatus(OPEN,false);
+#endif  
+  vergleichen(Check::Lieferschein|Check::Menge,"LSR_restrict","Lieferung mit restriction","");
+  return true;
+}
+
+static TestReihe LieferscheinRestrict_(&LieferscheinRestrict,"Lieferschein für _einen_ Auftrag","LSR");
