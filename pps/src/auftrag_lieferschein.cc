@@ -561,7 +561,7 @@ void auftrag_lieferschein::on_Palette_activate()
     if (!auftragnr->get_text().empty())
       try 
       { Auftrag::ID aid=Auftrag::getIdFromYourAufId(lieferschein->Instanz()->Id(),
-                auftragnr->get_text(),lieferschein->lieferschein->KdNr());
+                auftragnr->get_text(),lieferschein->KdNr());
         AuftragBase order(lieferschein->Instanz(),aid);
         lieferschein->push_back(order,artikel,anzahl->get_value_as_int(),
                   menge, Palette->get_value_as_int());
