@@ -561,7 +561,7 @@ void auftrag_main::fill_simple_tree()
         allaufids = new SelectedFullAufList(psel);
       }
     std::vector<cH_RowDataBase> datavec;
-    for(SelectedFullAufList::const_iterator i = allaufids->aufidliste.begin();i!=allaufids->aufidliste.end(); ++i)
+    for(SelectedFullAufList::const_iterator i = allaufids->begin();i!=allaufids->end(); ++i)
      {
 //      if(instanz->Id()!=ppsInstanzID::Kundenauftraege && i->Id()!=0) continue;
       datavec.push_back(new Data_auftrag(*i,this));
