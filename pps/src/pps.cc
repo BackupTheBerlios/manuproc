@@ -43,6 +43,8 @@ int main(int argc, char **argv, char **envp)
  Conn = new ManuProC::Connection();
  int i;
 
+
+
  env=envp;
 
  while ((i = getopt(argc, argv, "h:d:s")) != EOF)

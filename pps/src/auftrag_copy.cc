@@ -91,7 +91,7 @@ void auftrag_copy::on_copy_ok_clicked()
 		"rabatt,lieferdate,preismenge,instanz,preisliste,provsatz) "
 		"(select ?,zeilennr,?,0,?,artikelid,0,preis,rabatt,?,"
 		"preismenge,instanz,preisliste,? from auftragentry"
-		" where (auftragid,instanz)=(?,?) and status!=?)")
+		" where (auftragid,instanz)=(?,?) and status!=(?))")
 		<< neu_aufid
 		).add_argument(
 			stueck==0 ? "bestellt" : itos(stueck))
@@ -104,7 +104,8 @@ void auftrag_copy::on_copy_ok_clicked()
 			itos(provsatz) : "provsatz")
 		<< alt_auftrag->Id()
 		<< alt_auftrag->Instanz()
-		<< (AufStatVal)STORNO;
+		<< (copy_storno->get_active() ? (AufStatVal)STORNO : 
+					       (AufStatVal)NOSTAT);
 	SQLerror::test(__FILELINE__);
 
 
@@ -132,7 +133,9 @@ void auftrag_copy::on_copy_ok_clicked()
       }
       
  catch(SQLerror &e)
-   {meldung->Show(e);
+   {if(e.Code()!=100)
+      meldung->Show(e);
+    else meldung->Show("keine Zeilen zum Kopieren gefunden");
     auftragbearbeiten->new_aufid_from_copy=AuftragBase::none_id;
     return;
    }

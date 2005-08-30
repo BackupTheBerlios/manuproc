@@ -85,7 +85,7 @@ F77 =
 GCJ = @GCJ@
 GCJFLAGS = @GCJFLAGS@
 GNOMEGNORBA_LIBS = -rdynamic -lgnorba -lORBitCosNaming -lORBit -lIIOP -lORBitutil -lgnomeui -lart_lgpl -lgdk_imlib -lSM -lICE -lgtk -lgdk -lgmodule -ldl -lXi -lXext -lX11 -lgnome -lgnomesupport -lesd -laudiofile -lm -ldb-3 -lglib
-GNOMEMM_CFLAGS = -I/usr/lib/gnomemm/include -I/usr/include/gnome-1.0 -DNEED_GNOMESUPPORT_H -I/usr/lib/gnome-libs/include -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/include/orbit-1.0 -I/usr/include/gtk-1.2 -I/usr/lib/sigc++-1.0/include -I/usr/include/sigc++-1.0 -I/usr/lib/gtkmm/include -I/usr/X11R6/include -I/usr/include/gnome-1.0 -DNEED_GNOMESUPPORT_H -I/usr/lib/gnome-libs/include -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include
+GNOMEMM_CFLAGS = -I/usr/lib/gnomemm/include -I/usr/include/gnome-1.0 -DNEED_GNOMESUPPORT_H -I/usr/lib/gnome-libs/include -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/include/orbit-1.0 -I/usr/include/gtk-1.2 -I/usr/lib/sigc++-1.0/include -I/usr/include/sigc++-1.0 -I/usr/lib/gtkmm/include -I/usr/include/gnome-1.0 -DNEED_GNOMESUPPORT_H -I/usr/lib/gnome-libs/include -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include
 GNOMEMM_LIBS = -rdynamic -L/usr/lib -L/usr/X11R6/lib -lgnomemm -lgtkmm -lgdkmm -lgtk -lgdk -lgmodule -lglib -ldl -lXi -lXext -lX11 -lm -lsigc -lpthread -rdynamic -L/usr/lib -L/usr/X11R6/lib -lgnomeui -lart_lgpl -lgdk_imlib -lSM -lICE -lgtk -lgdk -lgmodule -ldl -lXi -lXext -lX11 -lgnome -lgnomesupport -lesd -laudiofile -lm -ldb-3 -lglib
 GNOMEUI_LIBS = -rdynamic -lgnomeui -lart_lgpl -lgdk_imlib -lSM -lICE -lgtk -lgdk -lgmodule -ldl -lXi -lXext -lX11 -lgnome -lgnomesupport -lesd -laudiofile -lm -ldb-3 -lglib
 GNOME_ACLOCAL_DIR = 
@@ -101,12 +101,12 @@ GNORBA_LIBS = -rdynamic -L/usr/lib -L/usr/X11R6/lib -lgnorba -lORBitCosNaming -l
 GTKMM2_CFLAGS = @GTKMM2_CFLAGS@
 GTKMM2_INCLUDES = @GTKMM2_INCLUDES@
 GTKMM2_NODB_LIBS = @GTKMM2_NODB_LIBS@
-GTKMM_CFLAGS = -I/usr/lib/gtkmm/include -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/X11R6/include -I/usr/lib/sigc++-1.0/include -I/usr/include/sigc++-1.0
+GTKMM_CFLAGS = -I/usr/lib/gtkmm/include -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/lib/sigc++-1.0/include -I/usr/include/sigc++-1.0
 GTKMM_CONFIG = /usr/bin/gtkmm-config
-GTKMM_INCLUDES = -I/usr/lib/gtkmm/include -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/X11R6/include -I/usr/lib/sigc++-1.0/include -I/usr/include/sigc++-1.0
+GTKMM_INCLUDES = -I/usr/lib/gtkmm/include -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/lib/sigc++-1.0/include -I/usr/include/sigc++-1.0
 GTKMM_LIBS = -rdynamic -L/usr/lib -L/usr/X11R6/lib -lgtkmm -lgdkmm -lgtk -lgdk -lgmodule -lglib -ldl -lXi -lXext -lX11 -lm -lsigc -lpthread
 GTKMM_NODB_LIBS = -rdynamic -L/usr/lib -L/usr/X11R6/lib -lgtkmm -lgdkmm -lgtk -lgdk -lgmodule -lglib -ldl -lXi -lXext -lX11 -lm -lsigc -lpthread
-GTKXMHTML_LIBS = 
+GTKXMHTML_LIBS = -rdynamic -lgtkxmhtml -lXpm -ljpeg -lpng10 -lz -lSM -lICE -lgtk -lgdk -lgmodule -lglib -ldl -lXi -lXext -lX11 -lm
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_CONFIG = @GTK_CONFIG@
 GTK_LIBS = @GTK_LIBS@
@@ -115,7 +115,7 @@ LIBDL = @LIBDL@
 LIBMICO = @LIBMICO@
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LN_S = ln -s
-MAINT = 
+MAINT = #
 MAKEINFO = ${SHELL} /home/jacek/cvs/pps/missing --run makeinfo
 MICO_CFLAGS = @MICO_CFLAGS@
 MICO_GTKLIBS = @MICO_GTKLIBS@
@@ -139,7 +139,7 @@ SIGC_LIBS = -lsigc -lpthread
 SIGC_MACROS = -I /usr/include/sigc++-1.0/sigc++/macros
 STRIP = strip
 VERSION = 0.0
-ZVT_LIBS = 
+ZVT_LIBS = -rdynamic -lzvt -lutil -lSM -lICE -lgdk_imlib -lgtk -lgdk -lgmodule -lglib -ldl -lXi -lXext -lX11 -lm
 cflags_set = yes
 cxxflags_set = @cxxflags_set@
 
@@ -153,7 +153,7 @@ auftrag_drucken_SOURCES =     $(BUILT_SOURCES)    auftrag_drucken.cc    drucken.
 noinst_HEADERS =     drucken.hh    drucken_class.hh
 
 
-AM_CXXFLAGS = -DUSE_POSTGRES -I/usr/lib/gtkmm/include -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/X11R6/include -I/usr/lib/sigc++-1.0/include -I/usr/include/sigc++-1.0 -I/home/jacek/cvs/GtkmmAddons/src -I/home/jacek/cvs/c++ -I/usr/lib/sigc++-1.0/include -I/usr/include/sigc++-1.0  -I. -I/usr/include/postgresql -I/home/jacek/cvs/Komponenten/src
+AM_CXXFLAGS = -DUSE_POSTGRES -I/usr/lib/gtkmm/include -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/lib/sigc++-1.0/include -I/usr/include/sigc++-1.0 -I/home/jacek/cvs/GtkmmAddons/src -I/home/jacek/cvs/c++ -I/usr/lib/sigc++-1.0/include -I/usr/include/sigc++-1.0  -I. -I/usr/include/postgresql -I/home/jacek/cvs/Komponenten/src
 
 LDFLAGS =    -L/home/jacek/cvs/GtkmmAddons/src   
 
@@ -173,7 +173,7 @@ drucken_class.$(OBJEXT)
 auftrag_drucken_LDADD = $(LDADD)
 auftrag_drucken_DEPENDENCIES = 
 auftrag_drucken_LDFLAGS = 
-CXXFLAGS = -Wall -g -O0
+CXXFLAGS = -g -O2
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -195,7 +195,7 @@ OBJECTS = $(auftrag_drucken_OBJECTS)
 all: all-redirect
 .SUFFIXES:
 .SUFFIXES: .S .c .cc .lo .o .obj .s
-$(srcdir)/Makefile.in:  Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+$(srcdir)/Makefile.in: # Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu sdo_drucken/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
