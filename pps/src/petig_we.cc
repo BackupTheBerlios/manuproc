@@ -252,8 +252,8 @@ void petig_we::identify_article() throw(SQLerror)
         bk!=ebz->sigend(signifikanz) &&
         bez!=(*i).artbez.end();++bk,++bez)
       q+=" and "+bk->spaltenname+"=trim("+
-            ((*bez).empty()?"''":"'"+(*bez))
-            +"')";
+            ((*bez).empty()?"''":"'"+(*bez)+"'")
+            +")";
     Query query(q);
     SQLerror::test(__FILELINE__,100);
     if(query.Result()==100) continue;
