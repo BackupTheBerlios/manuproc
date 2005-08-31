@@ -633,7 +633,10 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
        drucken_betrag(os,mld->MLT(MultiL_Dict::TXT_SUMME),betrag);
      }
      
-  calc_all(kunde_rng,cH_Kunde(KdNr())->MwSt());     
+  if(Typ()==Rechnung)
+    calc_all(kunde_rng,cH_Kunde(KdNr())->MwSt(RngNr()));     
+  else
+    calc_all(kunde_rng,cH_Kunde(KdNr())->MwSt());     
      
 //     os << zur_preisspalte << "Endsumme & "<< FormatiereTeX(betrag) <<"\\\\""\n";
 //     --zeilen_passen_noch;
@@ -692,7 +695,8 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
  if (preise_addieren)
  { cH_Kunde kunde_an(KdNr());
 //   if(kunde_rng->MwSt())   
-   if(kunde_an->MwSt())   
+   if((Typ()==Rechnung && kunde_an->MwSt(RngNr())) || 
+      (Typ()!=Rechnung && kunde_an->MwSt()))
    { os << zur_preisspalte.substr(0,zur_preisspalte.size()-1) << "\\multicolumn{2}{r}{+ "<<MWSTPROZ<<"\\% "
 		<< mld->MLT(MultiL_Dict::MWST) <<"}& "<< FormatiereTeX(mwstbetrag) <<"\\\\"
      	"\\cline{"<<preisspalte<<"-"<<preisspalte<<"}\n";  

@@ -45,10 +45,10 @@ pkgincludedir = $(includedir)/auftrag
 
 top_builddir = ..
 
-ACLOCAL = ${SHELL} /home/jacek/cvs/pps/missing --run aclocal-1.7 -I macros 
-AUTOCONF = ${SHELL} /home/jacek/cvs/pps/missing --run autoconf
-AUTOMAKE = ${SHELL} /home/jacek/cvs/pps/missing --run automake-1.7
-AUTOHEADER = ${SHELL} /home/jacek/cvs/pps/missing --run autoheader
+ACLOCAL = aclocal-1.4 -I macros 
+AUTOCONF = autoconf
+AUTOMAKE = automake-1.4
+AUTOHEADER = autoheader
 
 INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL} $(AM_INSTALL_PROGRAM_FLAGS)
@@ -116,6 +116,7 @@ LIBMICO = @LIBMICO@
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LN_S = ln -s
 MAINT = #
+MAINT = #
 MAKEINFO = ${SHELL} /home/jacek/cvs/pps/missing --run makeinfo
 MICO_CFLAGS = @MICO_CFLAGS@
 MICO_GTKLIBS = @MICO_GTKLIBS@
@@ -157,7 +158,7 @@ AM_CXXFLAGS = -DUSE_POSTGRES -I/usr/lib/gtkmm/include -I/usr/include/gtk-1.2 -I/
 
 LDFLAGS =    -L/home/jacek/cvs/GtkmmAddons/src   
 
-LDADD =  /home/jacek/cvs/c++/libcommon++.a -lsigc -lpthread -lecpg -lpq -lcrypt -lGtkmmAddons 
+LDADD =  /home/jacek/cvs/c++/libcommon++.a -lecpg -lpq -lcrypt -lsigc -lpthread -lGtkmmAddons 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
