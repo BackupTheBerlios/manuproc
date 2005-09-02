@@ -1,4 +1,4 @@
-// $Id: FILEstream.h,v 1.6 2004/05/03 16:49:27 christof Exp $
+// $Id: FILEstream.h,v 1.7 2005/09/02 11:17:42 christof Exp $
 /*  Midgard Character Generator
  *  Copyright (C) 2001-2004 Christof Petig
  *
@@ -35,6 +35,7 @@ class FILEbuf : public std::streambuf
 #endif
         
    FILEbuf(FILE *_o) : o(_o),cached(eof) {}
+   void flush() { std::streambuf::flush(); fflush(o); }
 protected:
    int_type overflow(int_type c) 
       {  if (c!=eof)
