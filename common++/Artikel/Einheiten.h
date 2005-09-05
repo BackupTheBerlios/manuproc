@@ -1,4 +1,4 @@
-/* $Id: Einheiten.h,v 1.18 2005/02/01 10:30:06 jacek Exp $ */
+/* $Id: Einheiten.h,v 1.19 2005/09/05 16:28:37 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.18 2005/02/01 10:30:06 jacek Exp $
+// $Id: Einheiten.h,v 1.19 2005/09/05 16:28:37 christof Exp $
 
 #ifndef ARTIKEL_EINHEITEN_H
 #define ARTIKEL_EINHEITEN_H
@@ -28,7 +28,7 @@
 //#include <Misc/Handles.h>
 #include <vector>
 #include <DynamicEnums/DynamicEnums.h>
-#include <Aux/multi_lang.h>
+#include <Misc/multi_lang.h>
 
 namespace EinheitID=ManuProC::DynamicEnums::Einheiten;
 

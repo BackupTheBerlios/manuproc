@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.hh,v 1.3 2002/07/05 12:35:01 christof Exp $
+// $Id: Zahlungsart.hh,v 1.4 2005/09/05 16:28:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -22,8 +22,8 @@
 #define ZAHLUNGSART__
 
 #include <string>
-#include <Aux/Handles.h>
-#include <Aux/CacheStatic.h>  
+#include <Misc/Handles.h>
+#include <Misc/CacheStatic.h>  
 
 #warning ich glaub die Datei kann jetzt weg MAT 15.5.02
 /*

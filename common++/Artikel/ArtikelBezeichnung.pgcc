@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.30 2005/07/13 17:03:02 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.31 2005/09/05 16:28:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,7 +30,7 @@ exec sql include sqlca;
 
 
 #ifdef MABELLA_EXTENSIONS
-#include <Aux/EAN.h>
+#include <Misc/EAN.h>
 #endif
 
 ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, const cH_ExtBezSchema &_schema) throw()

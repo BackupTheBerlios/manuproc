@@ -1,4 +1,4 @@
-// $Id: Bindung.hh,v 1.7 2004/02/06 08:41:33 christof Exp $
+// $Id: Bindung.hh,v 1.8 2005/09/05 16:28:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -26,7 +26,7 @@
 #include <map>
 #include <iterator>
 #include <algo.h>
-#include <Aux/SQLerror.h>
+#include <Misc/SQLerror.h>
 
 class Bindungsliste;
 class Bindung {

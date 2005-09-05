@@ -1,4 +1,4 @@
-// $Id: Schussfaeden.hh,v 1.8 2003/07/17 07:26:09 christof Exp $
+// $Id: Schussfaeden.hh,v 1.9 2005/09/05 16:28:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -23,7 +23,7 @@
 
 #include <Faeden/Faden.hh>
 #include <Artikel/ArtikelBase.h>
-#include <Aux/fixedpoint.h>
+#include <Misc/fixedpoint.h>
 
 class Schussfaeden 
 {

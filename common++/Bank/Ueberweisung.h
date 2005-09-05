@@ -1,4 +1,4 @@
-/* $Id: Ueberweisung.h,v 1.7 2003/06/26 16:36:00 jacek Exp $ */
+/* $Id: Ueberweisung.h,v 1.8 2005/09/05 16:28:37 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,8 +20,8 @@
 #ifndef UEBERWEISUNG_H
 #define UEBERWEISUNG_H
 #include <BaseObjects/ManuProcEntity.h>
-#include <Aux/fixedpoint.h>
-#include <Aux/Datum.h>
+#include <Misc/fixedpoint.h>
+#include <Misc/Datum.h>
 #include <Kunde/Kunde.h>
 #include <vector>
 #include <string>

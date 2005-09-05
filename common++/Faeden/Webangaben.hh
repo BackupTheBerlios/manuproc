@@ -1,4 +1,4 @@
-// $Id: Webangaben.hh,v 1.12 2004/10/07 16:34:28 christof Exp $
+// $Id: Webangaben.hh,v 1.13 2005/09/05 16:28:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -22,8 +22,8 @@
 #define WEBFADEN_HH
 
 #include <Artikel/ArtikelBase.h>
-#include <Aux/Datum.h>
-#include <Aux/fixedpoint.h>
+#include <Misc/Datum.h>
+#include <Misc/fixedpoint.h>
 #include <Faeden/Faden.hh>
 #include <Faeden/Schussfaeden.hh>
 

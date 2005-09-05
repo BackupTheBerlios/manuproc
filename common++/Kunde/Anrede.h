@@ -1,4 +1,4 @@
-// $Id: Anrede.h,v 1.8 2003/04/24 13:44:36 jacek Exp $
+// $Id: Anrede.h,v 1.9 2005/09/05 16:28:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,7 +25,7 @@
 #include <Misc/Handles.h>
 #include <Misc/CacheStatic.h>
 #include <BaseObjects/ManuProcHandle.h>
-#include <Aux/multi_lang.h>
+#include <Misc/multi_lang.h>
 
 class Anrede : public ManuProcHandle<long int>
 {

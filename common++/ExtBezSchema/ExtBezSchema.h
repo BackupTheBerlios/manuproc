@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.21 2004/03/26 10:45:38 jacek Exp $
+// $Id: ExtBezSchema.h,v 1.22 2005/09/05 16:28:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,7 +24,7 @@
 #include <string>
 #include <Misc/Handles.h>
 #include <Artikel/ArtikelTyp.h>
-#include <Aux/multi_lang.h>
+#include <Misc/multi_lang.h>
 
 class cH_ExtBezSchema;
 

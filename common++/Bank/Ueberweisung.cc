@@ -1,4 +1,4 @@
-/* $Id: Ueberweisung.cc,v 1.9 2003/05/13 14:21:35 jacek Exp $ */
+/* $Id: Ueberweisung.cc,v 1.10 2005/09/05 16:28:37 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,7 +19,7 @@
 
 
 #include "Ueberweisung.h"
-#include <Aux/Transaction.h>
+#include <Misc/Transaction.h>
 #include <pwd.h>
 #include <sys/types.h>
         

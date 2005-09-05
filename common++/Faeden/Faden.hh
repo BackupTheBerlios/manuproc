@@ -1,4 +1,4 @@
-// $Id: Faden.hh,v 1.14 2005/09/05 15:30:38 christof Exp $
+// $Id: Faden.hh,v 1.15 2005/09/05 16:28:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -27,7 +27,7 @@
 #include <algo.h>
 #include "Bindung.hh"
 #include <Artikel/ArtikelBase.h>
-#include <Aux/fixedpoint.h>
+#include <Misc/fixedpoint.h>
 class Wiederholung;
 class Webangaben;
 
