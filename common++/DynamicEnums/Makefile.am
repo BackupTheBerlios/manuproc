@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.14 2005/07/04 15:53:38 christof Exp $
+# $Id: Makefile.am,v 1.15 2005/09/05 12:27:30 jacek Exp $
 
 includedir=@includedir@/DynamicEnums
 
@@ -15,6 +15,7 @@ DynamicDescr.h: DynDescr_default.h
 	then ../Programme/createDynDescr >DynamicDescr.h ; \
 	else cp DynDescr_default.h DynamicDescr.h ; \
 	fi
+
 
 DynamicConfig.h:
 	if [ -x ../Programme/createDynConfig ] ; \

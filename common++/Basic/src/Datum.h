@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.26 2005/05/18 14:35:55 christof Exp $ */
+/* $Id: Datum.h,v 1.27 2005/09/05 12:27:30 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -177,6 +177,7 @@ public:
 			      return quart;
 			 }
 	std::string MonatName() const { return monate[monat-1];}
+	static std::string MonatName(int m) { return monate[m-1];}	
 	
 	friend std::ostream &NOTGCC295(::)operator<<(std::ostream&,const Datum&) throw();
 	
