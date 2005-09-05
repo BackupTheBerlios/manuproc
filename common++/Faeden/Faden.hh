@@ -1,4 +1,4 @@
-// $Id: Faden.hh,v 1.13 2004/06/24 08:24:05 christof Exp $
+// $Id: Faden.hh,v 1.14 2005/09/05 15:30:38 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -96,6 +96,8 @@ class Fadenliste {
 	std::vector<Wiederholung> repliste;
 	std::vector<unsigned> repnumliste;
 	std::vector<Fd_Kettscheibe> kettscheiben;
+
+	void LoadRecurse(const Webangaben &wa);
 public:
 	typedef std::vector<Faden>::const_iterator const_iterator;
 	typedef std::vector<Faden>::iterator iterator;

@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.24 2004/06/23 09:25:33 christof Exp $
+// $Id: Faden.cc,v 1.25 2005/09/05 15:30:38 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -413,6 +413,31 @@ void Fadenliste::Load(const ArtikelBase &ab,const Bindungsliste &bindungsliste)
    Load(wa);
 }
 
+void Fadenliste::LoadRecurse(const Webangaben &wa)
+{ assert(!!wa.VarianteVon());
+  assert(liste.empty());
+  assert(sumliste.empty());
+  assert(repliste.empty());
+  assert(kettscheiben.empty());
+  const Webangaben::ersetzen_t &ersetzen=wa.Ersetzen();
+  Webangaben parent(wa.VarianteVon());
+  parent.Load();
+  Fadenliste pfaeden;
+  pfaeden.Load(parent);
+  for (const_iterator i=pfaeden.begin();i!=pfaeden.end();++i)
+  {  Faden f=*i;
+     std::map<ArtikelBase,ArtikelBase>::const_iterator found=ersetzen.find(f.material);
+     if (found!=ersetzen.end()) f.material=found->second;
+     add(f,unsigned(-1));
+  }
+  for (const_repiterator i=pfaeden.repbegin();i!=pfaeden.repend();++i)
+     rep_add(i->getStart(),i->getEnd(),i->getAnzahl());
+  for (const_kettiterator i=pfaeden.kettbegin();i!=pfaeden.kettend();++i)
+  { if (i->nr>=kettscheiben.size()) kettscheiben.resize(i->nr+1);
+    kettscheiben[i->nr]=*i;
+  }
+}
+
 void Fadenliste::Load(const Webangaben &wa)
 {  erase();
    FetchIStream is;
@@ -431,7 +456,7 @@ void Fadenliste::Load(const Webangaben &wa)
          {  std::map<ArtikelBase,ArtikelBase>::const_iterator found=ersetzen.find(f.material);
             if (found!=ersetzen.end()) f.material=found->second;
          }
-         add(f,-1);
+         add(f,unsigned(-1));
       }
 
       Query q2("select anfangszeile, endzeile, wiederholungen "
@@ -458,6 +483,9 @@ void Fadenliste::Load(const Webangaben &wa)
          if (ks.nr>=kettscheiben.size()) kettscheiben.resize(ks.nr+1);
          kettscheiben[ks.nr]=ks;
       }
+  if (!!wa.VarianteVon() && liste.empty() && kettscheiben.empty())
+  // try the slower recursive way
+    LoadRecurse(wa);
 }
 
 const Fd_Kettscheibe &Fadenliste::Kettscheibe(unsigned nr) const
