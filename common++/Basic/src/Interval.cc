@@ -1,4 +1,4 @@
-// $Id: Interval.cc,v 1.5 2005/09/06 10:35:58 christof Exp $
+// $Id: Interval.cc,v 1.6 2005/09/06 10:36:00 christof Exp $
 
 #include <ManuProCConfig.h>
 #include <Misc/Interval.h>
@@ -11,12 +11,15 @@
 
 ManuProC::Interval::Interval(const std::string &_s) : days(), seconds(), microseconds()
 { std::string s=_s;
-  if (s.size()==4 && s[1]==':') s="0"+s;
-  if (s.size()==5) s+=":00";
-  assert(s.size()==8);
-  assert(s[2]==':' && s[5]==':');
-  seconds=(atoi(s.substr(0,2).c_str())*60*60) + (atoi(s.substr(3,2).c_str())*60)
-    + atoi(s.substr(6,2).c_str());
+  std::string::size_type first_colon=s.find(':');
+  std::string::size_type second_colon=std::string::npos;
+  if (first_colon!=std::string::npos) second_colon=s.find(':',first_colon+1);
+  int hours=atoi(s.substr(0,first_colon).c_str()),minutes=0;
+  if (first_colon!=std::string::npos)
+    minutes=atoi(s.substr(first_colon+1,second_colon).c_str());
+  if (second_colon!=std::string::npos)
+    seconds=atoi(s.substr(second_colon+1).c_str());
+  seconds+=(hours*60*60) + (minutes*60);
 }
 
 std::string ManuProC::Interval::str() const
