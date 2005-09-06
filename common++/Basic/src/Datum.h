@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.27 2005/09/05 12:27:30 jacek Exp $ */
+/* $Id: Datum.h,v 1.28 2005/09/06 13:31:45 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -121,6 +121,7 @@ public:
         {  return !(*this==b);  }
         /// erstes Datum vor dem zweiten?
         bool operator<(const Datum &b) const throw(Datumsfehler);
+        bool operator!() const { return !valid(); }
         /** morgen
             noch nicht implementiert */
         Datum &operator++();
