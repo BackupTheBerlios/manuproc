@@ -13,6 +13,8 @@
 #include<Aux/exception.h>
 #include "MyMessage.h"
 
+//extern "C" { void gle_init(int *argc, char ***argv); }
+
 MyMessage *Message;
 
 int main(int argc, char **argv)
@@ -33,7 +35,7 @@ int main(int argc, char **argv)
    }
 
 
-
+//   gle_init(&argc,&argv);
    Gtk::Main m(argc, argv);
    Petig::PrintUncaughtExceptions();
 
