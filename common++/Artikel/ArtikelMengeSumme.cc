@@ -1,4 +1,4 @@
-// $Id: ArtikelMengeSumme.cc,v 1.6 2003/06/23 15:55:57 christof Exp $
+// $Id: ArtikelMengeSumme.cc,v 1.7 2005/09/07 14:34:02 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -106,6 +106,14 @@ void ArtikelMengeSumme::cumulate(const ArtikelMenge &am)
       einfach=false;
    for (ArtikelMenge::const_iterator i=am.begin();i!=am.end();++i)
       lvalue(i->first)+=i->second;
+}
+
+void ArtikelMengeSumme::deduct(const ArtikelMenge &am)
+{  if (am.empty()) return;
+   if (einfach && !(emenge[0]==am.getEinheit()))
+      einfach=false;
+   for (ArtikelMenge::const_iterator i=am.begin();i!=am.end();++i)
+      lvalue(i->first)-=i->second;
 }
 
 std::string ArtikelMengeSumme::abgeleiteteMenge() const

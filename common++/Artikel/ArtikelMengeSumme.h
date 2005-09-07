@@ -1,4 +1,4 @@
-/* $Id: ArtikelMengeSumme.h,v 1.6 2003/01/08 09:46:56 christof Exp $ */
+/* $Id: ArtikelMengeSumme.h,v 1.7 2005/09/07 14:34:02 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -87,6 +87,7 @@ private:
 public:
 	ArtikelMengeSumme() : einfach(true) {}
 	void cumulate(const ArtikelMenge &am);
+	void deduct(const ArtikelMenge &am);
 	std::string abgeleiteteMenge() const;
 	std::string Menge() const;
 	std::string Menge(const Einheit &e) const;
