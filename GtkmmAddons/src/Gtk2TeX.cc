@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: Gtk2TeX.cc,v 1.10 2004/04/29 14:24:40 christof Exp $
+// $Id: Gtk2TeX.cc,v 1.11 2005/09/07 16:22:52 christof Exp $
 
 #include "Gtk2TeX.h"
 #include "gtkhacks.h"
@@ -153,8 +153,12 @@ std::ostream &Gtk2TeX::TreeView2Table(std::ostream &os,const Gtk::TreeView *cl,c
     } 
 
 
-   if (fl.selection) //  && fl.selection->begin()!=fl.selection->end())
-   {  TreeView2Table_sub(os,cl,fl,fl.selection,true);
+   if (!fl.selection.empty()) //  && fl.selection->begin()!=fl.selection->end())
+   { for (Gtk::TreeSelection::ListHandle_Path::const_iterator i=fl.selection.begin();i!=fl.selection.end();++i)
+     { Gtk::TreeSelection::ListHandle_Path::const_iterator j=i;
+       ++j;
+       TreeView2Table_sub(os,cl,fl,const_cast<Gtk::TreeView*>(cl)->get_model()->get_iter(*i),j==fl.selection.end());
+     }
    }
    else
    {  Gtk::TreeModel::const_iterator yend(const_cast<Gtk::TreeView*>(cl)->get_model()->children().end());
