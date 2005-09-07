@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: Gtk2TeX.h,v 1.10 2005/09/07 16:22:52 christof Exp $
+// $Id: Gtk2TeX.h,v 1.11 2005/09/07 16:37:37 christof Exp $
 
 #include <TeX.h>
 #include <iostream>
@@ -49,7 +49,7 @@ namespace Gtk2TeX
 //		Gtk::TreeModel::const_iterator selection;
 
 		// This is much easier:
-		// tf.selection=tv->get_selection()->get_selected_rows();
+		// tv->get_selection()->get_selected_rows().copy(tf.selection);
 		Gtk::TreeSelection::ListHandle_Path selection;
 		bool single_row_with_children;
 		
