@@ -1,4 +1,4 @@
-// $Id: Optionmenu_Lager.cc,v 1.2 2005/09/07 14:18:03 christof Exp $
+// $Id: Optionmenu_Lager.cc,v 1.3 2005/09/07 14:18:06 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -30,7 +30,8 @@ Optionmenu_Lager::Optionmenu_Lager()
 
 const FertigWarenLager Optionmenu_Lager::get_value() const
 {
- return *(FertigWarenLager*)(get_menu()->get_active()->get_user_data());
+ return *(FertigWarenLager*)(const_cast<Gtk::MenuItem*>
+       (get_menu()->get_active())->get_data("user_data"));
 }
 
 void Optionmenu_Lager::fuelle_menu()
@@ -68,7 +69,7 @@ try
 
 static bool operator==(gpointer data, const FertigWarenLager &lager)
 { 
-  return (int)(data)==lager.Id();
+  return (long)(data)==lager.Id();
 }
 
 void Optionmenu_Lager::set_value(const FertigWarenLager &lager)

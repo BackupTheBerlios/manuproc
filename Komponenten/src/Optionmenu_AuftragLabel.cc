@@ -1,4 +1,4 @@
-// $Id: Optionmenu_AuftragLabel.cc,v 1.2 2005/09/07 13:27:37 christof Exp $
+// $Id: Optionmenu_AuftragLabel.cc,v 1.3 2005/09/07 14:18:06 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -30,7 +30,8 @@ Optionmenu_AuftragLabel::Optionmenu_AuftragLabel()
 
 int Optionmenu_AuftragLabel::get_value() const
 {
- return (int)(get_menu()->get_active()->get_user_data());
+ return int(reinterpret_cast<long>(const_cast<Gtk::MenuItem*>
+       (get_menu()->get_active())->get_data("user_data")));
 }
 
 void Optionmenu_AuftragLabel::fuelle_menu()
