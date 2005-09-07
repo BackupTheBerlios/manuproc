@@ -1,4 +1,4 @@
-// $Id: IntStringBox.cc,v 1.7 2003/09/30 15:59:19 jacek Exp $
+// $Id: IntStringBox.cc,v 1.8 2005/09/07 10:34:07 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
  *  1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -110,6 +110,7 @@ tr3("",false),
  // redirect our grab_focus
  gtk_signal_connect(GTK_OBJECT(gobj()), "grab_focus",
                  GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
+ sc_int->get_entry()->set_width_chars(8);
 }
 
 void IntStringBox::set_value(ManuProcEntity<>::ID i,const std::string &s, 
