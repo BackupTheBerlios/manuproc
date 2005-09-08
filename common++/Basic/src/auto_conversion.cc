@@ -1,4 +1,4 @@
-// $Id: auto_conversion.cc,v 1.13 2004/05/07 12:37:22 christof Exp $
+// $Id: auto_conversion.cc,v 1.14 2005/09/08 10:08:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -91,7 +91,7 @@ void ManuProC::Datum::from_auto(const char *datum,const char **endptr) throw(Dat
 #include <Misc/Zeitpunkt_new.h>
 
 Zeitpunkt_new::Zeitpunkt_new(const char *stamp)
-	: hour(0), minute(0), second(0), millisecond(0), 
+	: hour(0), minute(0), second(0), microsecond(0), 
 	  minutes_from_gmt(0), prec(days)
 {  if (!*stamp) return;
    const char *payload=stamp;
@@ -123,10 +123,10 @@ Zeitpunkt_new::Zeitpunkt_new(const char *stamp)
    if (len>=1 && *payload=='.') // second fractions
    {  ++payload;
       char *endptr;
-      millisecond=strtol(payload,&endptr,10);
-      for (int i=0;i<6-(endptr-payload);++i) millisecond*=10;
-      if (millisecond>999999 || millisecond<0) millisecond=0;
-      prec=milliseconds;
+      microsecond=strtol(payload,&endptr,10);
+      for (int i=0;i<6-(endptr-payload);++i) microsecond*=10;
+      if (microsecond>999999 || microsecond<0) microsecond=0;
+      prec=microseconds;
       payload=endptr;
       len=strlen(payload);
    }
@@ -135,7 +135,7 @@ Zeitpunkt_new::Zeitpunkt_new(const char *stamp)
       minutes_from_gmt=strtol(payload,const_cast<char**>(&payload),10)*60;
       if (minutes_from_gmt>12*60 || minutes_from_gmt<-12*60) minutes_from_gmt=0;
    }
-   else calculate_TZ(); // kills milliseconds?
+   else calculate_TZ(); // kills microseconds?
   }
   else // fixed format, obsolete?
   {if (len>=2)
@@ -157,12 +157,12 @@ Zeitpunkt_new::Zeitpunkt_new(const char *stamp)
    if (second>59 || second<0) second=0;
 
    if (len>=8)
-   {  millisecond=ManuProC::Datum::getnum((const unsigned char*)payload+6,6);
-      for (int i=len;i<12;i++) millisecond*=10;
-      prec=milliseconds;
+   {  microsecond=ManuProC::Datum::getnum((const unsigned char*)payload+6,6);
+      for (int i=len;i<12;i++) microsecond*=10;
+      prec=microseconds;
    }
-   if (millisecond>999999 || millisecond<0) millisecond=0;
-   calculate_TZ(); // will kill milliseconds?
+   if (microsecond>999999 || microsecond<0) microsecond=0;
+   calculate_TZ(); // will kill microseconds?
   }
 }
 

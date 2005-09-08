@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.cc,v 1.14 2005/09/08 10:08:16 christof Exp $
+// $Id: Zeitpunkt_new.cc,v 1.15 2005/09/08 10:08:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -47,8 +47,8 @@ void Zeitpunkt_new::Round(precision p)
    {  case days: if (hour>=12) ++datum; break;
       case hours: if (minute>=30) ++hour; break;
       case minutes: if (second>=30) ++minute; break;
-      case seconds: if (millisecond>=500000) ++second; break;
-      case milliseconds: if ((millisecond%1000)>500) microsecond+=500;
+      case seconds: if (microsecond>=500000) ++second; break;
+      case milliseconds: if ((microsecond%1000)>500) microsecond+=500;
       case microseconds: break;
       default: assert(0);
    }

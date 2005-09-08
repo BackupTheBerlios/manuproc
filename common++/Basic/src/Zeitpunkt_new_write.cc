@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new_write.cc,v 1.7 2003/03/13 08:50:40 christof Exp $
+// $Id: Zeitpunkt_new_write.cc,v 1.8 2005/09/08 10:08:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,8 +23,8 @@
 
 void Zeitpunkt_new::write(PostgresTimestamp a) const
 {  char micro[20];
-   if (prec>=milliseconds && millisecond)
-   {  snprintf0(micro,sizeof micro,".%06d",millisecond);
+   if (prec>=milliseconds && microsecond)
+   {  snprintf0(micro,sizeof micro,".%06d",microsecond);
       unsigned l;
       for (l=strlen(micro);l>2 && micro[l-1]=='0';--l) micro[l-1]=0;
    }
