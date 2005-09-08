@@ -1,4 +1,4 @@
-// $Id: Interval.cc,v 1.8 2005/09/08 10:08:23 christof Exp $
+// $Id: Interval.cc,v 1.9 2005/09/08 13:10:10 christof Exp $
 
 #include <ManuProCConfig.h>
 #include <Misc/Interval.h>
@@ -23,10 +23,11 @@ ManuProC::Interval::Interval(const std::string &_s) : days(), seconds(), microse
 }
 
 std::string ManuProC::Interval::str() const
-{  assert(!days);
-   assert(!microseconds); // not implemented yet
-   std::string s=itos(seconds/(60*60))+":"+Formatiere((unsigned long)((seconds/60)%60),0,2,"","",'0');
+{  std::string s;
+   if (days) s+=itos(days)+"days ";
+   s+=itos(seconds/(60*60))+":"+Formatiere((unsigned long)((seconds/60)%60),0,2,"","",'0');
    if (seconds%60 || microseconds) s+=":"+Formatiere((unsigned long)seconds%60,0,2,"","",'0');
+   if (microseconds) s+="."+Formatiere((unsigned long)microseconds,0,6,"","",'0');
    return s;
 }
 
