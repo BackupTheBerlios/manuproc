@@ -1,6 +1,6 @@
-// $Id: Zeitpunkt_new.cc,v 1.12 2005/07/07 07:39:02 christof Exp $
+// $Id: Zeitpunkt_new.cc,v 1.13 2005/09/08 10:08:13 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,6 +27,31 @@
 #ifdef DEFAULT_DB // actually we should test for database support
 #include <Misc/FetchIStream.h>
 #endif
+
+Zeitpunkt_new &Zeitpunkt_new::Precision(precision p)
+{ prec=p;
+  switch (prec)
+   {  case days: hour=0; // fall through
+      case hours: minute=0;
+      case minutes: second=0;
+      case seconds: millisecond=0;
+      case milliseconds: break;
+      default: assert(0);
+   }
+  return *this;
+}
+
+void Zeitpunkt_new::Round(precision p)
+{ switch (prec)
+   {  case days: if (hour>=12) ++datum; break;
+      case hours: if (minute>=30) ++hour; break;
+      case minutes: if (second>=30) ++minute; break;
+      case seconds: if (millisecond>=500000) ++second; break;
+      case milliseconds: break;
+      default: assert(0);
+   }
+  Precision(p);
+}
 
 long Zeitpunkt_new::diff(const Zeitpunkt_new &b, precision destprec) const throw()
 {  switch (destprec)

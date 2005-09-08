@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.h,v 1.16 2005/07/07 07:39:02 christof Exp $
+// $Id: Zeitpunkt_new.h,v 1.17 2005/09/08 10:08:13 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -107,16 +107,17 @@ public:
    Zeitpunkt_new operator+(const Days &dist) const throw();
    Zeitpunkt_new operator+(const Minutes &dist) const throw();
    Zeitpunkt_new operator+(const Seconds &dist) const throw();
-   Zeitpunkt_new &Precision(precision p)
-   {  prec=p; return *this; }
+   Zeitpunkt_new &Precision(precision p);
    // return a copy since we should not alter it
-   Zeitpunkt_new Precision(precision p) const
-   {  return withPrecision(p); }
+   // this is misleading, the signature suggests an alteration ...
+   // Zeitpunkt_new Precision(precision p) const
+   // {  return withPrecision(p); }
    // make a copy
    Zeitpunkt_new withPrecision(precision p) const
    {  Zeitpunkt_new res=*this; res.Precision(p); return res; }
    precision Precision() const
    {  return prec; }
+   void Round(precision p);
    
    operator ManuProC::Datum() const throw()
    {  return Datum(); }
@@ -132,9 +133,10 @@ public:
    unsigned int Minute() const { return minute; }
    unsigned int Sekunde() const { return second; }
    // falscher Name
-   unsigned int Minuten() const { return minute; }
+   __deprecated unsigned int Minuten() const { return minute; }
    
     bool valid() const throw() { return datum.valid(); }
+    bool operator!() const throw() { return !valid(); }
 };
 
 std::ostream &operator<<(std::ostream&,const Zeitpunkt_new&);
