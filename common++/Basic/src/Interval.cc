@@ -1,4 +1,4 @@
-// $Id: Interval.cc,v 1.6 2005/09/06 10:36:00 christof Exp $
+// $Id: Interval.cc,v 1.7 2005/09/08 10:08:16 christof Exp $
 
 #include <ManuProCConfig.h>
 #include <Misc/Interval.h>
@@ -32,6 +32,14 @@ std::string ManuProC::Interval::str() const
 
 bool ManuProC::Interval::operator==(const Interval &b)
 { return days==b.days && seconds==b.seconds && microseconds==b.microseconds;
+}
+
+ManuProC::Interval::Interval(const TimeStamp &a, const TimeStamp &b)
+ : days(), seconds(b.diff(a,TimeStamp::seconds)), microseconds((b.Mikrosekunde()-a.Mikrosekunde()))
+{ if (microseconds<0)
+  { microseconds+=1000000; --seconds; }
+  if (seconds>24*60*60) 
+  { days=seconds/(24*60*60); seconds-=days*(24*60*60); }
 }
 
 #ifdef DEFAULT_DB // actually we should test for database support

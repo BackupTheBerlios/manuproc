@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.cc,v 1.13 2005/09/08 10:08:13 christof Exp $
+// $Id: Zeitpunkt_new.cc,v 1.14 2005/09/08 10:08:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,8 +34,9 @@ Zeitpunkt_new &Zeitpunkt_new::Precision(precision p)
    {  case days: hour=0; // fall through
       case hours: minute=0;
       case minutes: second=0;
-      case seconds: millisecond=0;
-      case milliseconds: break;
+      case seconds: microsecond=0;
+      case milliseconds: microsecond-=microsecond%1000;
+      case microseconds: break;
       default: assert(0);
    }
   return *this;
@@ -47,7 +48,8 @@ void Zeitpunkt_new::Round(precision p)
       case hours: if (minute>=30) ++hour; break;
       case minutes: if (second>=30) ++minute; break;
       case seconds: if (millisecond>=500000) ++second; break;
-      case milliseconds: break;
+      case milliseconds: if ((millisecond%1000)>500) microsecond+=500;
+      case microseconds: break;
       default: assert(0);
    }
   Precision(p);
@@ -61,7 +63,9 @@ long Zeitpunkt_new::diff(const Zeitpunkt_new &b, precision destprec) const throw
       case seconds: 
          return (((datum-b.datum)*24+hour-b.hour)*60+minute-b.minute+(b.minutes_from_gmt-minutes_from_gmt))*60+second-b.second;
       case milliseconds: 
-         return ((((datum-b.datum)*24+hour-b.hour)*60+minute-b.minute+(b.minutes_from_gmt-minutes_from_gmt))*60+second-b.second)*1000000+millisecond-b.millisecond;
+         return ((((datum-b.datum)*24+hour-b.hour)*60+minute-b.minute+(b.minutes_from_gmt-minutes_from_gmt))*60+second-b.second)*1000+(microsecond-b.microsecond)/1000;
+      case microseconds: 
+         return ((((datum-b.datum)*24+hour-b.hour)*60+minute-b.minute+(b.minutes_from_gmt-minutes_from_gmt))*60+second-b.second)*1000000+microsecond-b.microsecond;
       default: assert(0);
    }
 }
@@ -84,7 +88,7 @@ bool Zeitpunkt_new::operator<(const Zeitpunkt_new &b) const throw()
    if (minute>(b.minute-mdiff) || prec2==minutes) return false;
    if (second<b.second) return true;
    if (second>b.second || prec2==seconds) return false;
-   return millisecond<b.millisecond;
+   return microsecond<b.microsecond;
 }
 
 const ManuProC::Datum &Zeitpunkt_new::Datum() const throw()
@@ -124,7 +128,7 @@ bool Zeitpunkt_new::operator==(const Zeitpunkt_new &b) const throw()
    if (prec2==minutes) return true;
    if (second!=b.second) return false;
    if (prec2==seconds) return true;
-   return millisecond==b.millisecond;
+   return microsecond==b.microsecond;
 }
 
 Zeitpunkt_new::operator time_t() throw()
@@ -170,7 +174,7 @@ void Zeitpunkt_new::normalize_TZ() const throw()
 }
 
 Zeitpunkt_new::Zeitpunkt_new(time_t t) throw()
-	: millisecond(0), prec(seconds)
+	: microsecond(0), prec(seconds)
 {  struct tm *tm(localtime(&t));
    datum=ManuProC::Datum(tm->tm_mday,tm->tm_mon+1,tm->tm_year+1900);
    hour=tm->tm_hour;
@@ -194,8 +198,8 @@ std::string Zeitpunkt_new::Short(const ManuProC::Datum &d) const
 { std::string res;
   if (datum!=d) res+=datum.Short()+" ";
   res+=itos(hour)+":"+(minute<10?"0":"")+itos(minute);
-  if (second || millisecond) res+=std::string(":")+(second<10?"0":"")+itos(second);
-  if (millisecond) res+=","+Formatiere((unsigned long)millisecond,0,6,"","",'0');
+  if (second || microsecond) res+=std::string(":")+(second<10?"0":"")+itos(second);
+  if (microsecond) res+=","+Formatiere((unsigned long)microsecond,0,6,"","",'0');
   return res;
 }
 

@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.h,v 1.17 2005/09/08 10:08:13 christof Exp $
+// $Id: Zeitpunkt_new.h,v 1.18 2005/09/08 10:08:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -58,31 +58,31 @@ class Zeitpunkt_new
    };
 
    /// not fully implemented yet!
-   enum precision { days,hours,minutes,seconds,milliseconds };
+   enum precision { days,hours,minutes,seconds,milliseconds,microseconds };
    class illegal_value {};
 private:
 //   static const int standard_zone=120;
    ManuProC::Datum datum;
-   int hour,minute,second,millisecond;
+   int hour,minute,second,microsecond;
    mutable int minutes_from_gmt; // time zone, CE[TD]ST=120
    precision prec;
    
    void calculate_TZ(int isdst=-1) const throw();
    void normalize_TZ() const throw();
 public:
-   Zeitpunkt_new() throw() : hour(0), minute(0), second(0), millisecond(0), minutes_from_gmt(0), prec(days) {}
+   Zeitpunkt_new() throw() : hour(0), minute(0), second(0), microsecond(0), minutes_from_gmt(0), prec(days) {}
    Zeitpunkt_new(ManuProC::Datum d) throw() 
-   	: datum(d), hour(0), minute(0), second(0), millisecond(0), 
+   	: datum(d), hour(0), minute(0), second(0), microsecond(0), 
    	  minutes_from_gmt(0), prec(days) 
    {  calculate_TZ(); }
    Zeitpunkt_new(ManuProC::Datum d, int h) throw() 
-   	: datum(d), hour(h), minute(0), second(0), millisecond(0), minutes_from_gmt(0), prec(hours) 
+   	: datum(d), hour(h), minute(0), second(0), microsecond(0), minutes_from_gmt(0), prec(hours) 
    {  calculate_TZ(); }
    Zeitpunkt_new(ManuProC::Datum d, int h, int m) throw() 
-   	: datum(d), hour(h), minute(m), second(0), millisecond(0), minutes_from_gmt(0), prec(minutes) 
+   	: datum(d), hour(h), minute(m), second(0), microsecond(0), minutes_from_gmt(0), prec(minutes) 
    {  calculate_TZ(); }
    Zeitpunkt_new(ManuProC::Datum d, int h, int m, int s) throw() 
-   	: datum(d), hour(h), minute(m), second(s), millisecond(0), minutes_from_gmt(0), prec(seconds) 
+   	: datum(d), hour(h), minute(m), second(s), microsecond(0), minutes_from_gmt(0), prec(seconds) 
    {  calculate_TZ(); }
    // correct wrapper
    Zeitpunkt_new(const PostgresTimestamp &a)
@@ -132,6 +132,7 @@ public:
    unsigned int Stunde() const { return hour; }
    unsigned int Minute() const { return minute; }
    unsigned int Sekunde() const { return second; }
+   unsigned int Mikrosekunde() const { return microsecond; }
    // falscher Name
    __deprecated unsigned int Minuten() const { return minute; }
    
