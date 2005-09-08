@@ -1,4 +1,4 @@
-// $Id: Interval.cc,v 1.7 2005/09/08 10:08:16 christof Exp $
+// $Id: Interval.cc,v 1.8 2005/09/08 10:08:23 christof Exp $
 
 #include <ManuProCConfig.h>
 #include <Misc/Interval.h>
@@ -40,6 +40,15 @@ ManuProC::Interval::Interval(const TimeStamp &a, const TimeStamp &b)
   { microseconds+=1000000; --seconds; }
   if (seconds>24*60*60) 
   { days=seconds/(24*60*60); seconds-=days*(24*60*60); }
+}
+
+void ManuProC::Interval::operator+=(const Interval &b)
+{ days+=b.days;
+  seconds+=b.seconds;
+  microseconds+=b.microseconds;
+  if (microseconds>1000000) { microseconds-=1000000; ++seconds; }
+  if (seconds>24*60*60)
+  { ++days; seconds-=24*60*60; }
 }
 
 #ifdef DEFAULT_DB // actually we should test for database support
