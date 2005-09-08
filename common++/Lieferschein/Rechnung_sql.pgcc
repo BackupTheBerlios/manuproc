@@ -396,12 +396,7 @@ void RechnungBase::setEingezogen(int refnr, bool bezahlt) throw(SQLerror)
    // member nicht ändern?
 }
 
-void Rechnung::setBezahlt(bool _bezahlt) throw(SQLerror)
-{Query("update rechnung set bezahlt=? where rngid=?")
- 	<< _bezahlt << rngid;
- SQLerror::test(__FILELINE__);
- bezahlt=_bezahlt;
-}
+
 
 const std::string Rechnung::Notiz() const throw(SQLerror)
 {

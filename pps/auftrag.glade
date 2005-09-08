@@ -542,7 +542,7 @@
 	      <handler>on_auftraege_kunde_activate</handler>
 	      <last_modification_time>Mon, 17 Dec 2001 10:57:53 GMT</last_modification_time>
 	    </signal>
-	    <label>Aufträge ohne Kunde</label>
+	    <label></label>
 	    <active>False</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>auf_kunde</group>
@@ -556,7 +556,7 @@
 	      <handler>on_auftraege_kunde_activate</handler>
 	      <last_modification_time>Mon, 17 Dec 2001 10:57:53 GMT</last_modification_time>
 	    </signal>
-	    <label>Aufträge mit Kunde</label>
+	    <label></label>
 	    <active>True</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>auf_kunde</group>
@@ -567,7 +567,7 @@
       <widget>
 	<class>GtkMenuItem</class>
 	<name>aufträge</name>
-	<label>Aufträge</label>
+	<label></label>
 	<right_justify>False</right_justify>
 
 	<widget>
@@ -582,7 +582,7 @@
 	      <handler>on_preload_orders_activate</handler>
 	      <last_modification_time>Fri, 12 Apr 2002 08:57:37 GMT</last_modification_time>
 	    </signal>
-	    <label>Aufträge bei Programmstart laden</label>
+	    <label></label>
 	    <active>False</active>
 	    <always_show_toggle>True</always_show_toggle>
 	  </widget>
@@ -602,7 +602,7 @@
 	      <handler>on_unbest_auftraege_activate</handler>
 	      <last_modification_time>Tue, 05 Nov 2002 07:51:48 GMT</last_modification_time>
 	    </signal>
-	    <label>unbestätigte Aufträge / Mengen</label>
+	    <label></label>
 	    <active>False</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>auftrag</group>
@@ -617,7 +617,7 @@
 	      <handler>on_offene_auftraege_activate</handler>
 	      <last_modification_time>Thu, 29 Nov 2001 15:21:19 GMT</last_modification_time>
 	    </signal>
-	    <label>offene Aufträge / Mengen</label>
+	    <label></label>
 	    <active>False</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>auftrag</group>
@@ -632,7 +632,7 @@
 	      <handler>on_storno_auftraege_activate</handler>
 	      <last_modification_time>Tue, 05 Nov 2002 07:51:48 GMT</last_modification_time>
 	    </signal>
-	    <label>stornierte Aufträge / Mengen</label>
+	    <label></label>
 	    <active>False</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>auftrag</group>
@@ -647,7 +647,7 @@
 	      <handler>on_closed_auftraege_activate</handler>
 	      <last_modification_time>Tue, 05 Nov 2002 07:51:48 GMT</last_modification_time>
 	    </signal>
-	    <label>geschlossene Aufträge / Mengen</label>
+	    <label></label>
 	    <active>True</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>auftrag</group>
@@ -698,7 +698,7 @@
 	      <handler>auftrags_id_aenderung</handler>
 	      <last_modification_time>Sat, 31 Jan 2004 13:40:15 GMT</last_modification_time>
 	    </signal>
-	    <label>verfügbare Menge </label>
+	    <label></label>
 	    <active>False</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>auftrag_0_1_2_20000</group>
@@ -893,7 +893,7 @@
 	  <handler>on_togglebutton_auftraege_toggled</handler>
 	  <last_modification_time>Fri, 30 Nov 2001 08:52:16 GMT</last_modification_time>
 	</signal>
-	<label>Aufträge</label>
+	<label></label>
 	<icon>stock_convert_rev2.xpm</icon>
 	<active>False</active>
       </widget>
@@ -943,7 +943,7 @@
 	  <handler>on_button_Kunden_erledigt_clicked</handler>
 	  <last_modification_time>Thu, 29 Nov 2001 17:45:32 GMT</last_modification_time>
 	</signal>
-	<label>aufräumen</label>
+	<label></label>
 	<stock_pixmap>GNOME_STOCK_PIXMAP_TRASH_FULL</stock_pixmap>
       </widget>
 
@@ -957,7 +957,7 @@
 	  <handler>on_button_faerben_clicked</handler>
 	  <last_modification_time>Fri, 17 May 2002 09:08:47 GMT</last_modification_time>
 	</signal>
-	<label>Färben</label>
+	<label></label>
 	<stock_pixmap>GNOME_STOCK_PIXMAP_LINE_IN</stock_pixmap>
       </widget>
     </widget>
@@ -1041,7 +1041,7 @@
 	    <widget>
 	      <class>GtkLabel</class>
 	      <name>label110</name>
-	      <label>für Warengruppe</label>
+	      <label></label>
 	      <justify>GTK_JUSTIFY_CENTER</justify>
 	      <wrap>False</wrap>
 	      <xalign>0.5</xalign>
@@ -1638,7 +1638,7 @@ Auftrag</label>
 	    <class>GtkLabel</class>
 	    <name>info_label_instanzen</name>
 	    <cxx_visibility>protected</cxx_visibility>
-	    <label>info text (etwas länger)</label>
+	    <label></label>
 	    <justify>GTK_JUSTIFY_CENTER</justify>
 	    <wrap>False</wrap>
 	    <xalign>0</xalign>
@@ -1850,7 +1850,7 @@ Auftrag</label>
       <widget>
 	<class>GtkMenuItem</class>
 	<name>auftragseinträge1</name>
-	<label>Auftragseinträge</label>
+	<label></label>
 	<right_justify>False</right_justify>
 
 	<widget>
@@ -2009,7 +2009,7 @@ Auftrag</label>
 	  <handler>on_rueckstand_clicked</handler>
 	  <last_modification_time>Fri, 21 Jun 2002 09:41:23 GMT</last_modification_time>
 	</signal>
-	<label>Rückstand</label>
+	<label></label>
 	<stock_pixmap>GNOME_STOCK_PIXMAP_PRINT</stock_pixmap>
       </widget>
     </widget>
@@ -3661,7 +3661,7 @@ Auftrag</label>
 	      <class>GtkLabel</class>
 	      <child_name>CList:title</child_name>
 	      <name>label8</name>
-	      <label>Stück/Meter</label>
+	      <label></label>
 	      <justify>GTK_JUSTIFY_RIGHT</justify>
 	      <wrap>False</wrap>
 	      <xalign>0.5</xalign>
@@ -3778,7 +3778,7 @@ Auftrag</label>
 	      <class>GtkLabel</class>
 	      <child_name>CList:title</child_name>
 	      <name>label18</name>
-	      <label>Änderung</label>
+	      <label></label>
 	      <justify>GTK_JUSTIFY_LEFT</justify>
 	      <wrap>False</wrap>
 	      <xalign>0.5</xalign>
@@ -4043,7 +4043,7 @@ Auftrag</label>
 	  <handler>on_liefer_close</handler>
 	  <last_modification_time>Wed, 17 Jan 2001 15:48:58 GMT</last_modification_time>
 	</signal>
-	<label>Schließen</label>
+	<label></label>
 	<stock_pixmap>GNOME_STOCK_PIXMAP_CLOSE</stock_pixmap>
       </widget>
 
@@ -4128,8 +4128,7 @@ Auftrag</label>
 	  <handler>liefzeile_delete</handler>
 	  <last_modification_time>Mon, 26 Mar 2001 10:21:19 GMT</last_modification_time>
 	</signal>
-	<label>Lief.Zeile
-löschen</label>
+	<label></label>
 	<stock_pixmap>GNOME_STOCK_PIXMAP_CLEAR</stock_pixmap>
       </widget>
 
@@ -5078,7 +5077,7 @@ Fertig</label>
 		  <handler>on_button_zeile_modifizieren_clicked</handler>
 		  <last_modification_time>Thu, 11 Apr 2002 08:32:14 GMT</last_modification_time>
 		</signal>
-		<label>Übernehmen</label>
+		<label></label>
 		<stock_pixmap>GNOME_STOCK_PIXMAP_CONVERT</stock_pixmap>
 	      </widget>
 	    </widget>
@@ -5232,7 +5231,7 @@ Fertig</label>
 		<class>GtkLabel</class>
 		<name>label_menge</name>
 		<cxx_visibility>protected</cxx_visibility>
-		<label>à Menge</label>
+		<label></label>
 		<justify>GTK_JUSTIFY_LEFT</justify>
 		<wrap>False</wrap>
 		<xalign>0</xalign>
@@ -5523,7 +5522,7 @@ Fertig</label>
 	    <handler>on_rng_close</handler>
 	    <last_modification_time>Wed, 28 Mar 2001 10:47:08 GMT</last_modification_time>
 	  </signal>
-	  <label>Schließen</label>
+	  <label></label>
 	  <stock_pixmap>GNOME_STOCK_PIXMAP_CLOSE</stock_pixmap>
 	</widget>
 
@@ -5694,8 +5693,7 @@ Fertig</label>
 	    <handler>Preis_ergaenzen</handler>
 	    <last_modification_time>Thu, 10 May 2001 06:45:32 GMT</last_modification_time>
 	  </signal>
-	  <label>Preise
-ergänzen</label>
+	  <label></label>
 	  <stock_pixmap>GNOME_STOCK_PIXMAP_SEARCH</stock_pixmap>
 	</widget>
 
@@ -5710,8 +5708,7 @@ ergänzen</label>
 	    <handler>rngzeile_delete</handler>
 	    <last_modification_time>Wed, 28 Mar 2001 10:48:03 GMT</last_modification_time>
 	  </signal>
-	  <label>Rng.Zeile
-löschen</label>
+	  <label></label>
 	  <stock_pixmap>GNOME_STOCK_PIXMAP_CLEAR</stock_pixmap>
 	  <child>
 	    <new_group>True</new_group>
@@ -5745,7 +5742,7 @@ löschen</label>
 	  <widget>
 	    <class>GtkLabel</class>
 	    <name>label66</name>
-	    <label>Währung</label>
+	    <label></label>
 	    <justify>GTK_JUSTIFY_CENTER</justify>
 	    <wrap>False</wrap>
 	    <xalign>0</xalign>
@@ -6147,33 +6144,6 @@ Zuschlag
 	  </widget>
 
 	  <widget>
-	    <class>GtkLabel</class>
-	    <name>label_rechnung_ctl</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <label></label>
-	    <justify>GTK_JUSTIFY_LEFT</justify>
-	    <wrap>False</wrap>
-	    <xalign>0</xalign>
-	    <yalign>0.5</yalign>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <child>
-	      <left_attach>1</left_attach>
-	      <right_attach>2</right_attach>
-	      <top_attach>3</top_attach>
-	      <bottom_attach>4</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>False</yfill>
-	    </child>
-	  </widget>
-
-	  <widget>
 	    <class>Custom</class>
 	    <name>lieferkunde</name>
 	    <cxx_visibility>protected</cxx_visibility>
@@ -6233,6 +6203,33 @@ Zuschlag
 	      <yshrink>False</yshrink>
 	      <xfill>True</xfill>
 	      <yfill>True</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkLabel</class>
+	    <name>label_rechnung_ctl</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <label></label>
+	    <justify>GTK_JUSTIFY_CENTER</justify>
+	    <wrap>False</wrap>
+	    <xalign>0</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <child>
+	      <left_attach>1</left_attach>
+	      <right_attach>2</right_attach>
+	      <top_attach>3</top_attach>
+	      <bottom_attach>4</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
 	    </child>
 	  </widget>
 	</widget>
@@ -6592,9 +6589,10 @@ Zuschlag
 
 	<widget>
 	  <class>GtkFrame</class>
-	  <name>frame54</name>
+	  <name>frame_betrag</name>
 	  <border_width>3</border_width>
 	  <width>180</width>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <label>Rechnungsbetrag</label>
 	  <label_xalign>0</label_xalign>
 	  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
@@ -6607,7 +6605,7 @@ Zuschlag
 	  <widget>
 	    <class>GtkTable</class>
 	    <name>table28</name>
-	    <rows>7</rows>
+	    <rows>8</rows>
 	    <columns>3</columns>
 	    <homogeneous>False</homogeneous>
 	    <row_spacing>0</row_spacing>
@@ -6829,8 +6827,8 @@ Zuschlag
 	      <child>
 		<left_attach>0</left_attach>
 		<right_attach>1</right_attach>
-		<top_attach>5</top_attach>
-		<bottom_attach>6</bottom_attach>
+		<top_attach>6</top_attach>
+		<bottom_attach>7</bottom_attach>
 		<xpad>0</xpad>
 		<ypad>0</ypad>
 		<xexpand>False</xexpand>
@@ -6855,8 +6853,8 @@ Zuschlag
 	      <child>
 		<left_attach>0</left_attach>
 		<right_attach>1</right_attach>
-		<top_attach>6</top_attach>
-		<bottom_attach>7</bottom_attach>
+		<top_attach>7</top_attach>
+		<bottom_attach>8</bottom_attach>
 		<xpad>0</xpad>
 		<ypad>0</ypad>
 		<xexpand>False</xexpand>
@@ -6882,8 +6880,8 @@ Zuschlag
 	      <child>
 		<left_attach>2</left_attach>
 		<right_attach>3</right_attach>
-		<top_attach>5</top_attach>
-		<bottom_attach>6</bottom_attach>
+		<top_attach>6</top_attach>
+		<bottom_attach>7</bottom_attach>
 		<xpad>0</xpad>
 		<ypad>0</ypad>
 		<xexpand>False</xexpand>
@@ -6909,8 +6907,8 @@ Zuschlag
 	      <child>
 		<left_attach>2</left_attach>
 		<right_attach>3</right_attach>
-		<top_attach>6</top_attach>
-		<bottom_attach>7</bottom_attach>
+		<top_attach>7</top_attach>
+		<bottom_attach>8</bottom_attach>
 		<xpad>0</xpad>
 		<ypad>0</ypad>
 		<xexpand>False</xexpand>
@@ -6979,8 +6977,8 @@ Zuschlag
 	      <child>
 		<left_attach>1</left_attach>
 		<right_attach>2</right_attach>
-		<top_attach>5</top_attach>
-		<bottom_attach>6</bottom_attach>
+		<top_attach>6</top_attach>
+		<bottom_attach>7</bottom_attach>
 		<xpad>0</xpad>
 		<ypad>0</ypad>
 		<xexpand>False</xexpand>
@@ -7014,8 +7012,8 @@ Zuschlag
 	      <child>
 		<left_attach>1</left_attach>
 		<right_attach>2</right_attach>
-		<top_attach>6</top_attach>
-		<bottom_attach>7</bottom_attach>
+		<top_attach>7</top_attach>
+		<bottom_attach>8</bottom_attach>
 		<xpad>0</xpad>
 		<ypad>0</ypad>
 		<xexpand>False</xexpand>
@@ -7040,8 +7038,8 @@ Zuschlag
 	      <child>
 		<left_attach>0</left_attach>
 		<right_attach>1</right_attach>
-		<top_attach>3</top_attach>
-		<bottom_attach>4</bottom_attach>
+		<top_attach>4</top_attach>
+		<bottom_attach>5</bottom_attach>
 		<xpad>0</xpad>
 		<ypad>0</ypad>
 		<xexpand>False</xexpand>
@@ -7066,8 +7064,8 @@ Zuschlag
 	      <child>
 		<left_attach>0</left_attach>
 		<right_attach>1</right_attach>
-		<top_attach>4</top_attach>
-		<bottom_attach>5</bottom_attach>
+		<top_attach>5</top_attach>
+		<bottom_attach>6</bottom_attach>
 		<xpad>0</xpad>
 		<ypad>0</ypad>
 		<xexpand>False</xexpand>
@@ -7120,8 +7118,8 @@ Zuschlag
 	      <child>
 		<left_attach>2</left_attach>
 		<right_attach>3</right_attach>
-		<top_attach>3</top_attach>
-		<bottom_attach>4</bottom_attach>
+		<top_attach>4</top_attach>
+		<bottom_attach>5</bottom_attach>
 		<xpad>0</xpad>
 		<ypad>0</ypad>
 		<xexpand>False</xexpand>
@@ -7147,8 +7145,8 @@ Zuschlag
 	      <child>
 		<left_attach>2</left_attach>
 		<right_attach>3</right_attach>
-		<top_attach>4</top_attach>
-		<bottom_attach>5</bottom_attach>
+		<top_attach>5</top_attach>
+		<bottom_attach>6</bottom_attach>
 		<xpad>0</xpad>
 		<ypad>0</ypad>
 		<xexpand>False</xexpand>
@@ -7182,8 +7180,8 @@ Zuschlag
 	      <child>
 		<left_attach>1</left_attach>
 		<right_attach>2</right_attach>
-		<top_attach>3</top_attach>
-		<bottom_attach>4</bottom_attach>
+		<top_attach>4</top_attach>
+		<bottom_attach>5</bottom_attach>
 		<xpad>0</xpad>
 		<ypad>0</ypad>
 		<xexpand>False</xexpand>
@@ -7217,8 +7215,38 @@ Zuschlag
 	      <child>
 		<left_attach>1</left_attach>
 		<right_attach>2</right_attach>
-		<top_attach>4</top_attach>
-		<bottom_attach>5</bottom_attach>
+		<top_attach>5</top_attach>
+		<bottom_attach>6</bottom_attach>
+		<xpad>0</xpad>
+		<ypad>0</ypad>
+		<xexpand>False</xexpand>
+		<yexpand>False</yexpand>
+		<xshrink>False</xshrink>
+		<yshrink>False</yshrink>
+		<xfill>False</xfill>
+		<yfill>False</yfill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>GtkCheckButton</class>
+	      <name>entsorgung</name>
+	      <width>160</width>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <signal>
+		<name>toggled</name>
+		<handler>on_entsorgung_toggled</handler>
+		<after>True</after>
+		<last_modification_time>Thu, 08 Sep 2005 10:47:20 GMT</last_modification_time>
+	      </signal>
+	      <label>Ents.-Pausch.</label>
+	      <active>False</active>
+	      <draw_indicator>True</draw_indicator>
+	      <child>
+		<left_attach>0</left_attach>
+		<right_attach>3</right_attach>
+		<top_attach>3</top_attach>
+		<bottom_attach>4</bottom_attach>
 		<xpad>0</xpad>
 		<ypad>0</ypad>
 		<xexpand>False</xexpand>
@@ -7418,7 +7446,7 @@ Zuschlag
 		<handler>on_button_lieferscheine_aufraumen_clicked</handler>
 		<last_modification_time>Wed, 28 Aug 2002 15:53:06 GMT</last_modification_time>
 	      </signal>
-	      <label>leere Liefer. aufräumen</label>
+	      <label></label>
 	      <stock_pixmap>GNOME_STOCK_PIXMAP_CLEAR</stock_pixmap>
 	    </widget>
 	  </widget>
@@ -7459,7 +7487,7 @@ Zuschlag
 		<handler>lieferschein_uebernehmen</handler>
 		<last_modification_time>Wed, 28 Mar 2001 11:24:50 GMT</last_modification_time>
 	      </signal>
-	      <label>Liefer. übernehmen</label>
+	      <label></label>
 	      <stock_pixmap>GNOME_STOCK_PIXMAP_ATTACH</stock_pixmap>
 	    </widget>
 	  </widget>
@@ -7648,7 +7676,7 @@ Zuschlag
 	  <handler>on_button_close_clicked</handler>
 	  <last_modification_time>Thu, 13 Sep 2001 18:31:42 GMT</last_modification_time>
 	</signal>
-	<label>Schließen</label>
+	<label></label>
 	<stock_pixmap>GNOME_STOCK_PIXMAP_EXIT</stock_pixmap>
       </widget>
 
@@ -8017,7 +8045,7 @@ Jahr
 		  <name>first_komponent</name>
 		  <cxx_visibility>protected</cxx_visibility>
 		  <can_focus>True</can_focus>
-		  <label>nur Art.Nr. einschränken</label>
+		  <label></label>
 		  <active>True</active>
 		  <draw_indicator>True</draw_indicator>
 		  <child>
@@ -8511,7 +8539,7 @@ Jahr
 	<widget>
 	  <class>GtkTable</class>
 	  <name>table26</name>
-	  <rows>4</rows>
+	  <rows>5</rows>
 	  <columns>2</columns>
 	  <homogeneous>False</homogeneous>
 	  <row_spacing>0</row_spacing>
@@ -8669,7 +8697,7 @@ Jahr
 	      <handler>on_liefdate_uebernehmen_toggled</handler>
 	      <last_modification_time>Fri, 16 May 2003 11:55:30 GMT</last_modification_time>
 	    </signal>
-	    <label>überschreiben</label>
+	    <label></label>
 	    <active>False</active>
 	    <draw_indicator>True</draw_indicator>
 	    <child>
@@ -8699,7 +8727,7 @@ Jahr
 	      <handler>on_stueck_uebernehmen_toggled</handler>
 	      <last_modification_time>Fri, 16 May 2003 11:55:40 GMT</last_modification_time>
 	    </signal>
-	    <label>überschreiben</label>
+	    <label></label>
 	    <active>False</active>
 	    <draw_indicator>True</draw_indicator>
 	    <child>
@@ -8767,8 +8795,6 @@ Jahr
 	      <yfill>False</yfill>
 	    </child>
 	  </widget>
-
-
 	</widget>
       </widget>
     </widget>
@@ -9003,7 +9029,7 @@ Jahr
 	      <after>True</after>
 	      <last_modification_time>Tue, 03 May 2005 07:45:09 GMT</last_modification_time>
 	    </signal>
-	    <label>Provision gewähren</label>
+	    <label></label>
 	    <active>True</active>
 	    <draw_indicator>True</draw_indicator>
 	    <child>
@@ -9216,7 +9242,7 @@ Jahr
 			<class>GtkLabel</class>
 			<child_name>CList:title</child_name>
 			<name>label102</name>
-			<label>Stück</label>
+			<label>St</label>
 			<justify>GTK_JUSTIFY_RIGHT</justify>
 			<wrap>False</wrap>
 			<xalign>0.5</xalign>
@@ -9518,7 +9544,7 @@ Jahr
       <class>GtkLabel</class>
       <name>text</name>
       <cxx_visibility>protected</cxx_visibility>
-      <label>Bitte Schließen</label>
+      <label></label>
       <justify>GTK_JUSTIFY_CENTER</justify>
       <wrap>False</wrap>
       <xalign>0.5</xalign>
@@ -9695,7 +9721,7 @@ Jahr
 	  <handler>on_bp_quit_clicked</handler>
 	  <last_modification_time>Thu, 27 Jan 2005 09:53:54 GMT</last_modification_time>
 	</signal>
-	<label>Schließen</label>
+	<label></label>
 	<stock_pixmap>GNOME_STOCK_PIXMAP_CLOSE</stock_pixmap>
       </widget>
 
@@ -9723,7 +9749,7 @@ Jahr
 	  <handler>on_next_artikel_clicked</handler>
 	  <last_modification_time>Thu, 27 Jan 2005 09:54:13 GMT</last_modification_time>
 	</signal>
-	<label>nächst. Artikel</label>
+	<label></label>
 	<stock_pixmap>GNOME_STOCK_PIXMAP_FORWARD</stock_pixmap>
       </widget>
     </widget>
@@ -9774,7 +9800,7 @@ Jahr
       <widget>
 	<class>GtkLabel</class>
 	<name>label121</name>
-	<label>Verfügbar</label>
+	<label>Verf</label>
 	<justify>GTK_JUSTIFY_CENTER</justify>
 	<wrap>False</wrap>
 	<xalign>0</xalign>

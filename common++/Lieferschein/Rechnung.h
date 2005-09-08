@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.34 2005/07/26 11:07:29 jacek Exp $ */
+/* $Id: Rechnung.h,v 1.35 2005/09/08 11:45:14 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2000-2004 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski
@@ -103,6 +103,7 @@ public:
  cH_Zahlungsart getZahlungsart() const {return zahlungsart;}
  void setze_Zahlungsart(cH_Zahlungsart z)   throw(SQLerror);
  bool Entsorgung() const { return entsorgung;}
+ void setEntsorgung(bool ent) throw(SQLerror);
  const std::string Notiz() const throw(SQLerror);
  void Notiz(const std::string _notiz) throw(SQLerror);
  int getEinzugRefnr() const { return einzug_refnr; }

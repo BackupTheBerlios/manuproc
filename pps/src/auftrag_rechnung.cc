@@ -258,7 +258,7 @@ void auftrag_rechnung::on_rngnr_activate()
  rabatt_wert->set_sensitive(rechnung.getFiBuBuchid()==0);
  rabatt_typ->set_sensitive(rechnung.getFiBuBuchid()==0);
  rng_WWaehrung->set_sensitive(rechnung.getFiBuBuchid()==0);
-
+ frame_betrag->set_sensitive(rechnung.getFiBuBuchid()==0);
  
  rtree_daten->show();
 // vbox_n_b_lieferscheine->show();
@@ -305,6 +305,7 @@ void auftrag_rechnung::showBetraege()
      label_waehrung5->set_text(w->Kurzbezeichnung());
      label_waehrung6->set_text(w->Kurzbezeichnung());
      label_waehrung7->set_text(w->Kurzbezeichnung());
+     entsorgung->set_active(rechnung.Entsorgung());
   }else
   {
     rgbetrag_warenwert->set_value(0);
@@ -322,6 +323,7 @@ void auftrag_rechnung::showBetraege()
      label_waehrung5->set_text(w->Kurzbezeichnung());
      label_waehrung6->set_text(w->Kurzbezeichnung());
      label_waehrung7->set_text(w->Kurzbezeichnung());  
+     entsorgung->set_active(false);
   }
 }
 
@@ -910,4 +912,18 @@ void auftrag_rechnung::on_clear_all()
 {  
  lieferkunde->reset();
 }
+
+void auftrag_rechnung::on_entsorgung_toggled()
+{
+ try{
+   if(rechnung.Id()!=Rechnung::none_id)
+    rechnung.setEntsorgung(entsorgung->get_active());
+    showBetraege();
+   }
+ catch(SQLerror &e)
+   {meldung->Show(e);
+    entsorgung->set_active(!entsorgung->get_active());
+   }  
+}
+
 

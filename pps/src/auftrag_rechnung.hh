@@ -51,6 +51,7 @@ class auftrag_rechnung : public auftrag_rechnung_glade
         void on_rngnr_activate();
         void on_rngnr_search(int *_continue, GtkSCContext newsearch);
         void on_lieferkunde_activate();
+        void on_entsorgung_toggled();
 //        void on_selectrow_rechnung(int row, int col, GdkEvent* b);
         void on_unselectrow_rtree(int row, int col, GdkEvent* b);
         void preis_activate();
