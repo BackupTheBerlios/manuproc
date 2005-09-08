@@ -1,4 +1,4 @@
-// $Id: Interval.h,v 1.7 2005/09/08 10:08:16 christof Exp $
+// $Id: Interval.h,v 1.8 2005/09/08 10:08:21 christof Exp $
 
 #ifndef TA734B8C_4F66_4FEF_BEA5_8A6C8FC2C017
 #define TA734B8C_4F66_4FEF_BEA5_8A6C8FC2C017
@@ -17,6 +17,7 @@ struct Interval
   Interval(const TimeStamp &a, const TimeStamp &b); // a<b (normally)
   std::string str() const;
   bool operator==(const Interval &b);
+  bool operator!() const { return !days && !seconds && !microseconds; }
 };
 }
 
