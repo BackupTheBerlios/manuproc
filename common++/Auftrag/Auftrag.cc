@@ -1,4 +1,4 @@
-// $Id: Auftrag.cc,v 1.17 2005/08/24 14:46:08 christof Exp $
+// $Id: Auftrag.cc,v 1.18 2005/09/09 08:48:28 christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -247,9 +247,18 @@ Auftrag::ID Auftrag::getIdFromYourAufId(ppsInstanz::ID instanz,
    return (Query("select auftragid from auftrag where (instanz,youraufnr)=(?,?)")
 	<< instanz << youraufid)
 	.FetchOne<int>();
- return (Query("select auftragid from auftrag where (instanz,kundennr,youraufnr)=(?,?,?)")
-	<< instanz << kundennr << youraufid)
-	.FetchOne<int>();
+  Query q("select auftragid from auftrag where (instanz,kundennr,youraufnr)=(?,?,?)");
+  q << instanz << kundennr << youraufid)
+#ifdef PETIG_EXTENSIONS // fuzzy search
+  if (q.AffectedLines()) 
+    return FetchOne<int>();
+  
+  return (Query("select auftragid from auftrag where (instanz,kundennr)=(?,?) "
+  		"and youraufnr like ?")
+    << instanz << kundennr << (youraufid+"%")).FetchOne<int>();
+#else
+  return FetchOne<int>();
+#endif
 }
 
 Auftrag::ID Auftrag::getIdFromYourAufId(const char *youraufid) throw(SQLerror)
