@@ -1,4 +1,4 @@
-// $Id: Auftrag.cc,v 1.18 2005/09/09 08:48:28 christof Exp $
+// $Id: Auftrag.cc,v 1.19 2005/09/09 08:53:38 christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -248,10 +248,10 @@ Auftrag::ID Auftrag::getIdFromYourAufId(ppsInstanz::ID instanz,
 	<< instanz << youraufid)
 	.FetchOne<int>();
   Query q("select auftragid from auftrag where (instanz,kundennr,youraufnr)=(?,?,?)");
-  q << instanz << kundennr << youraufid)
+  q << instanz << kundennr << youraufid;
 #ifdef PETIG_EXTENSIONS // fuzzy search
-  if (q.AffectedLines()) 
-    return FetchOne<int>();
+  if (q.LinesAffected())
+    return q.FetchOne<int>();
   
   return (Query("select auftragid from auftrag where (instanz,kundennr)=(?,?) "
   		"and youraufnr like ?")
