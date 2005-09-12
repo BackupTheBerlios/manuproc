@@ -404,6 +404,7 @@ auftrag_lieferschein::auftrag_lieferschein(cH_ppsInstanz _instanz)
   else
      if(instanz->ExterneBestellung())
        liefer_kunde->EinschraenkenKdGr(KundengruppeID::Lieferanten);
+  masseneingabe2->set_active(true);
 #endif
 
   liefer_kunde->setExpandStr1(true);

@@ -118,6 +118,9 @@ lieferscheinliste::lieferscheinliste(const cH_ppsInstanz& _instanz)
   kundenid=ManuProcEntity<>::none_id;
   
   LL.setHoleEntries(true);
+#ifdef PETIG_EXTENSIONS
+  first_komponent->set_active(false);
+#endif  
 }
 
 void lieferscheinliste::on_button_show_clicked()
