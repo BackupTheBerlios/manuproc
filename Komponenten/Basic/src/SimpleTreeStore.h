@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.49 2005/09/12 10:30:48 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.50 2005/09/12 10:33:24 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -55,7 +55,7 @@ public:
 	void setDataVec(const SimpleTreeModel::datavec_t &d) {  model->setDataVec(d); }
 	const SimpleTreeModel::datavec_t &getDataVec() const { return model->getDataVec(); }
 	void setTitles(const std::vector<std::string> &T) {  model->setTitles(T); }
-	void setTitleAt(unsigned idx, const std::string &s) {  model->setTitles(idx,s); }
+	void setTitleAt(unsigned idx, const std::string &s) {  model->setTitleAt(idx,s); }
 	void clear() { model->clear(); }
 };
 
