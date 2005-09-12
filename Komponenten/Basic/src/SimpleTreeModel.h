@@ -1,4 +1,4 @@
-// $Id: SimpleTreeModel.h,v 1.12 2004/12/04 10:53:34 christof Exp $
+// $Id: SimpleTreeModel.h,v 1.13 2005/09/12 10:30:48 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -55,6 +55,7 @@ public:
 	const datavec_t &getDataVec() const
 	{  return datavec; }
 	void setTitles(const std::vector<std::string> &T);
+	void setTitleAt(unsigned idx,const std::string &s);
 	const std::string getColTitle(guint idx) const;
 
 	SigC::Signal1<void,cH_RowDataBase> &signal_line_appended()
