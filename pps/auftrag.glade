@@ -566,13 +566,13 @@
 
       <widget>
 	<class>GtkMenuItem</class>
-	<name>aufträge</name>
+	<name>auftrÃ¤ge</name>
 	<label></label>
 	<right_justify>False</right_justify>
 
 	<widget>
 	  <class>GtkMenu</class>
-	  <name>aufträge_menu</name>
+	  <name>auftrÃ¤ge_menu</name>
 
 	  <widget>
 	    <class>GtkCheckMenuItem</class>
@@ -919,7 +919,7 @@
 	<child_name>Toolbar:button</child_name>
 	<name>button_auftrag_erledigt</name>
 	<cxx_visibility>protected</cxx_visibility>
-	<tooltip>Der gewählte Auftrag wird als 'erledigt' markiert</tooltip>
+	<tooltip>Der gewÃ¤hlte Auftrag wird als 'erledigt' markiert</tooltip>
 	<signal>
 	  <name>clicked</name>
 	  <handler>on_button_auftrag_erledigt_clicked</handler>
@@ -937,7 +937,7 @@
 	<child_name>Toolbar:button</child_name>
 	<name>button_Kunden_erledigt</name>
 	<cxx_visibility>protected</cxx_visibility>
-	<tooltip>Die zu erledigten Kundenaufträgen gehörenden Einträge dieser Instanz werden als 'erledigt' markiert.</tooltip>
+	<tooltip>Die zu erledigten KundenauftrÃ¤gen gehÃ¶renden EintrÃ¤ge dieser Instanz werden als 'erledigt' markiert.</tooltip>
 	<signal>
 	  <name>clicked</name>
 	  <handler>on_button_Kunden_erledigt_clicked</handler>
@@ -1250,7 +1250,7 @@
 		<widget>
 		  <class>GtkFrame</class>
 		  <name>frame32</name>
-		  <label>geplante Verfügbarkeit</label>
+		  <label>geplante VerfÃ¼gbarkeit</label>
 		  <label_xalign>0</label_xalign>
 		  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 		  <child>
@@ -1738,7 +1738,7 @@ Auftrag</label>
 
 	  <widget>
 	    <class>GtkPixmapMenuItem</class>
-	    <name>schließen1</name>
+	    <name>schlieÃŸen1</name>
 	    <signal>
 	      <name>activate</name>
 	      <handler>on_backtomain_button_clicked</handler>
@@ -1815,7 +1815,7 @@ Auftrag</label>
 	  <widget>
 	    <class>GtkPixmapMenuItem</class>
 	    <name>kopieren1</name>
-	    <tooltip>Erstellt neuen Auftrag und übernimt die Einträge des aktuellen Auftrages</tooltip>
+	    <tooltip>Erstellt neuen Auftrag und Ã¼bernimt die EintrÃ¤ge des aktuellen Auftrages</tooltip>
 	    <signal>
 	      <name>activate</name>
 	      <handler>on_auftrag_kopieren_activate</handler>
@@ -1849,13 +1849,13 @@ Auftrag</label>
 
       <widget>
 	<class>GtkMenuItem</class>
-	<name>auftragseinträge1</name>
+	<name>auftragseintrÃ¤ge1</name>
 	<label></label>
 	<right_justify>False</right_justify>
 
 	<widget>
 	  <class>GtkMenu</class>
-	  <name>auftragseinträge1_menu</name>
+	  <name>auftragseintrÃ¤ge1_menu</name>
 
 	  <widget>
 	    <class>GtkPixmapMenuItem</class>
@@ -1922,7 +1922,7 @@ Auftrag</label>
 	  <handler>on_backtomain_button_clicked</handler>
 	  <last_modification_time>Wed, 29 Nov 2000 11:21:05 GMT</last_modification_time>
 	</signal>
-	<label>Zurück</label>
+	<label>ZurÃ¼ck</label>
 	<stock_pixmap>GNOME_STOCK_PIXMAP_EXIT</stock_pixmap>
       </widget>
 
@@ -2720,7 +2720,7 @@ Auftrag</label>
 	  <class>GtkEntry</class>
 	  <name>aufbemerkung_entry</name>
 	  <cxx_visibility>protected</cxx_visibility>
-	  <tooltip>Eingabe mit 'Enter' abschließen.</tooltip>
+	  <tooltip>Eingabe mit 'Enter' abschlieÃŸen.</tooltip>
 	  <can_focus>True</can_focus>
 	  <signal>
 	    <name>activate</name>
@@ -2794,7 +2794,7 @@ Auftrag</label>
 	<class>GtkFrame</class>
 	<name>frame3</name>
 	<border_width>5</border_width>
-	<label>Auftragseinträge</label>
+	<label>AuftragseintrÃ¤ge</label>
 	<label_xalign>0</label_xalign>
 	<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 	<child>
@@ -3281,7 +3281,7 @@ Auftrag</label>
 	    <widget>
 	      <class>GtkButton</class>
 	      <name>button33</name>
-	      <tooltip>Verfügbar</tooltip>
+	      <tooltip>VerfÃ¼gbar</tooltip>
 	      <can_focus>True</can_focus>
 	      <label>V:</label>
 	      <relief>GTK_RELIEF_NORMAL</relief>
@@ -3921,7 +3921,7 @@ Auftrag</label>
 
 	  <widget>
 	    <class>GtkPixmapMenuItem</class>
-	    <name>schließen2</name>
+	    <name>schlieÃŸen2</name>
 	    <signal>
 	      <name>activate</name>
 	      <handler>on_liefer_close</handler>
@@ -4368,7 +4368,7 @@ Auftrag</label>
 	  <widget>
 	    <class>GtkFrame</class>
 	    <name>frame19</name>
-	    <label>Päckchen</label>
+	    <label>PÃ¤ckchen</label>
 	    <label_xalign>0</label_xalign>
 	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 	    <child>
@@ -4465,7 +4465,7 @@ Auftrag</label>
 	      <widget>
 		<class>GtkButton</class>
 		<name>button_erledigt</name>
-		<tooltip>Lieferschein wird nicht mehr für DPD vorgeschlagen</tooltip>
+		<tooltip>Lieferschein wird nicht mehr fÃ¼r DPD vorgeschlagen</tooltip>
 		<can_focus>True</can_focus>
 		<signal>
 		  <name>clicked</name>
@@ -5071,7 +5071,7 @@ Fertig</label>
 		<name>button_zeile_modifizieren</name>
 		<cxx_visibility>protected</cxx_visibility>
 		<sensitive>False</sensitive>
-		<tooltip>Zeile modifiezieren, nachdem Anzahl, Menge und/oder Palette geändert worden sind.</tooltip>
+		<tooltip>Zeile modifiezieren, nachdem Anzahl, Menge und/oder Palette geÃ¤ndert worden sind.</tooltip>
 		<signal>
 		  <name>clicked</name>
 		  <handler>on_button_zeile_modifizieren_clicked</handler>
@@ -5321,7 +5321,7 @@ Fertig</label>
 		<child_name>Toolbar:button</child_name>
 		<name>button_zeile_uebernehmen</name>
 		<cxx_visibility>protected</cxx_visibility>
-		<tooltip>Ausgewählte Zeile in Lieferschein übernehmen</tooltip>
+		<tooltip>AusgewÃ¤hlte Zeile in Lieferschein Ã¼bernehmen</tooltip>
 		<signal>
 		  <name>clicked</name>
 		  <handler>on_Palette_activate</handler>
@@ -5336,7 +5336,7 @@ Fertig</label>
 		<child_name>Toolbar:button</child_name>
 		<name>button_kompletter_auftrag</name>
 		<cxx_visibility>protected</cxx_visibility>
-		<tooltip>Kompletten Auftrag in Lieferschein übernehmen</tooltip>
+		<tooltip>Kompletten Auftrag in Lieferschein Ã¼bernehmen</tooltip>
 		<signal>
 		  <name>clicked</name>
 		  <handler>on_newlieferentryall_ok</handler>
@@ -5584,7 +5584,7 @@ Fertig</label>
 	  <child_name>Toolbar:button</child_name>
 	  <name>button27</name>
 	  <cxx_visibility>protected</cxx_visibility>
-	  <tooltip>Linke Maustaste: Drucken wie gewählt. Mittlere Maustaste: Originalrechnung auf Firmanpapier und Kopie auf Standardpapier. Rechte Maustaste: Original auf Firmanpapier und je eine Kopie auf Firmenpapier und Standardpapier.</tooltip>
+	  <tooltip>Linke Maustaste: Drucken wie gewÃ¤hlt. Mittlere Maustaste: Originalrechnung auf Firmanpapier und Kopie auf Standardpapier. Rechte Maustaste: Original auf Firmanpapier und je eine Kopie auf Firmenpapier und Standardpapier.</tooltip>
 	  <signal>
 	    <name>button_press_event</name>
 	    <handler>on_rng_print</handler>
@@ -6280,7 +6280,7 @@ Zuschlag
 	      <widget>
 		<class>GtkFrame</class>
 		<name>frame34</name>
-		<label>Preis überschreiben mit ...</label>
+		<label>Preis Ã¼berschreiben mit ...</label>
 		<label_xalign>0</label_xalign>
 		<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 		<child>
@@ -7481,7 +7481,7 @@ Zuschlag
 	      <name>lief_uebernehmen</name>
 	      <cxx_visibility>protected</cxx_visibility>
 	      <sensitive>False</sensitive>
-	      <tooltip>Kompletten Auftrag in Lieferschein übernehmen</tooltip>
+	      <tooltip>Kompletten Auftrag in Lieferschein Ã¼bernehmen</tooltip>
 	      <signal>
 		<name>clicked</name>
 		<handler>lieferschein_uebernehmen</handler>
@@ -8647,7 +8647,7 @@ Jahr
 	    <class>GtkFrame</class>
 	    <name>frame44</name>
 	    <cxx_visibility>protected</cxx_visibility>
-	    <label>Stück</label>
+	    <label>StÃ¼ck</label>
 	    <label_xalign>0</label_xalign>
 	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
 	    <child>
@@ -8690,7 +8690,7 @@ Jahr
 	    <class>GtkCheckButton</class>
 	    <name>liefdate_uebernehmen</name>
 	    <cxx_visibility>protected</cxx_visibility>
-	    <tooltip>Vom Ursprungsauftrag übernehmen oder überscheiben</tooltip>
+	    <tooltip>Vom Ursprungsauftrag Ã¼bernehmen oder Ã¼berscheiben</tooltip>
 	    <can_focus>True</can_focus>
 	    <signal>
 	      <name>toggled</name>
@@ -8720,7 +8720,7 @@ Jahr
 	    <class>GtkCheckButton</class>
 	    <name>stueck_uebernehmen</name>
 	    <cxx_visibility>protected</cxx_visibility>
-	    <tooltip>Vom Urspringsauftrag übernehmen oder überschreiben</tooltip>
+	    <tooltip>Vom Urspringsauftrag Ã¼bernehmen oder Ã¼berschreiben</tooltip>
 	    <can_focus>True</can_focus>
 	    <signal>
 	      <name>toggled</name>
@@ -9003,7 +9003,7 @@ Jahr
 	<class>GtkFrame</class>
 	<name>verkprov_frame</name>
 	<cxx_visibility>protected</cxx_visibility>
-	<label>Verkäufer &amp; Provision</label>
+	<label>VerkÃ¤ufer &amp; Provision</label>
 	<label_xalign>0</label_xalign>
 	<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 	<child>
@@ -9042,7 +9042,7 @@ Jahr
 	  <widget>
 	    <class>GtkFrame</class>
 	    <name>frame51</name>
-	    <label>Verkäufer</label>
+	    <label>VerkÃ¤ufer</label>
 	    <label_xalign>0</label_xalign>
 	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
 	    <child>
