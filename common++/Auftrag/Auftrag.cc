@@ -1,4 +1,4 @@
-// $Id: Auftrag.cc,v 1.19 2005/09/09 08:53:38 christof Exp $
+// $Id: Auftrag.cc,v 1.20 2005/09/13 08:07:34 christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -257,7 +257,7 @@ Auftrag::ID Auftrag::getIdFromYourAufId(ppsInstanz::ID instanz,
   		"and youraufnr like ?")
     << instanz << kundennr << (youraufid+"%")).FetchOne<int>();
 #else
-  return FetchOne<int>();
+  return q.FetchOne<int>();
 #endif
 }
 
