@@ -1,4 +1,4 @@
-/* $Id: ManuProcEntity.h,v 1.9 2004/02/12 11:26:43 jacek Exp $ */
+/* $Id: ManuProcEntity.h,v 1.10 2005/09/13 08:43:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -47,7 +47,7 @@ public:
       return true;
       }
 
- std::string strId() const { itos0pad(entityid,6);}
+ std::string strId() const { return itos0pad(entityid,6);}
 
 };
 
