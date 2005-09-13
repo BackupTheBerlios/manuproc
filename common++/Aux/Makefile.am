@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.65 2005/07/01 06:37:58 christof Exp $
+# $Id: Makefile.am,v 1.66 2005/09/13 08:09:18 christof Exp $
 
 # this is needed for FetchIStream's Fake hack on debian sid
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@  \
@@ -35,7 +35,7 @@ libMisc.a: $(libMisc_a_OBJECTS) $(libMisc_a_DEPENDENCIES) Makefile
 	(for i in $(libMisc_a_OBJECTS) ; do echo Misc/$$i ; done ) >$@
 
 LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
-	Datum.cc Datum.h Handles.h Handles.cc \
+	Datum.cc Datum.h Date.h Handles.h Handles.cc \
 	IOerror.cc IOerror.h Kalenderwoche.h Pointer.h \
 	Postgres.h Rundungsmacros.h SQLerror.h SQLerror_postgres.h \
 	SQLerror_postgres.pgcc Transaction.h Transaction.pgcc Zeitpunkt_new.cc \
