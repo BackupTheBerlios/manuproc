@@ -1,4 +1,4 @@
-/* $Id: ManuProcEntity.h,v 1.10 2005/09/13 08:43:09 christof Exp $ */
+/* $Id: ManuProcEntity.h,v 1.11 2005/09/13 08:43:12 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -39,6 +39,7 @@ public:
  ManuProcEntity(const ID i) : entityid(i) {}
  virtual ID Id() const = 0;
  virtual void setId(ID _id) { entityid=_id;}
+ virtual ~ManuProcEntity() {}
  
 // static bool Valid(ID) ;//const; // wenn die Klassen von *this abgeleitet werden
                             // soll das 'statis' verschwinden
