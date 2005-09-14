@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.56 2005/03/17 09:03:18 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.57 2005/09/14 12:14:46 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -116,9 +116,18 @@ sqlca.sqlcode=0;
 #endif
    error=sqlca.sqlcode;
    lines=sqlca.sqlerrd[2];
+   
    if (sqlca.sqlcode && sqlca.sqlcode!=100)
    {  eof=true;
+#ifdef OLD_ECPG   
       FetchIStream::mythrow(SQLerror(query)); 
+#else
+      PGresult *lresult=*(ECPGdescriptor_lvalue(__LINE__,descriptor.c_str()));
+      std::string detail;
+      if (lresult) detail=PQresultErrorField(lresult,PG_DIAG_MESSAGE_DETAIL);
+//      Message(lresult);
+      FetchIStream::mythrow(SQLerror(query,detail)); 
+#endif
    }
    else if (sqlca.sqlcode==100 && Query::debugging.on)
    {  DEBUG_FIS("no lines returned/changed");

@@ -1,4 +1,4 @@
-/* $Id: SQLerror_postgres.pgcc,v 1.10 2004/04/29 08:38:47 christof Exp $ */
+/* $Id: SQLerror_postgres.pgcc,v 1.11 2005/09/14 12:14:47 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,11 +29,13 @@ SQLerror_postgres::SQLerror_postgres(const std::string &ctext,int _code,const st
 	: context(ctext), code(_code), name (_name), separator(' ')
 {  }
 
-SQLerror_postgres::SQLerror_postgres(const std::string &ctext) throw()
-	: context(ctext), separator(' ')
+SQLerror_postgres::SQLerror_postgres(const std::string &ctext, 
+              std::string const& _detail) throw()
+	: context(ctext), separator(' '), detail(_detail)
 {  exec sql begin declare section;
    exec sql end declare section;
    code=sqlca.sqlcode;
+   state=sqlca.sqlstate;
    
 // do not copy leading and trailing spaces  
    const char *errmc=sqlca.sqlerrm.sqlerrmc;

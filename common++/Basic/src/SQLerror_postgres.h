@@ -1,4 +1,4 @@
-/* $Id: SQLerror_postgres.h,v 1.7 2003/01/27 10:47:18 christof Exp $ */
+/* $Id: SQLerror_postgres.h,v 1.8 2005/09/14 12:14:46 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,7 @@
 #include <iostream>
 #include <string>
 #include <exception>
+#include <Misc/compiler_ports.h>
 #endif
 
 #define _sql_STRING2__(a) #a
@@ -35,10 +36,12 @@ class SQLerror_postgres : public std::exception
    int code;
    std::string name;
    char separator;
+   std::string state;
+   std::string detail;
 
 public:
    ~SQLerror_postgres() throw() {}
-   SQLerror_postgres(const std::string &context) throw();
+   SQLerror_postgres(const std::string &context, std::string const& detail=std::string()) throw();
    SQLerror_postgres(const std::string &context,int code,const std::string &name) throw();
    
    virtual const char* what() const throw() { return "SQLerror"; }
@@ -49,6 +52,8 @@ public:
    const std::string Context() const { return context; }
    int Code() const { return code; }
    const std::string Message() const { return name; }
+   const std::string State() const { return state; }
+   const std::string Detail() const { return detail; }
 
    static void print(const std::string &context,int codeok=0);
    static void close_cursor(const std::string &c) throw();
@@ -62,7 +67,7 @@ public:
    {  test(context,std::string(cursor),codeok);
    }
    
-   static int SQLCode();
+   static __deprecated int SQLCode();
 
 // with Transaction rollback - please use class Transaction where possible
 // I don't like it too much but I have no better idea, CP 2001-6-27
