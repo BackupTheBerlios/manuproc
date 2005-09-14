@@ -1,4 +1,4 @@
-## $Id: configure.in,v 1.11 2004/05/03 09:47:22 christof Exp $
+## $Id: configure.in,v 1.12 2005/09/14 08:17:06 christof Exp $
 #
 # process this file with GNU autoconf to produce a configure script.
 #
@@ -29,7 +29,14 @@ PKG_CHECK_MODULES(GTKMM,[gtkmm-2.4 >= 2.4.0],
 	[PKG_CHECK_MODULES(SIGC,[sigc++-2.0 >= 2.0.1])],
 	[PKG_CHECK_MODULES(GTKMM,[gtkmm-2.0 >= 1.3.20])])
 
-#AC_CONFIG_SUBDIRS( searchcombo )
-#AM_CONDITIONAL(INSTALL_WIDGET, false )
+dnl LATEX stuff
+m4_include(latex.m4)
+
+AC_PROG_LATEX
+AC_LATEX_PACKAGE(helvetic,article,HELVETIC)
+if test "$HELVETIC" = "yes"
+then
+  AC_DEFINE(HAS_HELVETIC,[],[whether the latex installation has helvetic.sty])
+fi
 
 AC_OUTPUT(Makefile src/Makefile tests/Makefile tests/close_window/Makefile)
