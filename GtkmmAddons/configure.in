@@ -1,4 +1,4 @@
-## $Id: configure.in,v 1.13 2005/09/14 08:17:09 christof Exp $
+## $Id: configure.in,v 1.14 2005/09/14 08:17:11 christof Exp $
 #
 # process this file with GNU autoconf to produce a configure script.
 #
@@ -38,13 +38,17 @@ if test "$has_helvetic" = "yes"
 then
   AC_DEFINE(HAS_HELVETIC,[],[whether the latex installation has helvetic.sty])
 fi
-_AC_LATEX_TEST(changequote(<<, >>)dnl
-<<\documentclass{article}
+
+AC_MSG_CHECKING([for utf8x encoding in latex])
+_AC_LATEX_TEST([
+\documentclass{article}
 \usepackage[utf8x]{inputenc}
 \begin{document}
 \end{document}
->>changequote([, ]),has_utf8x)
-
-echo $has_utf8x
+],has_utf8x)
+AC_MSG_RESULT_UNQUOTED([$has_utf8x])
+if test "$has_utf8x" = "yes"
+then AC_DEFINE(HAS_UTF8X, [], [whether the latex installation has encoding utf8x])
+fi
 
 AC_OUTPUT(Makefile src/Makefile tests/Makefile tests/close_window/Makefile)
