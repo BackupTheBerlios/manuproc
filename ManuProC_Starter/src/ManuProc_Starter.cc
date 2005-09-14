@@ -127,3 +127,10 @@ void ManuProc_Starter::on_offeneposten_clicked()
  system(cmd.c_str());
 }
 
+void ManuProc_Starter::on_taxbird_start_clicked()
+{  
+ std::string cmd("/bin/sh -l -c taxbird &");
+ system(cmd.c_str());
+} 
+
+
