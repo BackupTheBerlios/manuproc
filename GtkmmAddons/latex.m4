@@ -82,18 +82,18 @@ cd .tmps_latex
 ifelse($#,2,[
 $2="no"; export $2;
 cat > testconf.tex << \EOF
-$1
+[$1]
 EOF
 ],$#,3,[
 echo "\\documentclass{$3}" > testconf.tex
 cat >> testconf.tex << \EOF
-$1
+[$1]
 EOF
 ],$#,4,[
 echo "\\documentclass{$3}" > testconf.tex
 echo "\\usepackage{$4}" > testconf.tex
 cat >> testconf.tex << \EOF
-$1
+[$1]
 ])
 cat testconf.tex | $latex 2>&1 1>/dev/null && $2=yes; export $2;
 cd ..
