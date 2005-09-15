@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.38 2004/09/24 15:20:12 christof Exp $
+# $Id: Makefile.am,v 1.39 2005/09/15 09:48:16 christof Exp $
 
 SUBDIRS=AuftragsTest
 
@@ -17,7 +17,7 @@ EXTRA_PROGRAMS=preis test_Bankauftrag test_pgsql_conv testHandles \
    Jumbo_lager Lieferschein ppsInstanz auftrag_ohne_instanzen trans \
    ean artikelbaum mvc trace event_listen event_talk mvc2 \
    vectormap intmap rexml GlobalSettings testmystream \
-   test_schaerangaben extra_cols
+   test_schaerangaben extra_cols interval
 
 ean_SOURCES=ean.cc
 artikelbaum_SOURCES=artikelbaum.cc
@@ -55,12 +55,13 @@ GlobalSettings_SOURCES=GlobalSettings.cc
 testmystream_SOURCES=testmystream.cc
 test_schaerangaben_SOURCES=test_schaerangaben.cc
 extra_cols_SOURCES=extra_cols.cc
+interval_SOURCES=interval.cc
 
 CLEANFILES= *~ $(LINKS) $(EXTRA_PROGRAMS)
 
 LINKS=testHandles.cc testKW.cc test_pgsql_conv.cc FetchIStream.pgcc \
 	fixedpoint.cc Zeitpunkt.cc long.cc mvc.cc trace.cc mvc2.cc \
-	vectormap.cc intmap.cc rexml.cc
+	vectormap.cc intmap.cc rexml.cc interval.cc
 
 $(LINKS):
 	ln -sf ../Basic/examples/$@ .

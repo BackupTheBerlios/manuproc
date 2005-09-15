@@ -1,4 +1,4 @@
-// $Id: Interval.cc,v 1.10 2005/09/13 08:01:03 christof Exp $
+// $Id: Interval.cc,v 1.11 2005/09/15 09:48:15 christof Exp $
 
 #include <ManuProCConfig.h>
 #include <Misc/Interval.h>
@@ -9,6 +9,10 @@
 #include <cassert>
 #include <Misc/Ausgabe_neu.h>
 
+static const int million=1000000;
+static const int secs_per_day=24*60*60;
+
+// this does not check very strict for well-formedness
 ManuProC::Interval::Interval(const std::string &_s) : days(), seconds(), microseconds()
 { std::string s=_s;
   std::string::size_type daypos=s.find("day");
@@ -18,6 +22,8 @@ ManuProC::Interval::Interval(const std::string &_s) : days(), seconds(), microse
     if (!s.empty() && s[0]=='s') s.erase(0,1);
     if (s.empty()) return;
   }
+  std::string::size_type minus=s.find('-');
+  if (minus!=std::string::npos) s.erase(0,minus+1);
   std::string::size_type first_colon=s.find(':');
   std::string::size_type second_colon=std::string::npos;
   if (first_colon!=std::string::npos) second_colon=s.find(':',first_colon+1);
@@ -36,17 +42,39 @@ ManuProC::Interval::Interval(const std::string &_s) : days(), seconds(), microse
     }
   }
   seconds+=(hours*60*60) + (minutes*60);
+  if (minus!=std::string::npos) 
+  { seconds=-seconds;
+    microseconds=-microseconds;
+  }
+  normalize();
+}
+
+ManuProC::Interval::Interval(int d,int s,int m)
+  : days(d), seconds(s), microseconds(m)
+{ normalize();
+}
+
+ManuProC::Interval ManuProC::Interval::operator-() const
+{ Interval result;
+  result.days=-days;
+  result.seconds=-seconds;
+  result.microseconds=-microseconds;
+  result.normalize();
+  return result;
 }
 
 std::string ManuProC::Interval::str() const
 {  std::string s;
    
    if (days) 
-   { if (days==1) s+=itos(days)+" day";
+   { if (days==1 || days==-1) s+=itos(days)+" day";
      else s+=itos(days)+" days";
      if (!seconds && !microseconds) return s; 
      s+=' ';
    }
+   
+   if (negative()) 
+     return s+"-"+Interval(0,-seconds,-microseconds).str();
    s+=itos(seconds/(60*60))+":"+Formatiere((unsigned long)((seconds/60)%60),0,2,"","",'0');
    if (seconds%60 || microseconds) s+=":"+Formatiere((unsigned long)seconds%60,0,2,"","",'0');
    if (microseconds) s+="."+Formatiere((unsigned long)microseconds,0,6,"","",'0');
@@ -57,21 +85,45 @@ bool ManuProC::Interval::operator==(const Interval &b)
 { return days==b.days && seconds==b.seconds && microseconds==b.microseconds;
 }
 
+bool ManuProC::Interval::negative() const
+{ return days<0 || (!days && (seconds<0 || (!seconds && microseconds<0)));
+}
+
 ManuProC::Interval::Interval(const TimeStamp &a, const TimeStamp &b)
  : days(), seconds(b.diff(a,TimeStamp::seconds)), microseconds((b.Mikrosekunde()-a.Mikrosekunde()))
-{ if (microseconds<0)
-  { microseconds+=1000000; --seconds; }
-  if (seconds>=24*60*60) 
-  { days=seconds/(24*60*60); seconds-=days*(24*60*60); }
+{ normalize();
+}
+
+static void normalize_one(int &what, int &next, int factor, bool negative)
+{ if (what<=-factor || what>=factor)
+  // this is also valid if to_add gets negative
+  { int to_add=what/factor;
+    next+=to_add; 
+    what-=factor*to_add; 
+  }
+  if (what<0 && !negative)
+  { --next;
+    what+=factor;
+  }
+  else if (what>0 && negative) 
+  { ++next;
+    what-=factor;
+  }
+}
+
+void ManuProC::Interval::normalize()
+{ normalize_one(microseconds, seconds, million, negative());
+  bool was_negative=negative();
+  normalize_one(seconds, days, secs_per_day, was_negative);
+  if (was_negative!=negative())
+    normalize_one(microseconds, seconds, million, negative());
 }
 
 void ManuProC::Interval::operator+=(const Interval &b)
 { days+=b.days;
   seconds+=b.seconds;
   microseconds+=b.microseconds;
-  if (microseconds>=1000000) { microseconds-=1000000; ++seconds; }
-  if (seconds>=24*60*60)
-  { ++days; seconds-=24*60*60; }
+  normalize();
 }
 
 #ifdef DEFAULT_DB // actually we should test for database support
@@ -83,12 +135,7 @@ FetchIStream &operator>>(FetchIStream &is, ManuProC::Interval &v)
 }
 
 ArgumentList &operator<<(ArgumentList &q, const ManuProC::Interval &v)
-{  std::string s="'";
-   if (v.days) s+=itos(v.days)+" days ";
-   s+=itos(v.seconds/(60*60))+":"+itos((v.seconds/60)%60)+":"+itos(v.seconds%60);
-   if (v.microseconds) s+="."+Formatiere((unsigned long)v.microseconds,0,6,"","",'0');
-   s+="'";
-   q.add_argument(s);
+{  q.add_argument("'"+v.str()+"'");
    return q;
 }
 
