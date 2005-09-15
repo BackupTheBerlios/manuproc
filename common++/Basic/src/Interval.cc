@@ -1,4 +1,4 @@
-// $Id: Interval.cc,v 1.11 2005/09/15 09:48:15 christof Exp $
+// $Id: Interval.cc,v 1.12 2005/09/15 10:53:32 christof Exp $
 
 #include <ManuProCConfig.h>
 #include <Misc/Interval.h>
@@ -55,12 +55,7 @@ ManuProC::Interval::Interval(int d,int s,int m)
 }
 
 ManuProC::Interval ManuProC::Interval::operator-() const
-{ Interval result;
-  result.days=-days;
-  result.seconds=-seconds;
-  result.microseconds=-microseconds;
-  result.normalize();
-  return result;
+{ return ManuProC::Interval(-days,-seconds,-microseconds);
 }
 
 std::string ManuProC::Interval::str() const
@@ -81,7 +76,7 @@ std::string ManuProC::Interval::str() const
    return s;
 }
 
-bool ManuProC::Interval::operator==(const Interval &b)
+bool ManuProC::Interval::operator==(const Interval &b) const
 { return days==b.days && seconds==b.seconds && microseconds==b.microseconds;
 }
 
@@ -124,6 +119,14 @@ void ManuProC::Interval::operator+=(const Interval &b)
   seconds+=b.seconds;
   microseconds+=b.microseconds;
   normalize();
+}
+
+ManuProC::Interval ManuProC::Interval::operator-(const Interval &b) const
+{ return ManuProC::Interval(days-b.days,seconds-b.seconds,microseconds-b.microseconds);
+}
+
+ManuProC::Interval ManuProC::Interval::operator+(const Interval &b) const
+{ return ManuProC::Interval(days+b.days,seconds+b.seconds,microseconds+b.microseconds);
 }
 
 #ifdef DEFAULT_DB // actually we should test for database support
