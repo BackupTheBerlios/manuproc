@@ -1,4 +1,4 @@
-// $Id: Interval.cc,v 1.12 2005/09/15 10:53:32 christof Exp $
+// $Id: Interval.cc,v 1.13 2005/09/15 12:33:59 christof Exp $
 
 #include <ManuProCConfig.h>
 #include <Misc/Interval.h>
@@ -71,6 +71,14 @@ std::string ManuProC::Interval::str() const
    if (negative()) 
      return s+"-"+Interval(0,-seconds,-microseconds).str();
    s+=itos(seconds/(60*60))+":"+Formatiere((unsigned long)((seconds/60)%60),0,2,"","",'0');
+   if (seconds%60 || microseconds) s+=":"+Formatiere((unsigned long)seconds%60,0,2,"","",'0');
+   if (microseconds) s+="."+Formatiere((unsigned long)microseconds,0,6,"","",'0');
+   return s;
+}
+
+std::string ManuProC::Interval::str(const NoDays &dummy) const
+{  if (negative()) return "-"+(-*this).str(dummy);
+   std::string s=itos(days*24+seconds/(60*60))+":"+Formatiere((unsigned long)((seconds/60)%60),0,2,"","",'0');
    if (seconds%60 || microseconds) s+=":"+Formatiere((unsigned long)seconds%60,0,2,"","",'0');
    if (microseconds) s+="."+Formatiere((unsigned long)microseconds,0,6,"","",'0');
    return s;
