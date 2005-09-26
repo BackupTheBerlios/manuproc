@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.85 2005/04/13 22:58:57 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.86 2005/09/26 07:31:29 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -130,7 +130,7 @@ void SimpleTreeStore::load_remembered()
       b=e+1;
    }
    auffuellen_bool=value.second.find('a')!=std::string::npos;
-   // Menü und Anzeige anpassen
+   // Men und Anzeige anpassen
    block_save=true;
    on_visibly_changed(bvector_iterator());
    signal_save(0);
@@ -684,7 +684,7 @@ void SimpleTreeStore::iterinit(vfunc_iter_t iter,const const_iterator &schema) c
    STS_GTKMM_22_24(iter->stamp=stamp, iter.set_stamp(stamp));
    reinterpret_cast<SimpleTreeStore::const_iterator&>(iter STS_GTKMM_22_24(->,.gobj()->)user_data)=schema;
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2   
-   iter.set_model_gobject(const_cast<GtkTreeModel*>(gobj()));
+   iter.set_model_gobject(const_cast<GtkTreeModel*>(Gtk::TreeModel::gobj()));
 #endif   
    ManuProC::Trace(trace_channel,__FUNCTION__,iter STS_GTKMM_22_24(->stamp,.get_stamp()),
    		iter STS_GTKMM_22_24(->,.gobj()->)user_data,
@@ -1059,4 +1059,20 @@ void SimpleTreeStore::setSortierspalte(unsigned s,bool i)
 Glib::RefPtr<SimpleTreeStore> SimpleTreeStore::create(int cols)
 {
   return Glib::RefPtr<SimpleTreeStore>( new SimpleTreeStore(cols));
+}
+
+bool SimpleTreeStore::row_draggable_vfunc(const Gtk::TreeModel::Path& path) const
+{ return true;
+}
+bool SimpleTreeStore::drag_data_get_vfunc(const Gtk::TreeModel::Path& path, Gtk::SelectionData& selection_data) const
+{ return false;
+}
+bool SimpleTreeStore::drag_data_delete_vfunc(const Gtk::TreeModel::Path& path)
+{ return false;
+}
+bool SimpleTreeStore::drag_data_received_vfunc(const Gtk::TreeModel::Path& dest, const Gtk::SelectionData& selection_data)
+{ return false;
+}
+bool SimpleTreeStore::row_drop_possible_vfunc(const Gtk::TreeModel::Path& dest, const Gtk::SelectionData& selection_data) const
+{ return false;
 }

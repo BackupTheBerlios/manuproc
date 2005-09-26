@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.50 2005/09/12 10:33:24 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.51 2005/09/26 07:31:29 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,8 @@
 
 #include <SimpleTreeModel.h>
 #include <gtkmm/treemodel.h>
+#include <gtkmm/treedragsource.h>
+#include <gtkmm/treedragdest.h>
 #include <RowDataBase.h>
 #include <TreeRow.h>
 #include <deque>
@@ -94,7 +96,9 @@ namespace std { // sigh
 void swap(SimpleTreeStoreNode &a,SimpleTreeStoreNode &b);
 };
 
-class SimpleTreeStore : public Glib::Object, public Gtk::TreeModel, public SimpleTreeModel_Proxy
+class SimpleTreeStore : virtual public Glib::Object, public Gtk::TreeModel, 
+		public Gtk::TreeDragSource, public Gtk::TreeDragDest,
+		public SimpleTreeModel_Proxy
 {public:
 
 	// einen neuen Ast erzeugen, deep ist die Spalte, v der Wert dieser Spalte
@@ -123,7 +127,7 @@ private:
 
 	guint columns;
 	guint max_column;
-	guint showdeep;  // nicht hier benötigt
+	guint showdeep;  // nicht hier benï¿½igt
 	std::vector<bool> vec_hide_cols; // index is index
 	gpointer gp;
 
@@ -185,6 +189,12 @@ private:
    unsigned Node2nth_child(const Node &nd) const;
 
 // vfunc overrides for my tree model
+   virtual bool row_draggable_vfunc(const Gtk::TreeModel::Path& path) const;
+   virtual bool drag_data_get_vfunc(const Gtk::TreeModel::Path& path, Gtk::SelectionData& selection_data) const;
+   virtual bool drag_data_delete_vfunc(const Gtk::TreeModel::Path& path);
+   virtual bool drag_data_received_vfunc(const Gtk::TreeModel::Path& dest, const Gtk::SelectionData& selection_data);
+   virtual bool row_drop_possible_vfunc(const Gtk::TreeModel::Path& dest, const Gtk::SelectionData& selection_data) const;
+
    virtual Gtk::TreeModelFlags get_flags_vfunc() STS_VFUNC_CONST;
    virtual int get_n_columns_vfunc() STS_VFUNC_CONST;
    virtual GType get_column_type_vfunc(int index) STS_VFUNC_CONST;

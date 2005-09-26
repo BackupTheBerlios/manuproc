@@ -1,4 +1,4 @@
-// $Id: CellRendererSimpleTree.cc,v 1.1 2004/01/06 09:07:09 christof Exp $
+// $Id: CellRendererSimpleTree.cc,v 1.2 2005/09/26 07:31:29 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -75,6 +75,10 @@ void CellRendererSimpleTree::get_size_vfunc(Gtk::Widget& widget, const Gdk::Rect
 {  if (column && guint(childrens_deep)==column)
    {  if (width) *width=property_xpad() * 2 + XSIZE;
       if (height) *height=property_ypad() * 2 + IMGSIZE;
+   }
+   else
+   { if (width) *width=0;
+     if (height) *height=0;
    }
 }
 
