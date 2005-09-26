@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.cc,v 1.17 2005/09/26 13:26:27 jacek Exp $
+// $Id: Zeitpunkt_new.cc,v 1.18 2005/09/26 13:56:55 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -48,31 +48,27 @@ void Zeitpunkt_new::normalize(Zeitpunkt_new::precision p)
  {
   case microseconds: 
    if(microsecond>=1000000)
-     {microsecond=0; second++;
-      normalize(seconds);
-     }
+     {microsecond=0; second++;}
+   normalize(seconds);
    break;
 
   case seconds: 
    if(second>=60)
-     {second=0; minute++;
-      normalize(minutes);
-     }
+     {second=0; minute++;}
+   normalize(minutes);
    break;
 
   case minutes: 
    if(minute>=60)
-     {minute=0; hour++;
-      normalize(hours);
-     }
+     {minute=0; hour++;}
+   normalize(hours);
    break; 
 
   case hours: 
    if(hour>23)
-     hour=0; datum++;
+     {hour=0; datum++;}
    break; 
  }
-
  
 }
 
