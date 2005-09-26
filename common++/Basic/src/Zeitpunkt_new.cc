@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.cc,v 1.18 2005/09/26 13:56:55 jacek Exp $
+// $Id: Zeitpunkt_new.cc,v 1.19 2005/09/26 14:37:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -42,34 +42,16 @@ Zeitpunkt_new &Zeitpunkt_new::Precision(precision p)
   return *this;
 }
 
-void Zeitpunkt_new::normalize(Zeitpunkt_new::precision p)
+void Zeitpunkt_new::normalize(precision p)
 {
- switch(p)
- {
-  case microseconds: 
-   if(microsecond>=1000000)
-     {microsecond=0; second++;}
-   normalize(seconds);
-   break;
-
-  case seconds: 
-   if(second>=60)
-     {second=0; minute++;}
-   normalize(minutes);
-   break;
-
-  case minutes: 
-   if(minute>=60)
-     {minute=0; hour++;}
-   normalize(hours);
-   break; 
-
-  case hours: 
-   if(hour>23)
-     {hour=0; datum++;}
-   break; 
- }
- 
+   while (microsecond>=1000000)
+   {microsecond-=1000000; second++;}
+   while (second>=60)
+   {second-=60; minute++;}
+   while (minute>=60)
+   {minute-=60; hour++;}
+   while (hour>=24)
+   {hour-=24; datum++;}
 }
 
 
@@ -83,8 +65,8 @@ void Zeitpunkt_new::Round(precision p)
       case microseconds: break;
       default: assert(0);
    }
+  normalize(p);
   Precision(p);
-  normalize(microseconds);
 }
 
 long Zeitpunkt_new::diff(const Zeitpunkt_new &b, precision destprec) const throw()
