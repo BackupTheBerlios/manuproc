@@ -1,4 +1,4 @@
-// $Id: Interval.cc,v 1.13 2005/09/15 12:33:59 christof Exp $
+// $Id: Interval.cc,v 1.14 2005/09/26 12:38:57 christof Exp $
 
 #include <ManuProCConfig.h>
 #include <Misc/Interval.h>
@@ -82,6 +82,10 @@ std::string ManuProC::Interval::str(const NoDays &dummy) const
    if (seconds%60 || microseconds) s+=":"+Formatiere((unsigned long)seconds%60,0,2,"","",'0');
    if (microseconds) s+="."+Formatiere((unsigned long)microseconds,0,6,"","",'0');
    return s;
+}
+
+long ManuProC::Interval::Sekunden() const
+{ return days*long(secs_per_day)+seconds;
 }
 
 bool ManuProC::Interval::operator==(const Interval &b) const

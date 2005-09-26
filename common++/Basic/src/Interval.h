@@ -1,4 +1,4 @@
-// $Id: Interval.h,v 1.12 2005/09/15 12:33:59 christof Exp $
+// $Id: Interval.h,v 1.13 2005/09/26 12:38:57 christof Exp $
 
 #ifndef TA734B8C_4F66_4FEF_BEA5_8A6C8FC2C017
 #define TA734B8C_4F66_4FEF_BEA5_8A6C8FC2C017
@@ -29,6 +29,7 @@ struct Interval
   bool negative() const;
   void normalize();
   Interval operator-() const;
+  long Sekunden() const;
 };
 }
 
