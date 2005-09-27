@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.19 2004/11/18 16:45:44 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.20 2005/09/27 09:39:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -36,8 +36,12 @@
 #define ECPG_INVALID_DESCRIPTOR_INDEX   -241
 #endif
 
-Query::debug_environment::debug_environment() : on(false)
-{  if (getenv("SQLOPT") && getenv("SQLOPT")==std::string("-E")) on=true;
+Query::debug_environment::debug_environment() : on(), time_queries()
+{  char *env=getenv("SQLOPT");
+   if (!env) return;
+   std::string senv=env;
+   if (senv=="-E") on=true;
+   else if (senv=="-T") time_queries=true;
 }
 
 Query::debug_environment Query::debugging;

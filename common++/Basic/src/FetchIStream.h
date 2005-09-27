@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.61 2005/09/14 12:14:46 christof Exp $
+// $Id: FetchIStream.h,v 1.62 2005/09/27 09:39:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Christof Petig
@@ -323,6 +323,7 @@ public:
 	// SQLOPT=-E turns this on
 	struct debug_environment
 	{  bool on;
+	   bool time_queries;
 	   debug_environment();
 	};
 	static debug_environment debugging;
