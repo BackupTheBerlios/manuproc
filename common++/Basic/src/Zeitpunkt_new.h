@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.h,v 1.19 2005/09/26 13:26:27 jacek Exp $
+// $Id: Zeitpunkt_new.h,v 1.20 2005/09/27 09:38:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -69,7 +69,7 @@ private:
    
    void calculate_TZ(int isdst=-1) const throw();
    void normalize_TZ() const throw();
-   void normalize(precision p);
+   void normalize();
 public:
    Zeitpunkt_new() throw() : hour(0), minute(0), second(0), microsecond(0), minutes_from_gmt(0), prec(days) {}
    Zeitpunkt_new(ManuProC::Datum d) throw() 
