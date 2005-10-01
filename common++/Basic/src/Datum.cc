@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.33 2005/07/01 06:37:59 christof Exp $
+// $Id: Datum.cc,v 1.34 2005/10/01 02:16:08 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.33 2005/07/01 06:37:59 christof Exp $ */
+/* $Id: Datum.cc,v 1.34 2005/10/01 02:16:08 jacek Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -225,6 +225,26 @@ ManuProC::Datum ManuProC::Datum::operator+(unsigned int tage) const throw(Datums
    ret.tag=ret_tag;
    ret.woche=0;
    return ret;
+}
+
+ManuProC::Datum ManuProC::Datum::TruncJahr() const throw(Datumsfehler)
+{
+ teste();
+ Datum ret(*this);
+ ret.tag=ret.monat=1;
+ ret.woche=0;
+ return ret;
+}
+
+ManuProC::Datum ManuProC::Datum::AddJahr(int jahre) const throw(Datumsfehler)
+{
+ teste();
+ Datum ret(*this);
+ if(Schaltjahr(ret.jahr) && ret.tag==29)
+   ret.tag=28;
+ ret.jahr+=jahre;
+ ret.woche=0;
+ return ret;
 }
 
 ManuProC::Datum ManuProC::Datum::operator-(unsigned int tage) const throw(Datumsfehler)

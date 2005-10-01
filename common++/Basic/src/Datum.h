@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.28 2005/09/06 13:31:45 christof Exp $ */
+/* $Id: Datum.h,v 1.29 2005/10/01 02:16:08 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -128,6 +128,10 @@ public:
         Datum operator++(int);
         Datum operator+(unsigned int) const throw(Datumsfehler);
         Datum operator-(unsigned int) const throw(Datumsfehler);
+        // Schaltet auf das gleiche Datum aber in anderem Jahr
+        Datum AddJahr(int) const throw(Datumsfehler);
+        // gibt als Datum 1. Januar dieses Jahres
+        Datum TruncJahr() const throw(Datumsfehler);
         Datum &operator+=(unsigned int tage)
         {  return *this=*this+tage;
         }
