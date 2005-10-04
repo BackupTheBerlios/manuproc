@@ -1684,7 +1684,8 @@ void LR_Abstraktion::page_header(std::ostream &os)
    if (page_counter==1 && (Typ()==Lieferschein || Typ()==Rechnung))
     {os << "\\scriptsize{"<<mld->MLT(MultiL_Dict::TXT_SIEERHIELTEN)<<"}";
      if(Typ()==Rechnung)
-       os <<  "\\hfill \\scriptsize{"<<mld->MLT(MultiL_Dict::TXT_UNSERESTNR)<<": 5131/5923/0168}\\\\\n";
+       os <<  "\\hfill \\scriptsize{"<<mld->MLT(MultiL_Dict::TXT_UNSERESTNR)
+		 <<": "<< kunde_von->idnr() << "}\\\\\n"; //5131/5923/0168}
      else os << "\\\\\n";
      --zeilen_passen_noch; // immer besser
     }
