@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.30 2005/10/05 08:33:32 christof Exp $ */
+/* $Id: Datum.h,v 1.31 2005/10/05 08:33:39 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -37,12 +37,12 @@ class Datum;
 
 std::ostream &operator<<(std::ostream&,const ManuProC::Datumsfehler&);
 
-/// Ein Datum ist ungltig
+/// Ein Datum ist ungültig
 class ManuProC::Datumsfehler : public std::exception
 {  /// eine Kombination aus tagfalsch, monatfalsch, jahrfalsch
    int falsch;
 public:
-   /** Werte fr falsch: */
+   /** Werte für falsch: */
    static const int tagfalsch=1;
    static const int monatfalsch=2;
    static const int jahrfalsch=4;
@@ -71,7 +71,7 @@ public:
 		virtual const char* what() const throw() { return "ManuProC::Datum::Formatfehler"; }
 	};
 	
-	/// aus Tag, Monat, Jahr erzeugen (expandyear l�st 2stelliges Jahr zu)
+	/// aus Tag, Monat, Jahr erzeugen (expandyear lässt 2stelliges Jahr zu)
 	Datum(int t, int m, int j,bool expandyear=true) throw(Datumsfehler);
 	
 	Datum() throw() : woche(),woche_jahrdiff(),quart(),
@@ -96,14 +96,14 @@ public:
 	const char *c_str_filled() const throw(Datumsfehler);
 	
         const std::string Short() const throw(Datumsfehler);
-	/// in Postgres Repr�entation wandeln
+	/// in Postgres Repräsentation wandeln
 	void write_postgres(char *b,unsigned int sz) const throw(Datumsfehler);
    std::string to_iso() const throw(Datumsfehler);
    std::string postgres_null_if_invalid() const;
-	/// in Europ�sches Format wandeln
+	/// in Europäisches Format wandeln
 	void write_euro(char *b,unsigned int sz) const throw(Datumsfehler);
 	std::string write_euro() const throw(Datumsfehler);
-	/// Gltigkeit testen
+	/// Gültigkeit testen
 	void teste() const throw(Datumsfehler);
 	/// Datumsformat automatisch raten
         void from_auto(const char *datum,const char **endptr=0) throw(Datumsfehler,Formatfehler);
@@ -143,8 +143,8 @@ public:
         /// Differenz in Tagen
         int operator-(const Datum &b) const throw(Datumsfehler);
 
-	/** fhrende Leerzeichen berlesen, dann Dezimalziffern in ulong wandeln
-	    bis zu einer bestimmten L�ge */
+	/** führende Leerzeichen berlesen, dann Dezimalziffern in ulong wandeln
+	    bis zu einer bestimmten Länge */
 	static unsigned long getnum(const unsigned char *s,int len) throw();
 
 	unsigned int Tage_in_Monat() const throw()
@@ -158,14 +158,14 @@ public:
 	static bool Schaltjahr(int jahr) throw()
 	{  return (jahr%4==0); }
 	/** Wieviele Tage hat das Jahr,
-	    gltig 1901-2099 */
+	    gültig 1901-2099 */
 	static int Tage_im_Jahr(int jahr) throw()
 	{  return Schaltjahr(jahr)?366:365; }
 	
 	/// Der [1..366]. Tag im Jahr
 	int Julian() const throw(Datumsfehler);
 	/** Tage seit 1.1.1900 
-            <br>(1.1.1 waere m�lich gewesen, 
+            <br>(1.1.1 waere möglich gewesen, 
 	    aber: Kalenderreformationen sind ein Kreuz) */
 	int Internal() const throw(Datumsfehler);
 	/// Kalenderwoche

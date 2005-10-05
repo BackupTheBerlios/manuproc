@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.h,v 1.21 2005/10/05 08:33:32 christof Exp $
+// $Id: Zeitpunkt_new.h,v 1.22 2005/10/05 08:33:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,8 +28,8 @@
 #include <time.h>
 
 //: Zeitpunkt an einem Tag
-// m�licherweise von Datum ableiten?
-// Dann wrde allerdings manches komplizierter werden !!!
+// möglicherweise von Datum ableiten?
+// Dann würde allerdings manches komplizierter werden !!!
 class Zeitpunkt_new
 {public:
    class Days 
