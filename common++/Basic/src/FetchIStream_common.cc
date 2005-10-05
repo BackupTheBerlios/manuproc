@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.21 2005/10/05 08:33:36 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.22 2005/10/05 08:53:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -160,6 +160,9 @@ bool needs_quotes(Oid type)
 { switch (type)
   { case CHAROID:
     case INTERVALOID:
+    case DATEOID:
+    case INTERVALOID:
+    case TIMESTAMPTZOID:
     case TEXTOID: return true;
     
     case INT8OID:
@@ -167,6 +170,7 @@ bool needs_quotes(Oid type)
     case NUMERICOID:
     case FLOAT4OID:
     case FLOAT8OID:
+    case BOOLOID:
     case VOIDOID: return false;
     
     default: std::cerr << "Oid " << type << " is unknown\n"; 
