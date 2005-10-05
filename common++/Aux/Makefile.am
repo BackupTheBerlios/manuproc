@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.66 2005/09/13 08:09:18 christof Exp $
+# $Id: Makefile.am,v 1.67 2005/10/05 08:39:21 christof Exp $
 
 # this is needed for FetchIStream's Fake hack on debian sid
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@  \
@@ -58,7 +58,7 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
    EntryValueInvert.h create_parse.cc create_parse.h \
    dbconnect_shared.cc SQLerror_sqlite.h FetchIStream_common.cc \
    SQLerror_sqlite.cc algorithm.h ExtraColumns.cc ExtraColumns.h \
-   Query.h TS_base64.cc Interval.h Interval.cc
+   Query.h TS_base64.cc Interval.h Interval.cc pg_type.h
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .

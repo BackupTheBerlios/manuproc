@@ -1,16 +1,9 @@
 Lange dauernde Requests:
 
-select id from artikelstamm where (not exists (select true from auftragentry
-where (instanz,auftragid,artikelid)=(2,2,artikelstamm.id)) or exists (select
-true from auftragentry where (instanz,auftragi ...
+13 secs: select instanz,auftragid,zeilennr from auftragentry where not exists (select true from auftrag where (auftragentry.instanz,auftragentry.auftragid)=(auftrag.instanz,auftrag.auftragid))
+10 secs: delete from auftragsentryzuordnung where not exists (select true from auftragentry where (instanz,auftragid,zeilennr)=(altinstanz,altauftragid,altzeilennr)) or not exists (select true from auftragentry where (instanz,auftragid,zeilennr)=(neuinstanz,neuauftragid,neuzeilennr))
+24 secs: select a.instanz, a.auftragid, e.zeilennr, bestellt, e.artikelid, e.lieferdate, geliefert, a.stat, a.kundennr, youraufnr, coalesce(p.prozessid,0), coalesce(p.letzteplaninstanz,-1), coalesce(p.maxplaninstanz,-1), coalesce(p.datum,cast(now() as date)), e.preis, coalesce(e.preismenge,1), coalesce(a.waehrung,1), coalesce(e.rabatt,0.0), e.status,coalesce(e.lastedit_uid,0),e.lasteditdate,e.letzte_lieferung,coalesce(e.preisliste,-1), e.provsatz ,0 from (auftrag a join auftragentry e using (instanz,auftragid)) left join auftrag_prozess p using (instanz,auftragid,zeilennr)  where true  and a.instanz=1
+237 secs: select id from artikelstamm where (not exists (select true from auftragentry where (instanz,auftragid,artikelid)=(2,2,artikelstamm.id)) or exists (select true from auftragentry where (instanz,auftragid,artikelid)=(2,2,artikelstamm.id)and bestellt<mindbestand) or (exists (select true from auftragentry where (instanz,auftragid,artikelid)=(2,2,artikelstamm.id)and bestellt>=mindbestand and exists (select true from auftragsentryzuordnung where (altinstanz,altauftragid,altzeilennr)=(instanz,auftragid,zeilennr))))) and (bestellen_bei=2 or exists (select true from prod_instanz where lager_fuer=2 and insid=bestellen_bei)) and mindbestand>0
+37 secs: select a.instanz, a.auftragid, e.zeilennr, bestellt, e.artikelid, e.lieferdate, geliefert, a.stat, a.kundennr, youraufnr, coalesce(p.prozessid,0), coalesce(p.letzteplaninstanz,-1), coalesce(p.maxplaninstanz,-1), coalesce(p.datum,cast(now() as date)), e.preis, coalesce(e.preismenge,1), coalesce(a.waehrung,1), coalesce(e.rabatt,0.0), e.status,coalesce(e.lastedit_uid,0),e.lasteditdate,e.letzte_lieferung,coalesce(e.preisliste,-1), e.provsatz ,0 from (auftrag a join auftragentry e using (instanz,auftragid)) left join auftrag_prozess p using (instanz,auftragid,zeilennr)  where true  and a.instanz=1
 
-select a.instanz, a.auftragid, e.zeilennr, bestellt, e.artikelid,
-e.lieferdate, geliefert, a.stat, a.kundennr, youraufnr,
-coalesce(p.prozessid,0), coalesce(p.letzteplaninstanz,-1),
-coalesce(p.maxplaninstanz,-1), coalesce(p.datum,cast(now() as date)),
-e.preis, coalesce(e.preismenge,1), coalesce(a.waehrung,1),
-coalesce(e.rabatt,0.0),
-e.status,coalesce(e.lastedit_uid,0),e.lasteditdate,e.letzte_lieferung,coalesce(e.preisliste,-1),
-e.provsatz ,0 from (auftrag a join auftragentry e using (instanz,auftragid))
-left join auftrag_prozess p using (instanz,auftragid,zeilennr) where true
-and a.instanz=1
+./auftrag_repair -A58012 -l -I -a\*       loops

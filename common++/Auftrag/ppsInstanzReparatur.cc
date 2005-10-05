@@ -923,8 +923,10 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
 	 }
       }
       else 
-         std::cout << "$ delete from auftragentry where (instanz,auftragid,zeilennr)=("
+      { if(ae.Id() < AuftragBase::handplan_id)
+          std::cout << "$ delete from auftragentry where (instanz,auftragid,zeilennr)=("
 		<< ae.Instanz()->Id() << ',' << ae.Id() << ',' << ae.ZNr() << ");\n";
+      }
 
       return alles_ok;
       // besser: Kinder für diesen Auftrag nicht aufrufen
