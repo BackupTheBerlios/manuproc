@@ -1008,7 +1008,7 @@ void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
 		!bez->Bezeichnung(EAN_SIGNIFIKANZ).empty()
 	      )
 	      {if(rabatt_bool)
-	        os <<"{\\small" << bez->Bezeichnung(EAN_SIGNIFIKANZ) <<"}";
+	        os <<"{\\small " << bez->Bezeichnung(EAN_SIGNIFIKANZ) <<"}";
 	      else
 	        os <<bez->Bezeichnung(EAN_SIGNIFIKANZ);
 	      }
@@ -1018,7 +1018,10 @@ void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
 	    if(ArtikelTyp::hasAttribute(s->Typ(),
 				ArtikelTypAttr::mit_bezeichnung))
 	      { neue_spalte( erste_spalte, os);
-	        os << Gtk2TeX::string2TeX(bez->Bezeichnung(BEZEICHNUNG_SIGNIFIKANZ));
+		std::string bezstring=bez->Bezeichnung(BEZEICHNUNG_SIGNIFIKANZ);
+		std::string bs=bezstring;
+		if(rabatt_bool) bs=bezstring.substr(0,25);
+	        os << Gtk2TeX::string2TeX(bs);
 	      }
 	   }
 #endif 
