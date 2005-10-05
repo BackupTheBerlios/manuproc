@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.22 2005/10/05 08:53:39 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.23 2005/10/05 09:01:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -159,7 +159,6 @@ Oid ArgumentList::type_of(const_iterator const& which) const
 bool needs_quotes(Oid type)
 { switch (type)
   { case CHAROID:
-    case INTERVALOID:
     case DATEOID:
     case INTERVALOID:
     case TIMESTAMPTZOID:
