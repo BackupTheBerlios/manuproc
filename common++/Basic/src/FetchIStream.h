@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.62 2005/09/27 09:39:01 christof Exp $
+// $Id: FetchIStream.h,v 1.63 2005/10/05 08:33:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Christof Petig
@@ -100,7 +100,7 @@ public:
 #ifdef MPC_POSTGRESQL
         std::string getFieldName() const;
 #endif
-	bool good() const; // noch Spalten verfügbar
+	bool good() const; // noch Spalten verfgbar
 	
 	FetchIStream &operator>>(std::string &str);
 	FetchIStream &operator>>(int &i);
