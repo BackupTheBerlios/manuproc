@@ -1,4 +1,4 @@
-// $Id: JumboLager.cc,v 1.10 2003/10/17 12:32:39 christof Exp $
+// $Id: JumboLager.cc,v 1.11 2005/10/05 08:49:27 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -140,7 +140,7 @@ void JumboLager::Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const std::s
       "(code,action,name,lagerplatz,zeit) "
       "values (?,?,?,?,?)");
   q << jumbo.Code()/10 << char(typ) << user.substr(0,4) << jumbo.LagerPosition().IPosition();
-  if (!zeit) q.add_argument("now()");
+  if (!zeit) q.add_argument("now",25);
   else q << *zeit;
 } 
 

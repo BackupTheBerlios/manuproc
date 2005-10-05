@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.60 2005/10/05 08:33:39 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.61 2005/10/05 08:49:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -128,7 +128,6 @@ extern "C"
 {
 struct connection *ECPGget_connection(char const *name);
 }
-#endif
 
 void Query::raise(std::string const& state, int code, std::string const& message, std::string const& detail)
 { memcpy(sqlca.sqlstate,state.c_str(),5);
@@ -145,6 +144,7 @@ void Query::raise(char const* state, int code, char const* message, char const* 
   if (!detail) detail="";
   raise(std::string(state),code,message,detail);
 }
+#endif
 
 // note cursor is the name for both the cursor and the descriptor
 void Query::Execute() throw(SQLerror)
