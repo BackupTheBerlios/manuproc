@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.34 2005/10/01 02:16:08 jacek Exp $
+// $Id: Datum.cc,v 1.35 2005/10/05 08:33:36 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.34 2005/10/01 02:16:08 jacek Exp $ */
+/* $Id: Datum.cc,v 1.35 2005/10/05 08:33:36 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -396,6 +396,8 @@ ManuProC::Datumsfehler::Datumsfehler(int _falsch) throw()
 {}
 
 #ifdef DEFAULT_DB // actually we should test for database support
+#include <Misc/pg_type.h>
+
 FetchIStream &operator>>(FetchIStream &is, ManuProC::Datum &v)
 {  std::string s;
    int ind;
@@ -406,7 +408,8 @@ FetchIStream &operator>>(FetchIStream &is, ManuProC::Datum &v)
 }
 
 ArgumentList &operator<<(ArgumentList &q, const ManuProC::Datum &v)
-{  q.add_argument(v.postgres_null_if_invalid());
+{  if (!v) q << Query::null();
+   else q.add_argument(itos(v.Jahr())+"-"+itos(v.Monat())+"-"+itos(v.Tag()),DATEOID);
    return q;
 }
 

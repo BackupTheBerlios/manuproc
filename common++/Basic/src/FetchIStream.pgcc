@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.58 2005/09/27 09:39:01 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.59 2005/10/05 08:33:36 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,6 +24,10 @@
 #include <Misc/FetchIStream.h>
 #include <Misc/SQLerror.h>
 #include <Misc/itos.h>
+#ifdef USE_PARAMETERS
+#include <libpq-fe.h>
+#include <Misc/pg_type.h>
+#endif
 
 exec sql include sqlca;
 
@@ -39,6 +43,31 @@ exec sql include sqlca;
 extern "C" {
 extern PGresult **ECPGdescriptor_lvalue(int line, const char *descriptor);
 }
+
+#ifdef USE_PARAMETERS
+#define ECPG_SQLSTATE_NO_DATA				"02000"
+#define ECPG_SQLSTATE_USING_CLAUSE_DOES_NOT_MATCH_PARAMETERS	"07001"
+#define ECPG_SQLSTATE_USING_CLAUSE_DOES_NOT_MATCH_TARGETS		"07002"
+#define ECPG_SQLSTATE_RESTRICTED_DATA_TYPE_ATTRIBUTE_VIOLATION	"07006"
+#define ECPG_SQLSTATE_INVALID_DESCRIPTOR_INDEX		"07009"
+#define ECPG_SQLSTATE_SQLCLIENT_UNABLE_TO_ESTABLISH_SQLCONNECTION	"08001"
+#define ECPG_SQLSTATE_CONNECTION_DOES_NOT_EXIST		"08003"
+#define ECPG_SQLSTATE_TRANSACTION_RESOLUTION_UNKNOWN	"08007"
+#define ECPG_SQLSTATE_CARDINALITY_VIOLATION "21000"
+#define ECPG_SQLSTATE_NULL_VALUE_NO_INDICATOR_PARAMETER "22002"
+#define ECPG_SQLSTATE_ACTIVE_SQL_TRANSACTION		"25001"
+#define ECPG_SQLSTATE_NO_ACTIVE_SQL_TRANSACTION		"25P01"
+#define ECPG_SQLSTATE_INVALID_SQL_STATEMENT_NAME	"26000"
+#define ECPG_SQLSTATE_INVALID_SQL_DESCRIPTOR_NAME	"33000"
+#define ECPG_SQLSTATE_INVALID_CURSOR_NAME	"34000"
+#define ECPG_SQLSTATE_SYNTAX_ERROR			"42601"
+#define ECPG_SQLSTATE_DATATYPE_MISMATCH		"42804"
+#define ECPG_SQLSTATE_DUPLICATE_CURSOR		"42P03"
+
+/* implementation-defined internal errors of ecpg */
+#define ECPG_SQLSTATE_ECPG_INTERNAL_ERROR	"YE000"
+#define ECPG_SQLSTATE_ECPG_OUT_OF_MEMORY	"YE001"
+#endif
 
 // ecpg incoming descriptor has to be FetchIStream
 
@@ -88,9 +117,40 @@ std::string FetchIStream::getFieldName() const
 
 /// QUERY
 
+#ifdef USE_PARAMETERS
+struct connection
+{	char const *	name;
+        PGconn *	connection;
+        // ...
+};
+
+extern "C"
+{
+struct connection *ECPGget_connection(char const *name);
+}
+#endif
+
+void Query::raise(std::string const& state, int code, std::string const& message, std::string const& detail)
+{ memcpy(sqlca.sqlstate,state.c_str(),5);
+  sqlca.sqlcode=code;
+  error=code;
+  strncpy(sqlca.sqlerrm.sqlerrmc, message.c_str(), sizeof(sqlca.sqlerrm.sqlerrmc));
+  if (code!=ECPG_NOT_FOUND)
+    Row::mythrow(SQLerror(query,detail.empty()?message:detail));
+}
+
+void Query::raise(char const* state, int code, char const* message, char const* detail)
+{ if (!state) state=ECPG_SQLSTATE_ECPG_INTERNAL_ERROR;
+  if (!message) message="internal error";
+  if (!detail) detail="";
+  raise(std::string(state),code,message,detail);
+}
+
 // note cursor is the name for both the cursor and the descriptor
 void Query::Execute() throw(SQLerror)
-{  exec sql begin declare section;
+{
+#ifndef USE_PARAMETERS
+   exec sql begin declare section;
    char *COMMAND=const_cast<char*>(query.c_str());
    exec sql end declare section;
    time_t start=-1;
@@ -126,7 +186,8 @@ sqlca.sqlcode=0;
 #else
       PGresult *lresult=*(ECPGdescriptor_lvalue(__LINE__,descriptor.c_str()));
       std::string detail;
-      if (lresult) detail=PQresultErrorField(lresult,PG_DIAG_MESSAGE_DETAIL);
+      if (lresult && PQresultErrorField(lresult,PG_DIAG_MESSAGE_DETAIL)) 
+        detail=PQresultErrorField(lresult,PG_DIAG_MESSAGE_DETAIL);
 //      Message(lresult);
       FetchIStream::mythrow(SQLerror(query,detail)); 
 #endif
@@ -135,9 +196,84 @@ sqlca.sqlcode=0;
    {  DEBUG_FIS("no lines returned/changed");
    }
    result=*(ECPGdescriptor_lvalue(__LINE__,descriptor.c_str()));
-   if (debugging.time_queries && (time(0)-start)>4)
-   { std::cerr << (time(0)-start) << " secs: " << query << '\n';
-   }
+#else // query parameters (using libpq)
+  PGconn *conn=ECPGget_connection(NULL)->connection;
+  eof=false;
+  sqlca.sqlcode=0;
+  int numparams=params.size();
+  int binary[params.size()];
+  Oid types[params.size()];
+  char const * values[params.size()];
+  int length[params.size()];
+//  memset(binary,0,sizeof(binary));
+  if (Query::debugging.on)
+    std::cerr << "Query " << query << "\n"
+      "with params: ";
+  unsigned idx=0;
+  for (ArgumentList::const_iterator i=params.begin();i!=params.end();++i,++idx)
+  { if (params.type_of(i)==VOIDOID)
+    { values[idx]=0;
+      length[idx]=0;
+      types[idx]=TEXTOID; // or INT4OID ?, gibt sonst "-400 konnte Datentyp von Parameter $2 nicht ermitteln"
+      binary[idx]=false;
+      if (Query::debugging.on) std::cerr << "<NULL>,";
+    }
+    else
+    { values[idx]=i->c_str();
+      length[idx]=i->size();
+      types[idx]=params.type_of(i);
+      binary[idx]=false;
+      if (Query::debugging.on) std::cerr << *i << ",";
+    }
+  }
+  if (Query::debugging.on) std::cerr << "\n";
+  // oder PQsendPrepare PQsendQueryPrepared PQgetResult
+  result=PQexecParams(conn,query.c_str(),numparams,types,values,length,binary,0);
+  if (!result) raise(ECPG_SQLSTATE_ECPG_INTERNAL_ERROR,ECPG_PGSQL,PQerrorMessage(conn));
+  if (Query::debugging.on) std::cerr << "result "<< PQresultStatus(result) << " " << PQcmdStatus(result) << "\n";
+  // this resembles the code in ecpglib/execute.c
+  switch (PQresultStatus(result))
+  { case PGRES_TUPLES_OK:
+      error=0;
+      lines=PQntuples(result);
+      eof=false;
+      if (!lines) 
+        raise(ECPG_SQLSTATE_NO_DATA, ECPG_NOT_FOUND, "no lines selected");
+      break;
+    case PGRES_EMPTY_QUERY:
+      raise(ECPG_SQLSTATE_ECPG_INTERNAL_ERROR,ECPG_EMPTY,"empty query");
+    case PGRES_COMMAND_OK:
+      sqlca.sqlerrd[1] = PQoidValue(result);
+      lines = sqlca.sqlerrd[2] = atol(PQcmdTuples(result));
+      if (!lines &&
+		(!strncmp(PQcmdStatus(result), "UPDATE", 6)
+		|| !strncmp(PQcmdStatus(result), "INSERT", 6)
+		|| !strncmp(PQcmdStatus(result), "DELETE", 6)))
+	raise(ECPG_SQLSTATE_NO_DATA, ECPG_NOT_FOUND, "no lines affected");
+      eof=true;
+      break;
+    case PGRES_COPY_OUT:
+    case PGRES_COPY_IN:
+      PQendcopy(conn);
+      eof=true;
+      break;
+    case PGRES_NONFATAL_ERROR:
+    case PGRES_FATAL_ERROR:
+    case PGRES_BAD_RESPONSE:
+    default:
+      raise(PQresultErrorField(result, PG_DIAG_SQLSTATE), ECPG_PGSQL, 
+          PQresultErrorField(result, PG_DIAG_MESSAGE_PRIMARY),
+          PQresultErrorField(result,PG_DIAG_MESSAGE_DETAIL));
+      break;
+  }
+  PGnotify *notify = PQnotifies(conn);
+  if (notify)
+  { PQfreemem(notify);
+  }
+#endif
+  if (debugging.time_queries && (time(0)-start)>4)
+  { std::cerr << (time(0)-start) << " secs: " << query << '\n';
+  }
 }
 
 // note cursor is the name for both the cursor and the descriptor
@@ -167,6 +303,7 @@ Query::~Query()
    }
    else
    {  
+#ifndef USE_PARAMETERS
 #ifdef OLD_ECPG
       struct sqlca copy=sqlca;
 #else
@@ -176,6 +313,10 @@ Query::~Query()
       ECPGdeallocate_desc(__LINE__, descriptor.c_str());
       // do not change sqlca ... believe me, you don't want to
       sqlca=copy;
+#else
+      PQclear(result);
+      result=0;
+#endif
    }
 }
 

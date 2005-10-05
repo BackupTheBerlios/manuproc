@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.63 2005/10/05 08:33:32 christof Exp $
+// $Id: FetchIStream.h,v 1.64 2005/10/05 08:33:36 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Christof Petig
@@ -35,12 +35,17 @@
 #ifdef MPC_SQLITE
 #include <algorithm>
 #include <sqlite3.h>
+typedef unsigned long Oid;
 // enum ECPG...
 #else
 #include <ecpgerrno.h>
 extern "C" {
 #include <libpq-fe.h>
 }
+#endif
+
+#ifndef OLD_ECPG
+#define USE_PARAMETERS
 #endif
 
 // please access this class under the new alias "Query::Row"
@@ -57,7 +62,7 @@ private:
 	unsigned nfields;
 #else
 protected:
-	const PGresult * /* const */ result;
+        const PGresult * /* const */ result;
 private:
 #endif	
 
@@ -182,7 +187,9 @@ struct Query_types
 
 class ArgumentList
 {	unsigned params_needed;
+        std::vector<Oid> types;
 	std::vector<std::string> params;
+	std::vector<bool> binary;
 public:
 	typedef std::vector<std::string>::const_iterator const_iterator;
 	ArgumentList() : params_needed(unsigned(-1)) {}
@@ -192,10 +199,13 @@ public:
 	unsigned HowManyNeededParams() const { return params_needed; }
 	const_iterator begin() const { return params.begin(); }
 	const_iterator end() const { return params.end(); }
+	Oid type_of(const_iterator const& which) const;
+	size_t size() const { return params.size(); }
 
 	//-------------------- parameters ------------------
 	// must be already quoted for plain SQL inclusion
-	ArgumentList &add_argument(const std::string &s);
+	__deprecated ArgumentList &add_argument(const std::string &s);
+	ArgumentList &add_argument(const std::string &s, Oid type);
 
 	ArgumentList &operator<<(const std::string &str);
 	ArgumentList &operator<<(int i)
@@ -211,8 +221,7 @@ public:
 	ArgumentList &operator<<(const ArgumentList &list);
 	ArgumentList &operator<<(const char *s)
 	{  return operator<<(std::string(s)); }
-	ArgumentList &operator<<(Query_types::null n)
-	{  return add_argument("null"); }
+	ArgumentList &operator<<(Query_types::null n);
 	
 	template <class T>
 	 ArgumentList &operator<<(const Query_types::NullIf_s<T> &n)
@@ -233,7 +242,10 @@ class Query : public Query_types
 	const char * const *result;
 	unsigned nfields;
 #else	
-	const PGresult *result;
+#ifndef USE_PARAMETERS
+	const 
+#endif	
+	      PGresult *result;
 #endif	
 	std::string query;
 	ArgumentList params;
@@ -249,6 +261,8 @@ class Query : public Query_types
 	// perform it
 	void Execute() throw(SQLerror);
 	void Execute_if_complete();
+	void raise(std::string const& state, int code, std::string const& message, std::string const& detail=std::string());
+	void raise(char const* state, int code, char const* message, char const* detail=0);
 
 public:
         typedef FetchIStream Row;
@@ -277,7 +291,9 @@ public:
 
 	//-------------------- parameters ------------------
 	// must be already quoted for plain SQL inclusion
-	Query &add_argument(const std::string &s);
+	__deprecated Query &add_argument(const std::string &s);
+	// this is normal style
+	Query &add_argument(const std::string &s, Oid type);
 
 	// for user defined << operators and temporary queries 
 	// 	you need to insert this one

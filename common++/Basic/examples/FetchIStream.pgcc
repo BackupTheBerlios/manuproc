@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.26 2004/05/25 12:28:21 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.27 2005/10/05 08:33:36 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,7 @@
 exec sql include sqlca;
 #include <iterator>
 #include <cassert>
+#include <Misc/pg_type.h>
 
 exec sql whenever sqlerror do X();
 #define X() throw SQLerror(__FILELINE__)
@@ -76,8 +77,8 @@ int main()
    Query ("update pg_class set relname=relname where relname='' and oid=0");
    SQLerror::print("should be 100");
    
-   std::cout << (Query("select ? from pg_class limit 1")
-   	.add_argument("relname").FetchOne<std::string>()) << '\n';
+//   std::cout << (Query("select ? from pg_class limit 1")
+//   	.add_argument("relname",TEXTOID).FetchOne<std::string>()) << '\n';
    std::cout << "this should give a warning:\n";
    Query("select ?");
    SQLerror::print("should be -202");

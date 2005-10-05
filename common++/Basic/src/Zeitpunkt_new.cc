@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.cc,v 1.21 2005/10/01 02:16:08 jacek Exp $
+// $Id: Zeitpunkt_new.cc,v 1.22 2005/10/05 08:33:36 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -219,6 +219,8 @@ std::string Zeitpunkt_new::Short(const ManuProC::Datum &d) const
 }
 
 #ifdef DEFAULT_DB // actually we should test for database support
+#include <Misc/pg_type.h>
+
 FetchIStream &operator>>(FetchIStream &is, Zeitpunkt_new &v)
 {  std::string s;
    int ind;
@@ -230,7 +232,7 @@ FetchIStream &operator>>(FetchIStream &is, Zeitpunkt_new &v)
 
 ArgumentList &operator<<(ArgumentList &q, const Zeitpunkt_new &v)
 {  if (!v.valid()) return q << Query::null();
-   q.add_argument('\''+v.write()+'\'');
+   q.add_argument(v.write(),TIMESTAMPTZOID);
    return q;
 }
 #endif
