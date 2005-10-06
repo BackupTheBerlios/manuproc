@@ -1,4 +1,4 @@
-/* $Id: SQLerror_postgres.pgcc,v 1.12 2005/10/05 08:49:27 christof Exp $ */
+/* $Id: SQLerror_postgres.pgcc,v 1.13 2005/10/06 13:30:24 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -60,8 +60,14 @@ void SQLerror_postgres::close_cursor(const std::string &c) throw()
 
 std::ostream &operator<<(std::ostream &o,const SQLerror_postgres &e) throw()
 {  o<<e.context;
+#ifndef MPC_SQLITE
+   if (!e.state.empty())
+     o << ": " << e.state;
+#endif     
    if (e.code)
       o <<':'<<e.separator<<e.code<<e.separator<<e.name;
+   if (!e.detail.empty() && e.detail!=e.name)
+      o << " (" << e.detail << ")";
    return o;
 }
 
