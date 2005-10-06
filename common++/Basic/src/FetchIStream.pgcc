@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.62 2005/10/06 14:11:57 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.63 2005/10/06 14:11:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -134,7 +134,7 @@ void Query::raise(std::string const& state, int code, std::string const& message
   sqlca.sqlcode=code;
   error=code;
   strncpy(sqlca.sqlerrm.sqlerrmc, message.c_str(), sizeof(sqlca.sqlerrm.sqlerrmc));
-//  if (debugging.on)
+  if (debugging.on || code!=ECPG_NOT_FOUND)
   { std::cerr << "raising " << state << " (" << code << ") " << message << "\n" << detail;
     if (!detail.empty()) std::cerr << "\n";
   }
