@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.27 2005/10/05 08:33:36 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.28 2005/10/06 14:17:51 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -90,6 +90,13 @@ int main()
    return 1;
    } catch (SQLerror &e)
    {  assert(e.Code()==100);
+   }
+   
+   try {
+   Query ("close inexistant");
+   std::cerr << "CLOSE does never throw\n";
+   } catch (SQLerror &e)
+   { std::cerr << "CLOSE does throw\n";
    }
    
    ManuProC::dbdisconnect();
