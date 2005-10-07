@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.63 2005/10/06 14:11:59 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.64 2005/10/07 12:02:13 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -130,7 +130,7 @@ struct connection *ECPGget_connection(char const *name);
 }
 
 void Query::raise(std::string const& state, int code, std::string const& message, std::string const& detail)
-{ memcpy(sqlca.sqlstate,state.c_str(),5);
+{ strncpy(sqlca.sqlstate,state.c_str(),5);
   sqlca.sqlcode=code;
   error=code;
   strncpy(sqlca.sqlerrm.sqlerrmc, message.c_str(), sizeof(sqlca.sqlerrm.sqlerrmc));
@@ -223,7 +223,7 @@ sqlca.sqlcode=0;
       if (Query::debugging.on) std::cerr << "<NULL>,";
     }
     else
-    { values[idx]=i->c_str();
+    { values[idx]=i->data();
       length[idx]=i->size();
       types[idx]=params.type_of(i);
       binary[idx]=false;
