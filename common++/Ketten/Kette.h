@@ -1,4 +1,4 @@
-/* $Id: Kette.h,v 1.12 2004/11/04 17:17:53 christof Exp $ */
+/* $Id: Kette.h,v 1.13 2005/10/11 10:19:30 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,7 +26,7 @@
 #include <vector>
 #include <exception>
 
-class FetchIStream;
+class Query_Row;
 
 struct Kette {
 	int maschine;
@@ -58,7 +58,7 @@ public:
    bool Valid() const;
 
 	friend std::ostream& operator<<(std::ostream &o,const Kette &k);
-	friend FetchIStream& operator>>(FetchIStream &i,Kette &k);
+	friend Query_Row& operator>>(Query_Row &i,Kette &k);
 };
 
 extern inline std::ostream& operator<<(std::ostream &o,const Kette &k)

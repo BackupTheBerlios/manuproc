@@ -1,4 +1,4 @@
-// $Id: Waehrung.h,v 1.19 2005/06/30 11:59:34 jacek Exp $
+// $Id: Waehrung.h,v 1.20 2005/10/11 10:19:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,7 +25,7 @@
 #include <Misc/CacheStatic.h>
 #include <Misc/Pointer.h>
 
-class FetchIStream; 
+class Query_Row; 
 
 
 namespace WaehrungID = ManuProC::DynamicEnums::Waehrung;
@@ -44,7 +44,7 @@ private:
  std::string lang;
  double faktor;
 
- friend FetchIStream &operator>>(FetchIStream &is, ID &wid);
+ friend Query_Row &operator>>(Query_Row &is, ID &wid);
 
 public:
  Waehrung(ID id) throw(SQLerror);

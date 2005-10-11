@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.h,v 1.24 2005/06/17 14:48:18 christof Exp $
+// $Id: Zahlungsart.h,v 1.25 2005/10/11 10:19:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,7 +33,7 @@
 #include <Misc/compiler_ports.h>
 
 class cH_Kunde;
-class FetchIStream;
+class Query_Row;
 
 class Zahlungsart : public ManuProcHandle<>
 {
@@ -59,7 +59,7 @@ private:
     int textid;
 
     void setVerfahren(const std::string v);
-    friend FetchIStream &NOTGCC295(::)operator>>(FetchIStream &is, Zahlungsart &za);
+    friend Query_Row &NOTGCC295(::)operator>>(Query_Row &is, Zahlungsart &za);
     
 public:
     Zahlungsart(ID _id) throw (SQLerror) ;

@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.30 2004/02/02 18:34:52 jacek Exp $ */
+/* $Id: Lager.h,v 1.31 2005/10/11 10:19:30 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -29,10 +29,10 @@
 //#include <Auftrag/selFullAufEntry.h>
 //#include <Auftrag/auftrag_enums.h>
 class ppsInstanzReparatur;
-class FetchIStream;
+class Query_Row;
 
 class LagerInhalt
-{	friend FetchIStream &operator>>(FetchIStream &is, LagerInhalt &li);
+{	friend Query_Row &operator>>(Query_Row &is, LagerInhalt &li);
    private:
       ArtikelBase artikel;
       int stueck,reststueck;

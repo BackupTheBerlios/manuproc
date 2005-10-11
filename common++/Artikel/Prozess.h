@@ -1,4 +1,4 @@
-/* $Id: Prozess.h,v 1.16 2003/01/29 13:56:00 christof Exp $ */
+/* $Id: Prozess.h,v 1.17 2005/10/11 10:19:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -86,8 +86,8 @@ public:
 	cH_Prozess(Prozess::ID pid);
 };
 
-class FetchIStream;
-FetchIStream& operator>>(FetchIStream&,cH_Prozess&);
-FetchIStream &operator>>(FetchIStream &is, Prozess::ID &v);
+class Query_Row;
+Query_Row& operator>>(Query_Row&,cH_Prozess&);
+Query_Row &operator>>(Query_Row &is, Prozess::ID &v);
 
 #endif

@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.62 2004/10/21 11:02:19 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.63 2005/10/11 10:19:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski
@@ -30,7 +30,7 @@ class AufEintrag;
 // hier sollten noch viel mehr Funktionen aus Auftrag rein !!!
 class AufEintragBase;
 #include <BaseObjects/ManuProcEntity.h>
-class FetchIStream;
+class Query_Row;
 #include <Misc/UniqueValue.h>
 #include <Misc/compiler_ports.h>
 
@@ -138,7 +138,7 @@ public:
 std::ostream &operator<<(std::ostream &o,const AuftragBase &a);
 class ArgumentList;
 ArgumentList &operator<<(ArgumentList &q, const AuftragBase &ab);
-//FetchIStream& operator>>(FetchIStream& is,AuftragBase::mengen_t &menge);
+//Query_Row& operator>>(Query_Row& is,AuftragBase::mengen_t &menge);
 
 // für map<AuftragBase,...>
 bool operator<(const AuftragBase &a, const AuftragBase &b);

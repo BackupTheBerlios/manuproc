@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.31 2004/05/24 09:59:17 christof Exp $
+// $Id: ppsInstanz.h,v 1.32 2005/10/11 10:19:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -37,7 +37,7 @@ namespace ppsInstanzID=ManuProC::DynamicEnums::Instanzen;
 class cH_ppsInstanz;
 class ArtikelBase;
 class ArtikelStamm;
-class FetchIStream;
+class Query_Row;
 
 class ppsInstanz : public HandleContent
 {
@@ -140,7 +140,7 @@ class cH_ppsInstanz : public Handle<const ppsInstanz>
 };
 
 std::ostream &operator<<(std::ostream &o,const cH_ppsInstanz &i);
-FetchIStream &operator>>(FetchIStream &is, ppsInstanz::ID &v);
-FetchIStream &operator>>(FetchIStream &is, cH_ppsInstanz &i);
+Query_Row &operator>>(Query_Row &is, ppsInstanz::ID &v);
+Query_Row &operator>>(Query_Row &is, cH_ppsInstanz &i);
 
 #endif
