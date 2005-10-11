@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.82 2005/08/24 15:05:15 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.83 2005/10/11 16:26:46 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -468,17 +468,19 @@ void LieferscheinEntry::updateZusatzEntry(const AufEintragBase &Z,const AuftragB
   }
   std::string Q="update lieferscheinentryzusatz set menge=?"
       " where (instanz,lfrsid,lfsznr) = (?,?,?) and ";
+  ArgumentList args;
+  args << menge << *this;
   if(Z.Id()!=AufEintragBase::none_id)
-    Q += "(auftragid,auftragznr)=(?,?)";
+  { Q += "(auftragid,auftragznr)=(?,?)";
+    args << Query::NullIf(Z.Id(),AufEintragBase::none_id)
+  	<< Query::NullIf(Z.ZNr(),AufEintragBase::none_znr);
+  }
   else
-  { Q += "auftragid is ? and auftragznr is ?";
+  { Q += "auftragid is null and auftragznr is null";
     assert(Z.ZNr()==AufEintragBase::none_znr);
   }
 
-  Query(Q) << menge
-  	<< *this 
-  	<< Query::NullIf(Z.Id(),AufEintragBase::none_id)
-  	<< Query::NullIf(Z.ZNr(),AufEintragBase::none_znr);
+  Query(Q) << args;
   SQLerror::test(__FILELINE__);
   for (zusaetze_t::iterator i=VZusatz.begin();std_neq(i,VZusatz.end());++i)
      if (i->aeb==Z)
@@ -493,16 +495,19 @@ void LieferscheinEntry::deleteZusatzEntry(const AufEintragBase &Z) throw(SQLerro
   bool nek0=NurEinKind(VZusatz);
   std::string Q="delete from lieferscheinentryzusatz "
       "where (instanz,lfrsid,lfsznr) = (?,?,?) and ";
+  ArgumentList args;
+  args << *this;
   if(Z.Id()!=AufEintragBase::none_id)
-    Q += "(auftragid,auftragznr)=(?,?)";
+  { Q += "(auftragid,auftragznr)=(?,?)";
+    args << Query::NullIf(Z.Id(),AufEintragBase::none_id)
+  	<< Query::NullIf(Z.ZNr(),AufEintragBase::none_znr);
+  }
   else
-  { Q += "auftragid is ? and auftragznr is ?";
+  { Q += "auftragid is null and auftragznr is null";
     assert(Z.ZNr()==AufEintragBase::none_znr);
   }
 
-  Query(Q) << *this 
-  	<< Query::NullIf(Z.Id(),AufEintragBase::none_id)
-  	<< Query::NullIf(Z.ZNr(),AufEintragBase::none_znr);
+  Query(Q) << args; 
   SQLerror::test(__FILELINE__,100);
   for (zusaetze_t::iterator i=VZusatz.begin();std_neq(i,VZusatz.end());++i)
      if (i->aeb==Z)
