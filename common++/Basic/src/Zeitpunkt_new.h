@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.h,v 1.22 2005/10/05 08:33:39 christof Exp $
+// $Id: Zeitpunkt_new.h,v 1.23 2005/10/11 09:58:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -142,8 +142,8 @@ public:
 };
 
 std::ostream &operator<<(std::ostream&,const Zeitpunkt_new&);
-class FetchIStream;
-FetchIStream &operator>>(FetchIStream &is, Zeitpunkt_new &v);
+class Query_Row;
+Query_Row &operator>>(Query_Row &is, Zeitpunkt_new &v);
 class ArgumentList;
 ArgumentList &operator<<(ArgumentList &, const Zeitpunkt_new &v);
 

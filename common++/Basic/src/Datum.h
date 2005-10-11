@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.31 2005/10/05 08:33:39 christof Exp $ */
+/* $Id: Datum.h,v 1.32 2005/10/11 09:58:30 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -190,8 +190,8 @@ public:
 	
 };
 
-class FetchIStream;
-FetchIStream &operator>>(FetchIStream &is, ManuProC::Datum &v);
+class Query_Row;
+Query_Row &operator>>(Query_Row &is, ManuProC::Datum &v);
 class ArgumentList;
 ArgumentList &operator<<(ArgumentList &, const ManuProC::Datum &v);
 

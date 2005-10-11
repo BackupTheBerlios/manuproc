@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.65 2005/10/05 08:33:39 christof Exp $
+// $Id: FetchIStream.h,v 1.66 2005/10/11 09:58:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Christof Petig
@@ -49,7 +49,7 @@ extern "C" {
 #endif
 
 // please access this class under the new alias "Query::Row"
-class FetchIStream
+class Query_Row
 {public:
 	struct check_eol { check_eol() {} };
 	class Fake;
@@ -76,7 +76,7 @@ private:
 	{	T &var;
 		T nullval;
 		
-		friend class FetchIStream;
+		friend class Query_Row;
 	 public:
 	 	template <class U> MapNull_s(T &v,const U &nv)
 	 	 : var(v), nullval(nv) {}
@@ -86,19 +86,19 @@ private:
 	{	T &var;
 		int &ind;
 		
-		friend class FetchIStream;
+		friend class Query_Row;
 	 public:
 	 	WithIndicator_s(T &v,int &i)
 	 	  : var(v), ind(i) {}
 	};
 public:
 #ifndef MPC_SQLITE
-	FetchIStream(const std::string &descr, int line=0);
-	FetchIStream(const PGresult *res=0, int line=0)
+	Query_Row(const std::string &descr, int line=0);
+	Query_Row(const PGresult *res=0, int line=0)
 	  : naechstesFeld(0), zeile(line), result(res)
 	{}
 #else
-	FetchIStream(const char *const *res=0, unsigned nfields=0, int line=0);
+	Query_Row(const char *const *res=0, unsigned nfields=0, int line=0);
 #endif
 	
 	int getIndicator() const;
@@ -107,23 +107,23 @@ public:
 #endif
 	bool good() const; // noch Spalten verfügbar
 	
-	FetchIStream &operator>>(std::string &str);
-	FetchIStream &operator>>(int &i);
-	FetchIStream &operator>>(unsigned &i);
-	FetchIStream &operator>>(long &i);
-	FetchIStream &operator>>(long long &i);	
-	FetchIStream &operator>>(unsigned long &i);
-	FetchIStream &operator>>(float &f);
-	FetchIStream &operator>>(double &f);
-	FetchIStream &operator>>(bool &b);
-	FetchIStream &operator>>(char &c);
+	Query_Row &operator>>(std::string &str);
+	Query_Row &operator>>(int &i);
+	Query_Row &operator>>(unsigned &i);
+	Query_Row &operator>>(long &i);
+	Query_Row &operator>>(long long &i);	
+	Query_Row &operator>>(unsigned long &i);
+	Query_Row &operator>>(float &f);
+	Query_Row &operator>>(double &f);
+	Query_Row &operator>>(bool &b);
+	Query_Row &operator>>(char &c);
 	void operator>>(const check_eol &eol)
 	{ ThrowIfNotEmpty("check_eol"); }
 	
 	template <class T> static WithIndicator_s<T> WithIndicator(T &v,int &i)
 	{ return WithIndicator_s<T>(v,i); }
 	template <class T>
-	 FetchIStream &operator>>(const WithIndicator_s<T> &wi)
+	 Query_Row &operator>>(const WithIndicator_s<T> &wi)
 	{  if ((wi.ind=getIndicator())) ++naechstesFeld;
 	   else *this >> wi.var;
 	   return *this;
@@ -134,7 +134,7 @@ public:
 	template <class T> static MapNull_s<T> MapNull(T &v)
 	{ return MapNull_s<T>(v,T()); }
 	template <class T>
-	 FetchIStream &operator>>(const MapNull_s<T> &mn)
+	 Query_Row &operator>>(const MapNull_s<T> &mn)
 	{  if (getIndicator()) 
 	   {  ++naechstesFeld;
 	      mn.var=mn.nullval;
@@ -159,8 +159,10 @@ public:
 	void ThrowIfNotEmpty(const char *where);
 };
 
+typedef Query_Row FetchIStream;
+
 // one time internal (fake) result (mostly a hack)
-class FetchIStream::Fake : public FetchIStream
+class Query_Row::Fake : public Query_Row
 { 	  std::string value;
           void operator=(const Fake &);
           
@@ -182,7 +184,7 @@ struct Query_types
 		template <class U> NullIf_s(const T &a,const U &b) : data(a), null(a==b) {}
 	};
 	struct null { null(){} };
-	typedef FetchIStream::check_eol check_eol;
+	typedef Query_Row::check_eol check_eol;
 };
 
 class ArgumentList
@@ -231,6 +233,8 @@ public:
 	static const char *next_insert(const char *text);
 };
 
+class PreparedQuery;
+
 class Query : public Query_types
 {
 #ifndef MPC_SQLITE
@@ -250,9 +254,11 @@ class Query : public Query_types
 	std::string query;
 	ArgumentList params;
 	unsigned num_params;
-	FetchIStream embedded_iterator;
+	Query_Row embedded_iterator;
 	int error; // error after execution
 	unsigned lines; // lines affected
+	PreparedQuery* prepare;
+	std::string portal_name;
 	
 	// not possible yet (because result can not refcount)
 	const Query &operator=(const Query &);
@@ -265,12 +271,14 @@ class Query : public Query_types
 	void raise(char const* state, int code, char const* message, char const* detail=0);
 
 public:
-        typedef FetchIStream Row;
+        typedef Query_Row Row;
 	struct check100 { check100(){} };
 	typedef Row::check_eol check_eol;
 	typedef SQLerror Error;
 
 	Query(const std::string &command);
+	Query(std::string const& portal_name, const std::string &command);
+	Query(PreparedQuery const& prep);
 	~Query();
 
 	bool good() const 
@@ -313,10 +321,10 @@ public:
 	{  return NullIf_s<T>(a,T()); }
 	
 	//--------------- result --------------------
-	FetchIStream &Fetch();
-	FetchIStream &FetchOne();
-	void Fetch(FetchIStream &);
-        Query &operator>>(FetchIStream &s);
+	Query_Row &Fetch();
+	Query_Row &FetchOne();
+	void Fetch(Query_Row &);
+        Query &operator>>(Query_Row &s);
         Query &operator>>(const check100 &s);
         // we might as well define >> for this
 	template <class T> void FetchArray(std::vector<T> &);
@@ -329,11 +337,11 @@ public:
 	template <class T> T FetchOneMap(const T &nv=T());
 	template <class T> void FetchOneMap(T &v, const T &nv=T());
 
-	template <class T> FetchIStream &operator>>(T &x)
+	template <class T> Query_Row &operator>>(T &x)
 	{  return FetchOne() >> x; }
-	template <class T> FetchIStream &operator>>(const FetchIStream::MapNull_s<T> &x)
+	template <class T> Query_Row &operator>>(const Query_Row::MapNull_s<T> &x)
 	{  return FetchOne() >> x; }
-	template <class T> FetchIStream &operator>>(const FetchIStream::WithIndicator_s<T> &x)
+	template <class T> Query_Row &operator>>(const Query_Row::WithIndicator_s<T> &x)
 	{  return FetchOne() >> x; }
 
 	// SQLOPT=-E turns this on
@@ -345,7 +353,19 @@ public:
 	static debug_environment debugging;
 };
 
-// we use the embedded FetchIStream but that's ok, 
+class PreparedQuery
+{	std::string command;
+#ifdef MPC_POSTGRESQL
+        std::string name;
+        bool active;
+        std::vector<Oid> types;
+#endif
+public:
+        PreparedQuery(std::string const& cmd) : command(cmd), active() {}
+        std::string const& Command() const { return command; }
+};
+
+// we use the embedded Query_Row but that's ok, 
 // 	since it makes no sense to mix us with Fetch[One]
 template <class T> 
 void Query::FetchArray(std::vector<T> &res)
@@ -362,7 +382,7 @@ void Query::FetchArrayMap(std::vector<T> &res, const T &nv)
 {  ThrowOnBad(__FUNCTION__);
    while (((*this)>>embedded_iterator).good()) 
    { T x;
-     embedded_iterator >> FetchIStream::MapNull(x,nv) >> Query::check_eol();
+     embedded_iterator >> Row::MapNull(x,nv) >> Query::check_eol();
      res.push_back(x);
    }
 }
@@ -398,7 +418,7 @@ void Query::FetchOne(T &res)
 template <class T>
 void Query::FetchOneMap(T &res, const T &nv)
 {  ThrowOnBad(__FUNCTION__);
-   (FetchOne() >> FetchIStream::MapNull(res,nv)) >> Query::check_eol();
+   (FetchOne() >> Row::MapNull(res,nv)) >> Query::check_eol();
 }
 
 // T a = q.FetchOne<T>(); variant (slower)

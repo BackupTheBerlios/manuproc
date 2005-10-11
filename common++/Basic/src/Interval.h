@@ -1,4 +1,4 @@
-// $Id: Interval.h,v 1.13 2005/09/26 12:38:57 christof Exp $
+// $Id: Interval.h,v 1.14 2005/10/11 09:58:30 christof Exp $
 
 #ifndef TA734B8C_4F66_4FEF_BEA5_8A6C8FC2C017
 #define TA734B8C_4F66_4FEF_BEA5_8A6C8FC2C017
@@ -33,8 +33,8 @@ struct Interval
 };
 }
 
-class FetchIStream;
-FetchIStream &operator>>(FetchIStream &is, ManuProC::Interval &v);
+class Query_Row;
+Query_Row &operator>>(Query_Row &is, ManuProC::Interval &v);
 class ArgumentList;
 ArgumentList &operator<<(ArgumentList &, const ManuProC::Interval &v);
 
