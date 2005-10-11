@@ -1,4 +1,4 @@
-// $Id: Query.pgcc,v 1.5 2005/10/11 15:16:14 christof Exp $
+// $Id: Query.pgcc,v 1.6 2005/10/11 15:44:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -223,7 +223,7 @@ sqlca.sqlcode=0;
   { if (params.type_of(i)==VOIDOID)
     { values[idx]=0;
       length[idx]=0;
-      types[idx]=TEXTOID; // or INT4OID ?, gibt sonst "-400 konnte Datentyp von Parameter $2 nicht ermitteln"
+      types[idx]=INT4OID; // or INT4OID ?, gibt sonst "-400 konnte Datentyp von Parameter $2 nicht ermitteln"
       binary[idx]=false;
       if (Query::debugging.on) std::cerr << "<NULL>,";
     }
