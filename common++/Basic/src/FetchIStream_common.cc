@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.23 2005/10/05 09:01:10 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.24 2005/10/11 09:58:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,7 +20,7 @@
 #include <locale.h>
 #include <cassert>
 #include <ManuProCConfig.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/SQLerror.h>
 #include <Misc/itos.h>
 #include <Misc/pg_type.h>
@@ -47,14 +47,14 @@ Query::debug_environment::debug_environment() : on(), time_queries()
 
 Query::debug_environment Query::debugging;
 
-void FetchIStream::mythrow(const SQLerror &e)
+void Query_Row::mythrow(const SQLerror &e)
 {  if (Query::debugging.on) std::cerr << e << '\n';
    throw e;
 }
 
 void Query::Check100() const throw(SQLerror)
-{  if (!params.complete()) FetchIStream::mythrow(SQLerror(query,ECPG_TOO_FEW_ARGUMENTS,"to few input parameter"));
-   if (!LinesAffected()) FetchIStream::mythrow(SQLerror(query,100,"no lines selected"));
+{  if (!params.complete()) Query_Row::mythrow(SQLerror(query,ECPG_TOO_FEW_ARGUMENTS,"to few input parameter"));
+   if (!LinesAffected()) Query_Row::mythrow(SQLerror(query,100,"no lines selected"));
 }
 
 Query &Query::operator>>(const check100 &s)
@@ -64,22 +64,22 @@ Query &Query::operator>>(const check100 &s)
 
 #define DEBUG_FIS(x) std::cerr << x << '\n'
 
-FetchIStream &FetchIStream::operator>>(char &c)
+Query_Row &Query_Row::operator>>(char &c)
 {  std::string s;
    *this >> s;
-   if (s.size()>1) mythrow(SQLerror("FetchIStream>>char&",ECPG_DATA_NOT_ARRAY,"data too long"));
+   if (s.size()>1) mythrow(SQLerror("Query_Row>>char&",ECPG_DATA_NOT_ARRAY,"data too long"));
    c=*s.c_str();
    return *this;
 }
 
-FetchIStream &FetchIStream::operator>>(int &i)
+Query_Row &Query_Row::operator>>(int &i)
 {  std::string s;
    *this >> s;
    i=strtol(s.c_str(),0,10);
    return *this;
 }
 
-FetchIStream &FetchIStream::operator>>(long &i)
+Query_Row &Query_Row::operator>>(long &i)
 {  std::string s;
    *this >> s;
    i=strtol(s.c_str(),0,10);
@@ -87,7 +87,7 @@ FetchIStream &FetchIStream::operator>>(long &i)
 }
 
 #ifndef __MINGW32__
-FetchIStream &FetchIStream::operator>>(long long &i)
+Query_Row &Query_Row::operator>>(long long &i)
 {  std::string s;
    *this >> s;
    i=strtoll(s.c_str(),0,10);
@@ -95,28 +95,28 @@ FetchIStream &FetchIStream::operator>>(long long &i)
 }
 #endif
 
-FetchIStream &FetchIStream::operator>>(unsigned &i)
+Query_Row &Query_Row::operator>>(unsigned &i)
 {  std::string s;
    *this >> s;
    i=strtoul(s.c_str(),0,10);
    return *this;
 }
 
-FetchIStream &FetchIStream::operator>>(unsigned long &i)
+Query_Row &Query_Row::operator>>(unsigned long &i)
 {  std::string s;
    *this >> s;
    i=strtoul(s.c_str(),0,10);
    return *this;
 }
 
-FetchIStream &FetchIStream::operator>>(float &f)
+Query_Row &Query_Row::operator>>(float &f)
 {  double d=0;
    *this >> d;
    f=d;
    return *this;
 }
 
-FetchIStream &FetchIStream::operator>>(double &f)
+Query_Row &Query_Row::operator>>(double &f)
 {  std::string s;
    *this >> s;
    /* Make sure we do NOT honor the locale for numeric input */
@@ -128,7 +128,7 @@ FetchIStream &FetchIStream::operator>>(double &f)
    return *this;
 }
 
-FetchIStream &FetchIStream::operator>>(bool &b)
+Query_Row &Query_Row::operator>>(bool &b)
 {  std::string s;
    *this >> s;
    b=s[0]=='t' || s[0]=='T' || s[0]=='1';
@@ -233,7 +233,7 @@ Query &Query::add_argument(const std::string &s, Oid type)
 
 ArgumentList &ArgumentList::add_argument(const std::string &x, Oid type)
 {  if (complete())
-      FetchIStream::mythrow(SQLerror("",ECPG_TOO_MANY_ARGUMENTS,"too many arguments"));
+      Query_Row::mythrow(SQLerror("",ECPG_TOO_MANY_ARGUMENTS,"too many arguments"));
    params.push_back(x);
    types.push_back(type);
    --params_needed;
@@ -318,41 +318,41 @@ ArgumentList &ArgumentList::operator<<(const ArgumentList &list)
    return *this;
 }
 
-FetchIStream &Query::Fetch()
+Query_Row &Query::Fetch()
 {  Fetch(embedded_iterator);
    return embedded_iterator;
 }
 
-Query &Query::operator>>(FetchIStream &s)
+Query &Query::operator>>(Query_Row &s)
 {  Fetch(s);
    return *this;
 }
 
-FetchIStream &Query::FetchOne()
+Query_Row &Query::FetchOne()
 {  ThrowOnBad(__FUNCTION__);
    Check100();
    Fetch(embedded_iterator);
-   FetchIStream dummy;
+   Query_Row dummy;
    Fetch(dummy);
-   if (good()) FetchIStream::mythrow(SQLerror(__FUNCTION__,-2,"more than one result"));
+   if (good()) Query_Row::mythrow(SQLerror(__FUNCTION__,-2,"more than one result"));
    return embedded_iterator;
 }
 
 void Query::ThrowOnBad(const char *where) const
 {  if (!good()) 
    {  SQLerror::test(__FUNCTION__); 
-      FetchIStream::mythrow(SQLerror(__FUNCTION__,-1,"unspecific bad result")); 
+      Query_Row::mythrow(SQLerror(__FUNCTION__,-1,"unspecific bad result")); 
    }
 }
 
 // ====================== SQLite =================================
 
 #ifdef MPC_SQLITE
-FetchIStream::FetchIStream(const char *const *res, unsigned _nfields, int line)
+Query_Row::Query_Row(const char *const *res, unsigned _nfields, int line)
 	: naechstesFeld(), zeile(line), result(res), nfields(_nfields)
 {}
 
-FetchIStream &FetchIStream::operator>>(std::string &str)
+Query_Row &Query_Row::operator>>(std::string &str)
 {  if (!result)
 	mythrow(SQLerror(__FUNCTION__,ECPG_UNKNOWN_DESCRIPTOR,"no result to fetch from (left?)"));
    if (naechstesFeld>=nfields) 
@@ -366,17 +366,17 @@ FetchIStream &FetchIStream::operator>>(std::string &str)
    return *this;
 }
 
-void FetchIStream::ThrowIfNotEmpty(const char *where)
+void Query_Row::ThrowIfNotEmpty(const char *where)
 {  if (!result)
 	mythrow(SQLerror(where,ECPG_UNKNOWN_DESCRIPTOR,"no result to fetch from"));
    if (naechstesFeld<nfields)
 	mythrow(SQLerror(where,ECPG_TOO_FEW_ARGUMENTS,"too few arguments"));
 }
 
-int FetchIStream::getIndicator() const
+int Query_Row::getIndicator() const
 {  
    if (naechstesFeld>=nfields) 
-	mythrow(SQLerror("FetchIStream::getIndicator",ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end"));
+	mythrow(SQLerror("Query_Row::getIndicator",ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end"));
    return -(result[naechstesFeld]==0);
 }
 
@@ -408,19 +408,19 @@ void Query::Execute() throw(SQLerror)
    eof=!lines;
 }
 
-void Query::Fetch(FetchIStream &is)
+void Query::Fetch(Query_Row &is)
 {  if (!params.complete())
-      FetchIStream::mythrow(SQLerror(query,ECPG_TOO_FEW_ARGUMENTS,"to few input parameter"));
+      Query_Row::mythrow(SQLerror(query,ECPG_TOO_FEW_ARGUMENTS,"to few input parameter"));
 
    if (!eof)
    {  if (line<lines) 
-      {  is=FetchIStream(result+((line+1)*nfields),nfields,line);
+      {  is=Query_Row(result+((line+1)*nfields),nfields,line);
          ++line;
          return;
       }
       eof=true;
    }
-  is=FetchIStream();
+  is=Query_Row();
 }
 
 Query::Query(const std::string &command)
@@ -449,26 +449,26 @@ int Query::Code()
 {  return SQLerror::last_code; 
 }
 
-bool FetchIStream::good() const
+bool Query_Row::good() const
 {  return result && naechstesFeld<nfields; }
 
-void FetchIStream::Fake::init()
+void Query_Row::Fake::init()
 {  result=(const char * const *)malloc(sizeof(*result));
    *const_cast<const char * *>(result)=0;
    nfields=1;
 }
 
-FetchIStream::Fake::Fake(const std::string &val) : value(val)
+Query_Row::Fake::Fake(const std::string &val) : value(val)
 {  init();
    *const_cast<const char * *>(result)=value.c_str();
 }
 
-FetchIStream::Fake::Fake(const Fake &a) : value(a.value)
+Query_Row::Fake::Fake(const Fake &a) : value(a.value)
 {  init();
    if (*a.result) *const_cast<const char * *>(result)=value.c_str();
 }
 
-FetchIStream::Fake::~Fake()
+Query_Row::Fake::~Fake()
 {  if (result) free(const_cast<void*>((const void*)result));
 }
 #endif

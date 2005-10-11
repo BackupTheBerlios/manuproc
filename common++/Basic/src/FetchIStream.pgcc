@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.65 2005/10/11 09:58:30 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.66 2005/10/11 09:58:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,7 +21,7 @@
 
 #include <ManuProCConfig.h>
 #ifndef MPC_SQLITE
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/SQLerror.h>
 #include <Misc/itos.h>
 #ifdef USE_PARAMETERS
@@ -77,7 +77,7 @@ Query_Row::Query_Row(const std::string &descr, int line)
    if (r) result=*r;
 }
 
-FetchIStream &FetchIStream::operator>>(std::string &str)
+Query_Row &Query_Row::operator>>(std::string &str)
 {  if (!result)
 	mythrow(SQLerror(__FUNCTION__,ECPG_UNKNOWN_DESCRIPTOR,"no result to fetch from (left?)"));
    if (naechstesFeld>=PQnfields(result)) 
@@ -93,25 +93,25 @@ FetchIStream &FetchIStream::operator>>(std::string &str)
    return *this;
 }
 
-void FetchIStream::ThrowIfNotEmpty(const char *where)
+void Query_Row::ThrowIfNotEmpty(const char *where)
 {  if (!result)
 	mythrow(SQLerror(where,ECPG_UNKNOWN_DESCRIPTOR,"no result to fetch from"));
    if (naechstesFeld<PQnfields(result))
 	mythrow(SQLerror(where,ECPG_TOO_FEW_ARGUMENTS,"too few arguments"));
 }
 
-int FetchIStream::getIndicator() const
+int Query_Row::getIndicator() const
 {  if (naechstesFeld>=PQnfields(result)) 
-	mythrow(SQLerror("FetchIStream::getIndicator",ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end"));
+	mythrow(SQLerror("Query_Row::getIndicator",ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end"));
    return -PQgetisnull(result, zeile, naechstesFeld);
 }
 
-bool FetchIStream::good() const
+bool Query_Row::good() const
 {  return result && naechstesFeld<PQnfields(result); }
 
-std::string FetchIStream::getFieldName() const
+std::string Query_Row::getFieldName() const
 {  if (naechstesFeld>=PQnfields(result)) 
-	mythrow(SQLerror("FetchIStream::getFieldName",ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end"));
+	mythrow(SQLerror("Query_Row::getFieldName",ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end"));
    return PQfname(result,naechstesFeld);
 }
 
@@ -186,14 +186,14 @@ sqlca.sqlcode=0;
    if (sqlca.sqlcode && sqlca.sqlcode!=100)
    {  eof=true;
 #ifdef OLD_ECPG   
-      FetchIStream::mythrow(SQLerror(query)); 
+      Query_Row::mythrow(SQLerror(query)); 
 #else
       PGresult *lresult=*(ECPGdescriptor_lvalue(__LINE__,descriptor.c_str()));
       std::string detail;
       if (lresult && PQresultErrorField(lresult,PG_DIAG_MESSAGE_DETAIL)) 
         detail=PQresultErrorField(lresult,PG_DIAG_MESSAGE_DETAIL);
 //      Message(lresult);
-      FetchIStream::mythrow(SQLerror(query,detail)); 
+      Query_Row::mythrow(SQLerror(query,detail)); 
 #endif
    }
    else if (sqlca.sqlcode==100 && Query::debugging.on)
@@ -324,17 +324,17 @@ Query::~Query()
    }
 }
 
-void Query::Fetch(FetchIStream &is)
+void Query::Fetch(Query_Row &is)
 {  if (!params.complete())
-      FetchIStream::mythrow(SQLerror(query,ECPG_TOO_FEW_ARGUMENTS,"to few input parameter"));
+      Query_Row::mythrow(SQLerror(query,ECPG_TOO_FEW_ARGUMENTS,"to few input parameter"));
    if (!eof)
    {  if (line<PQntuples(result)) 
-      {  is=FetchIStream(result,line++);
+      {  is=Query_Row(result,line++);
          return;
       }
       eof=true;
    }
- is=FetchIStream();
+ is=Query_Row();
 }
 
 void Query::Execute(const std::string &command) throw(SQLerror)
@@ -355,7 +355,7 @@ unsigned Query::Lines() {
 
 #include <internal/libpq-int.h>
 
-void FetchIStream::Fake::init()
+void Query_Row::Fake::init()
 {  PGresult *res=PQmakeEmptyPGresult(0,PGRES_TUPLES_OK);
    res->ntups=1;
    res->numAttributes=1;
@@ -372,14 +372,14 @@ void FetchIStream::Fake::init()
    result=res;
 }
 
-FetchIStream::Fake::Fake(const std::string &val) : value(val)
+Query_Row::Fake::Fake(const std::string &val) : value(val)
 {  init();
    const_cast<PGresult*>(result)->tuples[0][0].len=value.size();
    const_cast<PGresult*>(result)->tuples[0][0].value=
 		const_cast<char*>(value.c_str());
 }
 
-FetchIStream::Fake::Fake(const Fake &a) : value(a.value)
+Query_Row::Fake::Fake(const Fake &a) : value(a.value)
 {  init();
    if (a.result->tuples[0][0].value)
    { const_cast<PGresult*>(result)->tuples[0][0].len=value.size();
@@ -388,7 +388,7 @@ FetchIStream::Fake::Fake(const Fake &a) : value(a.value)
    }
 }
 
-FetchIStream::Fake::~Fake()
+Query_Row::Fake::~Fake()
 {  if (result) 
    { free(result->attDescs);
      free(result->tuples[0]);
