@@ -1,4 +1,4 @@
-// $Id: Query.pgcc,v 1.4 2005/10/11 13:46:49 christof Exp $
+// $Id: Query.pgcc,v 1.5 2005/10/11 15:16:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -239,7 +239,8 @@ sqlca.sqlcode=0;
   // oder PQsendPrepare PQsendQueryPrepared PQgetResult
   if (prepare)
   { if (!prepare->ready())
-    { std::string prepname="PrepQ"+ulltos(reinterpret_cast<unsigned long long>(prepare));
+    { static int serial;
+      std::string prepname="PrepQ"+itos(serial++);
       prepare->types=params.getTypes();
       std::string cmd=standardize_parameters(prepare->Command());
       if (Query::debugging.on) std::cerr << "preparing " << prepname << " as "

@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.40 2005/10/11 15:16:10 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.41 2005/10/11 15:16:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Jacek Jakubowski
@@ -112,7 +112,7 @@ std::string SQLFullAuftragSelector::IDQualifier(AuftragBase::ID id)
   return " and "+s+" ";
 }
 
-SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Status& selstr) : many()
+SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Status& selstr)
 {
  std::string cl;
 
@@ -136,7 +136,7 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Status& selstr) : many(
 }
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Aufid& selstr,
-		const std::string artbez_table) : many()
+		const std::string artbez_table)
 {
 //cout << "\n\n\nSTORNO = "<<selstr.with_storno<<"\n\n\n";
 #ifdef MABELLA_EXTENSIONS
@@ -158,14 +158,15 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Aufid& selstr,
 }
 
 
-SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_AufidZnr& selstr) : many()
+SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_AufidZnr& selstr)
 {
  setClausel(FULL_SELECT_FROM_WHERE
 	   " and (a.instanz, a.auftragid, e.zeilennr)=(?,?,?)");
  arguments << selstr.auftrag_znr;
+ prepnum=idx_AufidZnr;
 }
 
-SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_InstanzAlle& selstr) : many()
+SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_InstanzAlle& selstr)
 {
  std::string cl=FULL_SELECT_FROM_WHERE;
 
@@ -180,7 +181,7 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_InstanzAlle& selstr) : 
  setClausel(cl);
 }
 
-SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Jahr_Artikel &selstr) : many()
+SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Jahr_Artikel &selstr)
 {
  const std::string jahr(itos(selstr.jahr));
  std::string artids;
@@ -197,7 +198,7 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Jahr_Artikel &selstr) :
 	     ") and a.instanz="+itos(selstr.instanz));
 }
 
-SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Artikel &selstr) : many()
+SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Artikel &selstr)
 {
  setClausel(FULL_SELECT_FROM_WHERE
 	     " and "+StatusQualifier(OPEN)+
@@ -207,7 +208,7 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Artikel &selstr) 
  setOrderClausel(" order by e.lieferdate");
 }
 
-SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung_id &selstr) : many()
+SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung_id &selstr)
 {
   std::string clau=FULL_SELECT_FROM_WHERE
            " and "+StatusQualifier(selstr.status)+
@@ -239,14 +240,14 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung_id &sel
  setClausel(clau);
 }
 
-SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel &selstr) : many()
+SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel &selstr)
 {
  setClausel(FULL_SELECT_FROM_WHERE 
 	     " and a.instanz="+itos(selstr.instanz) +
 	     " and artikelid="+itos(selstr.artikel.Id()));
 }
 
-SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Status &selstr) : many()
+SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Status &selstr)
 {
  setClausel(FULL_SELECT_FROM_WHERE 
 	FULL_SELECT_NO_0
@@ -259,7 +260,7 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Status &selstr) :
 
 #ifdef MABELLA_EXTENSIONS
 SQLFullAuftragSelector::SQLFullAuftragSelector(
-			const sel_Kunde_Status_Lager &selstr) : many()
+			const sel_Kunde_Status_Lager &selstr)
 {
 // PRE QUERY
  std::string tmptable("aktbestand_");

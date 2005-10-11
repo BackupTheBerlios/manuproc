@@ -1,4 +1,4 @@
-// $Id: SelectedFullAufList.cc,v 1.3 2005/10/11 15:16:10 christof Exp $
+// $Id: SelectedFullAufList.cc,v 1.4 2005/10/11 15:16:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -84,7 +84,16 @@ SelectedFullAufList::SelectedFullAufList
  if(!selector.getPreQuery().empty())
    Query(selector.getPreQuery());
 
- if (selector.many_lines()) 
+ if (selector.prepare()!=SQLFullAuftragSelector::idx_noPrepare)
+ { static PreparedQuery pq[unsigned(SQLFullAuftragSelector::idx_anz)-1];
+   unsigned idx=unsigned(selector.prepare())-1;
+   assert(idx<unsigned(SQLFullAuftragSelector::idx_anz)-1);
+   if (pq[idx].Command().empty()) pq[idx]=PreparedQuery(selector.getClausel());
+   Query q(pq[idx]);
+   q << selector.getArguments();
+   q.FetchArray(aufidliste);
+ }
+ else if (selector.many_lines()) 
  { Transaction tr;
    Query q("auftrag",selector.getClausel());
    q << selector.getArguments();

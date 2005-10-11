@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.112 2004/11/02 10:46:03 jacek Exp $
+// $Id: AufEintrag.cc,v 1.113 2005/10/11 15:16:13 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -137,7 +137,7 @@ void AufEintrag::AlsGeplantMarkieren() const
 {  assert(Id()>=handplan_auftrag_id);
 //---- ProzessInstanz setzen ------
     // Kundenauftrag suchen
-#warning eigentlich sollte das über Verfügbarkeit.cc gehen
+#warning eigentlich sollte das Ã¼ber VerfÃ¼gbarkeit.cc gehen
     AufEintragZu::list_t ReferenzAufEintrag =
 			         AufEintragZu(*this).get_Referenz_listFull(false);
     for (AufEintragZu::list_t::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)

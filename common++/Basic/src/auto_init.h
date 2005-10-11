@@ -1,4 +1,4 @@
-/* $Id: Long.h,v 1.5 2005/10/11 15:16:14 christof Exp $ */
+/* $Id: auto_init.h,v 1.1 2005/10/11 15:16:14 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,12 +17,24 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef LONG_H
-#define LONG_H
+#ifndef A7192_C416_47B7_88FA_D9F04254B0C9
+#define A7192_C416_47B7_88FA_D9F04254B0C9
 
-#include <Misc/auto_init.h>
+// automatically initializing integer/float/enum type
 
-// it looks like this class should represent an automatically initializing
-// integer value
-typedef auto_init<long> Long;
+template<typename B>
+class auto_init
+{ B v;
+public:
+  auto_init() : v() {}
+  auto_init(B b) : v(b) {}
+  operator B() const { return v; }
+  template <class T> auto_init operator+=(const T &t) { return v+=t; }
+  template <class T> auto_init operator-=(const T &t) { return v-=t; }
+  template <class T> auto_init operator*=(const T &t) { return v*=t; }
+  template <class T> auto_init operator/=(const T &t) { return v/=t; }
+  template <class T> auto_init operator%=(const T &t) { return v%=t; }
+  auto_init operator++() { return ++v; }
+  auto_init operator++(int) { return v++; }
+};
 #endif

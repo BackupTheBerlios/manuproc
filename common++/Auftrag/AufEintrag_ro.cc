@@ -1,4 +1,4 @@
-// $Id: AufEintrag_ro.cc,v 1.12 2005/08/24 14:46:08 christof Exp $
+// $Id: AufEintrag_ro.cc,v 1.13 2005/10/11 15:16:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -32,24 +32,24 @@ AufEintrag::AufEintrag(const AufEintragBase &aeb, mengen_t _bestellt,
 	const cH_PreisListe &_preisliste) throw()
 : AufEintragBase(aeb),
  bestellt(_bestellt),
- geliefert(0),
+ geliefert(),
  artikel(_artikel),
  entrystatus(_entrystat),
  lieferdatum(_lieferdatum),
  lasteditdate_uid(getuid()),
  lasteditdate(ManuProC::Datum::today()),
  letztePlanInstanz(ppsInstanzID::None),
- maxPlanInstanz(0),
+ maxPlanInstanz(),
  preis(_preis),
  rabatt(_rabatt),
  kdnr(_kdnr),
  youraufnr(_youraufnr),
- disponr(0),
+ disponr(),
  auftragstatus(_aufstatus), 
- dispoentrynr(0),
+ dispoentrynr(),
  prozess(Prozess::default_id),
  preisliste(_preisliste),provsatz(-1),
- tmp_geliefert(0)
+ tmp_geliefert()
 {
 }
 	
@@ -59,14 +59,14 @@ AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr,
 	AufStatVal _entrystatus) throw()
 : AufEintragBase(_instanz,_auftragid,_zeilennr),
  bestellt(_bestellt),
- geliefert(0),
+ geliefert(),
  artikel(_artikel),
  entrystatus(_entrystatus),
  lieferdatum(_lieferdatum),
- lasteditdate_uid(0),
+ lasteditdate_uid(),
  auftragstatus(_entrystatus),
  prozess(Prozess::default_id),provsatz(-1),
- tmp_geliefert(0)
+ tmp_geliefert()
 {}
 	
 
@@ -103,9 +103,9 @@ bool AufEintrag::allesOK() const
 }
 
 AufEintrag::AufEintrag(const AufEintragBase &aebb) throw (SQLerror,NoAEB_Error)
-  : AufEintragBase(aebb), artikel(0),
+  : AufEintragBase(aebb), artikel(),
     prozess(Prozess::default_id),provsatz(-1),
-	tmp_geliefert(0)
+	tmp_geliefert()
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,aebb);
  try{

@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.33 2005/10/11 15:16:10 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.34 2005/10/11 15:16:14 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,9 +27,13 @@
 #include<Instanzen/ppsInstanz.h>
 #include <vector>
 #include <Lager/FertigWarenLager.h>
+#include <Misc/auto_init.h>
 
 class SQLFullAuftragSelector // : public SQLAuftragSelector
 {
+public:
+  enum prepareindex { idx_noPrepare, idx_AufidZnr, idx_anz };
+private:
  std::string clausel;
  std::string order_clausel; // will be added to query int getClausel
  			   // can be manipulated after creation
@@ -37,16 +41,15 @@ class SQLFullAuftragSelector // : public SQLAuftragSelector
  std::string post_query; // do it as sql-query after run main clausel 
  
  ArgumentList arguments;
- bool many; // many many lines are expected, use portal
+ auto_init<bool> many; // many many lines are expected, use portal
+ auto_init<prepareindex> prepnum; // which prepared statement is to use
 
  static std::string StatusQualifier(AufStatVal v);
  static std::string IDQualifier(AuftragBase::ID id);
 
 public:
- SQLFullAuftragSelector() : many() {}
+ SQLFullAuftragSelector() {}
  
- ArgumentList const& getArguments() const { return arguments; }
-
  // id=AuftragBase::none_id => Alle Aufträge
  // id=AuftragBase::plan_auftrag_id => Alle außer 0er und 2er
  // id=ungeplante_id|dispo_auftrag_id => as is
@@ -173,6 +176,8 @@ public:
  const std::string getPreQuery() const { return pre_query; }
  const std::string getPostQuery() const { return post_query; }
  bool many_lines() const { return many; }
+ prepareindex prepare() const { return prepnum; }
+ ArgumentList const& getArguments() const { return arguments; }
 };
 
 #endif
