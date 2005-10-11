@@ -1,4 +1,4 @@
-// $Id: SelectedFullAufList.cc,v 1.1 2005/08/24 14:46:08 christof Exp $
+// $Id: SelectedFullAufList.cc,v 1.2 2005/10/11 11:11:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -83,8 +83,15 @@ SelectedFullAufList::SelectedFullAufList
  if(!selector.getPreQuery().empty())
    Query(selector.getPreQuery());
 
- Query q(selector.getClausel());
- q.FetchArray(aufidliste);
+ if (selector.many_lines()) 
+ { Transaction tr;
+   Query q("auftrag",selector.getClausel());
+   q.FetchArray(aufidliste);
+ }
+ else
+ { Query q(selector.getClausel());
+   q.FetchArray(aufidliste);
+ }
 
  if(!selector.getPostQuery().empty())
    Query(selector.getPostQuery());

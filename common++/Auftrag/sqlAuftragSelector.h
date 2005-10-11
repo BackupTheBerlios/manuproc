@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.30 2004/10/12 15:54:28 jacek Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.31 2005/10/11 11:11:07 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -35,12 +35,14 @@ class SQLFullAuftragSelector // : public SQLAuftragSelector
  			   // can be manipulated after creation
  std::string pre_query; // do it as sql-query before run main clausel
  std::string post_query; // do it as sql-query after run main clausel 
+ 
+ bool many;
 
  static std::string StatusQualifier(AufStatVal v);
  static std::string IDQualifier(AuftragBase::ID id);
 
 public:
- SQLFullAuftragSelector() {}
+ SQLFullAuftragSelector() : many() {}
 
  // id=AuftragBase::none_id => Alle Auftr‰ge
  // id=AuftragBase::plan_auftrag_id => Alle auﬂer 0er und 2er
@@ -167,6 +169,7 @@ public:
  const std::string getClausel() const { return clausel+order_clausel; }
  const std::string getPreQuery() const { return pre_query; }
  const std::string getPostQuery() const { return post_query; }
+ bool many_lines() const { return many; }
 };
 
 #endif
