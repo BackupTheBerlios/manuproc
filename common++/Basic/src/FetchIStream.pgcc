@@ -1,6 +1,7 @@
-// $Id: FetchIStream.pgcc,v 1.66 2005/10/11 09:58:37 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.67 2005/10/11 09:58:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
+ *  written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -40,9 +41,11 @@ exec sql include sqlca;
 #define DEBUG_FIS(x) std::cerr << x << '\n'
 // ,y...) x,##y
 
+#ifndef USE_PARAMETERS
 extern "C" {
 extern PGresult **ECPGdescriptor_lvalue(int line, const char *descriptor);
 }
+#endif
 
 #ifdef USE_PARAMETERS
 #define ECPG_SQLSTATE_NO_DATA				"02000"
@@ -69,13 +72,13 @@ extern PGresult **ECPGdescriptor_lvalue(int line, const char *descriptor);
 #define ECPG_SQLSTATE_ECPG_OUT_OF_MEMORY	"YE001"
 #endif
 
-// ecpg incoming descriptor has to be FetchIStream
-
+#ifndef USE_PARAMETERS
 Query_Row::Query_Row(const std::string &descr, int line)
 	: naechstesFeld(0), zeile(line), result(0)
 {  PGresult **r=ECPGdescriptor_lvalue(__LINE__,descr.c_str());
    if (r) result=*r;
 }
+#endif
 
 Query_Row &Query_Row::operator>>(std::string &str)
 {  if (!result)
@@ -211,8 +214,9 @@ sqlca.sqlcode=0;
   int length[params.size()];
 //  memset(binary,0,sizeof(binary));
   if (Query::debugging.on)
-    std::cerr << "Query " << query << "\n"
-      "with params: ";
+  { std::cerr << "Query " << query << "\n";
+    if (!params.empty()) std::cerr << "with params: ";
+  }
   unsigned idx=0;
   for (ArgumentList::const_iterator i=params.begin();i!=params.end();++i,++idx)
   { if (params.type_of(i)==VOIDOID)
@@ -230,7 +234,7 @@ sqlca.sqlcode=0;
       if (Query::debugging.on) std::cerr << *i << ",";
     }
   }
-  if (Query::debugging.on) std::cerr << "\n";
+  if (Query::debugging.on && !params.empty()) std::cerr << "\n";
   // oder PQsendPrepare PQsendQueryPrepared PQgetResult
   result=PQexecParams(conn,query.c_str(),numparams,types,values,length,binary,0);
   if (!result) raise(ECPG_SQLSTATE_ECPG_INTERNAL_ERROR,ECPG_PGSQL,PQerrorMessage(conn));
@@ -240,7 +244,7 @@ sqlca.sqlcode=0;
   { case PGRES_TUPLES_OK:
       error=0;
       lines=PQntuples(result);
-      eof=false;
+      eof=false; // !lines; // ??? oder immer false?
       if (!lines) 
         raise(ECPG_SQLSTATE_NO_DATA, ECPG_NOT_FOUND, "no lines selected");
       break;
@@ -280,12 +284,42 @@ sqlca.sqlcode=0;
   }
 }
 
+static std::string descriptor_name(Query *t)
+{
+#ifndef USE_PARAMETERS 
+  return std::string("Query")+ulltos(reinterpret_cast<unsigned long long>(t));
+#else
+  return std::string();
+#endif  
+}
+
 // note cursor is the name for both the cursor and the descriptor
 Query::Query(const std::string &command)
-: descriptor(std::string("Query")+ulltos(reinterpret_cast<unsigned long long>(this))), 
-	eof(true), line(), result(), query(command), num_params(), 
-	error(ECPG_TOO_FEW_ARGUMENTS), lines()
+: descriptor(descriptor_name(this)), 
+  eof(true), line(), result(), query(command), num_params(), 
+  error(ECPG_TOO_FEW_ARGUMENTS), lines(), prepare()
 {  const char *p=query.c_str();
+   while ((p=ArgumentList::next_insert(p))) { ++num_params; ++p; }
+   params.setNeededParams(num_params);
+   Execute_if_complete();
+}
+
+Query::Query(std::string const& _portal_name,std::string const&command)
+: descriptor(_portal_name), eof(true), line(), result(), 
+  query("declare \""+_portal_name+"\" cursor for "+command), 
+  num_params(), error(ECPG_TOO_FEW_ARGUMENTS), lines(), prepare(), 
+  portal_name(_portal_name)
+{  const char *p=query.c_str();
+   while ((p=ArgumentList::next_insert(p))) { ++num_params; ++p; }
+   params.setNeededParams(num_params);
+   Execute_if_complete();
+}
+
+Query::Query(PreparedQuery &prep)
+: descriptor(descriptor_name(this)), eof(true), line(), result(), 
+  query(), num_params(), error(ECPG_TOO_FEW_ARGUMENTS), lines(), 
+  prepare(&prep)
+{  const char *p=prep.Command().c_str();
    while ((p=ArgumentList::next_insert(p))) { ++num_params; ++p; }
    params.setNeededParams(num_params);
    Execute_if_complete();
@@ -328,9 +362,17 @@ void Query::Fetch(Query_Row &is)
 {  if (!params.complete())
       Query_Row::mythrow(SQLerror(query,ECPG_TOO_FEW_ARGUMENTS,"to few input parameter"));
    if (!eof)
-   {  if (line<PQntuples(result)) 
+   {  if (line<PQntuples(result))
       {  is=Query_Row(result,line++);
          return;
+      }
+      if (!portal_name.empty())
+      { Query q2("fetch 32 from \""+portal_name+"\"");
+        std::swap(result,q2.result);
+        if (line<PQntuples(result))
+        {  is=Query_Row(result,line++);
+           return;
+        }
       }
       eof=true;
    }
