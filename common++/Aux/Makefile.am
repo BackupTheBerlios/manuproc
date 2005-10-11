@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.67 2005/10/05 08:39:21 christof Exp $
+# $Id: Makefile.am,v 1.68 2005/10/11 10:19:26 christof Exp $
 
 # this is needed for FetchIStream's Fake hack on debian sid
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@  \
@@ -12,7 +12,7 @@ noinst_LIBRARIES=libMisc.a
 includedir=@includedir@/Misc
 
 PGCC_Sources=dbconnect.cc SQLerror_postgres.cc Transaction.cc \
-		Waehrung_sql.cc Changejournal_sql.cc FetchIStream.cc \
+		Waehrung_sql.cc Changejournal_sql.cc Query.cc \
       EAN_sql.cc 
 
 libMisc_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
@@ -43,7 +43,7 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
 	auto_conversion.cc dbconnect.h dbconnect.pgcc \
 	exception.cc exception.h fixedpoint.h mystream.h \
 	postgres_conversion.cc safemap.h string0.c string0.h mystring.cc mystring.h itos.cc itos.h \
-	FetchIStream.pgcc FetchIStream.h ctime_assert.h \
+	Query.pgcc FetchIStream.h ctime_assert.h \
    EntryValueBase.cc EntryValueBase.h EntryValueIntString.cc \
    EntryValueIntString.h EntryValueEmptyInt.h EntryValueDatum.h \
    EntryValueDatum.cc EmptyInt_4TeX.h EntryValueFixed.h Long.h \
