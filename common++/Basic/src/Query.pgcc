@@ -1,4 +1,4 @@
-// $Id: Query.pgcc,v 1.1 2005/10/11 09:58:43 christof Exp $
+// $Id: Query.pgcc,v 1.2 2005/10/11 09:58:45 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -344,6 +344,9 @@ Query::~Query()
    }
    else
    {  
+      if (!portal_name.empty())
+      { Query("close \""+portal_name+"\"");
+      }
 #ifndef USE_PARAMETERS
 #ifdef OLD_ECPG
       struct sqlca copy=sqlca;
@@ -370,9 +373,15 @@ void Query::Fetch(Query_Row &is)
          return;
       }
       if (!portal_name.empty())
-      { Query q2("fetch 32 from \""+portal_name+"\"");
-        std::swap(result,q2.result);
+      { { Query q2("fetch 32 from \""+portal_name+"\"");
+          std::swap(result,q2.result);
+        }
         line=0;
+        // optimization: portal is at end
+        if (PQntuples(result)<32) 
+        { Query("close \""+portal_name+"\"");
+          portal_name.clear();
+        }
         if (line<PQntuples(result))
         {  is=Query_Row(result,line++);
            return;
