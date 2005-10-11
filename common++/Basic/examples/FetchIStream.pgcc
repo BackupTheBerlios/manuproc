@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.30 2005/10/11 13:46:43 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.31 2005/10/11 13:46:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -117,8 +117,8 @@ int main()
    query.FetchArray(v);
    std::cout << v.size() << '\n';
    Query query2(pq);
-   query << "art%";
-   query.FetchArray(v);
+   query2 << "art%";
+   query2.FetchArray(v);
    std::cout << v.size() << '\n';
   }
    

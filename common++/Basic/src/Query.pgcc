@@ -1,4 +1,4 @@
-// $Id: Query.pgcc,v 1.3 2005/10/11 13:46:43 christof Exp $
+// $Id: Query.pgcc,v 1.4 2005/10/11 13:46:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -243,7 +243,7 @@ sqlca.sqlcode=0;
       prepare->types=params.getTypes();
       std::string cmd=standardize_parameters(prepare->Command());
       if (Query::debugging.on) std::cerr << "preparing " << prepname << " as "
-          << prepare->Command() << '\n';
+          << cmd << '\n';
       result=PQprepare(conn,prepname.c_str(),cmd.c_str(),numparams,types);
       if (!result) raise(ECPG_SQLSTATE_ECPG_INTERNAL_ERROR,ECPG_PGSQL,PQerrorMessage(conn));
       if (PQresultStatus(result)!=PGRES_COMMAND_OK)
