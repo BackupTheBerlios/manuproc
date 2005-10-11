@@ -1,4 +1,4 @@
-// $Id: SelectedFullAufList.cc,v 1.2 2005/10/11 11:11:07 christof Exp $
+// $Id: SelectedFullAufList.cc,v 1.3 2005/10/11 15:16:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,33 +21,34 @@
 #include <Misc/Transaction.h>
 #include <Misc/Datum.h>
 
-FetchIStream &operator>>(FetchIStream &is, AufStatVal &v)
+Query::Row &operator>>(Query::Row &is, AufStatVal &v)
 {  int i;
    is >> i;
    v=AufStatVal(i);
    return is;
 }
 
-FetchIStream &operator>>(FetchIStream &is, cH_PreisListe &v)
+Query::Row &operator>>(Query::Row &is, cH_PreisListe &v)
 {  int i;
    is >> i;
    v=cH_PreisListe(i);
    return is;
 }
 
-FetchIStream &operator>>(FetchIStream &is, Preis &v)
+Query::Row &operator>>(Query::Row &is, Preis &v)
 {  double p,pm;
    int w;
-   int ip,ipm,iw;
-   is >> FetchIStream::WithIndicator(p,ip);
-   is >> FetchIStream::WithIndicator(pm,ipm);
-   is >> FetchIStream::WithIndicator(w,iw);
-   if (!ip && !ipm && !iw) v=Preis(p,Waehrung::ID(w),pm);
+   int ip; // indicator
+   is >> Query::Row::WithIndicator(p,ip);
+   is >> Query::Row::MapNull(pm,1);
+   // do I really want this default?
+   is >> Query::Row::MapNull(w,Waehrung::default_id);
+   if (!ip) v=Preis(p,Waehrung::ID(w),pm);
    else v=Preis();
    return is;
 }
 
-FetchIStream &operator>>(FetchIStream &is, AufEintrag &ae)
+Query::Row &operator>>(Query::Row &is, AufEintrag &ae)
 {  Prozess::ID prozid;
 
    is >> static_cast<AufEintragBase &>(ae)
@@ -57,19 +58,19 @@ FetchIStream &operator>>(FetchIStream &is, AufEintrag &ae)
    	>> ae.geliefert
 	>> ae.auftragstatus 
    	>> ae.kdnr 
-   	>> FetchIStream::MapNull(ae.youraufnr,std::string())
-   	>> prozid 
-   	>> ae.letztePlanInstanz
-   	>> ae.maxPlanInstanz 
-   	>> ae.prozdate
+   	>> Query::Row::MapNull(ae.youraufnr,std::string())
+   	>> Query::Row::MapNull(prozid,ProzessID::None)
+   	>> Query::Row::MapNull(ae.letztePlanInstanz,ppsInstanzID::None)
+   	>> Query::Row::MapNull(ae.maxPlanInstanz,ppsInstanzID::None)
+   	>> Query::Row::MapNull(ae.prozdate)
    	>> ae.preis 
-   	>> FetchIStream::MapNull(ae.rabatt,0)
+   	>> Query::Row::MapNull(ae.rabatt,0)
    	>> ae.entrystatus
-   	>> ae.lasteditdate_uid
+   	>> Query::Row::MapNull(ae.lasteditdate_uid)
    	>> ae.lasteditdate 
    	>> ae.letzte_lieferung
-   	>> ae.preisliste
-	>> FetchIStream::MapNull(ae.provsatz,0)
+   	>> Query::Row::MapNull(ae.preisliste,ManuProcEntity<>::none_id)
+	>> Query::Row::MapNull(ae.provsatz,0)
 	>> ae.am_lager;
 
    ae.prozess=cH_Prozess(prozid ? prozid : cH_Prozess::default_pid);
@@ -86,10 +87,12 @@ SelectedFullAufList::SelectedFullAufList
  if (selector.many_lines()) 
  { Transaction tr;
    Query q("auftrag",selector.getClausel());
+   q << selector.getArguments();
    q.FetchArray(aufidliste);
  }
  else
  { Query q(selector.getClausel());
+   q << selector.getArguments();
    q.FetchArray(aufidliste);
  }
 

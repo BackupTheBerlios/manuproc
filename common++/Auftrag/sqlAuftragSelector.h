@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.32 2005/10/11 11:11:12 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.33 2005/10/11 15:16:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -44,6 +44,8 @@ class SQLFullAuftragSelector // : public SQLAuftragSelector
 
 public:
  SQLFullAuftragSelector() : many() {}
+ 
+ ArgumentList const& getArguments() const { return arguments; }
 
  // id=AuftragBase::none_id => Alle Aufträge
  // id=AuftragBase::plan_auftrag_id => Alle außer 0er und 2er
