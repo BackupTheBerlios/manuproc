@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.31 2005/10/11 11:11:07 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.32 2005/10/11 11:11:12 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -36,7 +36,8 @@ class SQLFullAuftragSelector // : public SQLAuftragSelector
  std::string pre_query; // do it as sql-query before run main clausel
  std::string post_query; // do it as sql-query after run main clausel 
  
- bool many;
+ ArgumentList arguments;
+ bool many; // many many lines are expected, use portal
 
  static std::string StatusQualifier(AufStatVal v);
  static std::string IDQualifier(AuftragBase::ID id);
@@ -44,10 +45,10 @@ class SQLFullAuftragSelector // : public SQLAuftragSelector
 public:
  SQLFullAuftragSelector() : many() {}
 
- // id=AuftragBase::none_id => Alle Aufträge
- // id=AuftragBase::plan_auftrag_id => Alle außer 0er und 2er
+ // id=AuftragBase::none_id => Alle AuftrÃ¤ge
+ // id=AuftragBase::plan_auftrag_id => Alle auÃŸer 0er und 2er
  // id=ungeplante_id|dispo_auftrag_id => as is
- // wg=nur für Warengruppe wg selektieren; wg==noen_id alle Warengruppen
+ // wg=nur fÃ¼r Warengruppe wg selektieren; wg==noen_id alle Warengruppen
  struct sel_Status
   { sel_Status(ppsInstanz::ID in, AufStatVal st,AuftragBase::ID _id,
   		ArtikelTyp _wg=ArtikelTyp::none_id) 

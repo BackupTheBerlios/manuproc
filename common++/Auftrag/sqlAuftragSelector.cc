@@ -1,6 +1,7 @@
-// $Id: sqlAuftragSelector.cc,v 1.38 2004/11/26 17:32:06 jacek Exp $
+// $Id: sqlAuftragSelector.cc,v 1.39 2005/10/11 11:11:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, 
+ *  written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -134,6 +135,7 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Status& selstr)
 
 // if(!selstr.geplant) cl +=" and a.auftragid!=0 ";
  setClausel(cl);
+ many=true;
 }
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Aufid& selstr,
