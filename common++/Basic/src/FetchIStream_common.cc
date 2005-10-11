@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.25 2005/10/11 13:46:43 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.26 2005/10/11 16:26:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -489,5 +489,5 @@ Query_Row::Fake::~Fake()
 #endif
 
 ArgumentList &ArgumentList::operator<<(Query_types::null n)
-{ return add_argument("null",VOIDOID);
+{ return add_argument(std::string(),VOIDOID);
 }
