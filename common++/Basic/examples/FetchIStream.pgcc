@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.28 2005/10/06 14:17:51 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.29 2005/10/11 09:58:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,12 +18,13 @@
  */
 
 
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/dbconnect.h>
 exec sql include sqlca;
 #include <iterator>
 #include <cassert>
 #include <Misc/pg_type.h>
+#include <Misc/Transaction.h>
 
 exec sql whenever sqlerror do X();
 #define X() throw SQLerror(__FILELINE__)
@@ -42,8 +43,8 @@ int main()
    float f;
    int ind3=0;
    
-   query >> s >> s2 >> FetchIStream::WithIndicator(s3,ind3)
-      >> FetchIStream::MapNull(s4,"<NULL>")
+   query >> s >> s2 >> Query::Row::WithIndicator(s3,ind3)
+      >> Query::Row::MapNull(s4,"<NULL>")
       >> i >> f >> b;
    std::cout << s << ", " << s2 << ", " << ind3 << ", " << s4 << '\n';
    std::cout << i << ", " << f << ", " << b << '\n';
@@ -67,8 +68,8 @@ int main()
    Query ("select ?,?,?,'?',?, ?,?")
    	<< 1 << Query::null() << "test" << in 
    		<< Query::NullIf(1,2) << Query::NullIf(2,2)
-   	>> a >> FetchIStream::MapNull(b,-1) >> x >> y >> z 
-   		>> c >> FetchIStream::MapNull(d,-1);
+   	>> a >> Query::Row::MapNull(b,-1) >> x >> y >> z 
+   		>> c >> Query::Row::MapNull(d,-1);
    std::cout << a << ' ' << b << ' ' << x << ' ' << y << ' ' << z 
    		<< ' ' << c << ' ' << d << '\n';
   }
@@ -98,6 +99,16 @@ int main()
    } catch (SQLerror &e)
    { std::cerr << "CLOSE does throw\n";
    }
+
+  std::cerr << "--- advanced: portals\n";
+  {Transaction tr;
+   Query query("relname","select relname from pg_class");
+   std::vector<std::string> v;
+   query.FetchArray(v);
+   for (std::vector<std::string>::const_iterator i=v.begin();i!=v.end();++i)
+     std::cout << (*i)[0];
+   std::cout << '\n';
+  }
    
    ManuProC::dbdisconnect();
    return 0;

@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.67 2005/10/11 09:58:40 christof Exp $
+// $Id: Query.pgcc,v 1.1 2005/10/11 09:58:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -258,7 +258,10 @@ sqlca.sqlcode=0;
 		|| !strncmp(PQcmdStatus(result), "INSERT", 6)
 		|| !strncmp(PQcmdStatus(result), "DELETE", 6)))
 	raise(ECPG_SQLSTATE_NO_DATA, ECPG_NOT_FOUND, "no lines affected");
-      eof=true;
+      if (!strncmp(PQcmdStatus(result), "DECLARE CURSOR", 14))
+        eof=false;
+      else
+        eof=true;
       break;
     case PGRES_COPY_OUT:
     case PGRES_COPY_IN:
@@ -369,6 +372,7 @@ void Query::Fetch(Query_Row &is)
       if (!portal_name.empty())
       { Query q2("fetch 32 from \""+portal_name+"\"");
         std::swap(result,q2.result);
+        line=0;
         if (line<PQntuples(result))
         {  is=Query_Row(result,line++);
            return;
