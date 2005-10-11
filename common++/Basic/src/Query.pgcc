@@ -1,4 +1,4 @@
-// $Id: Query.pgcc,v 1.2 2005/10/11 09:58:45 christof Exp $
+// $Id: Query.pgcc,v 1.3 2005/10/11 13:46:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -158,6 +158,7 @@ void Query::Execute() throw(SQLerror)
 {
    time_t start=-1;
    if (debugging.time_queries) start=time(0);
+   if (!prepare && debugging.count_queries) debugging.counts[query]++;
 #ifndef USE_PARAMETERS
    exec sql begin declare section;
    char *COMMAND=const_cast<char*>(query.c_str());
@@ -214,7 +215,7 @@ sqlca.sqlcode=0;
   int length[params.size()];
 //  memset(binary,0,sizeof(binary));
   if (Query::debugging.on)
-  { std::cerr << "Query " << query << "\n";
+  { if (!query.empty()) std::cerr << "Query " << query << "\n";
     if (!params.empty()) std::cerr << "with params: ";
   }
   unsigned idx=0;
@@ -236,7 +237,30 @@ sqlca.sqlcode=0;
   }
   if (Query::debugging.on && !params.empty()) std::cerr << "\n";
   // oder PQsendPrepare PQsendQueryPrepared PQgetResult
-  result=PQexecParams(conn,query.c_str(),numparams,types,values,length,binary,0);
+  if (prepare)
+  { if (!prepare->ready())
+    { std::string prepname="PrepQ"+ulltos(reinterpret_cast<unsigned long long>(prepare));
+      prepare->types=params.getTypes();
+      std::string cmd=standardize_parameters(prepare->Command());
+      if (Query::debugging.on) std::cerr << "preparing " << prepname << " as "
+          << prepare->Command() << '\n';
+      result=PQprepare(conn,prepname.c_str(),cmd.c_str(),numparams,types);
+      if (!result) raise(ECPG_SQLSTATE_ECPG_INTERNAL_ERROR,ECPG_PGSQL,PQerrorMessage(conn));
+      if (PQresultStatus(result)!=PGRES_COMMAND_OK)
+        raise(PQresultErrorField(result, PG_DIAG_SQLSTATE), ECPG_PGSQL, 
+          PQresultErrorField(result, PG_DIAG_MESSAGE_PRIMARY),
+          PQresultErrorField(result,PG_DIAG_MESSAGE_DETAIL));
+      prepare->name=prepname;
+    }
+    else if (prepare->types!=params.getTypes())
+    { raise(ECPG_SQLSTATE_ECPG_INTERNAL_ERROR,ECPG_PGSQL,
+                  "prepare/bind type mismatch",prepare->Command());
+    }
+    if (Query::debugging.on) std::cerr << "binding " << prepare->name << '\n';
+    result=PQexecPrepared(conn,prepare->name.c_str(), numparams,values,length,binary,0);
+  }
+  else 
+    result=PQexecParams(conn,query.c_str(),numparams,types,values,length,binary,0);
   if (!result) raise(ECPG_SQLSTATE_ECPG_INTERNAL_ERROR,ECPG_PGSQL,PQerrorMessage(conn));
   if (Query::debugging.on) std::cerr << "result "<< PQresultStatus(result) << " " << PQcmdStatus(result) << "\n";
   // this resembles the code in ecpglib/execute.c
@@ -325,6 +349,9 @@ Query::Query(PreparedQuery &prep)
 {  const char *p=prep.Command().c_str();
    while ((p=ArgumentList::next_insert(p))) { ++num_params; ++p; }
    params.setNeededParams(num_params);
+#ifndef USE_PARAMETERS
+   query=prep.Command();
+#endif
    Execute_if_complete();
 }
 

@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.24 2005/10/11 09:58:37 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.25 2005/10/11 13:46:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -43,6 +43,16 @@ Query::debug_environment::debug_environment() : on(), time_queries()
    std::string senv=env;
    if (senv=="-E") on=true;
    else if (senv=="-T") time_queries=true;
+   else if (senv=="-C") count_queries=true;
+}
+
+Query::debug_environment::~debug_environment()
+{ if (count_queries)
+  { for (std::map<std::string,unsigned>::const_iterator i=counts.begin();
+      i!=counts.end();++i)
+    { std::cerr << i->second << "x " << i->first << '\n';
+    }
+  }
 }
 
 Query::debug_environment Query::debugging;
@@ -177,6 +187,26 @@ bool needs_quotes(Oid type)
   }
 }
 
+std::string Query::standardize_parameters(std::string const& in)
+{
+  std::string expanded;
+  const char *p=in.c_str();
+  const char *last=p;
+  unsigned idx=1;
+      
+  do
+  {  p=ArgumentList::next_insert(p);
+     if (!p) expanded+=last;
+     else
+     {  expanded+=std::string(last,p-last);
+        expanded+="$"+itos(idx++);
+        ++p;
+        last=p;
+     }
+  } while(p);
+  return expanded;
+}
+
 void Query::Execute_if_complete()
 {  if (params.complete())
    {  
@@ -204,22 +234,7 @@ void Query::Execute_if_complete()
       } while(p);
       query=expanded;
 #else // replace ? by $N
-      std::string expanded;
-      const char *p=query.c_str();
-      const char *last=p;
-      unsigned idx=1;
-      
-      do
-      {  p=ArgumentList::next_insert(p);
-         if (!p) expanded+=last;
-         else
-         {  expanded+=std::string(last,p-last);
-            expanded+="$"+itos(idx++);
-            ++p;
-            last=p;
-         }
-      } while(p);
-      query=expanded;
+      if (!params.empty()) query=standardize_parameters(query);
 #endif
       Execute();
    }

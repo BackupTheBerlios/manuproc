@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.34 2004/09/01 12:25:48 christof Exp $
+// $Id: AufEintragZu.cc,v 1.35 2005/10/11 13:46:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -23,7 +23,7 @@
 #include <Misc/Changejournal.h>
 #include <Artikel/ArtikelStamm.h>
 #include <Artikel/ArtikelBezeichnung.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/TraceNV.h>
 
 // was tut das eigentlich ? CP
@@ -153,7 +153,19 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,b
  }
  
  std::list<st_reflist> vaeb;
- (Query(squery).lvalue() << aeb).FetchArray(vaeb);
+ if (kinder && sorted && artikel)
+ { PreparedQuery pq;
+   if (pq.Command().empty()) pq=PreparedQuery(squery);
+   (Query(pq) << aeb).FetchArray(vaeb);
+ }
+ else if (!kinder && sorted && !artikel)
+ { PreparedQuery pq;
+   if (pq.Command().empty()) pq=PreparedQuery(squery);
+   (Query(pq) << aeb).FetchArray(vaeb);
+ }
+ else
+ { (Query(squery).lvalue() << aeb).FetchArray(vaeb);
+ }
  return vaeb;
 }
 

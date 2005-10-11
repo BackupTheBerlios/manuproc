@@ -1,4 +1,4 @@
-// $Id: Query.h,v 1.4 2005/10/11 09:58:40 christof Exp $
+// $Id: Query.h,v 1.5 2005/10/11 13:46:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Christof Petig
@@ -197,6 +197,7 @@ public:
 	{  params_needed=i; }
 	bool complete() const { return !params_needed; }
 	unsigned HowManyNeededParams() const { return params_needed; }
+	std::vector<Oid> const& getTypes() const { return types; }
 	const_iterator begin() const { return params.begin(); }
 	const_iterator end() const { return params.end(); }
 	bool empty() const { return params.empty(); }
@@ -268,6 +269,7 @@ class Query : public Query_types
 	void Execute_if_complete();
 	void raise(std::string const& state, int code, std::string const& message, std::string const& detail=std::string());
 	void raise(char const* state, int code, char const* message, char const* detail=0);
+	static std::string Query::standardize_parameters(std::string const& in);
 
 public:
         typedef Query_Row Row;
@@ -347,7 +349,11 @@ public:
 	struct debug_environment
 	{  bool on;
 	   bool time_queries;
+	   bool count_queries;
+	   
+	   std::map<std::string,unsigned> counts;
 	   debug_environment();
+	   ~debug_environment();
 	};
 	static debug_environment debugging;
 };
@@ -356,14 +362,17 @@ class PreparedQuery
 {	std::string command;
 #ifdef MPC_POSTGRESQL
         std::string name;
-        bool active;
         std::vector<Oid> types;
         
         friend class Query;
 #endif
 public:
-        PreparedQuery(std::string const& cmd) : command(cmd), active() {}
+        PreparedQuery() {}
+        PreparedQuery(std::string const& cmd) : command(cmd) {}
         std::string const& Command() const { return command; }
+#ifdef USE_PARAMETERS
+        bool ready() const { return !name.empty(); }
+#endif
 };
 
 // we use the embedded Query_Row but that's ok, 

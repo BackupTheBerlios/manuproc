@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.29 2005/10/11 09:58:43 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.30 2005/10/11 13:46:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -108,6 +108,18 @@ int main()
    for (std::vector<std::string>::const_iterator i=v.begin();i!=v.end();++i)
      std::cout << (*i)[0];
    std::cout << '\n';
+  }
+  std::cerr << "--- advanced: prepare\n";
+  {PreparedQuery pq("select relname from pg_class where relname like ?");
+   Query query(pq);
+   query << "pg_%";
+   std::vector<std::string> v;
+   query.FetchArray(v);
+   std::cout << v.size() << '\n';
+   Query query2(pq);
+   query << "art%";
+   query.FetchArray(v);
+   std::cout << v.size() << '\n';
   }
    
    ManuProC::dbdisconnect();
