@@ -1,4 +1,4 @@
-// $Id: Query.pgcc,v 1.9 2005/10/12 09:55:25 christof Exp $
+// $Id: Query.pgcc,v 1.10 2005/10/12 10:20:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -316,7 +316,8 @@ sqlca.sqlcode=0;
 static std::string descriptor_name(Query *t)
 {
 #ifndef USE_PARAMETERS 
-  return std::string("Query")+ulltos(reinterpret_cast<unsigned long long>(t));
+  static unsigned serial;
+  return std::string("Query")+itos(serial++);
 #else
   return std::string();
 #endif  
@@ -404,6 +405,7 @@ void Query::Fetch(Query_Row &is)
       if (!portal_name.empty())
       { { Query q2("fetch 32 from \""+portal_name+"\"");
           std::swap(result,q2.result);
+	  std::swap(descriptor,q2.descriptor);
         }
         line=0;
         // optimization: portal is at end
