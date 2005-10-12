@@ -1,4 +1,4 @@
-/* $Id: Zahlungsart_sql.pgcc,v 1.21 2004/10/21 13:43:42 jacek Exp $ */
+/* $Id: Zahlungsart_sql.pgcc,v 1.22 2005/10/12 08:32:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -32,27 +32,27 @@ static const char * const to_select =
 #endif	
 	;
 
-FetchIStream &operator>>(FetchIStream &is, Zahlungsart &za)
+Query::Row &operator>>(Query::Row &is, Zahlungsart &za)
 {  int frist[4]; // [0] is not used 
    fixedpoint<2> satz[4];
    std::string verfahren;
    
-   is >> FetchIStream::MapNull(za.kurzbezeichung,std::string())
-      >> FetchIStream::MapNull(za.bezeichnung,std::string())
-      >> FetchIStream::MapNull(za.zahlungsfrist,0)
-      >> FetchIStream::MapNull(satz[1],0)
-      >> FetchIStream::MapNull(frist[1],0)
-      >> FetchIStream::MapNull(satz[2],0)
-      >> FetchIStream::MapNull(frist[2],0)
-      >> FetchIStream::MapNull(satz[3],0)
-      >> FetchIStream::MapNull(frist[3],0)
+   is >> Query::Row::MapNull(za.kurzbezeichung,std::string())
+      >> Query::Row::MapNull(za.bezeichnung,std::string())
+      >> Query::Row::MapNull(za.zahlungsfrist,0)
+      >> Query::Row::MapNull(satz[1],0)
+      >> Query::Row::MapNull(frist[1],0)
+      >> Query::Row::MapNull(satz[2],0)
+      >> Query::Row::MapNull(frist[2],0)
+      >> Query::Row::MapNull(satz[3],0)
+      >> Query::Row::MapNull(frist[3],0)
 #ifdef MABELLA_EXTENSIONS      
-      >> FetchIStream::MapNull(za.einzugrabatt,0)
-      >> FetchIStream::MapNull(za.bankeinzug,false)
-      >> FetchIStream::MapNull(za.monatsende,false)
-      >> FetchIStream::MapNull(verfahren,std::string())
-      >> FetchIStream::MapNull(za.frist_monate,0)
-      >> FetchIStream::MapNull(za.textid,0)
+      >> Query::Row::MapNull(za.einzugrabatt,0)
+      >> Query::Row::MapNull(za.bankeinzug,false)
+      >> Query::Row::MapNull(za.monatsende,false)
+      >> Query::Row::MapNull(verfahren,std::string())
+      >> Query::Row::MapNull(za.frist_monate,0)
+      >> Query::Row::MapNull(za.textid,0)
 #endif      
       ;
    if (!verfahren.empty()) za.setVerfahren(verfahren);
