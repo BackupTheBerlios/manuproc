@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.h,v 1.19 2005/07/21 08:48:28 christof Exp $ */
+/* $Id: Ausgabe_neu.h,v 1.20 2005/10/12 08:59:38 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -36,7 +36,7 @@ const std::string Formatiere(unsigned long long Zahl,
                 const char *TausenderTrennzeichen=".",
                 const char *Komma=",",char fuehrendesZeichen=' ');                
                 
-// #warning TODO: für double sollte es einen Fehler geben ?
+// #warning TODO: fr double sollte es einen Fehler geben ?
 extern inline const std::string FormatiereTeX(unsigned long Zahl,
                 unsigned int Nachkommastellen=0,
                 unsigned int Ziellaenge=0,char fuehrendesZeichen=' ')
@@ -70,7 +70,7 @@ template <int decimals,class Ftype,class Itype>
 	fuehrendesZeichen);
 }
 
-// unnötige Nachkommastellen unterdrücken
+// unnï¿½ige Nachkommastellen unterdrcken
 template <int decimals,class Ftype,class Itype>
  const std::string FormatiereTeX_short(const fixedpoint<decimals,Ftype,Itype> &Zahl)
 {  return Zahl.String(true, 0, "\\,", ",");
@@ -85,7 +85,7 @@ template <int decimals,class Ftype,class Itype>
    return Zahl.String(true, 0, ".", ",");
 }
 
-// um transparent zwischen fixedpoints und ints umschalten zu können
+// um transparent zwischen fixedpoints und ints umschalten zu kï¿½nen
 extern inline const std::string Formatiere_short(unsigned int i)
 {  return Formatiere((unsigned long)i);
 }

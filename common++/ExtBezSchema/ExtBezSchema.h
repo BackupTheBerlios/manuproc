@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.22 2005/09/05 16:28:37 christof Exp $
+// $Id: ExtBezSchema.h,v 1.23 2005/10/12 08:59:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,7 +38,7 @@ public:
 	static const ArtikelTyp::ID default_Typ=ArtikelTyp::default_ID;
 	struct BezKomp
 	{	int bezkomptype; // =Index
-		std::string bezkomptext; // Überschrift
+		std::string bezkomptext; // ï¿½erschrift
 		std::string separator;
 		std::string spaltenname;
 		int signifikanz;
@@ -187,7 +187,7 @@ public:
  {  return const_sigiterator(end(),end(),signifikanz); }
  
 
-// für Preissignifikanz; villeicht doch lieber ein template sig_iterator<>
+// fr Preissignifikanz; villeicht doch lieber ein template sig_iterator<>
  size_t size(bool psig) const
  {  return psigsize(psig); } 
  size_t psigsize(bool psig) const; 
@@ -204,7 +204,7 @@ public:
  const_iterator end() const
  { return bezkomps.end(); }
  
-private: //wenn alle Clients der API damit kompil. sollte der Op. gelöscht werden
+private: //wenn alle Clients der API damit kompil. sollte der Op. gelï¿½cht werden
  const std::string operator[](unsigned int i) const
  {  return i<bezkomps.size()?bezkomps[i].bezkomptext:std::string();}
 

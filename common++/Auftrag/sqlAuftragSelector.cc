@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.41 2005/10/11 15:16:14 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.42 2005/10/12 08:59:38 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Jacek Jakubowski
@@ -77,7 +77,7 @@
 #define FULL_SELECT_NO_0 " and bestellt!=0 "
 #define FULL_SELECT_NO_STORNO " and e.status!="+itos(STORNO)+" "
 
-// Vorsicht: enthält keine führenden/abschließenden Leerzeichen
+// Vorsicht: enthï¿½t keine fhrenden/abschlieï¿½nden Leerzeichen
 std::string SQLFullAuftragSelector::StatusQualifier(AufStatVal stat)
 {
  const std::string status(itos(stat));

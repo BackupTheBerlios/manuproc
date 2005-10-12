@@ -190,7 +190,7 @@ void PreisListeFull::load_preisliste(bool with_artbez,
  
  Query q(qu); 
 
- FetchIStream is=q.Fetch();
+ Query::Row is=q.Fetch();
 
  int sort_sequence=0;
  while(is.good())
@@ -206,12 +206,12 @@ void PreisListeFull::load_preisliste(bool with_artbez,
     if(with_artbez)
       {
        for(unsigned int i=0; i<ebz->size(signifikanz); i++)
-         {is >> FetchIStream::MapNull(beztext);
+         {is >> Query::Row::MapNull(beztext);
           po.b.push_back(cH_EntryValueIntString(beztext));
          }
-       if(mit_ean) {is >> FetchIStream::MapNull(beztext);
+       if(mit_ean) {is >> Query::Row::MapNull(beztext);
                     po.b.push_back(cH_EntryValueIntString(beztext));}
-       if(mit_bez) {is >> FetchIStream::MapNull(beztext);
+       if(mit_bez) {is >> Query::Row::MapNull(beztext);
                     po.b.push_back(cH_EntryValueIntString(beztext));}
       }
     is  >> ARTIKELID >> PREIS >> PREISMENGE >> MINDMENGE >> PARENT;  

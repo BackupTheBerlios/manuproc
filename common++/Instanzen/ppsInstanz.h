@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.32 2005/10/11 10:19:30 christof Exp $
+// $Id: ppsInstanz.h,v 1.33 2005/10/12 08:59:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -60,7 +60,7 @@ public: // see Stroustrup about OO abuse
  ID alt_group_nr; // group of equivalent instances
 
 private:
- friend FetchIStream &operator>>(FetchIStream &,ppsInstanz&);
+ friend Query_Row &operator>>(Query_Row &,ppsInstanz&);
  void get_name() throw(SQLerror);
  void check() const; 
 public:
@@ -85,7 +85,7 @@ public:
  ID EinlagernIn() const { return einlagern_in;}
  bool AutomatischEinlagern() const {return automatisch_einlagern;}
  bool ExterneBestellung() const {return externe_bestellung;}
- // nächste Instanz für einen Artikel (dort wird von hier bestellt)
+ // nï¿½hste Instanz fr einen Artikel (dort wird von hier bestellt)
  ID NaechsteInstanz(const ArtikelStamm &art) const;
 
  cH_Prozess get_Prozess() const;

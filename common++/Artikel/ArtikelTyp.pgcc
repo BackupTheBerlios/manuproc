@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.pgcc,v 1.18 2005/07/04 14:51:08 jacek Exp $
+// $Id: ArtikelTyp.pgcc,v 1.19 2005/10/12 08:59:38 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -49,7 +49,7 @@ bool ArtikelTyp::hasAttribute(ID typ, AttrID attrid)
     query+=" from artbez_warengruppe ";
     Query q(query);
 
-    FetchIStream is;
+    Query::Row is;
     std::vector<bool> attr_val;
     while((q>>is).good()) 
       {
@@ -60,7 +60,7 @@ bool ArtikelTyp::hasAttribute(ID typ, AttrID attrid)
        for(int i=0;i<attr_num;i++)
          {
           bool in;
-          is >> FetchIStream::MapNull(in,false);
+          is >> Query::Row::MapNull(in,false);
           attr_val.push_back(in); 
          }
        attributes[(ID)in_typ]=attr_val;       
@@ -103,7 +103,7 @@ cH_PreisListe ArtikelTyp::EK_PL() const throw(SQLerror)
  PreisListe::ID pid=PreisListe::none_id;
  if(at.hasColumn("ek_prls"))
    Query("select ek_prls from artikelgruppen where warengruppe=?")
-     << Id() >> FetchIStream::MapNull(pid,PreisListe::none_id);
+     << Id() >> Query::Row::MapNull(pid,PreisListe::none_id);
      
  if(pid==PreisListe::none_id) return cH_PreisListe();    
 
@@ -114,7 +114,7 @@ cH_PreisListe ArtikelTyp::EK_PL() const throw(SQLerror)
 int ArtikelTyp::SpecialSignifikanz(const std::string setting_name) const throw(SQLerror)
 {
  std::string wert;
- FetchIStream is;
+ Query::Row is;
  int spez_sign=none_id;
  
  std::map<std::string, int>::const_iterator f=

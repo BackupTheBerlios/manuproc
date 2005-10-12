@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.63 2005/10/11 10:19:29 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.64 2005/10/12 08:59:38 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski
@@ -41,7 +41,7 @@ class AuftragBase
    typedef fixedpoint<ManuProC::Precision::AuftragsMenge> mengen_t;
    typedef Preis::rabatt_t rabatt_t;
    typedef ManuProcEntity<>::ID ID;
-   static const ID handplan_auftrag_id =  3; // gemeint sind alle Aufträge, die NICHT 0,1,2 sind
+   static const ID handplan_auftrag_id =  3; // gemeint sind alle Auftrï¿½e, die NICHT 0,1,2 sind
    static const ID dispo_auftrag_id =  2;
    static const ID plan_auftrag_id  =  1;
    static const ID ungeplante_auftrag_id    =  0;
@@ -83,10 +83,10 @@ class AuftragBase
    void setStatusAuftragBase(AufStatVal st) const throw(SQLerror);
    void setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror);
    
-   // gibt Zeilennummer zurück
+   // gibt Zeilennummer zurck
    int PassendeZeile(const ManuProC::Datum lieferdatum, const ArtikelBase& artikel,
                AufStatVal status) const throw(SQLerror);
-   // gibt Zeilennummer zurück
+   // gibt Zeilennummer zurck
    int BestellmengeAendern(mengen_t bestellt, 
                const ManuProC::Datum lieferdatum, const ArtikelBase& artikel,
                AufStatVal status,const AufEintragBase& altAEB) const throw(SQLerror);
@@ -97,7 +97,7 @@ class AuftragBase
    bool operator==(const AuftragBase &b) const 
       {return instanz==b.instanz && auftragid==b.auftragid;}
 
-   // Varianten für negative Zahlen??? kommt häufiger vor?
+   // Varianten fr negative Zahlen??? kommt hï¿½figer vor?
    static mengen_t min(const mengen_t &x,const mengen_t &y)
    { mengen_t m; if(x<=y) m=x; else m=y; if(m<0) m=0; return m;}
    static mengen_t max(const mengen_t &x,const mengen_t &y)
@@ -113,19 +113,19 @@ public:
 // wird in Instanzen.cc verwendet
    bool create_if_not_exists(AufStatVal status,Kunde::ID kunde=Kunde::default_id) const;
 // wird in AufEintrag_sql.pgcc verwendet
-   // könnte eigentlich durch 
+   // kï¿½nte eigentlich durch 
    // AuftragBase(instanz,AB::dispo_auftrag_id).BestellmengeAendern 
    // ersetzt werden (menge,datum,artikel,OPEN,AufEintragBase())
    static __deprecated void dispo_auftrag_aendern(cH_ppsInstanz instanz,const ArtikelBase artikel,
       const mengen_t &menge,const ManuProC::Datum &datum,const AufEintragBase &kindAEB) ;
-// Iiii bah - überprüfen!
-// zu viele merkwürdige Argumente
+// Iiii bah - berprfen!
+// zu viele merkwrdige Argumente
    // -> BestellmengeAendern ??? PassendeZeile?
    __deprecated bool existEntry(const ArtikelBase& artid,
                         const ManuProC::Datum& lieferdatum,
                         int& znr,int &newznr, mengen_t& menge, const AufStatVal status
                         ) const throw(SQLerror);
-   // gibt Zeilennr zurück
+   // gibt Zeilennr zurck
    int existEntry(const ArtikelBase& artid, const ManuProC::Datum& lieferdatum,
                   const AufStatVal status, mengen_t& menge_out) const throw();
 
@@ -140,7 +140,7 @@ class ArgumentList;
 ArgumentList &operator<<(ArgumentList &q, const AuftragBase &ab);
 //Query_Row& operator>>(Query_Row& is,AuftragBase::mengen_t &menge);
 
-// für map<AuftragBase,...>
+// fr map<AuftragBase,...>
 bool operator<(const AuftragBase &a, const AuftragBase &b);
 
 #endif

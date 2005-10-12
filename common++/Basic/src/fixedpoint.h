@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.25 2005/10/05 08:39:23 christof Exp $
+// $Id: fixedpoint.h,v 1.26 2005/10/12 08:59:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -261,9 +261,9 @@ template <int decimals,class Ftype,class Itype>
 #endif
 
 #if defined(DEFAULT_DB) && defined(MANUPROC_WITH_DATABASE)
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 
-static inline FetchIStream &operator>>(FetchIStream &is, fixedpoint<0> &v)
+static inline Query::Row &operator>>(Query::Row &is, fixedpoint<0> &v)
 {  long l;
    is >> l;
    v=l;
@@ -271,7 +271,7 @@ static inline FetchIStream &operator>>(FetchIStream &is, fixedpoint<0> &v)
 }
 
 template <int decimals,class Ftype,class Itype>
-FetchIStream &operator>>(FetchIStream &is, fixedpoint<decimals,Ftype,Itype> &v)
+Query::Row &operator>>(Query::Row &is, fixedpoint<decimals,Ftype,Itype> &v)
 {  Ftype d;
    is >> d;
    v=d;

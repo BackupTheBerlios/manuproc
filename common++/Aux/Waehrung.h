@@ -1,4 +1,4 @@
-// $Id: Waehrung.h,v 1.20 2005/10/11 10:19:29 christof Exp $
+// $Id: Waehrung.h,v 1.21 2005/10/12 08:59:38 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -53,7 +53,7 @@ public:
  	: wid(id), kurz(k), tex(tx), lang(l), faktor(f) {}
  ID Id() const { return wid; }
  void setFkt(const double f) { faktor=f; }
- // relativ zu anderen Währungen ...
+ // relativ zu anderen Wï¿½rungen ...
  double getFkt() const { return faktor; }
  
  // finde ich praktischer als Id() MAT. ich nicht! CP

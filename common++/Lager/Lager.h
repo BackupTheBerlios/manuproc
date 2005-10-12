@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.31 2005/10/11 10:19:30 christof Exp $ */
+/* $Id: Lager.h,v 1.32 2005/10/12 08:59:39 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -69,14 +69,14 @@ class LagerInhalt
 };
 
 struct ProductionContext
-{  // Einlagern: Auftrag nach unten der erfüllt wird
-   // Auslagern: Auftrag für den es ausgelagert wird
+{  // Einlagern: Auftrag nach unten der erfllt wird
+   // Auslagern: Auftrag fr den es ausgelagert wird
    AufEintragBase aeb;
 
    // Betroffener Lagerauftrag (optional!)
    AufEintragBase lager_aeb;
    
-   // zum Loggen: Lieferscheinzeile für diese Bewegung
+   // zum Loggen: Lieferscheinzeile fr diese Bewegung
    LieferscheinEntryBase leb; // Auslagern
    
    mutable bool fuer_auftrag;
@@ -93,13 +93,13 @@ std::ostream &operator<<(std::ostream &o,const ProductionContext &pc);
 class LagerBase : public cH_ppsInstanz
 {
    public:
-      /// Datum für freie Lagermengen (Aufträge)
+      /// Datum fr freie Lagermengen (Auftrï¿½e)
       static ManuProC::Datum Lagerdatum() {return ManuProC::Datum(ManuProC::Datum(1,1,1970));}
    private:
       virtual std::vector<class LagerInhalt> LagerInhalt_(const ArtikelBase& artikel)
-        const {assert(!"Nicht implementiert für Lager ohne eigene Tabelle");abort();} 
+        const {assert(!"Nicht implementiert fr Lager ohne eigene Tabelle");abort();} 
 
-     // die folgenden Methoden müssen einlagern können
+     // die folgenden Methoden mssen einlagern kï¿½nen
      friend class ppsInstanzReparatur;
 //     friend void AufEintrag::ProduziertNG(unsigned, fixedpoint<0>, const AufEintragBase&, const AufEintragBase&);
 
@@ -110,7 +110,7 @@ class LagerBase : public cH_ppsInstanz
 
    public:
       std::vector<class LagerInhalt> LagerInhalt() const ;
-      // Faßt gleiche Artikel des Vektors zusammenen:
+      // Faï¿½ gleiche Artikel des Vektors zusammenen:
       static void LagerInhaltSum(std::vector<class LagerInhalt>& LI);
       class LagerInhalt LagerInhalt(const ArtikelBase& artikel) const ;
 
@@ -126,10 +126,10 @@ class LagerBase : public cH_ppsInstanz
      	const AuftragBase::mengen_t &menge) const
      {  raus_aus_lager(artikel,-menge,false); }
      
-     // fuer_auftrag bedeutet, dass der Artikel für einen Auftrag verwendet wurde
-     // und nicht verschwunden ist (Entnahme außer der Reihe/Inventur)
+     // fuer_auftrag bedeutet, dass der Artikel fr einen Auftrag verwendet wurde
+     // und nicht verschwunden ist (Entnahme auï¿½r der Reihe/Inventur)
      //
-     // negative Menge bedeutet: Lieferung rückgängig gemacht
+     // negative Menge bedeutet: Lieferung rckgï¿½gig gemacht
      // = wiedereinlagern
      void raus_aus_lager(const ArtikelBase &artikel,
      	AuftragBase::mengen_t menge,bool fuer_auftrag,

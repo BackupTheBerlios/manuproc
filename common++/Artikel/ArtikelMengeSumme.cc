@@ -1,4 +1,4 @@
-// $Id: ArtikelMengeSumme.cc,v 1.7 2005/09/07 14:34:02 christof Exp $
+// $Id: ArtikelMengeSumme.cc,v 1.8 2005/10/12 08:59:38 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,7 +28,7 @@ bool operator==(const ArtikelMenge::pair_l_t &a, const Einheit &b)
 
 void ArtikelMenge::summiere(const ArtikelBaum &baum, mengen_t menge, const Einheit &e, bool add)
 {  bool same=false;
-   lvalue(e); // damit dieser Eintrag vorher auftaucht, vorab einfügen.
+   lvalue(e); // damit dieser Eintrag vorher auftaucht, vorab einfgen.
    for (ArtikelBaum::const_iterator i=baum.begin();i!=baum.end();++i)
    {  Einheit e2=ArtikelBase(i->rohartikel);
       if (e2==e) same=true;

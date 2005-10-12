@@ -1,4 +1,4 @@
-/* $Id: Einheiten.h,v 1.19 2005/09/05 16:28:37 christof Exp $ */
+/* $Id: Einheiten.h,v 1.20 2005/10/12 08:59:38 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.19 2005/09/05 16:28:37 christof Exp $
+// $Id: Einheiten.h,v 1.20 2005/10/12 08:59:38 christof Exp $
 
 #ifndef ARTIKEL_EINHEITEN_H
 #define ARTIKEL_EINHEITEN_H
@@ -79,7 +79,7 @@ public:
 	std::string TeX(const MultiL_Dict &mld=MultiL_Dict()) const;
 
 	bool hatAnzahl() const
-	{  return true; } // hmmm, sobald ich es jemals brauche wird es geändert CP 
+	{  return true; } // hmmm, sobald ich es jemals brauche wird es geï¿½dert CP 
 	bool hatMenge() const
 	{  return !bez_menge.empty();
 	}

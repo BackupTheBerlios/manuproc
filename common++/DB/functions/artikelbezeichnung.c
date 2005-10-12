@@ -1,4 +1,4 @@
-// $Id: artikelbezeichnung.c,v 1.2 2005/07/21 08:48:25 christof Exp $
+// $Id: artikelbezeichnung.c,v 1.3 2005/10/12 08:59:39 christof Exp $
 
 #include "postgres.h"
 #include "executor/spi.h"	/* this is what you need to work with SPI */
@@ -150,7 +150,7 @@ Datum artikelbezeichnung4(PG_FUNCTION_ARGS)
    return res;
 }
 
-// durch Binärzugriffe kann hier noch Geschwindigkeit herausgeholt werden
+// durch Binï¿½zugriffe kann hier noch Geschwindigkeit herausgeholt werden
 PG_FUNCTION_INFO_V1(artikelbezeichnung3);
 
 Datum artikelbezeichnung3(PG_FUNCTION_ARGS)
@@ -174,9 +174,9 @@ Datum artikelbezeichnung3(PG_FUNCTION_ARGS)
    return res;
 }
 
-// durch Binärzugriffe kann hier noch Geschwindigkeit herausgeholt werden
+// durch Binï¿½zugriffe kann hier noch Geschwindigkeit herausgeholt werden
 //
-// diese Funktion gibt bevorzugt die interne Bezeichnung zurück
+// diese Funktion gibt bevorzugt die interne Bezeichnung zurck
 //
 // ID, signigikanz
 static Datum artikelbezeichnung2_int(int4 artikelid,int4 signifikanz)

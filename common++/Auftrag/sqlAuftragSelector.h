@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.34 2005/10/11 15:16:14 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.35 2005/10/12 08:59:38 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -82,7 +82,7 @@ public:
  SQLFullAuftragSelector(const sel_AufidZnr& selstr);
 
  struct sel_Jahr_Artikel 
-// wird von bestserv verwendet, sollte auch erfüllte Einträge selektieren
+// wird von bestserv verwendet, sollte auch erfllte Eintrï¿½e selektieren
   { unsigned int jahr; // jahrgang _oder_ Lieferdatum in diesem Jahr
     std::vector <ArtikelBase::ID> artikelid;
     ppsInstanz::ID instanz;
@@ -106,7 +106,7 @@ public:
   };
  SQLFullAuftragSelector(const sel_Kunde_Artikel &selstr);
 
- // sortiert nach Lieferdatum (asc) für OPEN
+ // sortiert nach Lieferdatum (asc) fr OPEN
  struct sel_Artikel_Planung_id
   { ppsInstanz::ID instanz;
     Kunde::ID kunde;

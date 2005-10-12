@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.36 2005/10/11 13:56:00 christof Exp $
+// $Id: AufEintragZu.cc,v 1.37 2005/10/12 08:59:38 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -32,7 +32,7 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list_id(const ID id,bool kinder,
    ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,NV("Id",id),NV("Kinder",kinder));
    list_t L=get_Referenz_list(*this,kinder,artikel); // kinder/* oder false? */);
    list_t N=select_Id(id,L);
-   if(N.empty() && kinder) // Für die Reparatur; ein Pfeil könnte ins nichts zeigen ...
+   if(N.empty() && kinder) // Fr die Reparatur; ein Pfeil kï¿½nte ins nichts zeigen ...
     {
       L=get_Referenz_list_without_child();
       N=select_Id(id,L);
@@ -108,8 +108,8 @@ AufEintragZu::map_t AufEintragZu::get_Kinder_nach_Artikel(const AufEintragBase &
 
    for(list_t::const_iterator i=KindListeU.begin();i!=KindListeU.end();++i)
     {
-      // Nach dem Planen kann es zu einem Auftrag mehrere Kindaufträge 
-      // mit demselben Artikel geben, nur bei EINEM darf die Menge geändert
+      // Nach dem Planen kann es zu einem Auftrag mehrere Kindauftrï¿½e 
+      // mit demselben Artikel geben, nur bei EINEM darf die Menge geï¿½dert
       // werden
       MapArt[i->Art].push_back(*i);
      }
@@ -201,8 +201,8 @@ std::list<AufEintragBase> AufEintragZu::get_AufEintragList_from_Artikel
   
   (Query("select instanz,auftragid,zeilennr from auftragentry "
   	"where artikelid=? "
-  	"and instanz<>? " //Nur interne Aufträge sind interessant
-  	"and auftragid=0 " // Nur die UNGEPLANTEN Aufträge bekommen neue Kinder
+  	"and instanz<>? " //Nur interne Auftrï¿½e sind interessant
+  	"and auftragid=0 " // Nur die UNGEPLANTEN Auftrï¿½e bekommen neue Kinder
   	+(status!=NOSTAT ? " and status="+itos(status) : std::string())+
   	"order by auftragid,zeilennr").lvalue()
     << artikel.Id() << int(ppsInstanzID::Kundenauftraege))
@@ -214,7 +214,7 @@ void AufEintragZu::Neu(const AufEintragBase& neuAEB,const mengen_t menge)
 { ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,
       "--",menge,"-->",neuAEB);
 
- // erst erhöhen versuchen 
+ // erst erhï¿½en versuchen 
  if (!menge)
  {  bool da;
     Query("select exists (select true from auftragsentryzuordnung where"
@@ -293,7 +293,7 @@ AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,
            }
         }
      	// if (!noch_verteilen) break; 
-     	// Optimierung lohnt nicht, da eventuell noch etwas gelöscht werden könnte
+     	// Optimierung lohnt nicht, da eventuell noch etwas gelï¿½cht werden kï¿½nte
         ++i;
       loop_test:
         ;

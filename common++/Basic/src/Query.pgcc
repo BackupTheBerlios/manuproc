@@ -1,4 +1,4 @@
-// $Id: Query.pgcc,v 1.6 2005/10/11 15:44:37 christof Exp $
+// $Id: Query.pgcc,v 1.7 2005/10/12 08:59:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -41,12 +41,6 @@ exec sql include sqlca;
 #define DEBUG_FIS(x) std::cerr << x << '\n'
 // ,y...) x,##y
 
-#ifndef USE_PARAMETERS
-extern "C" {
-extern PGresult **ECPGdescriptor_lvalue(int line, const char *descriptor);
-}
-#endif
-
 #ifdef USE_PARAMETERS
 #define ECPG_SQLSTATE_NO_DATA				"02000"
 #define ECPG_SQLSTATE_USING_CLAUSE_DOES_NOT_MATCH_PARAMETERS	"07001"
@@ -72,13 +66,18 @@ extern PGresult **ECPGdescriptor_lvalue(int line, const char *descriptor);
 #define ECPG_SQLSTATE_ECPG_OUT_OF_MEMORY	"YE001"
 #endif
 
-#ifndef USE_PARAMETERS
+//#ifndef USE_PARAMETERS
+// this is still used somewhere within Komponenten ...
+extern "C" {
+extern PGresult **ECPGdescriptor_lvalue(int line, const char *descriptor);
+}
+
 Query_Row::Query_Row(const std::string &descr, int line)
 	: naechstesFeld(0), zeile(line), result(0)
 {  PGresult **r=ECPGdescriptor_lvalue(__LINE__,descr.c_str());
    if (r) result=*r;
 }
-#endif
+//#endif
 
 Query_Row &Query_Row::operator>>(std::string &str)
 {  if (!result)

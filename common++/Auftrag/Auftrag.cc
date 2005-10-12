@@ -1,4 +1,4 @@
-// $Id: Auftrag.cc,v 1.20 2005/09/13 08:07:34 christof Exp $
+// $Id: Auftrag.cc,v 1.21 2005/10/12 08:59:38 christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -74,7 +74,7 @@ void Auftrag::insert(unsigned zeilennr, const mengen_t bestellt,
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
    NV("Menge",bestellt),NV("Datum",lieferdatum),
    NV("Artikel",artikel),
-   NV("Status",status),NV("InstanzAufträgeSetzen",setInstanzAuftraege));
+   NV("Status",status),NV("InstanzAuftrï¿½eSetzen",setInstanzAuftraege));
  assert(Instanz()!=ppsInstanzID::Kundenauftraege || setInstanzAuftraege==true);
   // wieso auch nicht ... CP
 
@@ -113,10 +113,10 @@ void Auftrag::insert(unsigned zeilennr, const mengen_t bestellt,
       	<< *this << zeilennr;
       	SQLerror::test(__FILELINE__);
 #endif
- // Kundenaufträge legen automatisch einen Auftrag bei der entsprechenden Instanz 
- // für denselben Artikel an.
+ // Kundenauftrï¿½e legen automatisch einen Auftrag bei der entsprechenden Instanz 
+ // fr denselben Artikel an.
  if(status==OPEN && setInstanzAuftraege)
-  // Nur offene Aufträge werden nach unten bestellt
+  // Nur offene Auftrï¿½e werden nach unten bestellt
    {  AufEintrag AE(make_value(AufEintragBase(*this,zeilennr)));
       AE.Verzeigern(AE.getRestStk());
    }
@@ -132,7 +132,7 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
    NV("Menge",bestellt),NV("Datum",lieferdatum),
    NV("Artikel",artikel),
-   NV("Status",status),NV("InstanzAufträgeSetzen",setInstanzAuftraege));
+   NV("Status",status),NV("InstanzAuftrï¿½eSetzen",setInstanzAuftraege));
  assert(Instanz()!=ppsInstanzID::Kundenauftraege || setInstanzAuftraege==true);
   // wieso auch nicht ... CP
  int ZEILENNR;

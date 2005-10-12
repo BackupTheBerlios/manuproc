@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.113 2005/10/11 15:16:13 christof Exp $
+// $Id: AufEintrag.cc,v 1.114 2005/10/12 08:59:38 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -105,7 +105,7 @@ AufEintragBase AufEintrag::getFirstKundenAuftrag() const
 
 void AufEintrag::Planen(mengen_t menge, AufEintrag &ziel) throw(std::exception)
 {
-   // dispo (2er) Auftrag anlegen bei Überplanung
+   // dispo (2er) Auftrag anlegen bei ï¿½erplanung
    assert(Artikel()==ziel.Artikel());
    assert(getLieferdatum()>=ziel.getLieferdatum());
    assert(Instanz()==ziel.Instanz() 
@@ -116,7 +116,7 @@ void AufEintrag::Planen(mengen_t menge, AufEintrag &ziel) throw(std::exception)
    if (menge>getRestStk())
     { assert(!Instanz()->LagerInstanz());
 
-      // nur soviel unten verwenden (tatsächlich zu uns ziehen,
+      // nur soviel unten verwenden (tatsï¿½hlich zu uns ziehen,
       // 	Rest wird von uns in Ueberplanen bestellt)
       dispomenge = menge-getRestStk();
       menge-=dispomenge;
@@ -161,7 +161,7 @@ AufEintragBase AufEintrag::Planen(mengen_t menge,const AuftragBase &zielauftrag,
    Transaction tr;
 
 // wenn schon eine Zeile mit diesem Datum/Artikel/Status in diesem Auftrag
-// existiert, Menge erhöhen. So kann man von Aufträge aus verschiedenen
+// existiert, Menge erhï¿½en. So kann man von Auftrï¿½e aus verschiedenen
 // Quellen zusammen fertigen
 
    // Zeile erzeugen/finden
@@ -182,7 +182,7 @@ AufEintragBase AufEintrag::Planen(mengen_t menge,const AuftragBase &zielauftrag,
  return neueZeile;
 }
 
-// einen Dispo Auftrag für einen Auftrag anlegen (wegen freier Menge)
+// einen Dispo Auftrag fr einen Auftrag anlegen (wegen freier Menge)
 void AufEintrag::Ueberplanen(const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum)
 {
  ManuProC::Trace _t(trace_channel, __FUNCTION__,str(),
@@ -194,7 +194,7 @@ void AufEintrag::Ueberplanen(const ArtikelBase& artikel,mengen_t menge,const Man
    //int znr=
    dispoAB.BestellmengeAendern(menge,datum,artikel,OPEN,*this);
 
-   // zusätzliche Menge vermerken und Material bestellen
+   // zusï¿½zliche Menge vermerken und Material bestellen
    MengeAendern(menge,true,AufEintragBase());
 }
 
@@ -209,7 +209,7 @@ struct AufEintrag::Planen_cb : public auf_positionen_verteilen_cb
    }
 };
 
-// quelle und seine Kinder wurden bereits verändert
+// quelle und seine Kinder wurden bereits verï¿½dert
 struct AufEintrag::Planen_undo_cb : public distribute_parents_cb
 {  AufEintrag &quelle;
 
@@ -227,7 +227,7 @@ struct AufEintrag::Planen_undo_cb : public distribute_parents_cb
          return m2;
       }
    }
-   // _umgekehrte_ Priorität
+   // _umgekehrte_ Prioritï¿½
    virtual bool operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
    {  return AufEintragZu_sort::priority(b,a);
    }
@@ -248,14 +248,14 @@ void AufEintrag::Verzeigern(mengen_t M, bool nach_oben)
     			OPEN)));
        Transaction tr;
        mengen_t m=M;
-       // Menge wird gleich häppchenweise wieder hinzugebucht
+       // Menge wird gleich hï¿½pchenweise wieder hinzugebucht
        MengeAendern(-m,false,AufEintragBase());
        m=auf_positionen_verteilen(sel,m,Planen_cb(*this));
        // 2er anlegen
        if (!!m) Ueberplanen(Artikel(),m,getLieferdatum());
        tr.commit();
     }
-    else // planen rückgängig (Pfeile von oben ebenfalls anlegen)
+    else // planen rckgï¿½gig (Pfeile von oben ebenfalls anlegen)
     {  Transaction tr;
        mengen_t m=-M;
        {  delayed_reclaim dlr;
@@ -268,7 +268,7 @@ void AufEintrag::Verzeigern(mengen_t M, bool nach_oben)
     }
 }
 
-// 2 bool Parameter für instanzen (oben wie unten)
+// 2 bool Parameter fr instanzen (oben wie unten)
 void AufEintrag::setStatus(AufStatVal newstatus,bool force,bool instanzen,bool planen) throw(SQLerror)
 {
  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("status",newstatus),force?"force":"",
@@ -288,11 +288,11 @@ void AufEintrag::setStatus(AufStatVal newstatus,bool force,bool instanzen,bool p
     return;
  }
  if(newstatus == UNCOMMITED)
- {  std::cerr << "bestätigte Zeilen können nicht wieder unbestätigt werden\n";
+ {  std::cerr << "bestï¿½igte Zeilen kï¿½nen nicht wieder unbestï¿½igt werden\n";
     return;
  }
  if(newstatus == OPEN && entrystatus != UNCOMMITED && !force)
- {  std::cerr << "nur unbestätigte Zeilen können geöffnet werden\n";
+ {  std::cerr << "nur unbestï¿½igte Zeilen kï¿½nen geï¿½fnet werden\n";
     return;
  }
 
@@ -374,7 +374,7 @@ void AufEintrag::updateRabatt(rabatt_t rb) throw(SQLerror)
 void AufEintrag::updateLieferdatum(const Petig::Datum &ld,bool planen) throw(SQLerror)
 {ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("Datum",ld));
  Transaction tr;
- Query("lock auftragentry in exclusive mode"); // unnötig? CP
+ Query("lock auftragentry in exclusive mode"); // unnï¿½ig? CP
  SQLerror::test("updateLieferdatum: lock table auftragentry");
 
  {delayed_reclaim dlr;

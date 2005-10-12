@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.31 2005/09/05 16:28:37 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.32 2005/10/12 08:59:38 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -47,7 +47,7 @@ ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, ExtBezSchema:
         return;
       } catch (SQLerror &e) {}
 
-      try  // für interne Artikel zuerst internwarengruppe beim Kunden suchen
+      try  // fr interne Artikel zuerst internwarengruppe beim Kunden suchen
       { if (_schema==ExtBezSchema::default_ID)
         {   setzeExtBezSchema(cH_ExtBezSchema(AS.defaultSchema(),
                      AS.Warengruppe(_schema)));
