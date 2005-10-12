@@ -1,4 +1,4 @@
-// $Id: Query.pgcc,v 1.8 2005/10/12 09:23:05 christof Exp $
+// $Id: Query.pgcc,v 1.9 2005/10/12 09:55:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -409,7 +409,11 @@ void Query::Fetch(Query_Row &is)
         // optimization: portal is at end
         if (PQntuples(result)<32) 
         { Query("close \""+portal_name+"\"");
+#if defined(__GNUC__) && __GNUC__ < 3
+	  portal_name=std::string();
+#else
           portal_name.clear();
+#endif
         }
         if (line<PQntuples(result))
         {  is=Query_Row(result,line++);
