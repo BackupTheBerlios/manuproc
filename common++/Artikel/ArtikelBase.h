@@ -1,6 +1,6 @@
-/* $Id: ArtikelBase.h,v 1.13 2005/10/11 10:19:29 christof Exp $ */
+/* $Id: ArtikelBase.h,v 1.14 2005/10/12 08:56:07 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
