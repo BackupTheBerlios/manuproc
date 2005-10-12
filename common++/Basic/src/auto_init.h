@@ -1,4 +1,4 @@
-/* $Id: auto_init.h,v 1.1 2005/10/11 15:16:14 christof Exp $ */
+/* $Id: auto_init.h,v 1.2 2005/10/12 10:14:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,12 +21,14 @@
 #define A7192_C416_47B7_88FA_D9F04254B0C9
 
 // automatically initializing integer/float/enum type
+#include <Misc/compiler_ports.h>
 
 template<typename B>
 class auto_init
 { B v;
 public:
-  auto_init() : v() {}
+  // these dumb compiler drives me crazy
+  auto_init() : v( GCC295(B()) ) {}
   auto_init(B b) : v(b) {}
   operator B() const { return v; }
   template <class T> auto_init operator+=(const T &t) { return v+=t; }
