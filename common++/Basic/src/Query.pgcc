@@ -1,4 +1,4 @@
-// $Id: Query.pgcc,v 1.7 2005/10/12 08:59:39 christof Exp $
+// $Id: Query.pgcc,v 1.8 2005/10/12 09:23:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -236,6 +236,7 @@ sqlca.sqlcode=0;
   }
   if (Query::debugging.on && !params.empty()) std::cerr << "\n";
   // oder PQsendPrepare PQsendQueryPrepared PQgetResult
+#ifdef HAVE_PQPREPARE  
   if (prepare)
   { if (!prepare->ready())
     { static int serial;
@@ -260,6 +261,7 @@ sqlca.sqlcode=0;
     result=PQexecPrepared(conn,prepare->name.c_str(), numparams,values,length,binary,0);
   }
   else 
+#endif  
     result=PQexecParams(conn,query.c_str(),numparams,types,values,length,binary,0);
   if (!result) raise(ECPG_SQLSTATE_ECPG_INTERNAL_ERROR,ECPG_PGSQL,PQerrorMessage(conn));
   if (Query::debugging.on) std::cerr << "result "<< PQresultStatus(result) << " " << PQcmdStatus(result) << "\n";
@@ -349,7 +351,7 @@ Query::Query(PreparedQuery &prep)
 {  const char *p=prep.Command().c_str();
    while ((p=ArgumentList::next_insert(p))) { ++num_params; ++p; }
    params.setNeededParams(num_params);
-#ifndef USE_PARAMETERS
+#if !defined(USE_PARAMETERS) || !defined(HAVE_PQPREPARE)
    query=prep.Command();
 #endif
    Execute_if_complete();
