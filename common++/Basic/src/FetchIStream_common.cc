@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.27 2005/10/12 09:54:17 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.28 2005/10/13 22:53:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -208,7 +208,7 @@ std::string Query::standardize_parameters(std::string const& in)
 }
 
 void Query::Execute_if_complete()
-{  if (params.complete())
+{  if (params.complete() && !already_run())
    {  
 #ifndef USE_PARAMETERS   
       std::string expanded;

@@ -1,10 +1,10 @@
-- der Mindestmengen Code _erzeugt_ unnötige leere zweier im Lager
+- der Mindestmengen Code _erzeugt_ unnÃ¶tige leere zweier im Lager
 
 - EntryValue: PreSortedString (ein String zum Anzeigen und eine Zeilennummer
 		zum Sortieren)
-	Praktisch für Tree/List überschneidungen (Dispo)
+	Praktisch fÃ¼r Tree/List Ã¼berschneidungen (Dispo)
 
-- neue funktionale defines für die Programme (statt MABELLA_EXTENSIONS):
+- neue funktionale defines fÃ¼r die Programme (statt MABELLA_EXTENSIONS):
 	RIBA etc (BANKEINZUG)
 	VERKAEUFER (Provision etc)
 
@@ -20,34 +20,58 @@
 	0	zum 1/3er	geliefert
 	>0	~		vorgemerkt, geplant (evtl. teilgeliefert)
 
-- testen: überliefern, löschen bei !prod_selbst Lager :
-	dadrin, dadrüber, 2 drüber
+- testen: Ã¼berliefern, lÃ¶schen bei !prod_selbst Lager :
+	dadrin, dadrÃ¼ber, 2 drÃ¼ber
 
 - ausliefern mit ProdSelbst:
-	ProdNG: geschlossenen 1er Rückgängig machen wenn 0er ausgeliefert
+	ProdNG: geschlossenen 1er RÃ¼ckgÃ¤ngig machen wenn 0er ausgeliefert
 	wird. (dann neuen 1er anlegen)
 	
-- Rückmeldungen:
-	2er vergrößert = geplante Menge abbestellt (könnte sich eventuell
+- RÃ¼ckmeldungen:
+	2er vergrÃ¶ÃŸert = geplante Menge abbestellt (kÃ¶nnte sich eventuell
 		durch nachfolgende Neubestellung (split) erledigen)
-	0er mit "nahem" Termin erhöht
-	lager2er unter/über Limit gefallen/-stiegen
-	Artikel war nicht auf Lager! (kein 1er für 0er gefunden)
+	0er mit "nahem" Termin erhÃ¶ht
+	lager2er unter/Ã¼ber Limit gefallen/-stiegen
+	Artikel war nicht auf Lager! (kein 1er fÃ¼r 0er gefunden)
 	
-- Test: 2 Kundenaufträge, späterer wird ausgelagert, dann geliefert,
-	rückgängig
+- Test: 2 KundenauftrÃ¤ge, spÃ¤terer wird ausgelagert, dann geliefert,
+	rÃ¼ckgÃ¤ngig
 
 - Problem: Einen Auftrag 2mal planen zu unterschiedlichen Zeiten, welcher
 	wird zuerst produziert (Momentan zuletzt geplanter?)
 
-- distribute_children_artbaum könnte auch zum Bestellen verwendet werden?
+- distribute_children_artbaum kÃ¶nnte auch zum Bestellen verwendet werden?
 
-- Lieferschein Rückgängig reserviert in falscher Reihenfolge
+- Lieferschein RÃ¼ckgÃ¤ngig reserviert in falscher Reihenfolge
 
-- Übernehmen des 2ers durch andere Aufträge wenn abbestellt
+- Ãœbernehmen des 2ers durch andere AuftrÃ¤ge wenn abbestellt
 
 - Termin bis (deadline) wichtig bei Maschinenplanung (Ketten, Dauer)
 	= Termin? (dann fehlt ein "Produktionsbeginn am")
 
-- Grafik über Liefertermine
+- Grafik Ã¼ber Liefertermine
 
+- folgende Queries mit parameter und prepare:
+
+?x SELECT artikel, breite, farbe, id FROM artbez_0_629 WHERE id = 228279
+
+956x select warengruppe,coalesce(internwarengruppe,warengruppe),
+bestellen_bei,defaultschema,einheit,mindbestand from artikelstamm where
+id=$1
+
+912x select az.altartikelid, az.prozessid, az.menge from artikelzusammensetzung
+az where id=$1 order by az.altartikelid
+
+285x select erstellt, geaendert, riet, bemerkungen,fangfaden, schussdichte,
+variante_von from webangaben where artikel=$1
+
+282x select index,anzahl,material from webang_schuss where artikel=$1 order
+by index
+
+56x select kettscheibe, max_kettlaenge,max_fadenzahl,verlaengern,
+ausn_gaenge1, ausn_maxfd1,ausn_gaenge2,ausn_maxfd2 from webang_ketten where
+artikel=$1 order by kettscheibe desc
+
+56x select zeilennummer, anzahl, material, bindung, kettscheibe,
+ausn_gaenge,ausn_faeden from webang_faeden where artikel=$1 order by
+zeilennummer
