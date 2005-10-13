@@ -122,6 +122,8 @@ public:
 		TXT_IHRESTNR=110,
 		TXT_METER=111,
 		PRINTF_ZAHLUNG=112,
+		TXT_MAHNUNG=113,
+		TXT_BETRAG=114,
 	     } LangTXT;
 	     
  // id's >=  CUSTOMER_IDS werden nicht im Konstruktor, sondern on demand geladen

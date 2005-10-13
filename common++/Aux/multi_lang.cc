@@ -25,11 +25,13 @@ std::string MultiL_Dict::MLT(const LangTXT textid, std::string def_str)
 	if(textid>=CUSTOMER_IDS)
 	  { std::string text;
 	  
+	   try{
 	   Query q1("select textid,text_lang from text_bausteine "
  	   "where sprid=? and textid=?");
  	   q1 << sprid << textid;
- 	   
- 	   if(q1.good()) {FetchIStream f=q1.FetchOne(); f >> text;}
+ 	   FetchIStream fi=q1.FetchOne();
+
+ 	   if(fi.good()) {fi >> text;}
  	   textmap[textid]=text; 	   
  	   
  	   ret=text;
@@ -37,10 +39,14 @@ std::string MultiL_Dict::MLT(const LangTXT textid, std::string def_str)
 	   Query q("select textid,text_lang from text_bausteine "
  	   "where sprid=? and textid=?");
  	   q << def_sprid << textid;
- 	   
- 	   if(q.good()) {FetchIStream f=q.FetchOne(); f >> text;}
+ 	   fi=q.FetchOne();
+ 	   if(fi.good()) {fi >> text;}
  	   
  	   defaultmap[textid]=text;
+	   }
+
+	   catch(SQLerror &e)
+	   { if(e.Code()!=100) throw(e); }
 
  	   if(ret.empty()) 
  	     {ret=text;
