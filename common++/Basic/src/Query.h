@@ -1,4 +1,4 @@
-// $Id: Query.h,v 1.6 2005/10/13 22:53:21 christof Exp $
+// $Id: Query.h,v 1.7 2005/10/14 14:54:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Christof Petig
@@ -373,6 +373,8 @@ public:
         std::string const& Command() const { return command; }
 #ifdef USE_PARAMETERS
         bool ready() const { return !name.empty(); }
+#else
+        bool ready() const { return false; }
 #endif
 };
 
