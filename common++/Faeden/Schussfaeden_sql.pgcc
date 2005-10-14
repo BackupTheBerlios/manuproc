@@ -17,19 +17,20 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Schussfaeden_sql.pgcc,v 1.12 2004/01/26 12:39:47 christof Exp $
+// $Id: Schussfaeden_sql.pgcc,v 1.13 2005/10/14 12:12:30 christof Exp $
 
 #include "Schussfaeden.hh"
 #include <Misc/Transaction.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 
 void Schussfaeden::Load(const ArtikelBase &ab)
 {  
    clear();
-   Query q("select index,anzahl,material from webang_schuss "
+   static PreparedQuery pq("select index,anzahl,material from webang_schuss "
    	"where artikel=? order by index");
+   Query q(pq);
    q << ab.Id();
-   FetchIStream is;
+   Query::Row is;
    while ((q>>is).good())
    {  int index,anzahl,schussmaterial;
       is >> index >> anzahl >> schussmaterial >> Query::check_eol();

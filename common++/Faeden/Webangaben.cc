@@ -1,4 +1,4 @@
-// $Id: Webangaben.cc,v 1.15 2005/05/24 07:02:45 christof Exp $
+// $Id: Webangaben.cc,v 1.16 2005/10/14 12:12:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -54,9 +54,10 @@ FetchIStream &operator>>(FetchIStream &is, std::pair<ArtikelBase,ArtikelBase> &p
 
 bool Webangaben::Load() throw(SQLerror)
 {  try
-   {  Query("select erstellt, geaendert, riet, bemerkungen,"
+   {  static PreparedQuery pq("select erstellt, geaendert, riet, bemerkungen,"
 	"fangfaden,schussdichte,variante_von "
-	"from webangaben where artikel=?")
+	"from webangaben where artikel=?");
+      Query(pq)
 	<< artikel.Id()
 	>> erstellt >> geaendert
 	>> FetchIStream::MapNull(riet)
