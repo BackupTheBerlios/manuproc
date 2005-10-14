@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.32 2005/10/12 08:59:38 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.33 2005/10/14 12:12:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,9 +21,7 @@
 #include <Artikel/ArtikelStamm.h>
 #include <Misc/string0.h>
 #include <Misc/Transaction.h>
-#include <Misc/mystream.h>
-exec sql include sqlca;
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 //#include <Misc/dbconnect.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -66,35 +64,38 @@ ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, ExtBezSchema:
 
 void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw(SQLerror)
 {   
- schema = _schema;
-
-    value.clear();
+  schema = _schema;
+  value.clear();
     
-    unsigned neededsize=0;
-    if (Id())
-    {mystream sq; 
+  if (Id())
+  {  std::string query;
+     unsigned neededsize=0;
      std::vector<int> gewaehlte_indizes;
-     sq << "SELECT ";
+     static std::map<cH_ExtBezSchema,PreparedQuery> pqmap;
+  
+     query="SELECT ";
      for (ExtBezSchema::const_iterator i=schema->begin();i!=schema->end();)
       {
-         sq << i->spaltenname;
+         query += i->spaltenname;
          gewaehlte_indizes.push_back(i->bezkomptype);
          if (unsigned(i->bezkomptype+1)>neededsize) neededsize=i->bezkomptype+1;
          ++i;
-         if (i!=schema->end()) sq <<", " ;
+         if (i!=schema->end()) query+="," ;
       }
-     sq << " FROM artbez_" << int(schema->Typ()) <<"_"<<schema->Id()<<" WHERE id = "
-         << Id();
-     Query q(sq.str());
-     SQLerror::test(__FILELINE__);
-     
+     query+=" FROM artbez_"+itos(schema->Typ())+"_"+itos(schema->Id())
+         +" WHERE id=?";
+     PreparedQuery &pq=pqmap[schema];
+     if (pq.Command().empty()) pq=PreparedQuery(query);
+     Query q(pq);
+     q << Id();
+     Query::Row is=q.Fetch();
      value.resize(neededsize);
-     FetchIStream is=q.Fetch();
      for (std::vector<int>::const_iterator i=gewaehlte_indizes.begin();i!=gewaehlte_indizes.end();++i)
       {  std::string s;
-         is >> FetchIStream::MapNull(s,std::string());
+         is >> Query::Row::MapNull(s,std::string());
          value[*i]=cH_EntryValueIntString(s);
       }
+     is >> Query::Row::check_eol();
     }
 } 
 
@@ -155,48 +156,29 @@ cH_EntryValue ArtikelBezeichnung::Komponente_als_EntryValue
  return cH_EntryValue();
 }
 
-
-
+// for the map
+bool operator<(cH_ExtBezSchema const& a, cH_ExtBezSchema const& b)
+{ return a->Id() < b->Id() || (a->Id()==b->Id() && a->Typ()<b->Typ());
+}
 
 ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const std::vector<cH_EntryValue> &_val, const cH_ExtBezSchema &_schema) throw(SQLerror)
 : schema(_schema)
 {
- exec sql begin declare section;
- long ARTIKELID;
- char *QUERY;
- exec sql end declare section;
- mystream squery;
- squery << "SELECT id FROM artbez_"<<int(schema->Typ())<<"_"<<schema->Id()
-      << " WHERE ";
+ ArgumentList args;
+ std::string query;
+ query = "SELECT id FROM artbez_"+itos(schema->Typ())+"_"+itos(schema->Id())
+      + " WHERE ";
  int f=0;
- for (ExtBezSchema::const_iterator i=schema->begin();i!=schema->end();)
+ for (ExtBezSchema::const_sigiterator i=schema->sigbegin(signifikanz);
+         i!=schema->sigend(signifikanz);)
    {
-     if (i->signifikanz != signifikanz) {++i; continue;}
-     squery << i->spaltenname << " = '" << _val[f]->getStrVal() <<"'";
-     ++f;
-     do 
+     query+=i->spaltenname+"=?";
+     args << _val[f]->getStrVal();
      ++i;
-     while (i!=schema->end() && i->signifikanz != signifikanz ) ;
-     if (i!=schema->end()) squery <<" AND " ;
+     if (i!=schema->sigend(signifikanz)) query +=" AND " ;
    }
 
- std::string query = squery.str(); 
-   
- try
- {  QUERY=const_cast<char*>(query.c_str());
-    Transaction tr;
-    exec sql prepare QUERY2 from :QUERY;
-    exec sql declare loadart cursor for QUERY2;
-    exec sql open loadart;
-    SQLerror::test("ArtikelBox::loadArtikel: select artikelid");
-    exec sql fetch in loadart into :ARTIKELID;
-    SQLerror::test("ArtikelBox::loadArtikel: fetch artikelid");
-    exec sql close loadart;
-    tr.commit();
- }
- catch (SQLerror &e) { throw; }
- 
- *(ArtikelBase*)this=ArtikelBase(ARTIKELID);
+ Query(query) << args >> (*(ArtikelBase*)this);
  setzeExtBezSchema(schema);
 }
 

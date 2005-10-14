@@ -1,4 +1,4 @@
-// $Id: Query.pgcc,v 1.10 2005/10/12 10:20:17 christof Exp $
+// $Id: Query.pgcc,v 1.11 2005/10/14 12:12:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -157,7 +157,10 @@ void Query::Execute() throw(SQLerror)
 {
    time_t start=-1;
    if (debugging.time_queries) start=time(0);
-   if (!prepare && debugging.count_queries) debugging.counts[query]++;
+   if (debugging.count_queries)
+   { if (!prepare) debugging.counts[query]++;
+     else if (!prepare->ready()) debugging.counts[prepare->Command()]++;
+   }
 #ifndef USE_PARAMETERS
    exec sql begin declare section;
    char *COMMAND=const_cast<char*>(query.c_str());
