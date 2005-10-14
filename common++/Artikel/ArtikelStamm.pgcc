@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.39 2004/11/16 09:52:40 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.40 2005/10/14 12:12:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,17 +21,17 @@
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Instanzen/ppsInstanz.h>
 #include <Misc/Trace.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <unistd.h>
 
 ArtikelStamm::cache_t ArtikelStamm::cache;
 
-FetchIStream &operator>>(FetchIStream &is, ArtikelTypID::enum_t &e)
+Query::Row &operator>>(Query::Row &is, ArtikelTypID::enum_t &e)
 {  e = ArtikelTypID::enum_t(is.Fetch<int>());
    return is;
 }
 
-FetchIStream &operator>>(FetchIStream &is, Einheit &e)
+Query::Row &operator>>(Query::Row &is, Einheit &e)
 {  e = Einheit(Einheit::ID(is.Fetch<int>()));
    return is;
 }
@@ -47,16 +47,17 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
    }
    int ieinheit=0;
 
-   Query q("select warengruppe,coalesce(internwarengruppe,warengruppe),"
+   static PreparedQuery pq("select warengruppe,coalesce(internwarengruppe,warengruppe),"
 	"bestellen_bei,defaultschema,einheit,mindbestand"
 	" from artikelstamm where id=?");
+   Query q(pq);
    q << ab.Id();
-   FetchIStream is=q.FetchOne();
+   Query::Row is=q.FetchOne();
    is >> payload.typ >> payload.interntyp
-      >> FetchIStream::MapNull(payload.bestellen_bei,ppsInstanzID::None)
-      >> FetchIStream::MapNull(payload.defaultschema,1)
-      >> FetchIStream::WithIndicator(payload.einh,ieinheit)
-      >> FetchIStream::MapNull(payload.mindbest,NO_CHECK)
+      >> Query::Row::MapNull(payload.bestellen_bei,ppsInstanzID::None)
+      >> Query::Row::MapNull(payload.defaultschema,1)
+      >> Query::Row::WithIndicator(payload.einh,ieinheit)
+      >> Query::Row::MapNull(payload.mindbest,NO_CHECK)
       ;
       
    if (ieinheit) 
