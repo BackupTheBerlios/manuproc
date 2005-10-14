@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.33 2005/10/14 12:12:26 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.34 2005/10/14 15:01:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,6 +30,11 @@
 #ifdef MABELLA_EXTENSIONS
 #include <Misc/EAN.h>
 #endif
+
+// for the map
+bool operator<(cH_ExtBezSchema const& a, cH_ExtBezSchema const& b)
+{ return a->Id() < b->Id() || (a->Id()==b->Id() && a->Typ()<b->Typ());
+}
 
 ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, const cH_ExtBezSchema &_schema) throw()
  : ArtikelBase(artikel), schema(_schema)
@@ -154,11 +159,6 @@ cH_EntryValue ArtikelBezeichnung::Komponente_als_EntryValue
 	 return value[i.BezKomp().bezkomptype];
     }
  return cH_EntryValue();
-}
-
-// for the map
-bool operator<(cH_ExtBezSchema const& a, cH_ExtBezSchema const& b)
-{ return a->Id() < b->Id() || (a->Id()==b->Id() && a->Typ()<b->Typ());
 }
 
 ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const std::vector<cH_EntryValue> &_val, const cH_ExtBezSchema &_schema) throw(SQLerror)
