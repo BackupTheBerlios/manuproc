@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.25 2005/09/05 15:30:38 christof Exp $
+// $Id: Faden.cc,v 1.26 2005/10/14 12:12:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -22,7 +22,7 @@
 #include "Materialeigenschaft.hh"
 #include <Misc/relops.h>
 #include <Misc/compiler_ports.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Faeden/Webangaben.hh>
 #include <cassert>
 
@@ -352,7 +352,7 @@ fixedpoint<5> Faden::get_Gewicht_kg_mal_anzschfaeden_pro_km_und_breite_mm_und_sc
 }
 
 
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/itos.h>
 void Faden::create(const ArtikelBase &artikel,const int znr,const int anzahl,const ArtikelBase &material,Bindung bindung) throw(SQLerror)
 {
@@ -379,30 +379,30 @@ void Faden::create_wiederholung(const ArtikelBase &artikel, const Wiederholung &
   SQLerror::test(__FILELINE__);
 }
 
-static FetchIStream &operator>>(FetchIStream &is, Bindung &b)
+static Query::Row &operator>>(Query::Row &is, Bindung &b)
 {  int bnr;
-   is >> FetchIStream::MapNull(bnr,Bindung::standard_id);
+   is >> Query::Row::MapNull(bnr,Bindung::standard_id);
    b=Bindung::getById(bnr);
    return is;
 }
 
-static FetchIStream &operator>>(FetchIStream &is, Fd_Kettscheibe &f)
+static Query::Row &operator>>(Query::Row &is, Fd_Kettscheibe &f)
 {  is >> f.nr
-   	>> FetchIStream::MapNull(f.max_kettlaenge)
-   	>> FetchIStream::MapNull(f.max_fadenzahl)
-   	>> FetchIStream::MapNull(f.verlaengern)
-   	>> FetchIStream::MapNull(f.ausn_gaenge)
-   	>> FetchIStream::MapNull(f.ausn_maxfd)
-   	>> FetchIStream::MapNull(f.ausn_gaenge2)
-   	>> FetchIStream::MapNull(f.ausn_maxfd2);
+   	>> Query::Row::MapNull(f.max_kettlaenge)
+   	>> Query::Row::MapNull(f.max_fadenzahl)
+   	>> Query::Row::MapNull(f.verlaengern)
+   	>> Query::Row::MapNull(f.ausn_gaenge)
+   	>> Query::Row::MapNull(f.ausn_maxfd)
+   	>> Query::Row::MapNull(f.ausn_gaenge2)
+   	>> Query::Row::MapNull(f.ausn_maxfd2);
    return is;
 }
 
-static FetchIStream &operator>>(FetchIStream &is, Faden &f)
+static Query::Row &operator>>(Query::Row &is, Faden &f)
 {  is >> f.zeilennummer >> f.anzahl >> f.material >> f.bindung
-   	>> FetchIStream::MapNull(f.kettscheibe,-1)
-   	>> FetchIStream::MapNull(f.ausn_gaenge)
-   	>> FetchIStream::MapNull(f.ausn_faeden);
+   	>> Query::Row::MapNull(f.kettscheibe,-1)
+   	>> Query::Row::MapNull(f.ausn_gaenge)
+   	>> Query::Row::MapNull(f.ausn_faeden);
    return is;
 }
 
@@ -440,14 +440,15 @@ void Fadenliste::LoadRecurse(const Webangaben &wa)
 
 void Fadenliste::Load(const Webangaben &wa)
 {  erase();
-   FetchIStream is;
+   Query::Row is;
    const Webangaben::ersetzen_t &ersetzen=wa.Ersetzen();
    ArtikelBase ab=wa.Artikel();
    if (!!wa.VarianteVon()) ab=wa.VarianteVon();
       
-      Query q("select zeilennummer, anzahl, material, bindung, kettscheibe, "
+      static PreparedQuery pq("select zeilennummer, anzahl, material, bindung, kettscheibe, "
       	"ausn_gaenge,ausn_faeden "
       	"from webang_faeden where artikel=? order by zeilennummer");
+      Query q(pq);
       q << ab;
       while ((q>>is).good())
       {  Faden f;
@@ -459,10 +460,11 @@ void Fadenliste::Load(const Webangaben &wa)
          add(f,unsigned(-1));
       }
 
-      Query q2("select anfangszeile, endzeile, wiederholungen "
+      static PreparedQuery pq2("select anfangszeile, endzeile, wiederholungen "
 		"from webang_wiederhol where artikel=? "
 		// request small ones first so we print it right
 		"order by endzeile-anfangszeile");
+      Query q2(pq2);
       q2 << ab;
       while ((q2>>is).good())
       {  int anfangszeile, endzeile, wiederholungen;
@@ -470,12 +472,13 @@ void Fadenliste::Load(const Webangaben &wa)
          rep_add(anfangszeile, endzeile, wiederholungen);
       }
 
-      Query q3("select kettscheibe, "
+      static PreparedQuery pq3("select kettscheibe, "
       	"max_kettlaenge,max_fadenzahl,verlaengern,"
       	"ausn_gaenge1,ausn_maxfd1,ausn_gaenge2,ausn_maxfd2 "
 		"from webang_ketten where artikel=? "
 		// request last one first so that we resize efficiently
 		"order by kettscheibe desc");
+      Query q3(pq3);
       q3 << ab;
       while ((q3>>is).good())
       {  Fd_Kettscheibe ks;
