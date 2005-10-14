@@ -85,29 +85,27 @@ void auftrag_copy::on_copy_ok_clicked()
 			
 	AuftragBase::ID neu_aufid=auftrag->Id();
 
-
-	(((Query("insert into auftragentry (auftragid,zeilennr,bestellt,"
+	ArgumentList args;
+	std::string sql="insert into auftragentry (auftragid,zeilennr,bestellt,"
 		"geliefert,lastedit_uid,artikelid,status,preis,"
 		"rabatt,lieferdate,preismenge,instanz,preisliste,provsatz) "
-		"(select ?,zeilennr,?,0,?,artikelid,0,preis,rabatt,?,"
-		"preismenge,instanz,preisliste,? from auftragentry"
-		" where (auftragid,instanz)=(?,?) and status!=(?))")
-		<< neu_aufid
-		).add_argument(
-			stueck==0 ? "bestellt" : itos(stueck))
-		<< getuid()
-		).add_argument(
-			ld.valid() ? 
-			ld.postgres_null_if_invalid() : "lieferdate")
-		).add_argument(
-			provsatz==0 ? 
-			itos(provsatz) : "provsatz")
-		<< alt_auftrag->Id()
-		<< alt_auftrag->Instanz()
-		<< (copy_storno->get_active() ? (AufStatVal)STORNO : 
+		"(select ?,zeilennr,";
+        args << neu_aufid;
+        if (!stueck) sql+="bestellt,";
+        else { sql+="?,"; args << stueck; }
+        sql+="0,?,artikelid,0,preis,rabatt,";
+        args << getuid();
+        if (!ld.valid()) sql+="lieferdate,";
+        else { sql+="?,"; args << ld; }
+        sql+="preismenge,instanz,preisliste,";
+        if (!provsatz) sql+="provsatz ";
+        else { sql+="? "; args << provsatz; }
+        sql+="from auftragentry where (auftragid,instanz)=(?,?) "
+            "and status!=(?))";
+        args << AuftragBase(*alt_auftrag);
+        args << (copy_storno->get_active() ? (AufStatVal)STORNO : 
 					       (AufStatVal)NOSTAT);
-	SQLerror::test(__FILELINE__);
-
+	(Query(sql) << args).Check100();
 
       std::auto_ptr<AuftragFull> full(new AuftragFull(
       	AuftragBase(auftrag->Instanz(),auftrag->Id())));
