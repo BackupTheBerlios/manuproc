@@ -1,4 +1,4 @@
-// $Id: get_data.h,v 1.25 2003/11/26 16:29:32 christof Exp $
+// $Id: get_data.h,v 1.26 2005/10/18 21:46:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -94,6 +94,7 @@ public:
 	static bool dont_hide_empty;
 	// limit number of files to display
 	static unsigned limit,start;
+	static unsigned article;
 };
 
 #endif

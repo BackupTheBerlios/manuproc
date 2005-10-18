@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.54 2003/11/26 16:29:32 christof Exp $
+// $Id: get_data.cc,v 1.55 2005/10/18 21:46:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -24,6 +24,7 @@
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Misc/TraceNV.h>
 #include <algorithm>
+#include <Auftrag/SelectedFullAufList.h>
 
 static const UniqueValue::value_t trace_channel=ManuProC::Tracer::channels.get();
 static ManuProC::Tracer::Environment trace_channele("DEBUG",trace_channel);
@@ -43,10 +44,34 @@ unsigned graph_data_node::start=0;
 
 graph_data_node::graph_data_node(const std::string &mode)
 {
-   get_files(mode);
+  if (mode.empty())
+  { graphtitle=getenv("PGDATABASE");
+    filenames.push_back(st_files(ManuProC::Datum::today().c_str(),""));
+    if (!article && !dont_hide_empty)
+    { SelectedFullAufList auftraglist=SelectedFullAufList(SQLFullAuftragSelector::
+          sel_Artikel(ppsInstanz::none_id,article));
+      for (SelectedFullAufList::iterator j=auftraglist.begin();j!=auftraglist.end();++j)
+      { list_auftrag.push_back(st_auftrag(*j,j->getStueck(),j->getGeliefert(),
+            j->getCombinedStatus(),j->getLieferdatum(),"",j->Artikel()));
+        AufEintragZu::list_t kinder=AufEintragZu::get_Referenz_list
+            (*j,AufEintragZu::list_kinder,
+             AufEintragZu::list_Artikel,AufEintragZu::list_sorted);
+        for (AufEintragZu::list_t::const_iterator i=kinder.begin();i!=kinder.end();++i)
+        { if (i->Art!=article) continue; // oder hinzufügen?
+          list_auftragszuordung.push_back(st_aebZ(*j,i->AEB,i->Menge,0));
+        }
+      }
+      fill_map();
+    }
+    else
+      std::cerr << "Modus noch nicht unterstützt\n";
+  }
+  else
+  {get_files(mode);
    get_values_from_files();
    fill_map();
    get_values_from_files_Z();
+  }
 }
 
 bool operator==(const graph_data_node::st_auftrag &a, const AufEintragBase &b)
@@ -162,7 +187,7 @@ void graph_data_node::get_values_from_files_Z()
 		!=list_auftragszuordnung.end();
 	}
 	if (dont_hide_empty || !!menge || schon_drin)
-        list_auftragszuordnung.push_back(st_aebZ(aebALT,aebNEU,menge,fileindex));
+          list_auftragszuordnung.push_back(st_aebZ(aebALT,aebNEU,menge,fileindex));
       }
    }
 }

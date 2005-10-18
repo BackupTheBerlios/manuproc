@@ -1,4 +1,4 @@
-// $Id: graph.cc,v 1.27 2004/02/11 08:45:48 christof Exp $
+// $Id: graph.cc,v 1.28 2005/10/18 21:46:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -36,6 +36,8 @@ const static struct option options[]=
  { "start", required_argument, 0, 's' },
  { "only", required_argument, 0, 'o' },
  { "dont-hide", no_argument, 0, 'h' },
+ { "art", required_argument, 0, 'A' },
+ { "live", no_argument, 0, 'L' },
  { NULL,      0,       NULL, 0 }
 };       
         
@@ -50,6 +52,8 @@ void usage(std::string s)
        << "\t -l --limit <number>\tLetzter angezeigter Schritt\n"
        << "\t -o --only <number>\tNur einen Zustand anzeigen\n"
        << "\t -h --dont-hide\tLeere Aufträge anzeigen\n"
+       << "\t -L|--live\taktuelle Datenbank anzeigen (keine Dateisammlung)\n"
+       << "\t -A|--art <article>\tNur einen Artikel anzeigen\n"
        << "\n";
 }
 
@@ -58,7 +62,8 @@ int main(int argc, char *argv[])
 {
   dot_out::e_colour colour=dot_out::Black;
   int opt;
-  while ((opt=getopt_long(argc,argv,"s:bcrl:o:h",options,NULL))!=EOF)
+  bool live=false;
+  while ((opt=getopt_long(argc,argv,"s:bcrl:o:hLA:",options,NULL))!=EOF)
    { switch (opt) {
       case 'b' : colour=dot_out::Black; break;
       case 'c' : colour=dot_out::Colour; break;
@@ -69,12 +74,16 @@ int main(int argc, char *argv[])
       case 'o': graph_data_node::start=atol(optarg); 
                 graph_data_node::limit=graph_data_node::start+1;
       		break;
+      case 'L': live=true; break;
+      case 'A': graph_data_node::article=atol(optarg); break;
       default: usage(argv[0]); return 1;
      }
    }  
 
-  if (optind!=argc-1) {usage(argv[0]); exit(1);}
-  std::string mode=argv[optind];
+  if ((!live && optind!=argc-1) || (live && optind!=argc))
+  {usage(argv[0]); exit(1);}
+  std::string mode;
+  if (!live) mode=argv[optind];
   ManuProC::PrintUncaughtExceptions();
   try{
   if (!getenv("PGDATABASE"))
@@ -88,6 +97,7 @@ int main(int argc, char *argv[])
 #endif
   }
    ManuProC::dbconnect();
+   // UTF-8?
    dot_out D(mode,colour);
    D.write();
   }

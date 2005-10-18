@@ -1,6 +1,7 @@
-// $Id: dot_out.cc,v 1.24 2003/11/17 13:30:32 christof Exp $
+// $Id: dot_out.cc,v 1.25 2005/10/18 21:46:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
+ *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG
+ *  written by Malte Thoma and Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by  
@@ -58,7 +59,6 @@ struct st_edge{Node node;std::string bez;std::vector<std::pair<std::string,std::
 std::string aeb_to_string(AufEintragBase aeb)
 {
   return aeb.str();
-  // Instanz()->Name()+"/"+itos(aeb.Id())+"/"+itos(aeb.ZNr());
 }
 
 void dot_out::write_node(std::ofstream &fout)
