@@ -1,6 +1,7 @@
-/* $Id: sqlAuftragSelector.h,v 1.36 2005/10/18 21:46:11 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.37 2005/10/18 21:46:14 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG
+ *  written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,11 +21,11 @@
 #ifndef SQLSELECTORH
 #define SQLSELECTORH
 
-#include<string>
-#include<Artikel/ArtikelBase.h>
-#include<Auftrag/AuftragBase.h>
+#include <string>
+#include <Artikel/ArtikelBase.h>
+#include <Auftrag/AuftragBase.h>
 #include <Auftrag/AufEintragBase.h>
-#include<Instanzen/ppsInstanz.h>
+#include <Instanzen/ppsInstanz.h>
 #include <vector>
 #include <Lager/FertigWarenLager.h>
 #include <Misc/auto_init.h>
@@ -32,7 +33,7 @@
 class SQLFullAuftragSelector // : public SQLAuftragSelector
 {
 public:
-  enum prepareindex { idx_noPrepare, idx_AufidZnr, idx_Kunde_Art, idx_anz };
+  enum prepareindex { idx_noPrepare, idx_AufidZnr, idx_Kunde_Art, idx_Art_Plan_Id, idx_anz };
 private:
  std::string clausel;
  std::string order_clausel; // will be added to query int getClausel

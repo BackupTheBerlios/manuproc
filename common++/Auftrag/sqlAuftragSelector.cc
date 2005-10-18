@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.43 2005/10/18 21:46:11 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.44 2005/10/18 21:46:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Jacek Jakubowski
@@ -211,32 +211,37 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung_id &sel
 {
   std::string clau=FULL_SELECT_FROM_WHERE
            " and "+StatusQualifier(selstr.status)+
-	        " and a.instanz="+itos(selstr.instanz) +
-           " and kundennr="+itos(selstr.kunde) +
-   	     " and artikelid="+itos(selstr.artikel.Id());
+	        " and (a.instanz,kundennr,artikelid)=(?,?,?)";
+  arguments << selstr.instanz << selstr.kunde << selstr.artikel;
   if(selstr.lieferdatum.valid())
-      clau+= " and lieferdate="+selstr.lieferdatum.postgres_null_if_invalid();
-
+  { clau+= " and lieferdate=?";
+    arguments << selstr.lieferdatum;
+  }
 
   if(selstr.status==OPEN)
-   {
+  {
     if(selstr.auftragid!=AuftragBase::handplan_auftrag_id)
-     {
-       clau+=" and a.auftragid="+itos(selstr.auftragid);
-     }
+    {
+       clau+=" and a.auftragid=?";
+       arguments << selstr.auftragid;
+    }
     else
-     {
-       clau+=" and a.auftragid>="+itos(AuftragBase::handplan_auftrag_id);
-     }
+    {
+       clau+=" and a.auftragid>=?";
+       arguments << AuftragBase::handplan_auftrag_id;
+    }
     setOrderClausel(" order by e.lieferdate, e.auftragid , e.zeilennr");
-   }
-  else if(selstr.status==CLOSED)
-   {
-       clau+=" and a.auftragid="+itos(selstr.auftragid);
-	setOrderClausel(" order by e.lieferdate desc");
   }
-//cout << "CLAUSEL:"<<clau<<"\n\n";
- setClausel(clau);
+  else if(selstr.status==CLOSED)
+  { clau+=" and a.auftragid=?";
+    arguments << selstr.auftragid;
+    setOrderClausel(" order by e.lieferdate desc");
+  }
+  setClausel(clau);
+  // prepare most common case
+  if (!selstr.lieferdatum.valid() && selstr.status==OPEN 
+      && selstr.auftragid!=AuftragBase::handplan_auftrag_id)
+    prepnum=idx_Art_Plan_Id;
 }
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel &selstr)
