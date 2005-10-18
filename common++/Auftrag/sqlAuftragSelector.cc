@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.45 2005/10/18 21:46:17 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.46 2005/10/18 21:46:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Jacek Jakubowski
@@ -29,18 +29,19 @@
 
 
 
-#define FULL_SELECTIONS_BASE0 "a.instanz, a.auftragid, e.zeilennr, bestellt, " \
+#define FULL_SELECTIONS_BASE0 "a.instanz,a.auftragid,e.zeilennr, "
+        "bestellt, " \
 	"e.artikelid, " \
 	"e.lieferdate, geliefert, " \
 	"a.stat, " \
-	"a.kundennr, youraufnr, "
-#define PROZESS_BASE "p.prozessid, p.letzteplaninstanz, " \
-   	"p.maxplaninstanz, p.datum, " 
+	"a.kundennr,youraufnr, "
+#define PROZESS_BASE "p.prozessid,p.letzteplaninstanz," \
+   	"p.maxplaninstanz,p.datum, " 
 #define PROZESS_FAKE "null,null,null,null, "
-#define FULL_SELECTIONS_BASE1 "e.preis,e.preismenge,a.waehrung, " \
-	"e.rabatt, " \
-	"e.status,e.lastedit_uid,e.lasteditdate," \
-	"e.letzte_lieferung," \
+#define FULL_SELECTIONS_BASE1 \
+        "e.preis,e.preismenge,a.waehrung,e.rabatt, " \
+	"e.status, " \
+	"e.lastedit_uid,e.lasteditdate,e.letzte_lieferung, " \
 	"e.preisliste, " \
 	"e.provsatz "
 
