@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.55 2005/10/18 21:46:25 christof Exp $
+// $Id: get_data.cc,v 1.56 2005/10/18 21:46:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -41,6 +41,7 @@ bool graph_data_node::show_referenz;
 bool graph_data_node::dont_hide_empty;
 unsigned graph_data_node::limit=~0;
 unsigned graph_data_node::start=0;
+unsigned graph_data_node::article=0;
 
 graph_data_node::graph_data_node(const std::string &mode)
 {
@@ -49,16 +50,15 @@ graph_data_node::graph_data_node(const std::string &mode)
     filenames.push_back(st_files(ManuProC::Datum::today().c_str(),""));
     if (!article && !dont_hide_empty)
     { SelectedFullAufList auftraglist=SelectedFullAufList(SQLFullAuftragSelector::
-          sel_Artikel(ppsInstanz::none_id,article));
+          sel_Artikel(ppsInstanzID::None,ArtikelBase(article)));
       for (SelectedFullAufList::iterator j=auftraglist.begin();j!=auftraglist.end();++j)
       { list_auftrag.push_back(st_auftrag(*j,j->getStueck(),j->getGeliefert(),
             j->getCombinedStatus(),j->getLieferdatum(),"",j->Artikel()));
         AufEintragZu::list_t kinder=AufEintragZu::get_Referenz_list
-            (*j,AufEintragZu::list_kinder,
-             AufEintragZu::list_Artikel,AufEintragZu::list_sorted);
+            (*j,AufEintragZu::list_kinder,AufEintragZu::list_Artikel);
         for (AufEintragZu::list_t::const_iterator i=kinder.begin();i!=kinder.end();++i)
-        { if (i->Art!=article) continue; // oder hinzufügen?
-          list_auftragszuordung.push_back(st_aebZ(*j,i->AEB,i->Menge,0));
+        { if (i->Art!=ArtikelBase(article)) continue; // oder hinzufügen?
+          list_auftragszuordnung.push_back(st_aebZ(*j,i->AEB,i->Menge,0));
         }
       }
       fill_map();
