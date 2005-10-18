@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.57 2005/09/07 14:18:06 christof Exp $
+# $Id: Makefile.am,v 1.58 2005/10/18 21:48:14 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -70,7 +70,9 @@ libKomponenten_a_SOURCES= \
         Optionmenu_Einheit.cc WPreis.cc PreisBox.cc \
         Optionmenu_Kundengruppe.cc LandesBox.cc \
         Optionmenu_AuftragLabel.cc Optionmenu_Lager.cc \
-        VerfuegbarPixmap.cc
+        VerfuegbarPixmap.cc \
+        WTelefon_glade.cc WTelefon.cc ZahlungsArtBox.cc \
+	PersonenBox.cc
 
 lateron= \
 		KundenBox_glade.cc \
@@ -86,9 +88,8 @@ lateron= \
 BUILT_SOURCES_L= $(LINKS) \
 	IntStringBox_sql.cc ArtikelBox_sql.cc AB_Breitensuche_sql.cc \
 	StringBox_sql.cc Optionmenu_Warengruppe_sql.cc ProzessBox_sql.cc \
-	WWaehrung_sql.cc WAuftragStatus_sql.cc \
-	WTelefon_glade.cc WTelefon.cc ZahlungsArtBox.cc \
-	PersonenBox.cc
+	WWaehrung_sql.cc WAuftragStatus_sql.cc
+
 
 lateron2 = KundenBox_sql.cc 
 
