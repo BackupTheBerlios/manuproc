@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.35 2005/10/12 08:59:38 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.36 2005/10/18 21:46:11 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,7 +32,7 @@
 class SQLFullAuftragSelector // : public SQLAuftragSelector
 {
 public:
-  enum prepareindex { idx_noPrepare, idx_AufidZnr, idx_anz };
+  enum prepareindex { idx_noPrepare, idx_AufidZnr, idx_Kunde_Art, idx_anz };
 private:
  std::string clausel;
  std::string order_clausel; // will be added to query int getClausel

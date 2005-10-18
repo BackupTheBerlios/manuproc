@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.51 2004/10/21 11:02:19 christof Exp $
+// $Id: AuftragBase.cc,v 1.52 2005/10/18 21:46:11 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -209,12 +209,13 @@ int AuftragBase::existEntry(const ArtikelBase& artikel, const ManuProC::Datum& l
          NV("Artikel",artikel),NV("LieferDatum",lieferdatum),NV("Status",status));
    int ZEILENNR;
  try
- {  Query("select zeilennr,bestellt from auftragentry "
+ { static PreparedQuery pq("select zeilennr,bestellt from auftragentry "
 	"where (instanz,auftragid)= (?,?) and "
-        "lieferdate=? and artikelid=? and status=? limit 1").lvalue()
+        "lieferdate=? and artikelid=? and status=? limit 1");
+   Query(pq)
         << *this << lieferdatum << artikel.Id() << status
         >> ZEILENNR >> menge_out;
-     return ZEILENNR;
+   return ZEILENNR;
  } catch (SQLerror &e)
  {  return none_id;
  }

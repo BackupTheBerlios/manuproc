@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.37 2005/10/12 08:59:38 christof Exp $
+// $Id: AufEintragZu.cc,v 1.38 2005/10/18 21:46:11 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -154,6 +154,16 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,b
  
  std::list<st_reflist> vaeb;
  if (kinder && sorted && artikel)
+ { static PreparedQuery pq;
+   if (pq.Command().empty()) pq=PreparedQuery(squery);
+   (Query(pq) << aeb).FetchArray(vaeb);
+ }
+ else if (kinder && !sorted && artikel)
+ { static PreparedQuery pq;
+   if (pq.Command().empty()) pq=PreparedQuery(squery);
+   (Query(pq) << aeb).FetchArray(vaeb);
+ }
+ else if (kinder && !sorted && !artikel)
  { static PreparedQuery pq;
    if (pq.Command().empty()) pq=PreparedQuery(squery);
    (Query(pq) << aeb).FetchArray(vaeb);
