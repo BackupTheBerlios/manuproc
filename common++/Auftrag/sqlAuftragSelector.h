@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.37 2005/10/18 21:46:14 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.38 2005/10/18 21:46:17 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski
@@ -114,12 +114,15 @@ public:
     ArtikelBase artikel;
     int auftragid;
     AufStatVal status;
-    Petig::Datum lieferdatum;
+    ManuProC::Datum lieferdatum;
+    bool noprocess;
     
     sel_Artikel_Planung_id(ppsInstanz::ID i, Kunde::ID k,
                            ArtikelBase a, int _id,
-                           AufStatVal s=OPEN,Petig::Datum d=Petig::Datum()) 
-    : instanz(i), kunde(k),artikel(a), auftragid(_id), status(s),lieferdatum(d)
+                           AufStatVal s=OPEN,ManuProC::Datum d=ManuProC::Datum(),
+                           bool nopr=false) 
+    : instanz(i), kunde(k),artikel(a), auftragid(_id), 
+      status(s),lieferdatum(d), noprocess(nopr)
     {}
   };
  SQLFullAuftragSelector(const sel_Artikel_Planung_id &selstr);

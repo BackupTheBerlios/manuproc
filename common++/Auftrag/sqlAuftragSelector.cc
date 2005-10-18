@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.44 2005/10/18 21:46:14 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.45 2005/10/18 21:46:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Jacek Jakubowski
@@ -29,27 +29,35 @@
 
 
 
-#define FULL_SELECTIONS_BASE "a.instanz, a.auftragid, e.zeilennr, bestellt, " \
+#define FULL_SELECTIONS_BASE0 "a.instanz, a.auftragid, e.zeilennr, bestellt, " \
 	"e.artikelid, " \
 	"e.lieferdate, geliefert, " \
 	"a.stat, " \
-	"a.kundennr, youraufnr, " \
-	"p.prozessid, p.letzteplaninstanz, " \
-   	"p.maxplaninstanz, p.datum, " \
-	"e.preis,e.preismenge,a.waehrung, " \
+	"a.kundennr, youraufnr, "
+#define PROZESS_BASE "p.prozessid, p.letzteplaninstanz, " \
+   	"p.maxplaninstanz, p.datum, " 
+#define PROZESS_FAKE "null,null,null,null, "
+#define FULL_SELECTIONS_BASE1 "e.preis,e.preismenge,a.waehrung, " \
 	"e.rabatt, " \
 	"e.status,e.lastedit_uid,e.lasteditdate," \
 	"e.letzte_lieferung," \
 	"e.preisliste, " \
 	"e.provsatz "
 
+#define FULL_SELECTIONS_BASE FULL_SELECTIONS_BASE0 \
+        PROZESS_BASE \
+        FULL_SELECTIONS_BASE1
+#define FULL_SELECTIONS_BASE_NOPR FULL_SELECTIONS_BASE0 \
+        PROZESS_FAKE \
+        FULL_SELECTIONS_BASE1
+
 #define FULL_SELECTIONS FULL_SELECTIONS_BASE",0" 
+#define FULL_SELECTIONS_NOPR FULL_SELECTIONS_BASE_NOPR",0" 
 
 #define FULL_FROM "(auftrag a join auftragentry e using (instanz,auftragid))" \
 	" left join auftrag_prozess p" \
 	" using (instanz,auftragid,zeilennr) "
-
-
+#define FULL_FROM_NOPR "(auftrag a join auftragentry e using (instanz,auftragid))" 
 	
 #ifdef MABELLA_EXTENSIONS	
 #define FULL_FROM_SORT(s) "(auftrag a join auftragentry e using (instanz,auftragid))" \
@@ -72,6 +80,9 @@
 
 #define FULL_SELECT_FROM_WHERE "select " FULL_SELECTIONS \
 	" from " FULL_FROM " where true "
+	
+#define FULL_SELECT_FROM_WHERE_NOPR "select " FULL_SELECTIONS_NOPR \
+	" from " FULL_FROM_NOPR " where true "
 
 
 #define FULL_SELECT_NO_0 " and bestellt!=0 "
@@ -209,8 +220,9 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Artikel &selstr)
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung_id &selstr)
 {
-  std::string clau=FULL_SELECT_FROM_WHERE
-           " and "+StatusQualifier(selstr.status)+
+  std::string clau=FULL_SELECT_FROM_WHERE;
+  if (selstr.noprocess) clau=FULL_SELECT_FROM_WHERE_NOPR;
+  clau+=" and "+StatusQualifier(selstr.status)+
 	        " and (a.instanz,kundennr,artikelid)=(?,?,?)";
   arguments << selstr.instanz << selstr.kunde << selstr.artikel;
   if(selstr.lieferdatum.valid())
@@ -240,7 +252,8 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung_id &sel
   setClausel(clau);
   // prepare most common case
   if (!selstr.lieferdatum.valid() && selstr.status==OPEN 
-      && selstr.auftragid!=AuftragBase::handplan_auftrag_id)
+      && selstr.auftragid!=AuftragBase::handplan_auftrag_id
+      && selstr.noprocess)
     prepnum=idx_Art_Plan_Id;
 }
 
