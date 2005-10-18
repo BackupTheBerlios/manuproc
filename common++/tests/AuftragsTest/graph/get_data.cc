@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.56 2005/10/18 21:46:28 christof Exp $
+// $Id: get_data.cc,v 1.57 2005/10/18 21:46:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -48,11 +48,15 @@ graph_data_node::graph_data_node(const std::string &mode)
   if (mode.empty())
   { graphtitle=getenv("PGDATABASE");
     filenames.push_back(st_files(ManuProC::Datum::today().c_str(),""));
-    if (!article && !dont_hide_empty)
+    vec_files_auftragentry.push_back(st_files("",""));
+    vec_files_auftragsentryzuordnung.push_back("");
+    if (article)
     { SelectedFullAufList auftraglist=SelectedFullAufList(SQLFullAuftragSelector::
           sel_Artikel(ppsInstanzID::None,ArtikelBase(article)));
       for (SelectedFullAufList::iterator j=auftraglist.begin();j!=auftraglist.end();++j)
-      { list_auftrag.push_back(st_auftrag(*j,j->getStueck(),j->getGeliefert(),
+      { if (!dont_hide_empty && (j->getCombinedStatus()>OPEN || !j->getStueck())) 
+          continue;
+        list_auftrag.push_back(st_auftrag(*j,j->getStueck(),j->getGeliefert(),
             j->getCombinedStatus(),j->getLieferdatum(),"",j->Artikel()));
         AufEintragZu::list_t kinder=AufEintragZu::get_Referenz_list
             (*j,AufEintragZu::list_kinder,AufEintragZu::list_Artikel);
@@ -64,7 +68,7 @@ graph_data_node::graph_data_node(const std::string &mode)
       fill_map();
     }
     else
-      std::cerr << "Modus noch nicht unterstützt\n";
+      std::cerr << "kein Artikel angegeben ... noch nicht implementiert\n";
   }
   else
   {get_files(mode);
