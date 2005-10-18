@@ -196,7 +196,7 @@ bool ppsInstanzReparatur::Lagermenge_setzen(bool analyse_only, const ArtikelBase
      // Schon eingetragene Menge wieder abziehen
      SelectedFullAufList auftraglist1=SelectedFullAufList(SQLFullAuftragSelector::
        sel_Artikel_Planung_id(Instanz()->Id(),ManuProC::DefaultValues::EigeneKundenId,
-       art,AuftragBase::plan_id,OPEN,ManuProC::Date(),true));
+       art,AuftragBase::plan_id,OPEN,ManuProC::Datum(),true));
      // der Selector holt nur die Aufträge mit dem Status OPEN
      for (SelectedFullAufList::iterator j=auftraglist1.begin();j!=auftraglist1.end();++j)
        {
@@ -239,7 +239,7 @@ bool ppsInstanzReparatur::Lagermenge_setzen(bool analyse_only, const ArtikelBase
 
      SelectedFullAufList auftraglist2=SelectedFullAufList(SQLFullAuftragSelector::
           sel_Artikel_Planung_id(Instanz()->Id(),ManuProC::DefaultValues::EigeneKundenId,
-          art,AuftragBase::dispo_id,OPEN,ManuProC::Date(),true));
+          art,AuftragBase::dispo_id,OPEN,ManuProC::Datum(),true));
      assert(auftraglist2.empty() || auftraglist2.size()==1);
      ArtikelStamm artstamm(art);
      for (SelectedFullAufList::iterator j=auftraglist2.begin();j!=auftraglist2.end();++j)
