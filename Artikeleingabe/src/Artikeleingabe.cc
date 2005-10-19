@@ -1,4 +1,4 @@
-// $Id: Artikeleingabe.cc,v 1.33 2005/10/19 13:49:01 christof Exp $
+// $Id: Artikeleingabe.cc,v 1.34 2005/10/19 20:54:23 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -102,6 +102,7 @@ Artikeleingabe::Artikeleingabe(int argc, char **argv)
   artikelbox_activate();
  }
  else top_notebook->set_current_page(1);
+ table_preis->init(artikelbox);
 }
 
 
@@ -153,6 +154,7 @@ void Artikeleingabe::artikelbox_activate()
        mindbest_check->set_active(as.getCheckBest());
        mindbestand->set_sensitive(as.getCheckBest());
        mindbestand->set_value(as.getMindBest());
+       table_preis->Load();
     }
    } catch (SQLerror &e)   {mess->Show(e);} 
  set_Data_from_artikelliste();

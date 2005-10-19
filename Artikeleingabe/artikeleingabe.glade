@@ -1307,6 +1307,7 @@ Aufträgen anzeigen</property>
 	  <child>
 	    <widget class="GtkTable" id="table_preis">
 	      <property agent="glademm" name="cxx_separate_class">True</property>
+	      <property agent="glademm" name="cxx_visibility">protected</property>
 	      <property name="visible">True</property>
 	      <property name="n_rows">4</property>
 	      <property name="n_columns">1</property>
