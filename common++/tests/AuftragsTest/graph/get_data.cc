@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.57 2005/10/18 21:46:30 christof Exp $
+// $Id: get_data.cc,v 1.58 2005/10/19 10:41:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -91,9 +91,9 @@ void graph_data_node::get_values_from_files()
   for(std::vector<st_files>::const_iterator i=vec_files_auftragentry.begin();i!=vec_files_auftragentry.end();++i)
    {
      std::ifstream F((i->filename).c_str());
-     if(!F) {std::cout <<"FEHLER: "<< i->filename<<" kann nicht geöffnet werden: "<<F<<"\n"; exit(1);}
+     if(!F) {std::cout <<"FEHLER: "<< i->filename<<" kann nicht geÃ¶ffnet werden: "<<F<<"\n"; exit(1);}
      std::string zeile;
-     for(int j=0;j<2;++j) std::getline(F,zeile); // Kopfzeilen überlesen
+     for(int j=0;j<2;++j) std::getline(F,zeile); // Kopfzeilen Ã¼berlesen
      while(std::getline(F,zeile))
       {
         cH_ppsInstanz instanz(ppsInstanzID::None);
@@ -152,9 +152,9 @@ void graph_data_node::get_values_from_files_Z()
   		i!=vec_files_auftragsentryzuordnung.end();++i,++fileindex)
    { 
      std::ifstream F((*i).c_str());
-     if(!F) {std::cout <<"FEHLER: "<< *i<<" kann nicht geöffnet werden\n"; exit(1);}
+     if(!F) {std::cout <<"FEHLER: "<< *i<<" kann nicht geÃ¶ffnet werden\n"; exit(1);}
      std::string zeile;
-     for(int j=0;j<2;++j) std::getline(F,zeile); // Kopfzeilen überlesen
+     for(int j=0;j<2;++j) std::getline(F,zeile); // Kopfzeilen Ã¼berlesen
      while(std::getline(F,zeile))
       {
         cH_ppsInstanz instanzALT(ppsInstanzID::None);
@@ -259,7 +259,7 @@ std::vector<std::pair<std::string,std::string> > graph_data_node::get_edges_for(
   std::vector<std::pair<std::string,std::string> > V;
   if(!list_child.empty()) 
  {// nach ziel sortieren
-  list_child.sort(); // spannend, dass dies die fileindex Reihenfolge nicht stört ... CP
+  list_child.sort(); // spannend, dass dies die fileindex Reihenfolge nicht stÃ¶rt ... CP
   AufEintragBase aeb_mem=list_child.front().aeb;
   std::vector<std::string> S(1);
   std::vector<AuftragBase::mengen_t> Mmem(1);
@@ -347,7 +347,7 @@ std::list<AufEintragBase> graph_data_node::get_existing_aeb() const
 void graph_data_node::get_files(const std::string &mode)
 { std::ifstream i(("../files.log/"+mode).c_str());
   if (!i.good()) 
-  {  std::cerr << "../files.log/"<<mode<<": konnte Datei nicht öffnen\n";
+  {  std::cerr << "../files.log/"<<mode<<": konnte Datei nicht Ã¶ffnen\n";
      exit(1);
   }
   char buf[1024];
