@@ -1,4 +1,4 @@
-// $Id: table_preis.cc,v 1.4 2005/10/19 20:54:28 christof Exp $
+// $Id: table_preis.cc,v 1.5 2005/10/19 20:54:33 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -79,7 +79,7 @@ public:
   virtual const cH_EntryValue Value(guint _seqnr,gpointer gp) const
   { switch((Spalten)_seqnr)
     { case SP_PRNUM: return cH_EntryValueIntString(preisliste);
-      case SP_PRNAM: return cH_EntryValueIntString("?");
+      case SP_PRNAM: return cH_EntryValueIntString(PreisListe(preisliste).Name());
       case SP_STAFFEL: return cH_EntryValueIntString(mindestmenge);
       case SP_PRICE: return cH_EntryValueFixed<2,double,long,false>(pr.Wert());
       case SP_CURRENCY: return cH_EntryValueIntString(pr.getWaehrung()->Kurzbezeichnung());
@@ -134,7 +134,6 @@ Einheit PrRowData::einheit=Einheit::null();
 void table_preis::Load()
 { ArtikelBase art=artikelbox->get_value();
   std::vector<cH_RowDataBase> datavec;
-std::cerr << "I was here\n";
   Query q("select kundennr,mindestmenge,preis,preismenge,waehrung "
       "from artikelpreise where artikelid=?");
   q << art;
@@ -149,4 +148,6 @@ std::cerr << "I was here\n";
   preisstaffel->setDataVec(datavec);
   preisstaffel->set_remember("artikeleingabe","preisstaffel");
   PrRowData::einheit=Einheit(art);
+  einheit->set_text(PrRowData::einheit->Bezeichnung());
+  einheit2->set_text(PrRowData::einheit->Bezeichnung());
 }

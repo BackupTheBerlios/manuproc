@@ -1329,25 +1329,6 @@ Aufträgen anzeigen</property>
 	      </child>
 
 	      <child>
-		<widget class="Custom" id="preisliste">
-		  <property agent="glademm" name="cxx_visibility">protected</property>
-		  <property name="visible">True</property>
-		  <property name="creation_function">PreisBox</property>
-		  <property name="int1">0</property>
-		  <property name="int2">0</property>
-		  <property name="last_modification_time">Mon, 29 Nov 2004 15:28:24 GMT</property>
-		  <signal name="activate" handler="andere_Liste"/>
-		</widget>
-		<packing>
-		  <property name="left_attach">0</property>
-		  <property name="right_attach">1</property>
-		  <property name="top_attach">0</property>
-		  <property name="bottom_attach">1</property>
-		  <property name="x_options">fill</property>
-		</packing>
-	      </child>
-
-	      <child>
 		<widget class="GtkHBox" id="hbox6">
 		  <property name="visible">True</property>
 		  <property name="homogeneous">False</property>
@@ -1662,6 +1643,26 @@ Aufträgen anzeigen</property>
 		  <property name="right_attach">1</property>
 		  <property name="top_attach">2</property>
 		  <property name="bottom_attach">3</property>
+		  <property name="x_options">fill</property>
+		  <property name="y_options">fill</property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="Custom" id="preisliste">
+		  <property agent="glademm" name="cxx_visibility">protected</property>
+		  <property name="visible">True</property>
+		  <property name="creation_function">PreisBox</property>
+		  <property name="int1">0</property>
+		  <property name="int2">0</property>
+		  <property name="last_modification_time">Mon, 29 Nov 2004 15:28:24 GMT</property>
+		  <signal name="activate" handler="andere_Liste"/>
+		</widget>
+		<packing>
+		  <property name="left_attach">0</property>
+		  <property name="right_attach">1</property>
+		  <property name="top_attach">0</property>
+		  <property name="bottom_attach">1</property>
 		  <property name="x_options">fill</property>
 		  <property name="y_options">fill</property>
 		</packing>
