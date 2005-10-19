@@ -1,4 +1,4 @@
-// $Id: Artikeleingabe_neu.cc,v 1.3 2004/11/29 10:43:40 christof Exp $
+// $Id: Artikeleingabe_neu.cc,v 1.4 2005/10/19 13:39:50 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -63,7 +63,9 @@ void Artikeleingabe::on_was_tun_activate()
          no_instanz->set_active(true);
         }
       else
-        standard_instanz->set_value(ppsInstanz::ID(a.bestellen_bei));
+      { standard_instanz->set_value(ppsInstanz::ID(a.bestellen_bei));
+        standard_instanz->set_sensitive(true);
+      }
 
       artikelbox_neu->set_Default_Instanz(ppsInstanz::ID(a.bestellen_bei));
       if (standard_instanz->get_value()->Id()!=ppsInstanz::ID(a.bestellen_bei))

@@ -1,4 +1,4 @@
-// $Id: Artikeleingabe.cc,v 1.31 2005/03/02 11:49:40 christof Exp $
+// $Id: Artikeleingabe.cc,v 1.32 2005/10/19 13:39:50 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -101,6 +101,7 @@ Artikeleingabe::Artikeleingabe(int argc, char **argv)
   artikelbox->set_value(ArtikelBase(atoi(argv[1])));
   artikelbox_activate();
  }
+ else top_notebook->set_current_page(1);
 }
 
 
