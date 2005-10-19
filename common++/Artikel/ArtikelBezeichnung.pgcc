@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.34 2005/10/14 15:01:26 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.35 2005/10/19 20:53:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -175,6 +175,7 @@ ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const std::vector<cH_Ent
      query+=i->spaltenname+"=?";
      args << _val[f]->getStrVal();
      ++i;
+     ++f;
      if (i!=schema->sigend(signifikanz)) query +=" AND " ;
    }
 
