@@ -1,4 +1,4 @@
-// $Id: Artikeleingabe.cc,v 1.32 2005/10/19 13:39:50 christof Exp $
+// $Id: Artikeleingabe.cc,v 1.33 2005/10/19 13:49:01 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -653,7 +653,7 @@ ArtikelBase Data_tree::Artikel2() const
 }
 
 void Artikeleingabe::on_notebook1_switch_page(GtkNotebookPage *p0, guint p1)
-{  artikelbox->set_sensitive(p1==1 || p1==2);
+{  artikelbox->set_sensitive(p1==1 || p1==2 || p1==4);
 }
 
 void Artikeleingabe::on_no_instanz_toggled()
