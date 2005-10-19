@@ -5,7 +5,7 @@
 #include <BaseObjects/ManuProcHandle.h>
 #include <DynamicEnums/DynamicEnums.h>
 #include <DynamicEnums/DefaultValues.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/CacheStatic.h>
 
 namespace KundengruppeID=ManuProC::DynamicEnums::Kundengruppen;
@@ -34,8 +34,8 @@ public:
  std::string Obergruppe() const { return obergruppe; }
  std::string Kommentar() const { return kommentar; } 
  
- friend FetchIStream &operator>>(FetchIStream &is, Kundengruppe &kg);
- friend FetchIStream &operator>>(FetchIStream &is, Kundengruppe::ID &kgid); 
+ friend Query::Row &operator>>(Query::Row &is, Kundengruppe &kg);
+ friend Query::Row &operator>>(Query::Row &is, Kundengruppe::ID &kgid); 
 
 };
 
@@ -60,7 +60,7 @@ public:
 
 
 
-FetchIStream &operator>>(FetchIStream &is,cH_Kundengruppe &kg);
+Query::Row &operator>>(Query::Row &is,cH_Kundengruppe &kg);
     
 #endif
 

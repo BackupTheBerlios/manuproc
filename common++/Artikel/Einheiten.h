@@ -1,4 +1,4 @@
-/* $Id: Einheiten.h,v 1.20 2005/10/12 08:59:38 christof Exp $ */
+/* $Id: Einheiten.h,v 1.21 2005/10/19 20:53:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.20 2005/10/12 08:59:38 christof Exp $
+// $Id: Einheiten.h,v 1.21 2005/10/19 20:53:53 christof Exp $
 
 #ifndef ARTIKEL_EINHEITEN_H
 #define ARTIKEL_EINHEITEN_H
@@ -56,6 +56,7 @@ private:
 public:
 	Einheit(const ArtikelBase &ab) throw(SQLerror);
 	Einheit(const ID e);
+	static Einheit null() { return Einheit(); }
 	ID Id() const { return einh; }
 	operator ID() const
 	{ return einh;

@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.25 2005/03/15 16:21:47 jacek Exp $
+// $Id: Artikelpreis.h,v 1.26 2005/10/19 20:53:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG
  *		 written by Christof Petig
@@ -24,7 +24,7 @@
 #include <Artikel/Preis.h>
 #include <Kunde/Kunde.h>
 #include <Artikel/ArtikelBase.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/UniqueValue.h>
 
 //namespace ArtikelMisc { class ProzessListe; };
@@ -50,7 +50,7 @@ class Artikelpreis : public Preis
 	  mindestmenge(1) 
 	{}
 
-	friend FetchIStream &operator>>(FetchIStream &is,std::pair<int, float> &kg);  
+	friend Query::Row &operator>>(Query::Row &is,std::pair<int, float> &kg);  
 
 public:	
  typedef struct {
