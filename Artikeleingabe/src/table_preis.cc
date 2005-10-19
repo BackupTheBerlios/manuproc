@@ -1,4 +1,4 @@
-// $Id: table_preis.cc,v 1.2 2005/10/19 20:54:23 christof Exp $
+// $Id: table_preis.cc,v 1.3 2005/10/19 20:54:26 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -134,7 +134,8 @@ Einheit PrRowData::einheit=Einheit::null();
 void table_preis::Load()
 { ArtikelBase art=artikelbox->get_value();
   std::vector<cH_RowDataBase> datavec;
-  Query q("select kundennr,mindestmenge,preis,waehrung,preismenge "
+std::cerr << "I was here\n";
+  Query q("select kundennr,mindestmenge,preis,preismenge,waehrung "
       "from artikelpreise where artikelid=?");
   q << art;
   Query::Row r;
@@ -142,8 +143,7 @@ void table_preis::Load()
   { PreisListe::ID preisliste;
     Preis pr;
     int mindestmenge;
-    r >> preisliste >> mindestmenge;
-    r >> pr >> Query::check_eol();
+    r >> preisliste >> mindestmenge >> pr >> Query::check_eol();
     datavec.push_back(new PrRowData(preisliste,mindestmenge,pr));
   }
   preisstaffel->setDataVec(datavec);

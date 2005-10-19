@@ -1,4 +1,4 @@
-// $Id: Artikeleingabe.cc,v 1.34 2005/10/19 20:54:23 christof Exp $
+// $Id: Artikeleingabe.cc,v 1.35 2005/10/19 20:54:26 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -154,7 +154,6 @@ void Artikeleingabe::artikelbox_activate()
        mindbest_check->set_active(as.getCheckBest());
        mindbestand->set_sensitive(as.getCheckBest());
        mindbestand->set_value(as.getMindBest());
-       table_preis->Load();
     }
    } catch (SQLerror &e)   {mess->Show(e);} 
  set_Data_from_artikelliste();
@@ -166,6 +165,7 @@ void Artikeleingabe::artikelbox_activate()
  alias_warengruppe->set_extartbezid(artikelbox->getBezSchema()->Id());
  alias_warengruppe->set_value(artikelbox->getBezSchema()->Typ());
  fill_eingabebox(2);
+ table_preis->Load();
 
  top_notebook->grab_focus();
 
@@ -655,7 +655,7 @@ ArtikelBase Data_tree::Artikel2() const
 }
 
 void Artikeleingabe::on_notebook1_switch_page(GtkNotebookPage *p0, guint p1)
-{  artikelbox->set_sensitive(p1==1 || p1==2 || p1==4);
+{  artikelbox->set_sensitive(p1==1 || p1==2 || p1==5);
 }
 
 void Artikeleingabe::on_no_instanz_toggled()
