@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.22 2005/06/17 14:48:17 christof Exp $
+// $Id: Preis.h,v 1.23 2005/10/19 20:53:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,6 +19,7 @@
 
 #ifndef PREIS_HH
 #define PREIS_HH
+#include <ManuProCConfig.h>
 #include <Misc/fixedpoint.h>
 #include <iostream>
 #include <string>
@@ -127,5 +128,10 @@ public:
 std::ostream &operator<<(std::ostream &,const Preis &p);
 // template?
 const Preis operator*(fixedpoint<5> f, const Preis &p);
+
+#if defined(DEFAULT_DB) && defined(MANUPROC_WITH_DATABASE)
+class Query_row;
+Query_row &operator>>(Query_row &, Preis &);
+#endif
 
 #endif

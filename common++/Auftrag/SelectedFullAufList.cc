@@ -1,4 +1,4 @@
-// $Id: SelectedFullAufList.cc,v 1.4 2005/10/11 15:16:14 christof Exp $
+// $Id: SelectedFullAufList.cc,v 1.5 2005/10/19 20:53:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,19 +32,6 @@ Query::Row &operator>>(Query::Row &is, cH_PreisListe &v)
 {  int i;
    is >> i;
    v=cH_PreisListe(i);
-   return is;
-}
-
-Query::Row &operator>>(Query::Row &is, Preis &v)
-{  double p,pm;
-   int w;
-   int ip; // indicator
-   is >> Query::Row::WithIndicator(p,ip);
-   is >> Query::Row::MapNull(pm,1);
-   // do I really want this default?
-   is >> Query::Row::MapNull(w,Waehrung::default_id);
-   if (!ip) v=Preis(p,Waehrung::ID(w),pm);
-   else v=Preis();
    return is;
 }
 
