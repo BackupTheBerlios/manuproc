@@ -1,4 +1,4 @@
-// $Id: table_preis.cc,v 1.3 2005/10/19 20:54:26 christof Exp $
+// $Id: table_preis.cc,v 1.4 2005/10/19 20:54:28 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -81,10 +81,10 @@ public:
     { case SP_PRNUM: return cH_EntryValueIntString(preisliste);
       case SP_PRNAM: return cH_EntryValueIntString("?");
       case SP_STAFFEL: return cH_EntryValueIntString(mindestmenge);
-      case SP_PRICE: return cH_EntryValueFixed<>(pr.Wert());
+      case SP_PRICE: return cH_EntryValueFixed<2,double,long,false>(pr.Wert());
       case SP_CURRENCY: return cH_EntryValueIntString(pr.getWaehrung()->Kurzbezeichnung());
       case SP_PER: if (pr.BezugsMenge()==1) return cH_EntryValueIntString(einheit.Bezeichnung());
-        else return cH_EntryValueIntString(pr.BezugsMenge().String()+einheit.Bezeichnung());
+        else return cH_EntryValueIntString(pr.BezugsMenge().String(true,0,".",",")+einheit.Bezeichnung());
     }
     return cH_EntryValue();
   }
