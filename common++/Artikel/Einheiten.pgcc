@@ -1,4 +1,4 @@
-// $Id: Einheiten.pgcc,v 1.19 2005/10/12 08:32:55 christof Exp $
+// $Id: Einheiten.pgcc,v 1.20 2005/10/20 12:57:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -63,32 +63,21 @@ Einheit::Einheit(ID id) : einh(id)
 {  Einheit *cached=cache.lookup(id);
    if (cached) *this=*cached;
    else
-   {  exec sql begin declare section;
-      int eid=id;
-      char bez_anz[60],tex_anz[60],bez_men[60],tex_men[60];
-      exec sql end declare section;
-      *bez_anz=*tex_anz=*bez_men=*tex_men=0;
-      
-      exec sql select 
-      		coalesce(bez_anzahl,''),coalesce(tex_anzahl,bez_anzahl,''),
-	      	coalesce(bez_menge,''),coalesce(tex_menge,bez_menge,'')
-	into :bez_anz, :tex_anz, :bez_men, :tex_men
-      	from einheiten
-      	where id=:eid;
-      SQLerror::test(__FILELINE__, 100);
-      if (!sqlca.sqlcode) 
-      {  bez_anzahl=bez_anz;
-         tex_anzahl=tex_anz;
-         bez_menge=bez_men;
-         tex_menge=tex_men;
-      }
-
-      ExtraColumns at("einheiten","id");
-
-      at << id;
-      if(at.hasColumn("textid"))
-         Query("select textid from einheiten where id=?")
-         	<< id >> Query::Row::MapNull(textid,0);
+   { try
+     { ExtraColumns at("einheiten","id");
+       std::string what="bez_anzahl,tex_anzahl,bez_menge,tex_menge";
+       if (at.hasColumn("textid")) what+=",textid";
+       Query q("select "+what+" from einheiten where id=?");
+       q << id;
+       Query::Row r=q.Fetch();
+       r >> Query::Row::MapNull(bez_anzahl);
+       r >> Query::Row::MapNull(tex_anzahl,bez_anzahl);
+       r >> Query::Row::MapNull(bez_menge);
+       r >> Query::Row::MapNull(tex_menge,bez_menge);
+       if (at.hasColumn("textid")) 
+         r >> Query::Row::MapNull(textid);
+       r >> Query::check_eol();
+     } catch (SQLerror &e) {}
 
       cache.Register(id,*this);
    }
