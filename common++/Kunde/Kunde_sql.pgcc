@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.73 2005/10/20 12:57:17 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.74 2005/10/20 12:57:20 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -83,7 +83,9 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    q << _id;
    Query::Row r=q.Fetch();
    
-   int ZAHLUNGSART,LANDESID,WAEHRUNGID;
+   int ZAHLUNGSART,LANDESID,WAEHRUNGID,BRANR;
+   bool b; // needed for bitfields
+   long long ll;
    
    r >> adresse.firma 
      >> Query::Row::MapNull(adresse.name2);
@@ -96,33 +98,33 @@ Kunde::Kunde(ID _id) throw(SQLerror)
      >> Query::Row::MapNull(adresse.plz)
      >> Query::Row::MapNull(adresse.postfach)
      >> Query::Row::MapNull(adresse.postfachplz)
-     >> Query::Row::MapNull(adresse.ort)
-     >> Query::Row::MapNull(bankverb.konto)
-     >> Query::Row::MapNull(bankverb.blz)
+     >> Query::Row::MapNull(adresse.ort);
+   r >> Query::Row::MapNull(ll); bankverb.konto=ll;
+   r >> Query::Row::MapNull(bankverb.blz)
      >> Query::Row::MapNull(bankverb.bank)
      >> Query::Row::MapNull(bankverb.bankindex)
      >> Query::Row::MapNull(rngan,_id)
      >> Query::Row::MapNull(lfran,_id)
-     >> Query::Row::MapNull(adresse.branr,-1)
-     >> kundendaten.gebdatum
-     >> Query::Row::MapNull(IDnr)
-     >> Query::Row::MapNull(rng_an_postfach)
-     >> Query::Row::MapNull(ab_an_rngadresse)
-     >> Query::Row::MapNull(kundendaten.flaeche)
+     >> Query::Row::MapNull(BRANR,-1); adresse.branr=cH_Anrede(BRANR);
+   r >> kundendaten.gebdatum
+     >> Query::Row::MapNull(IDnr);
+   r >> Query::Row::MapNull(b); rng_an_postfach=b;
+   r >> Query::Row::MapNull(b); ab_an_rngadresse=b;
+   r >> Query::Row::MapNull(kundendaten.flaeche)
      >> Query::Row::MapNull(kundendaten.mitarbeiter)
      >> Query::Row::MapNull(kundendaten.kundenumsatz)
      >> Query::Row::MapNull(kundendaten.planumsatz)
      >> Query::Row::MapNull(kundendaten.umsatz)
      >> Query::Row::MapNull(kundendaten.rabatt)
-     >> Query::Row::MapNull(kundendaten.zeilenrabatt)
-     >> Query::Row::MapNull(ZAHLUNGSART,Zahlungsart::none_id)
+     >> Query::Row::MapNull(b); kundendaten.zeilenrabatt=b;
+   r >> Query::Row::MapNull(ZAHLUNGSART,Zahlungsart::none_id)
      >> Query::Row::MapNull(kundendaten.verein)
      >> Query::Row::MapNull(kundendaten.notiz)
      >> kundendaten.stand
      >> Query::Row::MapNull(LANDESID,LandesListe::none_id)
      >> Query::Row::MapNull(WAEHRUNGID,WaehrungID::EUR)
-     >> Query::Row::MapNull(entsorg)
-     >> Query::Row::MapNull(verkaeufer,-1)
+     >> Query::Row::MapNull(b); entsorg=b;
+   r >> Query::Row::MapNull(verkaeufer,-1)
      >> Query::Row::MapNull(bankverb.lieferantenkonto)
      >> Query::Row::MapNull(bankverb.gegenkonto);
    r >> Query::Row::MapNull(bankverb.debitorenkonto,rngan)
@@ -131,10 +133,11 @@ Kunde::Kunde(ID _id) throw(SQLerror)
      >> Query::Row::MapNull(kundendaten.anzahl_ausdruck_firmenpapier,1)
      >> Query::Row::MapNull(kundendaten.anzahl_ausdruck_weissespapier,1)
      >> Query::Row::MapNull(lieferung_frei_haus,true)
-     >> Query::Row::MapNull(isaktiv,true)
-     >> Query::Row::MapNull(preisautomatik,true)
-     >> Query::Row::MapNull(showean,true)
-     >> Query::Row::MapNull(mwst,true);
+     >> Query::Row::MapNull(b,true); isaktiv=b;
+   r >> Query::Row::MapNull(b,true); preisautomatik=b;
+   r >> Query::Row::MapNull(b,true); showean=b;
+   r >> Query::Row::MapNull(b,true); mwst=b;
+   r >> Query::check_eol();
 
    try{
    bankverb.zahlungsart=cH_Zahlungsart(ZAHLUNGSART);
