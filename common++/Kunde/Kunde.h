@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.74 2005/07/05 17:03:39 jacek Exp $
+// $Id: Kunde.h,v 1.75 2005/10/20 12:57:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -77,9 +77,10 @@ public:
     cH_Zahlungsart zahlungsart;
     cH_Lieferart lieferart;
     const std::string getBankverb() const { return  bank+": BLZ "+itos(blz)+", Kto.Nr. "+ulltos(konto);}
-    st_bankverb():bankindex(0),blz(0),konto(0),
-    lieferantenkonto(0),gegenkonto(0),debitorenkonto(0),zahlungsart(Zahlungsart::none_id),
-    lieferart(Lieferart::none_id)
+    st_bankverb() 
+    : bankindex(),blz(),konto(),lieferantenkonto(),gegenkonto(),
+      debitorenkonto(),zahlungsart(Zahlungsart::none_id),
+      lieferart(Lieferart::none_id)
     {}
    };
  typedef struct st_bankverb Bankverbindung;
@@ -110,8 +111,8 @@ public:
     int anzahl_ausdruck_firmenpapier;
     int anzahl_ausdruck_weissespapier;
     st_kddata()
-    	:flaeche(0),mitarbeiter(0),planumsatz(0),umsatz(0),kundenumsatz(0),
-    	 kalkulation(0),rabatt(0),zeilenrabatt(false),
+    	:flaeche(),mitarbeiter(),planumsatz(),umsatz(),kundenumsatz(),
+    	 kalkulation(),rabatt(),zeilenrabatt(),
     	 anzahl_ausdruck_firmenpapier(1),anzahl_ausdruck_weissespapier(1) {}
    };
  typedef struct st_kddata Kundendaten;

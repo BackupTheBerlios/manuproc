@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.72 2005/08/16 11:45:07 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.73 2005/10/20 12:57:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -52,139 +52,90 @@ const std::string Kunde::VerkName() const throw(SQLerror) {
  return v->getFullName(); 
 }
 
+static void ltrim(std::string &x)
+{ std::string::size_type nblank=x.find_first_not_of(" \t");
+  if (nblank==std::string::npos) x=std::string();
+  else if (nblank>0) x.erase(0,nblank);
+}
+
 Kunde::Kunde(ID _id) throw(SQLerror) 
-: ManuProcHandle<>(_id), KundenGruppennr(0),schema(ExtBezSchema::default_id),rngan(0),
-  rng_an_postfach(false),
-  ab_an_rngadresse(false),
-//lieferadresse(false),
-//rechnungsadresse(false),
-  entsorg(false),
-  mwst(true),
-  waehrung(WaehrungID::EUR),
+: ManuProcHandle<>(_id), KundenGruppennr(), schema(ExtBezSchema::default_id),
+  rngan(_id), lfran(_id), rng_an_postfach(), ab_an_rngadresse(), entsorg(), 
+  isaktiv(), preisautomatik(true), showean(true), mwst(true), 
+  betreuer(-1), waehrung(WaehrungID::EUR), prlist_valid(), 
   lieferung_frei_haus(true)
 { 
    // return ersetzen
    if(_id == Kunde::none_id) return;
-   exec sql begin declare section;
-   int ID=_id,BEZSCHEMA,BANKINDEX,RNG_AN,LFR_AN;
-   int BRANRID;
-   char SORTNAME[31], IDNR[21];
-   char NAME[61], STRASSE[36], HSNR[8], POSTFACH[21],ORT[41],BANKNAME[51],
-         PLZ[11],POSTFACHPLZ[11],KTONR[11],BLZ[11],POSTANWVOR[41],POSTANWNACH[41];
-   char *NAME2=0;
-   int LANDESID;
-   int ILLEGALLANDID;
-   int FLAECHE,MITARBEITER;
-   double KUNDENUMSATZ,PLANUMSATZ,UMSATZ, RABATT;
-   bool ZEILENRABATT;
-   int ZAHLUNGSART;
-   char VEREIN[31];
-/*   bool LIEFERADRESSE,RECHUNGSADRESSE; */
-   bool ENTSORGUNG,RNGANLFRA,ABANRNG,MWST;
-   char NOTIZ[2048];
-   char STAND[50];
-   int WAEHRUNGID;
-   int VERKNR;
-   int BETREUER;
-   int LIEFERANTENKONTO,GEGENKONTO,DEBITORENKONTO;
-   char UNSERE_KUNDENNR[128];
-   int ANZFIRMA,ANZWEISS;
-   bool FREIHAUS;
-   bool AKTIV;
-   bool PREISAUTO;
-   bool SHOWEAN;
-   char *GEBDATUM=0; int IGEBDATUM;
-   exec sql end declare section;
-   ILLEGALLANDID=LandesListe::none_id;
-  
-   Transaction tr;
- 
-   WAEHRUNGID = WaehrungID::EUR;
+   
+   static PreparedQuery pq("select firma,name2,sortname,extartbezid,strasse,postanwvor,"
+       "postanwnach,hsnr,plz,postfach,postfplz,ort,ktonr,b.blz,b.name,"
+       "b.bankindex,rechnung_an,lieferung_an,branr,gebdatum,"
+       "idnr,rng_an_postfach,ab_an_rngadresse,flaeche,mitarbeiter,"
+       "kundenumsatz,planumsatz,umsatz,rabatt,zeilenrabatt,"
+       "zahlungsart,verein,notiz,stand,landid,"
+       "waehrungid,entsorgung,verknr,lieferantenkonto,gegenkonto,"
+       "debitorenkonto,unsere_kundennr,betreuer,anz_firmenpapier,"
+       "anz_weissespapier,lieferung_frei_haus,aktiv,preisauto,"
+       "showean,mwst from kunden k left join banken b using(bankindex) "
+       "where kundennr=?");
+   Query q(pq);
+   q << _id;
+   Query::Row r=q.Fetch();
+   
+   int ZAHLUNGSART,LANDESID,WAEHRUNGID;
+   
+   r >> adresse.firma 
+     >> Query::Row::MapNull(adresse.name2);
+   r >> Query::Row::MapNull(adresse.sortname,adresse.firma)
+     >> Query::Row::MapNull(schema,ExtBezSchema::default_id)
+     >> Query::Row::MapNull(adresse.strasse)
+     >> Query::Row::MapNull(adresse.postanwvor)
+     >> Query::Row::MapNull(adresse.postanwnach)
+     >> Query::Row::MapNull(adresse.hsnr)
+     >> Query::Row::MapNull(adresse.plz)
+     >> Query::Row::MapNull(adresse.postfach)
+     >> Query::Row::MapNull(adresse.postfachplz)
+     >> Query::Row::MapNull(adresse.ort)
+     >> Query::Row::MapNull(bankverb.konto)
+     >> Query::Row::MapNull(bankverb.blz)
+     >> Query::Row::MapNull(bankverb.bank)
+     >> Query::Row::MapNull(bankverb.bankindex)
+     >> Query::Row::MapNull(rngan,_id)
+     >> Query::Row::MapNull(lfran,_id)
+     >> Query::Row::MapNull(adresse.branr,-1)
+     >> kundendaten.gebdatum
+     >> Query::Row::MapNull(IDnr)
+     >> Query::Row::MapNull(rng_an_postfach)
+     >> Query::Row::MapNull(ab_an_rngadresse)
+     >> Query::Row::MapNull(kundendaten.flaeche)
+     >> Query::Row::MapNull(kundendaten.mitarbeiter)
+     >> Query::Row::MapNull(kundendaten.kundenumsatz)
+     >> Query::Row::MapNull(kundendaten.planumsatz)
+     >> Query::Row::MapNull(kundendaten.umsatz)
+     >> Query::Row::MapNull(kundendaten.rabatt)
+     >> Query::Row::MapNull(kundendaten.zeilenrabatt)
+     >> Query::Row::MapNull(ZAHLUNGSART,Zahlungsart::none_id)
+     >> Query::Row::MapNull(kundendaten.verein)
+     >> Query::Row::MapNull(kundendaten.notiz)
+     >> kundendaten.stand
+     >> Query::Row::MapNull(LANDESID,LandesListe::none_id)
+     >> Query::Row::MapNull(WAEHRUNGID,WaehrungID::EUR)
+     >> Query::Row::MapNull(entsorg)
+     >> Query::Row::MapNull(verkaeufer,-1)
+     >> Query::Row::MapNull(bankverb.lieferantenkonto)
+     >> Query::Row::MapNull(bankverb.gegenkonto);
+   r >> Query::Row::MapNull(bankverb.debitorenkonto,rngan)
+     >> Query::Row::MapNull(adresse.unsere_kundennr)
+     >> Query::Row::MapNull(betreuer,-1)
+     >> Query::Row::MapNull(kundendaten.anzahl_ausdruck_firmenpapier,1)
+     >> Query::Row::MapNull(kundendaten.anzahl_ausdruck_weissespapier,1)
+     >> Query::Row::MapNull(lieferung_frei_haus,true)
+     >> Query::Row::MapNull(isaktiv,true)
+     >> Query::Row::MapNull(preisautomatik,true)
+     >> Query::Row::MapNull(showean,true)
+     >> Query::Row::MapNull(mwst,true);
 
-   exec sql select ltrim(firma),
-	coalesce(ltrim(name2),''),
-	coalesce(ltrim(sortname),ltrim(firma)),
-    coalesce(extartbezid,1),
-	 coalesce(strasse,''),
-    coalesce(postanwvor,''),coalesce(postanwnach,''),
-         coalesce(hsnr,''),coalesce(plz,''),coalesce(postfach,''),
-         coalesce(postfplz,''),coalesce(ort,''),coalesce(text(ktonr),''),
-         coalesce(text(b.blz),''), coalesce(b.name,''), coalesce(b.bankindex,0),
-         coalesce(rechnung_an,kundennr), 
-	 coalesce(lieferung_an,kundennr),
-	 coalesce(branr,-1),
-	 gebdatum,
-         coalesce(idnr,''),
-/*         coalesce(lieferadresse,false), coalesce(rechnungsadresse,false), */
-         coalesce(rng_an_postfach,false),
-	 coalesce(ab_an_rngadresse,false),
-         coalesce(flaeche,0),coalesce(mitarbeiter,0),
-   /* the 0.0s are to make typing more strict, which gives an error
-      once it is read into the wrong variable */
-         coalesce(kundenumsatz,0.0),
-         coalesce(planumsatz,0.0),coalesce(umsatz,0.0),
-         coalesce(rabatt,0.0),coalesce(zeilenrabatt,false)
-         ,coalesce(zahlungsart,0),
-         coalesce(verein,''), coalesce(notiz,''), 
-         coalesce(stand,now()),	coalesce(landid,:ILLEGALLANDID),
-	 coalesce(waehrungid,:WAEHRUNGID),
-	 coalesce(entsorgung,false),
-    coalesce(verknr,-1),coalesce(lieferantenkonto,0),
-    coalesce(gegenkonto,0),coalesce(debitorenkonto,rechnung_an),
-    coalesce(unsere_kundennr,''),
-	coalesce(betreuer,-1),coalesce(anz_firmenpapier,1),
-	coalesce(anz_weissespapier,1),coalesce(lieferung_frei_haus,'t'),
-	coalesce(aktiv,true), coalesce(preisauto,true),
-	coalesce(showean,false),
-	coalesce(mwst,true)
-   	into :NAME, :NAME2, :SORTNAME, :BEZSCHEMA, :STRASSE, :POSTANWVOR, :POSTANWNACH,
-           :HSNR, :PLZ, :POSTFACH,
-           :POSTFACHPLZ, :ORT, :KTONR, :BLZ, :BANKNAME, :BANKINDEX, :RNG_AN,
-	   :LFR_AN, :BRANRID, :GEBDATUM:IGEBDATUM,
-           :IDNR,
-/*           :LIEFERADRESSE,:RECHUNGSADRESSE, */
-	   :RNGANLFRA,:ABANRNG,
-           :FLAECHE,:MITARBEITER,:KUNDENUMSATZ,:PLANUMSATZ,:UMSATZ,
-	   :RABATT,:ZEILENRABATT,:ZAHLUNGSART, :VEREIN, 
-	   :NOTIZ,:STAND, :LANDESID, :WAEHRUNGID, :ENTSORGUNG, :VERKNR,
-      :LIEFERANTENKONTO,:GEGENKONTO,:DEBITORENKONTO,:UNSERE_KUNDENNR,:BETREUER,
-      :ANZFIRMA,:ANZWEISS,:FREIHAUS,:AKTIV,:PREISAUTO,:SHOWEAN,
-	:MWST
-   	from kunden k left join banken b using(bankindex)
-   	where kundennr= :ID;
-
-   SQLerror::test(__FILELINE__);
-
-
-   lieferung_frei_haus=FREIHAUS;
-   schema=BEZSCHEMA;
-   adresse.firma=NAME;
-   adresse.name2=NAME2;
-   adresse.branr=BRANRID;
-   SORTNAME[30]=0; // mit FetchIStream wäre das nicht passiert ...
-   adresse.sortname=SORTNAME;
-   adresse.strasse=STRASSE;
-   adresse.postanwvor=POSTANWVOR;
-   adresse.postanwnach=POSTANWNACH;
-   adresse.hsnr=HSNR;
-   adresse.plz=PLZ;
-   adresse.postfach=POSTFACH;
-   adresse.postfachplz=POSTFACHPLZ;
-   adresse.ort=ORT;
-   adresse.land = cH_LandesListe(LANDESID);
-   adresse.unsere_kundennr = UNSERE_KUNDENNR;
-   IDnr=IDNR;
-//   lieferadresse=LIEFERADRESSE;
-//   rechnungsadresse=RECHUNGSADRESSE;
-   rng_an_postfach=RNGANLFRA;
-   ab_an_rngadresse=ABANRNG;
-   bankverb.konto=strtoll(KTONR,NULL,10);
-   bankverb.blz=strtoul(BLZ,NULL,10);
-   bankverb.bank=BANKNAME;
-   bankverb.bankindex=BANKINDEX;
-   bankverb.lieferantenkonto=LIEFERANTENKONTO;
-   bankverb.gegenkonto=GEGENKONTO;
-   bankverb.debitorenkonto=DEBITORENKONTO;
    try{
    bankverb.zahlungsart=cH_Zahlungsart(ZAHLUNGSART);
    }catch(SQLerror &e) 
@@ -192,37 +143,12 @@ Kunde::Kunde(ID _id) throw(SQLerror)
     std::cerr << e<<"\tZahlungsart nicht gefunden\n";
     bankverb.zahlungsart=cH_Zahlungsart(Zahlungsart::none_id);
    }
-
-   rngan=RNG_AN;
-   lfran=LFR_AN;
-   
-   entsorg = ENTSORGUNG;
-
-   kundendaten.flaeche = FLAECHE;
-   kundendaten.mitarbeiter=MITARBEITER;
-   kundendaten.kundenumsatz=KUNDENUMSATZ;
-   kundendaten.planumsatz=PLANUMSATZ;
-   kundendaten.umsatz=UMSATZ;
-   kundendaten.rabatt=RABATT;
-   kundendaten.zeilenrabatt=ZEILENRABATT;
-//   kundendaten.einzugrabatt=EINZUGRABATT;
-//   kundendaten.skontosatz=SKONTOSATZ;
-   kundendaten.anzahl_ausdruck_firmenpapier=ANZFIRMA;
-   kundendaten.anzahl_ausdruck_weissespapier=ANZWEISS;
-   kundendaten.verein=VEREIN;
-//   kundendaten.bankeinzug=BANKEINZUG;
-   kundendaten.stand=STAND;
-   kundendaten.gebdatum=IGEBDATUM?ManuProC::Datum(GEBDATUM):ManuProC::Datum();
-   kundendaten.notiz=NOTIZ;
-   waehrung = cP_Waehrung(Waehrung::ID(WAEHRUNGID));
-
-   verkaeufer=VERKNR;
-   betreuer=BETREUER;
-   prlist_valid=false;
-   isaktiv=AKTIV;
-   preisautomatik=PREISAUTO;
-   showean=SHOWEAN;
-   mwst=MWST;
+  if (!kundendaten.stand) kundendaten.stand=ManuProC::Datum::today();
+  adresse.land = cH_LandesListe(LANDESID);
+  waehrung = cP_Waehrung(Waehrung::ID(WAEHRUNGID));
+  ltrim(adresse.firma);
+  ltrim(adresse.name2);
+  ltrim(adresse.sortname);
 }
 
 #ifdef MANUPROC_DYNAMICENUMS_CREATED
