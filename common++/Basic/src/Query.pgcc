@@ -1,4 +1,4 @@
-// $Id: Query.pgcc,v 1.15 2005/10/20 12:57:35 christof Exp $
+// $Id: Query.pgcc,v 1.16 2005/10/20 12:57:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -256,6 +256,7 @@ sqlca.sqlcode=0;
           PQresultErrorField(result, PG_DIAG_MESSAGE_PRIMARY),
           PQresultErrorField(result,PG_DIAG_MESSAGE_DETAIL));
       prepare->name=prepname;
+      prepare->connection=conn;
     }
     else if (prepare->types!=params.getTypes())
     { raise(ECPG_SQLSTATE_ECPG_INTERNAL_ERROR,ECPG_PGSQL,
