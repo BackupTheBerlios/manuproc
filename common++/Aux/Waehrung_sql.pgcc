@@ -1,4 +1,4 @@
-// $Id: Waehrung_sql.pgcc,v 1.16 2005/10/12 09:33:33 jacek Exp $
+// $Id: Waehrung_sql.pgcc,v 1.17 2005/10/20 12:57:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,24 +26,13 @@ Waehrung::Waehrung(WaehID id)  throw(SQLerror)
 : wid(id)
 {
  if(id==WaehrungID::None) return;
- exec sql begin declare section;
- int WID = id;
- char KURZ[10];
- char LANG[31];
- char TEX[81];
- double FAKTOR;
- exec sql end declare section;
- 
- exec sql select kurz, coalesce(lang,kurz), coalesce(tex,kurz), fkt
- 	into :KURZ, :LANG, :TEX, :FAKTOR
- 	from waehrung where wid= :WID;
- SQLerror::test(__FILELINE__":Waehrung: select from waehrung");
-
- wid=ID(WID);
- kurz = KURZ;
- lang = LANG;
- tex = TEX;
- faktor = FAKTOR;
+ Query q("select kurz,lang,tex,fkt from waehrung where wid=?");
+ q << id;
+ Query::Row r=q.Fetch();
+ r >> kurz;
+ r >> Query::Row::MapNull(lang,kurz)
+   >> Query::Row::MapNull(tex,kurz) 
+   >> faktor >> Query::check_eol();
 }
 
 cP_Waehrung::cache_t cP_Waehrung::cache;

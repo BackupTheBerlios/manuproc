@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema_sql.pgcc,v 1.24 2005/10/20 12:57:23 christof Exp $
+// $Id: ExtBezSchema_sql.pgcc,v 1.25 2005/10/20 12:57:48 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -118,4 +118,6 @@ size_t ExtBezSchema::psigsize(bool psig) const
   return s;
 }
 
+#if !defined(__GNUC__) || __GNUC__ > 2
 const ExtBezSchema::ID ExtBezSchema::default_id;
+#endif
