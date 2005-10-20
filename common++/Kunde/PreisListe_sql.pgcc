@@ -1,5 +1,5 @@
 
-// $Id: PreisListe_sql.pgcc,v 1.16 2005/03/15 16:21:48 jacek Exp $
+// $Id: PreisListe_sql.pgcc,v 1.17 2005/10/20 12:57:42 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,8 @@
 #include <Kunde/PreisListe.h>
 #include <Misc/Transaction.h>
 #include <Misc/Waehrung.h>
+#include <Misc/Query.h>
+
 exec sql include sqlca;
 
 PreisListe cH_PreisListe::default_object; 
@@ -44,41 +46,32 @@ PreisListe::PreisListe(ID _id) throw(SQLerror)
 : ManuProcHandle<>(_id), view_tabelle(DEF_VIEW_TABLE), pl_parent(none_id)
 {  
    if(_id == none_id) return;   
-   exec sql begin declare section;
-     int  ID=_id;
-     char *NAME=0;
-     int WAEHID;
-     float BRUTTOSATZ=0;
-     int IBRUTTOSATZ=-1;
-     char ART;
-     char *TABLENAMEGRP=0;
-     int ITABLENAMEGRP;
-     int PL_PARENT;
-     float FKT_P,ADD_P;
-   exec sql end declare section;
+   
+   int WAEHID;
+   int IBRUTTOSATZ;
+   char ART;
+   std::string TABLENAMEGRP;
+   int ITABLENAMEGRP;
+   
+   Query q("select notiz,waehrungid,bruttosatz,art,tablename_gruppe,"
+	"pl_parent,fkt_parent,add_parent "
+        "from ku_preisliste where prlsnr=?");
+   q << _id;
+   Query::Row r=q.Fetch();
+   r >> Query::Row::MapNull(name)
+     >> WAEHID
+     >> Query::Row::WithIndicator(rabatt,IBRUTTOSATZ)
+     >> Query::Row::MapNull(ART)
+     >> Query::Row::WithIndicator(TABLENAMEGRP,ITABLENAMEGRP)
+     >> Query::Row::MapNull(pl_parent,-1)
+     >> Query::Row::MapNull(fkt_parent)
+     >> Query::Row::MapNull(add_parent)
+     >> Query::check_eol();
 
-   exec sql select coalesce(notiz,''),waehrungid,
-	bruttosatz,coalesce(art,''), tablename_gruppe,
-	coalesce(pl_parent,-1),coalesce(fkt_parent,0),
-	coalesce(add_parent,0)
-	into :NAME,:WAEHID,:BRUTTOSATZ:IBRUTTOSATZ,:ART,
-		:TABLENAMEGRP:ITABLENAMEGRP,
-		:PL_PARENT,:FKT_P,:ADD_P
-      from ku_preisliste
-      where prlsnr = :ID;
-   SQLerror::test(__FILELINE__,100);
-
-   name=NAME;
    waehrung=cP_Waehrung((Waehrung::ID)WAEHID);
    rabatt_gesetzt=IBRUTTOSATZ!=-1;
-   rabatt=BRUTTOSATZ;
    art=(PlArt)ART;
-   view_tabelle+=ITABLENAMEGRP == 0 ? (std::string("_")+TABLENAMEGRP) : ("");
-   pl_parent=PL_PARENT;
-   fkt_parent=FKT_P;
-   add_parent=ADD_P;
-
-   ECPGfree_auto_mem();
+   view_tabelle+=ITABLENAMEGRP == 0 ? ("_"+TABLENAMEGRP) : ("");
 }
 
 /*
