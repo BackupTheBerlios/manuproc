@@ -1,4 +1,4 @@
-// $Id: Query.pgcc,v 1.14 2005/10/20 12:57:30 christof Exp $
+// $Id: Query.pgcc,v 1.15 2005/10/20 12:57:35 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -160,6 +160,7 @@ void Query::Execute() throw(SQLerror)
    if (debugging.count_queries)
    { if (!prepare) debugging.counts[query]++;
      else if (!prepare->ready()) debugging.counts[prepare->Command()]++;
+     else debugging.counts["("+prepare->Command()+")"]++;
    }
 #ifndef USE_PARAMETERS
    exec sql begin declare section;
