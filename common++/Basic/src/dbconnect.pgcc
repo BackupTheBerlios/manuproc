@@ -1,4 +1,4 @@
-// $Id: dbconnect.pgcc,v 1.21 2004/10/25 15:04:01 christof Exp $
+// $Id: dbconnect.pgcc,v 1.22 2005/10/20 12:57:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -70,6 +70,10 @@ void ManuProC::dbconnect(const Connection &c) throw(SQLerror)
       ECPGdebug(1,f);
    } 
    else if (!strcmp(opt,"-E"))
+   {  ECPGdebug(1,stderr);
+   }
+   else if (!strcmp(opt,"-C")) 
+   // also output ECPG activity when counting, because it is not counted
    {  ECPGdebug(1,stderr);
    }
    if(c.User().empty())
