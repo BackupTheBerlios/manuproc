@@ -1,4 +1,4 @@
-// $Id: Query.h,v 1.7 2005/10/14 14:54:02 christof Exp $
+// $Id: Query.h,v 1.8 2005/10/20 12:57:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Christof Petig
@@ -364,12 +364,13 @@ class PreparedQuery
 #ifdef MPC_POSTGRESQL
         std::string name;
         std::vector<Oid> types;
+        const PGconn *connection;
         
         friend class Query;
 #endif
 public:
-        PreparedQuery() {}
-        PreparedQuery(std::string const& cmd) : command(cmd) {}
+        PreparedQuery() : connection() {}
+        PreparedQuery(std::string const& cmd) : command(cmd), connection() {}
         std::string const& Command() const { return command; }
 #ifdef USE_PARAMETERS
         bool ready() const { return !name.empty(); }
