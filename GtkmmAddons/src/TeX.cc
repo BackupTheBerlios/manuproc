@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: TeX.cc,v 1.12 2005/09/14 08:17:11 christof Exp $
+// $Id: TeX.cc,v 1.13 2005/10/21 11:52:48 jacek Exp $
 
 #include <config.h>
 #include <TeX.h>
@@ -36,7 +36,7 @@ std::ostream &TeX::Header(std::ostream &os, HeaderFlags fl)
    }
 
    // now output it
-   os << "% created using $Id: TeX.cc,v 1.12 2005/09/14 08:17:11 christof Exp $\n";
+   os << "% created using $Id: TeX.cc,v 1.13 2005/10/21 11:52:48 jacek Exp $\n";
    os << "\\documentclass["<< fl.ptsize << "pt";
    if (fl.a4) os << ",a4paper";
    if (fl.twocolumn) os << ",twocolumn";
@@ -120,6 +120,7 @@ std::string TeX::string2TeX(const std::string &s, const StringFlags &fl) throw()
 	 case '[':
 	 case ']':
 	 case '#':
+	 case '$':
 	 case '_': in_line=true;
 	    ret+='\\'; ret+=s[i];
 	    break;
