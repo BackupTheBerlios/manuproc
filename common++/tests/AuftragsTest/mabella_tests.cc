@@ -169,10 +169,10 @@ static bool MinMenRepair()
    // FertigWarenLager fwl(fw,FertigWarenLager::default_lagerid);
    // fwl.Einlagern(ProductionContext());
 
-   Check::NeedsRepair();
-   ArtikelStamm(make_value(ArtikelBase(ARTIKEL_TRIO))).setMindBest(5);
+//   ArtikelStamm(make_value(ArtikelBase(ARTIKEL_TRIO))).setMindBest(5);
    vergleichen(Check::Menge,"MinMRep0","Ausgangspunkt","a");
 
+   Check::NeedsRepair();
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
    AufEintragBase AEB2=auftrag.push_back(4,DATUM,ARTIKEL_TRIO,OPEN,true);
    vergleichen(Check::Menge,"MinMRep1","Bestellung","b");   
@@ -186,6 +186,27 @@ static bool MinMenRepair()
 }
 
 static TestReihe MinMenRepair_(&MinMenRepair,"Mindestmenge Reparatur (bugcheck)","minMenRep");
+
+static bool MinMenRepair2()
+{  vergleichen(Check::Menge,"MinMRep0","Ausgangspunkt","a");
+
+//   Check::NeedsRepair();
+   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
+   AufEintragBase AEB2=auftrag.push_back(10,DATUM,ARTIKEL_TRIO,OPEN,true);
+   vergleichen(Check::Menge,"MinMR2-1","Bestellung","b");   
+
+   (Query("insert into fw_lager_buchung (artikelid,menge,datum,aktion,pid) "
+         "values (?,5,now(),'M',?)")
+      << ARTIKEL_TRIO << getuid()).Check100();
+   Query("update auftragentry set bestellt=bestellt+5 "
+         "where (instanz,auftragid,artikelid)=(?,?,?)")
+     << 2 << 2 << ARTIKEL_TRIO;
+   vergleichen(Check::Menge,"MinMR2-2","Inkonsistenz","i");   
+   
+   return true;
+}
+
+static TestReihe MinMenRepair2_(&MinMenRepair2,"Mindestmenge Reparatur 2 (bugcheck)","minMenR2");
 
 
 #endif
