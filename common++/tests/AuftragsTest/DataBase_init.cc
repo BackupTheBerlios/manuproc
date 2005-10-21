@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.24 2004/06/11 13:49:33 jacek Exp $
+// $Id: DataBase_init.cc,v 1.25 2005/10/21 07:05:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -47,9 +47,9 @@ DataBase_init::DataBase_init()
 
 #ifdef MABELLA_TEST
 void DataBase_init::FertigWarenLager_initialisieren()
-{
-   Lager L(FERTIGWLAGER); 
-//   L.rein_ins_lager(ARTIKEL_TRIO,5,false); 
+{  Lager L(FERTIGWLAGER); 
+   // ist notwendig um von Anfang an einen konsistenten Zustand zu haben
+   L.rein_ins_lager(ARTIKEL_TRIO,5,false); 
 }
 #endif
 

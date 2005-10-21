@@ -138,9 +138,9 @@ static TestReihe MindestMenge_(&MindestMenge,"Mindestmenge","minMen");
 
 
 static bool MindestMenge_Lief()
-{  FertigWaren fw(ARTIKEL_TRIO,FertigWaren::eManuell,5);
+{
+   FertigWaren fw(ARTIKEL_TRIO,FertigWaren::eManuell,0);
    FertigWarenLager fwl(fw,FertigWarenLager::default_lagerid);
-   fwl.Einlagern(ProductionContext());
    
    ArtikelStamm(make_value(ArtikelBase(ARTIKEL_TRIO))).setMindBest(5);
    vergleichen(Check::Menge,"minmen_Ausgangspunkt","Ausgangspunkt","a");
