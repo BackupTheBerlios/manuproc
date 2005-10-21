@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.28 2005/10/13 22:53:21 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.29 2005/10/21 07:06:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -345,7 +345,7 @@ Query &Query::operator>>(Query_Row &s)
 
 Query_Row &Query::FetchOne()
 {  ThrowOnBad(__FUNCTION__);
-   Check100();
+   if (portal_name.empty()) Check100();
    Fetch(embedded_iterator);
    Query_Row dummy;
    Fetch(dummy);

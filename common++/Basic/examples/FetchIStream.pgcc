@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.33 2005/10/11 13:56:00 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.34 2005/10/21 07:06:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -121,6 +121,21 @@ int main()
    query2 << "sql%";
    query2.FetchArray(v);
    std::cout << v.size() << '\n';
+  }
+  std::cerr << "--- advanced: declare cursor with params\n";
+  { // by foot
+   Transaction tr;
+   Query q("declare mycurs cursor for select relname from pg_class where relname like ?");
+   q << "pg_%";
+   Query f("fetch from mycurs");
+   std::cout << f.FetchOne<std::string>() << '\n';
+   Query("close mycurs");
+  }
+  { // by API
+   Transaction tr;
+   Query q("mycurs","select relname from pg_class where relname like ? limit 1");
+   q << "pg_%";
+   std::cout << q.FetchOne<std::string>() << '\n';
   }
    
    ManuProC::dbdisconnect();
