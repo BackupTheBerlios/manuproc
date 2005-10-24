@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.27 2005/10/24 17:23:45 christof Exp $
+// $Id: fixedpoint.h,v 1.28 2005/10/24 17:24:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -91,9 +91,9 @@ private:
 	typedef typename ctime_assert<(decimals>=0)>::_true failed;
 public:
 	fixedpoint() : scaled() {}
-	fixedpoint(fixedpoint_dyn const& val) : scaled()
-	{ if (vd.Scale()==Scale()) scaled=vd.Scaled();
-	  else *this=vd.as_float();
+	fixedpoint(fixedpoint_dyn<Ftype,Itype> const& val) : scaled()
+	{ if (val.Scale()==Scale()) scaled=val.Scaled();
+	  else *this=val.as_float();
 	}
 	// via dyn
 	fixedpoint(const std::string &val,const char *TausenderTrennzeichen="",const char *Komma=".")
