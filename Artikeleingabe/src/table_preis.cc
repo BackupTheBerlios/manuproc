@@ -1,4 +1,4 @@
-// $Id: table_preis.cc,v 1.5 2005/10/19 20:54:33 christof Exp $
+// $Id: table_preis.cc,v 1.6 2005/10/24 11:40:05 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -148,6 +148,6 @@ void table_preis::Load()
   preisstaffel->setDataVec(datavec);
   preisstaffel->set_remember("artikeleingabe","preisstaffel");
   PrRowData::einheit=Einheit(art);
-  einheit->set_text(PrRowData::einheit->Bezeichnung());
-  einheit2->set_text(PrRowData::einheit->Bezeichnung());
+  einheit->set_text(PrRowData::einheit.Bezeichnung());
+  einheit2->set_text(PrRowData::einheit.Bezeichnung());
 }

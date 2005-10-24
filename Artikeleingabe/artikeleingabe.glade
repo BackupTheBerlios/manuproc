@@ -1621,7 +1621,7 @@ Aufträgen anzeigen</property>
 			<widget class="GtkImage" id="image_preis_ok">
 			  <property agent="glademm" name="cxx_visibility">protected</property>
 			  <property name="visible">True</property>
-			  <property name="stock">gtk-convert</property>
+			  <property name="stock">gtk-add</property>
 			  <property name="icon_size">4</property>
 			  <property name="xalign">0</property>
 			  <property name="yalign">0.5</property>
