@@ -1,4 +1,4 @@
-// $Id: table_preis.cc,v 1.7 2005/10/24 11:40:15 christof Exp $
+// $Id: table_preis.cc,v 1.8 2005/10/24 11:40:24 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -121,6 +121,7 @@ void table_preis::preis_uebernehmen()
 	Preis(preis->get_value(),waehrung->get_value(),
 	    preismenge->get_value_as_int()),
 	mindestmenge->get_value_as_int());
+   Load();
  } catch (SQLerror &e)
  {  std::cerr << e <<'\n';
  }
