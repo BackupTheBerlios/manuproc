@@ -1,6 +1,7 @@
-// $Id: fixedpoint.h,v 1.28 2005/10/24 17:24:00 christof Exp $
+// $Id: fixedpoint.h,v 1.29 2005/10/24 17:24:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
+ *   written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -63,8 +64,8 @@ class fixedpoint_dyn
 { Itype scaled;
   size_t scale;
 public:
-  fixedpoint_dyn(Itype sc, size_t s)
-    : scaled(sc), scale(s) {}
+  fixedpoint_dyn() : scaled(), scale() {}
+  fixedpoint_dyn(Itype sc, size_t s) : scaled(sc), scale(s) {}
   fixedpoint_dyn(std::string const &s,const char *TausenderTrennzeichen="",const char *Komma=".");
   std::string String(bool _short=false, unsigned int Ziellaenge=0,
 		const char *TausenderTrennzeichen="",const char *Komma=".",
@@ -272,19 +273,11 @@ Query::Row &operator>>(Query::Row &is, fixedpoint_dyn<Ftype,Itype> &v);
 
 template <int decimals,class Ftype,class Itype>
 Query::Row &operator>>(Query::Row &is, fixedpoint<decimals,Ftype,Itype> &v)
-#if 0 // not ready yet
 {  fixedpoint_dyn<Itype,Ftype> fd;
    is >> fd;
-   v=fd;
+   v=fixedpoint<decimals,Ftype,Itype>(fd);
    return is;
 }
-#else
-{  Ftype fd;
-   is >> fd;
-   v=fd;
-   return is;
-}
-#endif
 
 template <int decimals,class Ftype,class Itype>
 ArgumentList &operator<<(ArgumentList &q, const fixedpoint<decimals,Ftype,Itype> &v)

@@ -1,4 +1,4 @@
-// $Id: fixedpoint.cc,v 1.12 2002/10/31 10:23:30 christof Exp $
+// $Id: fixedpoint.cc,v 1.13 2005/10/24 17:24:42 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -32,14 +32,14 @@ int main()
    std::cout << "a+b=" << a+b << '\n';
    
    // Formatiere
-   std::cout << Formatiere(12345) << "\n";
-   std::cout << Formatiere(12345,4) << "\n";
-   std::cout << Formatiere(12345,2) << "\n";
+   std::cout << Formatiere(12345UL) << "\n";
+   std::cout << Formatiere(12345UL,4) << "\n";
+   std::cout << Formatiere(12345UL,2) << "\n";
    std::cout << Formatiere(12345678901234ULL,6) << "\n";
    std::cout << Formatiere(fixedpoint<2>(12.567)) << '\n';
    std::cout << FormatiereTeX_short(fixedpoint<5>(12.4)) << '\n';
    // compile time assertion
-   std::cout << Formatiere(12.45) << '\n';
+//   std::cout << Formatiere(12.45) << '\n';
    
    std::cout << (fixedpoint<2>(1)==fixedpoint<2>(1.00)?"1==1.00":"1!=1.00") << '\n';
    
@@ -62,5 +62,8 @@ int main()
    	<< Formatiere_short(fixedpoint<2>(-1.20)) << ' '
    	<< FormatiereTeX(fixedpoint<2>(-12345.60)) << ' '
    	<< FormatiereTeX_short(fixedpoint<2>(-12345.60)) << '\n';
+   	
+   std::cout << fixedpoint<3>("123.567") << ' ' << fixedpoint<3>("123.567",".",",")
+       << ' ' << fixedpoint<3>("123 456 78<>9"," ","<>") << '\n';
    return 0;
 }

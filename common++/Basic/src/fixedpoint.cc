@@ -19,6 +19,7 @@
 
 #include "fixedpoint.h"
 #include <Misc/Ausgabe_neu.h>
+#include <math.h>
 
 #if defined(__GNUC__) && __GNUC__ >=4
 # define TEMPLATEltgt template<>
@@ -45,13 +46,37 @@ std::string fixedpoint_dyn<F,I>::String(bool _short, unsigned int Ziellaenge, \
 FP_STR(double,long)
 FP_STR(double,long long)
 
-#if 0
-template <class Ftype,class Itype>
-Query::Row &operator>>(Query::Row &is, fixedpoint_dyn<Ftype,Itype> &v);
-// string is better?
-{  Ftype d;
-   is >> d;
-   v=d;
+TEMPLATEltgt double fixedpoint_dyn<double,long>::as_float() const
+{ return scaled/pow(10,Scale());
+}
+
+// template <class Ftype,class Itype>
+TEMPLATEltgt Query::Row &operator>>(Query::Row &is, fixedpoint_dyn<double,long> &v)
+{  std::string s;
+   is >> s;
+   v=s;
    return is;
 }
-#endif
+
+TEMPLATEltgt
+fixedpoint_dyn<double,long>::fixedpoint_dyn(std::string const &s,const char *TausenderTrennzeichen,const char *Komma)
+ : scaled(), scale()
+{ bool komma=false;
+//  assert(!TausenderTrennzeichen || strlen(TausenderTrennzeichen)<=1);
+//  assert(!Komma || strlen(Komma)<=1);
+  for (std::string::const_iterator i=s.begin();i!=s.end();++i)
+  { if (isspace((unsigned char)(*i))) continue;
+    if (TausenderTrennzeichen && *TausenderTrennzeichen && s.substr(i-s.begin(),strlen(TausenderTrennzeichen))==TausenderTrennzeichen)
+    { i+=strlen(TausenderTrennzeichen)-1;
+      continue;
+    }
+    if (Komma && *Komma && s.substr(i-s.begin(),strlen(Komma))==Komma)
+    { i+=strlen(Komma)-1;
+      komma=true;
+      continue;
+    }
+    assert(isdigit((unsigned char)(*i)));
+    scaled=scaled*10+(*i-'0');
+    if (komma) scale++;
+  }
+}
