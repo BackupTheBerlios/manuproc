@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.29 2005/10/24 17:24:44 christof Exp $
+// $Id: fixedpoint.h,v 1.30 2005/10/24 17:24:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *   written by Christof Petig
@@ -273,7 +273,7 @@ Query::Row &operator>>(Query::Row &is, fixedpoint_dyn<Ftype,Itype> &v);
 
 template <int decimals,class Ftype,class Itype>
 Query::Row &operator>>(Query::Row &is, fixedpoint<decimals,Ftype,Itype> &v)
-{  fixedpoint_dyn<Itype,Ftype> fd;
+{  fixedpoint_dyn<Ftype,Itype> fd;
    is >> fd;
    v=fixedpoint<decimals,Ftype,Itype>(fd);
    return is;
