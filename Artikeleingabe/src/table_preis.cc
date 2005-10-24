@@ -1,4 +1,4 @@
-// $Id: table_preis.cc,v 1.6 2005/10/24 11:40:05 christof Exp $
+// $Id: table_preis.cc,v 1.7 2005/10/24 11:40:15 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -28,39 +28,40 @@
 
 void table_preis::andere_Liste()
 { // Laden und Staffelung anzeigen 
-#if 0
-    preis->set_value(0.0);
-    waehrung->set_value(Waehrung::default_id);
-    preismenge->set_value(1.0);
-    einheit->set_text("???");
-   Einheit e(artikel->get_value());
-   einheit->set_text((string)e);
-   // bestellmenge
-   Artikelpreis ap(cH_Kunde(kunde->get_value()),artikel->get_value());
-std::cout << ap << '\n';
+  preis->set_value(0.0);
+  waehrung->set_value(Waehrung::default_id);
+  preismenge->set_value(1.0);
+  mindestmenge->set_value(0);
+  try {
+    Artikelpreis ap(cH_PreisListe(preisliste->get_value()),artikelbox->get_value());
     preis->set_value(ap.Wert().as_float());
     waehrung->set_value(ap.getWaehrung());
     preismenge->set_value(ap.PreisMenge().as_float());
-#endif
+    mindestmenge->set_value(ap.MindMenge());
+  } catch (...) {}
   preis->select_region(0,-1);
   preis->grab_focus();
 }
 
 void table_preis::preismenge_activate()
-{ preis_uebernehmen();
+{ // preis_uebernehmen();
 // aufraeumen();
+  mindestmenge->select_region(0,-1);
+  mindestmenge->grab_focus();
 }
 
 void table_preis::mindestmenge_activate()
-{ 
+{ preis_uebernehmen();
 }
 
 void table_preis::waehrung_deactivate()
-{  preis_uebernehmen();
+{//  preis_uebernehmen();
+   preismenge->select_region(0,preismenge->get_text_length());
+   preismenge->grab_focus();
 }
 
 void table_preis::activate_preis()
-{  preis_uebernehmen();
+{//  preis_uebernehmen();
    preismenge->select_region(0,preismenge->get_text_length());
    preismenge->grab_focus();
 }
@@ -115,11 +116,11 @@ void table_preis::preis_uebernehmen()
 {try {   
    preis->update();
    preismenge->update();
-#if 0   
-   Artikelpreis::insert_or_change(cH_Kunde(kunde->get_value())->Preislisten().back().second,
-	artikel->get_value(),
-	Preis(preis->get_value_as_float(),waehrung->get_value(),preismenge->get_value_as_int()));
-#endif	
+   mindestmenge->update();
+   Artikelpreis::create_single(preisliste->get_value(),artikelbox->get_value(),
+	Preis(preis->get_value(),waehrung->get_value(),
+	    preismenge->get_value_as_int()),
+	mindestmenge->get_value_as_int());
  } catch (SQLerror &e)
  {  std::cerr << e <<'\n';
  }
