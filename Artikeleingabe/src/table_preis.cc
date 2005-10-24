@@ -1,4 +1,4 @@
-// $Id: table_preis.cc,v 1.9 2005/10/24 11:40:49 christof Exp $
+// $Id: table_preis.cc,v 1.10 2005/10/24 14:33:37 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -25,6 +25,7 @@
 #include <Aux/string0.h>
 #include <Misc/FetchIStream.h>
 #include <Misc/EntryValueFixed.h>
+#include <Misc/create_parse.h>
 
 void table_preis::andere_Liste()
 { // Laden und Staffelung anzeigen 
@@ -69,10 +70,11 @@ void table_preis::activate_preis()
 enum Spalten
 { SP_PRNUM, SP_PRNAM, SP_STAFFEL, SP_PRICE, SP_CURRENCY, SP_PER };
 
-class PrRowData : public RowDataBase
+struct PrRowData : public RowDataBase
 { PreisListe::ID preisliste;
   Preis pr;
   int mindestmenge;
+
 public:
   static Einheit einheit;
   PrRowData(PreisListe::ID i, int mm, Preis p) : preisliste(i), pr(p), mindestmenge(mm)
@@ -89,6 +91,7 @@ public:
     }
     return cH_EntryValue();
   }
+  
 };
 
 table_preis::table_preis(GlademmData *gmm_data)
@@ -110,6 +113,39 @@ table_preis::table_preis(GlademmData *gmm_data)
   preisstaffel->getModel().set_editable(SP_STAFFEL);
   preisstaffel->getModel().set_editable(SP_CURRENCY);
   preisstaffel->getModel().set_editable(SP_PER);
+  preisstaffel->getModel().signal_value_changed()
+      .connect(sigc::mem_fun(*this,&table_preis::edit));
+}
+
+bool table_preis::edit(cH_RowDataBase row,unsigned col,std::string const& val)
+{ try
+  { // ManuProC::parse<int>(val)
+    Handle<const PrRowData> prd=row.cast_dynamic<const PrRowData>();
+    switch (Spalten(col))
+    { case SP_STAFFEL: // alten Preis löschen
+        // neuen Preis anlegen
+        break;
+      case SP_PER:
+        { std::string::size_type bez_size=PrRowData::einheit.Bezeichnung().size();
+          std::string val2=val;
+          if (val2.size()>=bez_size 
+            && val2.substr(val2.size()-bez_size-1,bez_size)==PrRowData::einheit.Bezeichnung())
+            val2.erase(val2.size()-bez_size-1,bez_size);
+          int new_base=0;
+          if (!val2.empty()) new_base=ManuProC::parse<int>(val2);
+          Preis new_preis=Preis(prd->pr.Wert(),prd->pr.getWaehrung(),new_base);
+          if (new_preis!=prd->pr)
+          { Artikelpreis(cH_PreisListe(prd->preisliste),artikelbox->get_value(),
+                    prd->mindestmenge)
+              .changePreis(new_preis,prd->mindestmenge);
+            const_cast<Preis&>(prd->pr)=new_preis;
+          }
+        }
+        return true;
+    }
+    // return true;
+  } catch (...) {}
+  return false;
 }
 
 void table_preis::preis_uebernehmen()
