@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.cc,v 1.24 2005/08/25 07:48:40 christof Exp $ */
+/* $Id: Ausgabe_neu.cc,v 1.25 2005/10/24 17:23:45 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,38 +20,6 @@
 #include "Ausgabe_neu.h"
 #include <iostream>
 #include <cassert>
-
-#if defined(__GNUC__) && __GNUC__ >=4
-# define TEMPLATEltgt template<>
-#else
-# define TEMPLATEltgt 
-#endif
-
-#define FP_STR(D,F,I) TEMPLATEltgt \
-std::string fixedpoint<D,F,I>::String(bool _short, unsigned int Ziellaenge, \
-		const char *TausenderTrennzeichen,const char *Komma,\
-		char fuehrendesZeichen) const\
-{  const char *sign="";\
-   unsigned I val=Scaled();\
-   if (Scaled()<0) \
-   {  sign="-"; \
-      val=-Scaled(); \
-      if (Ziellaenge) --Ziellaenge;\
-   }\
-   unsigned scale=Scale();\
-   if (_short) while (scale>0 && !(val%10)) { val/=10; --scale; }\
-   return sign+Formatiere(val,scale,Ziellaenge,TausenderTrennzeichen,Komma,' ');\
-}
-
-FP_STR(0,double,long)
-FP_STR(1,double,long)
-FP_STR(2,double,long)
-FP_STR(2,double,long long)
-FP_STR(3,double,long)
-FP_STR(4,double,long)
-FP_STR(5,double,long)
-
-
 
 std::ostream &Formatiere(std::ostream &os,unsigned long Zahl, 
 		unsigned int Nachkommastellen,

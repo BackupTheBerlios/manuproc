@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.26 2005/10/12 08:59:39 christof Exp $
+// $Id: fixedpoint.h,v 1.27 2005/10/24 17:23:45 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -57,6 +57,23 @@ template <>
 static inline int zehnhochplusI<0>()
 { return 1; }
 
+// intermediate class which is easier to format/parse (less instantiations)
+template <class Ftype=double, class Itype=long>
+class fixedpoint_dyn
+{ Itype scaled;
+  size_t scale;
+public:
+  fixedpoint_dyn(Itype sc, size_t s)
+    : scaled(sc), scale(s) {}
+  fixedpoint_dyn(std::string const &s,const char *TausenderTrennzeichen="",const char *Komma=".");
+  std::string String(bool _short=false, unsigned int Ziellaenge=0,
+		const char *TausenderTrennzeichen="",const char *Komma=".",
+		char fuehrendesZeichen=' ') const;
+  size_t Scale() const { return scale; }
+  Itype Scaled() const { return scaled; }
+  Ftype	as_float() const;
+};
+
 template <int decimals=2,class Ftype=double,class Itype=long>
 class fixedpoint
 {
@@ -73,10 +90,15 @@ private:
 	const static int _decimals=decimals;
 	typedef typename ctime_assert<(decimals>=0)>::_true failed;
 public:
-	fixedpoint() : scaled(0) {}
-	fixedpoint(const std::string &val)
-	{  *this=strtod(val.c_str(),0);
+	fixedpoint() : scaled() {}
+	fixedpoint(fixedpoint_dyn const& val) : scaled()
+	{ if (vd.Scale()==Scale()) scaled=vd.Scaled();
+	  else *this=vd.as_float();
 	}
+	// via dyn
+	fixedpoint(const std::string &val,const char *TausenderTrennzeichen="",const char *Komma=".")
+	  : scaled(fixedpoint(fixedpoint_dyn<Ftype,Itype>(val,TausenderTrennzeichen,Komma)).scaled)
+	{ }
 	fixedpoint(Ftype d) { *this=d; }
 	fixedpoint(ScaledValue val) { scaled=val.wert; }
 	
@@ -84,37 +106,6 @@ public:
 	{  scaled=Itype(d*zehnhochplus<decimals>()+(d>0?.5:-.5));
    	   return *this;
 	}
-#if 0 // sadly explicit does not work with operators
-	explicit operator Ftype() const
-	{  return as_float();
-	}
-	explicit operator Itype() const
-	{  return as_int();
-	}
-#endif
-#if 0 // stop this if you want to debug rounding errors
-	operator Ftype() const
-	{  return as_float();
-	}
-	bool operator>(int i) const
-	{  return operator>(self_t(i));
-	}
-	bool operator<(int i) const
-	{  return operator<(self_t(i));
-	}
-	bool operator>=(int i) const
-	{  return operator>=(self_t(i));
-	}
-	bool operator<=(int i) const
-	{  return operator<=(self_t(i));
-	}
-	bool operator!=(int i) const
-	{  return operator!=(self_t(i));
-	}
-	bool operator==(int i) const
-	{  return operator==(self_t(i));
-	}
-#endif
 	Ftype as_float() const
 	{  return scaled*zehnhochminus<decimals>();
 	}
@@ -179,9 +170,15 @@ public:
 	{  return scaled>=b.scaled;
 	}
 	
+	operator fixedpoint_dyn<Ftype,Itype>() const
+	{ return fixedpoint_dyn<Ftype,Itype>(scaled,decimals);
+        }
 	std::string String(bool _short=false, unsigned int Ziellaenge=0,
 		const char *TausenderTrennzeichen="",const char *Komma=".",
-		char fuehrendesZeichen=' ') const;
+		char fuehrendesZeichen=' ') const
+        { return fixedpoint_dyn<Ftype,Itype>(*this)
+              .String(_short,Ziellaenge,TausenderTrennzeichen,Komma,fuehrendesZeichen);
+        }
 	Itype Scaled() const { return scaled; }
 	size_t Scale() const { return decimals; }
 	
@@ -270,13 +267,24 @@ static inline Query::Row &operator>>(Query::Row &is, fixedpoint<0> &v)
    return is;
 }
 
+template <class Ftype,class Itype>
+Query::Row &operator>>(Query::Row &is, fixedpoint_dyn<Ftype,Itype> &v);
+
 template <int decimals,class Ftype,class Itype>
 Query::Row &operator>>(Query::Row &is, fixedpoint<decimals,Ftype,Itype> &v)
-{  Ftype d;
-   is >> d;
-   v=d;
+#if 0 // not ready yet
+{  fixedpoint_dyn<Itype,Ftype> fd;
+   is >> fd;
+   v=fd;
    return is;
 }
+#else
+{  Ftype fd;
+   is >> fd;
+   v=fd;
+   return is;
+}
+#endif
 
 template <int decimals,class Ftype,class Itype>
 ArgumentList &operator<<(ArgumentList &q, const fixedpoint<decimals,Ftype,Itype> &v)
