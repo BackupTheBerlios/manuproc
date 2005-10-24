@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.26 2005/10/19 20:53:53 christof Exp $
+// $Id: Artikelpreis.h,v 1.27 2005/10/24 11:39:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG
  *		 written by Christof Petig
@@ -85,9 +85,9 @@ public:
    static void remove(const cH_PreisListe liste,const ArtikelBase &a,
    		std::vector<std::string> del_all_komp=std::vector<std::string>(),
    		int mindmenge=0, bool from_all_lists=false) throw(SQLerror);
-   // basic routine (used by petig), change exactly one price
+   // basic routine, change/create exactly one price
    static void insert_or_change(PreisListe::ID liste, const ArtikelBase &a, 
-               const Preis &p) throw(SQLerror);
+               const Preis &p, int mindestmenge) throw(SQLerror);
 };
  
 #endif
