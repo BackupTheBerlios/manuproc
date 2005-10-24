@@ -27,6 +27,7 @@
 #include <Misc/Trace.h>
 #include <Misc/dbcapability.h>
 #include <Misc/Event.h>
+#include "noUTF8.h"
 
 MyMessage *meldung;
 auftrag_main *auftragmain;
@@ -39,11 +40,9 @@ void RC_close(void);
 char **env;
 
 int main(int argc, char **argv, char **envp)
-{  
- Conn = new ManuProC::Connection();
+{ noUTF8();
+  Conn = new ManuProC::Connection();
  int i;
-
-
 
  env=envp;
 
