@@ -1,4 +1,4 @@
-// $Id: table_preis.cc,v 1.8 2005/10/24 11:40:24 christof Exp $
+// $Id: table_preis.cc,v 1.9 2005/10/24 11:40:49 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -80,7 +80,7 @@ public:
   virtual const cH_EntryValue Value(guint _seqnr,gpointer gp) const
   { switch((Spalten)_seqnr)
     { case SP_PRNUM: return cH_EntryValueIntString(preisliste);
-      case SP_PRNAM: return cH_EntryValueIntString(PreisListe(preisliste).Name());
+      case SP_PRNAM: return cH_EntryValueIntString(cH_PreisListe(preisliste)->Name());
       case SP_STAFFEL: return cH_EntryValueIntString(mindestmenge);
       case SP_PRICE: return cH_EntryValueFixed<2,double,long,false>(pr.Wert());
       case SP_CURRENCY: return cH_EntryValueIntString(pr.getWaehrung()->Kurzbezeichnung());
