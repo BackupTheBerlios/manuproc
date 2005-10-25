@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.58 2005/10/19 10:41:58 christof Exp $
+// $Id: get_data.cc,v 1.59 2005/10/25 12:13:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -50,7 +50,6 @@ graph_data_node::graph_data_node(const std::string &mode)
     filenames.push_back(st_files(ManuProC::Datum::today().c_str(),""));
     vec_files_auftragentry.push_back(st_files("",""));
     vec_files_auftragsentryzuordnung.push_back("");
-    if (article)
     { SelectedFullAufList auftraglist=SelectedFullAufList(SQLFullAuftragSelector::
           sel_Artikel(ppsInstanzID::None,ArtikelBase(article)));
       for (SelectedFullAufList::iterator j=auftraglist.begin();j!=auftraglist.end();++j)
@@ -67,8 +66,6 @@ graph_data_node::graph_data_node(const std::string &mode)
       }
       fill_map();
     }
-    else
-      std::cerr << "kein Artikel angegeben ... noch nicht implementiert\n";
   }
   else
   {get_files(mode);

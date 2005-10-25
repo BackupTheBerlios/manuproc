@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.38 2005/10/18 21:46:17 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.39 2005/10/25 12:13:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski
@@ -131,7 +131,8 @@ public:
   { ppsInstanz::ID instanz;
     ArtikelBase artikel;
     
-    sel_Artikel(ppsInstanz::ID i, ArtikelBase a) 
+    // this selector is capable of selecting all lines
+    sel_Artikel(ppsInstanz::ID i=ppsInstanzID::None, ArtikelBase a=ArtikelBase()) 
     : instanz(i), artikel(a)
     {}
   };
