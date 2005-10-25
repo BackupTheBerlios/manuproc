@@ -1,4 +1,4 @@
-/* $Id: SelectedFullAufList.h,v 1.1 2005/08/24 14:46:08 christof Exp $ */
+/* $Id: SelectedFullAufList.h,v 1.2 2005/10/25 12:13:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,12 +40,22 @@ public:
  typedef TYP::const_reverse_iterator const_reverse_iterator;
  typedef TYP::iterator iterator;
  typedef TYP::reverse_iterator reverse_iterator;
+ 
+ static void loop(const SQLFullAuftragSelector &sel,void (*fn)(void*,AufEintrag&),void *ptr);
+ static void genQuery(Query &q, const SQLFullAuftragSelector &selector);
 
 protected:
  TYP aufidliste;
  
 public:
  template <class T> void remove(const T &t) { aufidliste.remove(t); }
+ 
+ template <class T>
+  static void loop(const SQLFullAuftragSelector &sel,const T &t, void (T::*fn)(AufEintrag&))
+ // hopefully this cast orgy is portable (it assumes that a member function 
+ //  gets this as the first argument)
+ { loop(sel,(void (*)(void*,AufEintrag&))fn, (void*)&t);
+ }
 
  SelectedFullAufList(const SQLFullAuftragSelector &sel)	throw(SQLerror);
  void insert(const AufEintragBase& aeb) throw(SQLerror);

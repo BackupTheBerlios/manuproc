@@ -1,4 +1,4 @@
-// $Id: Query.pgcc,v 1.16 2005/10/20 12:57:37 christof Exp $
+// $Id: Query.pgcc,v 1.17 2005/10/25 12:14:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -383,17 +383,20 @@ Query::~Query()
       { Query("close \""+portal_name+"\"");
       }
 #ifndef USE_PARAMETERS
+      if (!descriptor.empty())
+      {
 #ifdef OLD_ECPG
-      struct sqlca copy=sqlca;
+        struct sqlca copy=sqlca;
 #else
-      struct sqlca_t copy=sqlca;
-#endif      
-      //   exec sql deallocate descriptor X;
-      ECPGdeallocate_desc(__LINE__, descriptor.c_str());
-      // do not change sqlca ... believe me, you don't want to
-      sqlca=copy;
+        struct sqlca_t copy=sqlca;
+#endif
+        //   exec sql deallocate descriptor X;
+        ECPGdeallocate_desc(__LINE__, descriptor.c_str());
+        // do not change sqlca ... believe me, you don't want to
+        sqlca=copy;
+      }
 #else
-      PQclear(result);
+      if (result) PQclear(result);
       result=0;
 #endif
    }

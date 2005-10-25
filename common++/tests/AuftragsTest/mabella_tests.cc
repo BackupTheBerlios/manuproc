@@ -55,7 +55,7 @@ static bool Auftrag_Kunde()
  LieferscheinEntry LE(LS);
  LE.lagerid=FertigWarenLager::default_lagerid;
  LE.changeStatus(OPEN,true);
- vergleichen(Check::Lieferschein|Check::Menge,"minmen_Auslief","Auslieferung","L");
+ vergleichen(Check::Lieferschein|Check::Menge,"Auslief","Auslieferung","L");
 	
  return true;
 }
@@ -155,7 +155,7 @@ static bool MindestMenge_Lief()
    LieferscheinEntry LE(lsb);
    LE.lagerid=fwl.Id();
    LE.changeStatus(OPEN,true);
-   vergleichen(Check::Lieferschein|Check::Menge,"minmen_Auslief","Lieferung","l");
+   vergleichen(Check::Lieferschein|Check::Menge,"minmen_Auslief2","Lieferung","l");
    LE.changeStatus(STORNO,true);
    vergleichen(Check::Lieferschein|Check::Menge,"minmen_Storno","Storno Lief","sl");
 
@@ -191,6 +191,8 @@ static bool MinMenRepair2()
 {  vergleichen(Check::Menge,"MinMRep0","Ausgangspunkt","a");
 
 //   Check::NeedsRepair();
+   Auftrag auftrag3=Auftrag(Auftrag::Anlegen(ppsInstanzID::Einkauf),Kunde::default_id);
+   AufEintragBase AEB3=auftrag3.push_back(10,DATUM-5,ARTIKEL_TRIO,OPEN,true);
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
    AufEintragBase AEB2=auftrag.push_back(10,DATUM,ARTIKEL_TRIO,OPEN,true);
    vergleichen(Check::Menge,"MinMR2-1","Bestellung","b");   
@@ -199,7 +201,8 @@ static bool MinMenRepair2()
          "values (?,3,now(),'M',?)")
       << ARTIKEL_TRIO << getuid()).Check100();
    Query("update auftragsentryzuordnung set menge=menge-3 "
-         "where (altinstanz,altauftragid, neuinstanz,neuauftragid)=(2,2, 3,0)");
+         "where (altinstanz,altauftragid, neuinstanz,neuauftragid,neuzeilennr)=(2,2, ?,?,?)")
+      << AEB3;
 //   Query("update auftragentry set bestellt=bestellt+5 "
 //         "where (instanz,auftragid,artikelid)=(?,?,?)")
 //     << 2 << 2 << ARTIKEL_TRIO;

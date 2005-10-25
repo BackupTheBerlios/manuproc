@@ -1,4 +1,4 @@
-// $Id: Query.h,v 1.8 2005/10/20 12:57:30 christof Exp $
+// $Id: Query.h,v 1.9 2005/10/25 12:14:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Christof Petig
@@ -259,6 +259,7 @@ class Query : public Query_types
 	unsigned lines; // lines affected
 	PreparedQuery* prepare;
 	std::string portal_name;
+	// if you add members do not forget to mention them in swap!
 	
 	// not possible yet (because result can not refcount)
 	const Query &operator=(const Query &);
@@ -278,6 +279,12 @@ public:
 	typedef Row::check_eol check_eol;
 	typedef SQLerror Error;
 
+	// you can exchange this via std::swap
+	Query() : eof(true), line(), result(), num_params(), error(), lines(),
+	    prepare() 
+        { params.setNeededParams(0); }
+        void swap(Query &b);
+        
 	Query(const std::string &command);
 	Query(std::string const& portal_name, const std::string &command);
 	Query(PreparedQuery& prep);
@@ -450,4 +457,8 @@ T Query::FetchOneMap(const T &nv)
    return res;
 }
 
+namespace std
+{ /// See Query::swap().
+  inline void swap(Query& __x, Query& __y) { __x.swap(__y); }
+}
 #endif

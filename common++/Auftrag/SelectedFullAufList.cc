@@ -1,4 +1,4 @@
-// $Id: SelectedFullAufList.cc,v 1.5 2005/10/19 20:53:50 christof Exp $
+// $Id: SelectedFullAufList.cc,v 1.6 2005/10/25 12:13:45 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -65,32 +65,56 @@ Query::Row &operator>>(Query::Row &is, AufEintrag &ae)
    return is;
 }
 
-SelectedFullAufList::SelectedFullAufList
-	(const SQLFullAuftragSelector &selector) throw(SQLerror)
+void SelectedFullAufList::genQuery(Query &q, const SQLFullAuftragSelector &selector)
 {
- if(!selector.getPreQuery().empty())
-   Query(selector.getPreQuery());
-
  if (selector.prepare()!=SQLFullAuftragSelector::idx_noPrepare)
  { static PreparedQuery pq[unsigned(SQLFullAuftragSelector::idx_anz)-1];
    unsigned idx=unsigned(selector.prepare())-1;
    assert(idx<unsigned(SQLFullAuftragSelector::idx_anz)-1);
    if (pq[idx].Command().empty()) pq[idx]=PreparedQuery(selector.getClausel());
-   Query q(pq[idx]);
-   q << selector.getArguments();
-   q.FetchArray(aufidliste);
+   Query q2(pq[idx]);
+   std::swap(q,q2);
  }
  else if (selector.many_lines()) 
- { Transaction tr;
-   Query q("auftrag",selector.getClausel());
-   q << selector.getArguments();
-   q.FetchArray(aufidliste);
+ { Query q2("auftrag",selector.getClausel());
+   std::swap(q,q2);
  }
  else
- { Query q(selector.getClausel());
-   q << selector.getArguments();
-   q.FetchArray(aufidliste);
+ { Query q2(selector.getClausel());
+   std::swap(q,q2); 
  }
+}
+
+void SelectedFullAufList::loop(const SQLFullAuftragSelector &selector,void (*fn)(void*,AufEintrag&),void *ptr)
+{ Transaction tr; // we need this for portals, does not hurt anyway
+  if(!selector.getPreQuery().empty())
+    Query(selector.getPreQuery());
+    
+  Query q;
+  genQuery(q,selector);
+  q << selector.getArguments();
+  Query::Row is;
+  while ((q>>is).good()) 
+  { AufEintrag ae;
+    is >> ae >> Query::check_eol();
+    (*fn)(ptr,ae);
+  }
+  
+  if(!selector.getPostQuery().empty())
+    Query(selector.getPostQuery());
+}
+
+SelectedFullAufList::SelectedFullAufList
+	(const SQLFullAuftragSelector &selector) throw(SQLerror)
+{
+ Transaction tr; // we need this for portals, does not hurt anyway
+ if(!selector.getPreQuery().empty())
+   Query(selector.getPreQuery());
+   
+ Query q;
+ genQuery(q,selector);
+ q << selector.getArguments();
+ q.FetchArray(aufidliste);
 
  if(!selector.getPostQuery().empty())
    Query(selector.getPostQuery());

@@ -73,11 +73,12 @@ std::vector<class LagerInhalt> FertigWarenLager::LagerInhalt_
   		(const ArtikelBase& artikel) const
 {
  std::string q="select artikelid,1,0,bestand,0 from artikel_bestand b";
- if(artikel.valid()) q+=" where b.artikelid="+itos(artikel.Id());
 
  std::vector<class LagerInhalt> V;
- Query(q).FetchArray(V);
-
+ // Speichplatz sparen (portal)
+ if (!artikel.valid()) 
+ { Transaction tr; Query("LagerInhalt",q).FetchArray(V); }
+ else (Query(q+" where b.artikelid=?") << artikel).FetchArray(V);
  return V;
 }
 

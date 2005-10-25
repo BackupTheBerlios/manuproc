@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.29 2005/10/21 07:06:17 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.30 2005/10/25 12:14:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -53,6 +53,24 @@ Query::debug_environment::~debug_environment()
     { std::cerr << i->second << "x " << i->first << '\n';
     }
   }
+}
+
+void Query::swap(Query &b)
+{ std::swap(descriptor,b.descriptor);
+  std::swap(eof,b.eof);
+  std::swap(line,b.line);
+  std::swap(result,b.result);
+#ifdef MPC_SQLITE
+  std::swap(nfields,b.nfields);
+#endif
+  std::swap(query,b.query);
+  std::swap(params,b.params);
+  std::swap(num_params,b.num_params);
+  std::swap(embedded_iterator,b.embedded_iterator);
+  std::swap(error,b.error);
+  std::swap(lines,b.lines);
+  std::swap(prepare,b.prepare);
+  std::swap(portal_name,b.portal_name);
 }
 
 Query::debug_environment Query::debugging;
