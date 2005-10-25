@@ -1,4 +1,4 @@
-// $Id: fixedpoint.cc,v 1.13 2005/10/24 17:24:42 christof Exp $
+// $Id: fixedpoint.cc,v 1.14 2005/10/25 12:13:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -63,7 +63,10 @@ int main()
    	<< FormatiereTeX(fixedpoint<2>(-12345.60)) << ' '
    	<< FormatiereTeX_short(fixedpoint<2>(-12345.60)) << '\n';
    	
-   std::cout << fixedpoint<3>("123.567") << ' ' << fixedpoint<3>("123.567",".",",")
-       << ' ' << fixedpoint<3>("123 456 78<>9"," ","<>") << '\n';
+  // test string parsing
+   std::cout << fixedpoint<3>("123.456") << ' ' << fixedpoint<3>("123.456",".",",")
+       << ' ' << fixedpoint<2>("123 456 78<>9"," ","<>")
+       << ' ' << fixedpoint<3>("-1.234,567",".",",")
+       << '\n';
    return 0;
 }

@@ -48,11 +48,11 @@ FP_STR(double,long)
 FP_STR(double,long long)
 
 TEMPLATEltgt double fixedpoint_dyn<double,long>::as_float() const
-{
+{ // I don't know why *pow(10,-Scale()) does not work ...
 #ifndef __GNUC__ 
-  return scaled*pow(10,-Scale());
+  return scaled/pow(10,Scale());
 #else
-  return scaled*exp10(-Scale());
+  return scaled/exp10(Scale());
 #endif
 }
 
@@ -68,10 +68,12 @@ TEMPLATEltgt
 fixedpoint_dyn<double,long>::fixedpoint_dyn(std::string const &s,const char *TausenderTrennzeichen,const char *Komma)
  : scaled(), scale()
 { bool komma=false;
+  bool negative=false;
 //  assert(!TausenderTrennzeichen || strlen(TausenderTrennzeichen)<=1);
 //  assert(!Komma || strlen(Komma)<=1);
   for (std::string::const_iterator i=s.begin();i!=s.end();++i)
   { if (isspace((unsigned char)(*i))) continue;
+    if (*i=='-') { negative=true; continue; }
     if (TausenderTrennzeichen && *TausenderTrennzeichen && s.substr(i-s.begin(),strlen(TausenderTrennzeichen))==TausenderTrennzeichen)
     { i+=strlen(TausenderTrennzeichen)-1;
       continue;
@@ -85,4 +87,5 @@ fixedpoint_dyn<double,long>::fixedpoint_dyn(std::string const &s,const char *Tau
     scaled=scaled*10+(*i-'0');
     if (komma) scale++;
   }
+  if (negative) scaled=-scaled;
 }
