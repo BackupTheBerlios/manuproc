@@ -90,6 +90,81 @@ bool ppsInstanzReparatur::Reparatur_MindestMenge(bool analyse_only,ArtikelBase a
    return alles_ok;
 }
 
+bool ppsInstanzReparatur::Reparatur_0er_und_2er(AufEintrag &ae0, 
+     AufEintrag &ae2, Auftrag::mengen_t &menge0er, 
+     const bool analyse_only) const throw(SQLerror)
+{  bool alles_ok=true;
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,analyse_only);
+   assert(Instanz() != ppsInstanzID::Kundenauftraege);
+   assert (ae2.Id()==AuftragBase::dispo_id);
+   assert (ae0.Id()==AuftragBase::ungeplante_id);
+   if (ae2.Artikel()!=ae0.Artikel()) return true;
+   if(ae2.getLieferdatum()>ae0.getLieferdatum()) 
+   { ManuProC::Trace(AuftragBase::trace_channel,">"
+               ,NV("j.datum",ae2.getLieferdatum())
+               ,NV("i.datum",ae0.getLieferdatum()));
+     return true;
+   }
+   if (!ae2.getRestStk()) return true;
+   ArtikelStamm astamm(ae0.Artikel());
+   AuftragBase::mengen_t M=AuftragBase::min(menge0er,ae2.getRestStk());
+   if (ae2.Instanz()->LagerInstanz() && astamm.getMindBest()>0)
+   {  AufEintragZu::list_t nachbestellt
+       = AufEintragZu::get_Referenz_list(ae2,AufEintragZu::list_kinder,
+             AufEintragZu::list_ohneArtikel,AufEintragZu::list_unsorted);
+      if (ae2.getRestStk()-Summe(nachbestellt)<=0)
+         return true;
+      M-=Summe(nachbestellt);
+      if (M<0) M=0;
+   }
+   
+   if (!M) 
+   { if (!silence_warnings) analyse("Es existieren passende 0er und 2er ohne überschneidende Menge",ae0,ae2);
+     return true;
+   }
+   analyse("Es existieren passende 0er und 2er",ae0,ae2,M);
+   
+   if(!analyse_only)
+    {  AuftragBase::mengen_t M_rest=M;
+       AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(ae0,
+                  AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
+       for(AufEintragZu::list_t::reverse_iterator k=L.rbegin();k!=L.rend();++k)
+       { AuftragBase::mengen_t M2=AuftragBase::min(k->Menge,M_rest);
+          if (!M2) continue;
+
+          ae0.MengeAendern(-M2,true,k->AEB);
+          AufEintrag::ArtikelInternNachbestellen(Instanz(),M2,ae0.getLieferdatum(),
+                          ae0.Artikel(),k->AEB);
+
+          M_rest-=M2;
+          if(!M_rest) break;
+       }
+       if (!!M_rest) analyse("Fehler: Der 0er hat nicht genügend Eltern",ae0,M_rest);
+       assert(AuftragBase::tolerate_inconsistency || !M_rest);
+    }
+   menge0er-=M;
+   return false;
+}
+
+bool ppsInstanzReparatur::Reparatur_0er_und_2er(AufEintrag &ae, 
+     const bool analyse_only) const throw(SQLerror)
+{  bool alles_ok=true;
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,analyse_only);
+   assert(Instanz() != ppsInstanzID::Kundenauftraege);
+   if (ae.Id()!=AuftragBase::ungeplante_id) return true;
+   AuftragBase::mengen_t menge0er=ae.getRestStk();
+   if (!menge0er) return true;
+   SelectedFullAufList auftraglist1=SelectedFullAufList(SQLFullAuftragSelector::
+       sel_Artikel_Planung_id(ae.Instanz()->Id(),ManuProC::DefaultValues::EigeneKundenId,
+       ae.Artikel(),AuftragBase::dispo_id,OPEN,ManuProC::Datum(),true));
+   for (SelectedFullAufList::iterator j=auftraglist1.begin();j!=auftraglist1.end();++j)
+   { assert(j->Id()==AuftragBase::dispo_id);
+     alles_ok &= Reparatur_0er_und_2er(ae,*j,menge0er,analyse_only);
+     if(!menge0er) break;
+   }
+   return alles_ok;
+}
+
 bool ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al, 
      const bool analyse_only) const throw(SQLerror)
 {  bool alles_ok=true;
@@ -109,53 +184,7 @@ bool ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al,
        if (!menge0er) continue;
        
       for(std::vector<SelectedFullAufList::iterator>::const_iterator j=zweier.begin();j!=zweier.end();++j)
-       {  assert ((*j)->Id()==AuftragBase::dispo_id);
-          if ((*j)->Artikel()!=i->Artikel()) continue;
-         if((*j)->getLieferdatum()>i->getLieferdatum()) 
-         { ManuProC::Trace(AuftragBase::trace_channel,">"
-               ,NV("j.datum",(*j)->getLieferdatum())
-               ,NV("i.datum",i->getLieferdatum()));
-           continue;
-         }
-         if (!(*j)->getRestStk()) continue;
-         ArtikelStamm astamm(i->Artikel());
-         AuftragBase::mengen_t M=AuftragBase::min(menge0er,(*j)->getRestStk());
-         if ((*j)->Instanz()->LagerInstanz() && astamm.getMindBest()>0)
-         {  AufEintragZu::list_t nachbestellt
-             = AufEintragZu::get_Referenz_list(**j,AufEintragZu::list_kinder,
-                   AufEintragZu::list_ohneArtikel,AufEintragZu::list_unsorted);
-            if ((*j)->getRestStk()-Summe(nachbestellt)<=0)
-               continue;
-            M-=Summe(nachbestellt);
-            if (M<0) M=0;
-         }
-         
-         if (!M) 
-         { if (!silence_warnings) analyse("Es existieren passende 0er und 2er ohne überschneidende Menge",*i,**j);
-           continue;
-         }
-         analyse("Es existieren passende 0er und 2er",*i,**j,M);
-         alles_ok=false;
-         
-         if(!analyse_only)
-          {  AuftragBase::mengen_t M_rest=M;
-             AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*i,
-            		AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
-             for(AufEintragZu::list_t::reverse_iterator k=L.rbegin();k!=L.rend();++k)
-             { AuftragBase::mengen_t M2=AuftragBase::min(k->Menge,M_rest);
-                if (!M2) continue;
-
-                i->MengeAendern(-M2,true,k->AEB);
-                AufEintrag::ArtikelInternNachbestellen(Instanz(),M2,i->getLieferdatum(),
-                		i->Artikel(),k->AEB);
-
-                M_rest-=M2;
-                if(!M_rest) break;
-             }
-             if (!!M_rest) analyse("Fehler: Der 0er hat nicht genügend Eltern",*i,M_rest);
-             assert(AuftragBase::tolerate_inconsistency || !M_rest);
-          }
-         menge0er-=M;
+       {  alles_ok &= Reparatur_0er_und_2er(*i,**j,menge0er,analyse_only);
          if(!menge0er) break;
        }
     }

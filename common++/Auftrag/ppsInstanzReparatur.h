@@ -1,6 +1,6 @@
-// $Id: ppsInstanzReparatur.h,v 1.23 2005/02/23 16:12:23 jacek Exp $
+// $Id: ppsInstanzReparatur.h,v 1.24 2005/10/25 15:03:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -69,6 +69,9 @@ class ppsInstanzReparatur : public cH_ppsInstanz
       // Entweder existieren 0er oder es existieren 2er
       // void Reparatur_0er_und_2er(const bool analyse_only) const throw(SQLerror);
       bool Reparatur_0er_und_2er(SelectedFullAufList &L, const bool analyse_only) const throw(SQLerror);
+      bool Reparatur_0er_und_2er(AufEintrag &ae0, const bool analyse_only) const throw(SQLerror);
+      bool Reparatur_0er_und_2er(AufEintrag &ae0, AufEintrag &ae2, 
+          AuftragBase::mengen_t &menge0er, const bool analyse_only) const throw(SQLerror);
 
       // neues Interface!
       bool Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, bool analyse_only, bool raise_prodselbst) const;
