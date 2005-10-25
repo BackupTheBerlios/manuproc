@@ -19,6 +19,7 @@
 
 #include "fixedpoint.h"
 #include <Misc/Ausgabe_neu.h>
+#define _GNU_SOURCE
 #include <math.h>
 
 #if defined(__GNUC__) && __GNUC__ >=4
@@ -47,7 +48,12 @@ FP_STR(double,long)
 FP_STR(double,long long)
 
 TEMPLATEltgt double fixedpoint_dyn<double,long>::as_float() const
-{ return scaled/pow(10,Scale());
+{
+#ifndef __GNUC__ 
+  return scaled*pow(10,-Scale());
+#else
+  return scaled*exp10(-Scale());
+#endif
 }
 
 // template <class Ftype,class Itype>

@@ -196,11 +196,13 @@ static bool MinMenRepair2()
    vergleichen(Check::Menge,"MinMR2-1","Bestellung","b");   
 
    (Query("insert into fw_lager_buchung (artikelid,menge,datum,aktion,pid) "
-         "values (?,5,now(),'M',?)")
+         "values (?,3,now(),'M',?)")
       << ARTIKEL_TRIO << getuid()).Check100();
-   Query("update auftragentry set bestellt=bestellt+5 "
-         "where (instanz,auftragid,artikelid)=(?,?,?)")
-     << 2 << 2 << ARTIKEL_TRIO;
+   Query("update auftragsentryzuordnung set menge=menge-3 "
+         "where (altinstanz,altauftragid, neuinstanz,neuauftragid)=(2,2, 3,0)");
+//   Query("update auftragentry set bestellt=bestellt+5 "
+//         "where (instanz,auftragid,artikelid)=(?,?,?)")
+//     << 2 << 2 << ARTIKEL_TRIO;
    vergleichen(Check::Menge,"MinMR2-2","Inkonsistenz","i");   
    
    return true;
