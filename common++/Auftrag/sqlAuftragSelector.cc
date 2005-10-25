@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.48 2005/10/25 12:13:01 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.49 2005/10/25 12:13:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Jacek Jakubowski
@@ -175,21 +175,6 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_AufidZnr& selstr)
  prepnum=idx_AufidZnr;
 }
 
-SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_InstanzAlle& selstr)
-{
- std::string cl=FULL_SELECT_FROM_WHERE;
-
- cl+=std::string(" and a.instanz=?");
- arguments << selstr.instanz;
-
- if(selstr.artikel!=ArtikelBase::none_id)
- { cl+=std::string(" and e.artikelid=?");
-   arguments << selstr.artikel;
- }
-
- setClausel(cl);
-}
-
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Jahr_Artikel &selstr)
 {
  std::string artids;
@@ -258,25 +243,19 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung_id &sel
     prepnum=idx_Art_Plan_Id;
 }
 
+// obseleted sel_InstanzAlle
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel &selstr)
-{
-  if (selstr.instanz!=ppsInstanzID::None && !!selstr.artikel)
-  { setClausel(FULL_SELECT_FROM_WHERE " and a.instanz=? and artikelid=?");
-    arguments << selstr.instanz << selstr.artikel;
+{ std::string cl=FULL_SELECT_FROM_WHERE;
+  if (selstr.instanz!=ppsInstanzID::None)
+  { cl+=" and a.instanz=?";
+    arguments << selstr.instanz;
   }
-  else if (!!selstr.artikel)
-  { setClausel(FULL_SELECT_FROM_WHERE " and artikelid=?");
+  if (!!selstr.artikel)
+  { cl+=" and e.artikelid=?";
     arguments << selstr.artikel;
   }
-  else if (selstr.instanz!=ppsInstanzID::None)
-  { setClausel(FULL_SELECT_FROM_WHERE " and a.instanz=?");
-    arguments << selstr.instanz;
-    many=true;
-  }
-  else
-  { setClausel(FULL_SELECT_FROM_WHERE);
-    many=true;
-  }
+  else many=true;
+  setClausel(cl);
 }
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Status &selstr)
@@ -325,6 +304,3 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(
 
 }
 #endif
-
-
-

@@ -111,7 +111,12 @@ bool ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al,
       for(std::vector<SelectedFullAufList::iterator>::const_iterator j=zweier.begin();j!=zweier.end();++j)
        {  assert ((*j)->Id()==AuftragBase::dispo_id);
           if ((*j)->Artikel()!=i->Artikel()) continue;
-         if((*j)->getLieferdatum()>i->getLieferdatum()) continue;
+         if((*j)->getLieferdatum()>i->getLieferdatum()) 
+         { ManuProC::Trace(AuftragBase::trace_channel,">"
+               ,NV("j.datum",(*j)->getLieferdatum())
+               ,NV("i.datum",i->getLieferdatum()));
+           continue;
+         }
          if (!(*j)->getRestStk()) continue;
          ArtikelStamm astamm(i->Artikel());
          AuftragBase::mengen_t M=AuftragBase::min(menge0er,(*j)->getRestStk());
@@ -125,6 +130,10 @@ bool ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al,
             if (M<0) M=0;
          }
          
+         if (!M) 
+         { if (!silence_warnings) analyse("Es existieren passende 0er und 2er ohne überschneidende Menge",*i,**j);
+           continue;
+         }
          analyse("Es existieren passende 0er und 2er",*i,**j,M);
          alles_ok=false;
          
@@ -186,7 +195,7 @@ bool ppsInstanzReparatur::ReparaturLager(const bool analyse_only,
 }
 
 bool ppsInstanzReparatur::Lagermenge_setzen(bool analyse_only, const ArtikelBase &art,const AuftragBase::mengen_t &gesmenge,bool retry) const
-{   ManuProC::Trace(AuftragBase::trace_channel, __FUNCTION__,
+{   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
      		NV("art",art),NV("art.Id()",art.Id()),NV("gesmenge",gesmenge));
   bool alles_ok=true;
 
