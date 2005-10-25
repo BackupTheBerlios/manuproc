@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.15 2005/04/14 11:54:30 christof Exp $
+// $Id: auftrag_repair.cc,v 1.16 2005/10/25 15:04:04 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -69,6 +69,43 @@ static void usage(const std::string &s)
            "most common use:\n"
            "\t./auftrag_repair -l -I -a\\*\trepair all (-aD to delete unneeded)\n";
  exit(1);
+}
+
+namespace { struct loopArgs
+{ std::string const& pname;
+  cH_ppsInstanz I;
+  const bool analyse_only;
+  const ArtikelBase::ID aid;
+  bool alles_ok;
+  ppsInstanzReparatur RI;
+
+  loopArgs(std::string const&p,cH_ppsInstanz i, bool a,ArtikelBase::ID ai,
+              ppsInstanzReparatur const& r)
+    : pname(p), I(i), analyse_only(a), aid(ai), alles_ok(true), RI(r) {}
+  void callback(AufEintrag &ae);
+};}
+
+void loopArgs::callback(AufEintrag &ae)
+{ if (actions&b_exclude)
+  { alles_ok&=RI.Reparatur_0er_und_2er(ae,analyse_only);
+  }
+  if (actions&b_tree)
+  {
+        try
+         {AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(ae,
+       			AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
+       	  alles_ok&=RI.Eltern(ae,eltern,analyse_only,actions&b_raise);
+       	  alles_ok&=RI.Lokal(ae,analyse_only);
+       	  AufEintragZu::map_t kinder=AufEintragZu::get_Kinder_nach_Artikel(ae);
+       	  alles_ok&=RI.Kinder(ae,kinder,analyse_only);
+         } catch (SQLerror &e)
+         {  std::cout << "SQL Fehler " << e << '\n';
+            alles_ok=false;
+         } catch (std::exception &e)
+         {  std::cout << "Exception " << e.what() << '\n';
+            alles_ok=false;
+         }
+  }
 }
 
 static bool check_for(const std::string &pname,cH_ppsInstanz I,
@@ -152,6 +189,11 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,
     if (actions&b_tree || actions&b_exclude)
     {  SQLFullAuftragSelector psel=
 		SQLFullAuftragSelector::sel_InstanzAlle(I->Id(),aid);
+#if 1 // less memory, slightly more database traffic		
+       loopArgs la(pname,I,analyse_only,aid,RI);
+       SelectedFullAufList::loop(psel,la,&loopArgs::callback);
+       alles_ok &= la.alles_ok;
+#else       
        SelectedFullAufList K(psel);
       if (actions&b_exclude)
       {  alles_ok&=RI.Reparatur_0er_und_2er(K,analyse_only);
@@ -175,9 +217,11 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,
          }
         }
       }
+#endif      
     }
    return alles_ok;
 }
+
 
 
 const static struct option options[]=

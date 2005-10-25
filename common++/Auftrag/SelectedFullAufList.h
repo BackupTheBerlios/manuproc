@@ -1,4 +1,4 @@
-/* $Id: SelectedFullAufList.h,v 1.2 2005/10/25 12:13:59 christof Exp $ */
+/* $Id: SelectedFullAufList.h,v 1.3 2005/10/25 15:04:04 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -43,6 +43,16 @@ public:
  
  static void loop(const SQLFullAuftragSelector &sel,void (*fn)(void*,AufEintrag&),void *ptr);
  static void genQuery(Query &q, const SQLFullAuftragSelector &selector);
+ template <class T>
+  struct loop_adaptor
+ { void (T::*fn)(AufEintrag&);
+   T *ptr;
+   loop_adaptor(T*p, void (T::*f)(AufEintrag&)) : fn(f), ptr(p) {}
+   static void callback(void *obj,AufEintrag &ae)
+   { loop_adaptor *_this=static_cast<loop_adaptor*>(obj);
+     (_this->ptr ->*(_this->fn))(ae);
+   }
+ };
 
 protected:
  TYP aufidliste;
@@ -51,10 +61,9 @@ public:
  template <class T> void remove(const T &t) { aufidliste.remove(t); }
  
  template <class T>
-  static void loop(const SQLFullAuftragSelector &sel,const T &t, void (T::*fn)(AufEintrag&))
- // hopefully this cast orgy is portable (it assumes that a member function 
- //  gets this as the first argument)
- { loop(sel,(void (*)(void*,AufEintrag&))fn, (void*)&t);
+  static void loop(const SQLFullAuftragSelector &sel,T &t, void (T::*fn)(AufEintrag&))
+ { loop_adaptor<T> adaptor(&t,fn);
+   loop(sel, &loop_adaptor<T>::callback, &adaptor);
  }
 
  SelectedFullAufList(const SQLFullAuftragSelector &sel)	throw(SQLerror);
