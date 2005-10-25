@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.40 2005/10/25 12:13:14 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.41 2005/10/25 12:13:22 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski
@@ -168,10 +168,6 @@ public:
   };
  SQLFullAuftragSelector(const sel_Kunde_Status_Lager &selstr); 
 #endif
-
-    sel_InstanzAlle(ppsInstanz::ID i,const ArtikelBase::ID aid=ArtikelBase::none_id) 
-    : instanz(i), artikel(aid)
-    {}
 
  void setClausel(const std::string &cl) { clausel = cl;}
  void setOrderClausel(const std::string &ocl) { order_clausel = ocl;} 
