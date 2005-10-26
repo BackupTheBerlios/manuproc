@@ -21,6 +21,7 @@
 #include <Misc/Ausgabe_neu.h>
 #define _GNU_SOURCE
 #include <math.h>
+#include <cassert>
 
 #if defined(__GNUC__) && __GNUC__ >=4
 # define TEMPLATEltgt template<>
