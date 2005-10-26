@@ -50,7 +50,7 @@ FP_STR(double,long long)
 
 TEMPLATEltgt double fixedpoint_dyn<double,long>::as_float() const
 { // I don't know why *pow(10,-Scale()) does not work ...
-#ifndef __GNUC__ 
+#if !defined(__GNUC__ ) || __GNUC__<3
   return scaled/pow(10,Scale());
 #else
   return scaled/exp10(Scale());

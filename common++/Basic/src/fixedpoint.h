@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.30 2005/10/24 17:24:52 christof Exp $
+// $Id: fixedpoint.h,v 1.31 2005/10/26 07:31:56 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *   written by Christof Petig
@@ -270,6 +270,9 @@ static inline Query::Row &operator>>(Query::Row &is, fixedpoint<0> &v)
 
 template <class Ftype,class Itype>
 Query::Row &operator>>(Query::Row &is, fixedpoint_dyn<Ftype,Itype> &v);
+
+// explicit instantiation for 3.3 and 2.95
+/*template <> */ Query::Row &operator>>(Query::Row &is, fixedpoint_dyn<double,long> &v);
 
 template <int decimals,class Ftype,class Itype>
 Query::Row &operator>>(Query::Row &is, fixedpoint<decimals,Ftype,Itype> &v)
