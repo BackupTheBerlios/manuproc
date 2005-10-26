@@ -48,7 +48,8 @@ std::string fixedpoint_dyn<F,I>::String(bool _short, unsigned int Ziellaenge, \
 FP_STR(double,long)
 FP_STR(double,long long)
 
-TEMPLATEltgt double fixedpoint_dyn<double,long>::as_float() const
+template <>
+double fixedpoint_dyn<double,long>::as_float() const
 { // I don't know why *pow(10,-Scale()) does not work ...
 #if !defined(__GNUC__ ) || __GNUC__<3
   return scaled/pow(10,Scale());

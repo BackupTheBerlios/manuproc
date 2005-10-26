@@ -1,4 +1,4 @@
-// $Id: fixedpoint.cc,v 1.14 2005/10/25 12:13:30 christof Exp $
+// $Id: fixedpoint.cc,v 1.15 2005/10/26 14:19:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -68,5 +68,8 @@ int main()
        << ' ' << fixedpoint<2>("123 456 78<>9"," ","<>")
        << ' ' << fixedpoint<3>("-1.234,567",".",",")
        << '\n';
+   std::cout << fixedpoint<2>("1303.05") << ' ' 
+         << fixedpoint<1>("1303.05") << ' ' 
+         << fixedpoint<3>("1303.05") << '\n';
    return 0;
 }
