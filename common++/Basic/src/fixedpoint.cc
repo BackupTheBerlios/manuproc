@@ -58,14 +58,15 @@ TEMPLATEltgt double fixedpoint_dyn<double,long>::as_float() const
 }
 
 // template <class Ftype,class Itype>
-TEMPLATEltgt Query::Row &operator>>(Query::Row &is, fixedpoint_dyn<double,long> &v)
+template <>
+Query::Row &operator>>(Query::Row &is, fixedpoint_dyn<double,long> &v)
 {  std::string s;
    is >> s;
    v=s;
    return is;
 }
 
-TEMPLATEltgt
+template<>
 fixedpoint_dyn<double,long>::fixedpoint_dyn(std::string const &s,const char *TausenderTrennzeichen,const char *Komma)
  : scaled(), scale()
 { bool komma=false;

@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.31 2005/10/26 07:31:56 christof Exp $
+// $Id: fixedpoint.h,v 1.32 2005/10/26 07:47:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *   written by Christof Petig
@@ -74,6 +74,16 @@ public:
   Itype Scaled() const { return scaled; }
   Ftype	as_float() const;
 };
+
+#if defined(DEFAULT_DB) && defined(MANUPROC_WITH_DATABASE)
+#include <Misc/Query.h>
+template <class Ftype,class Itype>
+Query::Row &operator>>(Query::Row &is, fixedpoint_dyn<Ftype,Itype> &v);
+// explicit instantiation for 3.3 and 2.95
+template <> Query::Row &operator>>(Query::Row &is, fixedpoint_dyn<double,long> &v);
+template<>
+fixedpoint_dyn<double,long>::fixedpoint_dyn(std::string const &,const char *,const char *);
+#endif
 
 template <int decimals=2,class Ftype=double,class Itype=long>
 class fixedpoint
@@ -259,7 +269,6 @@ template <int decimals,class Ftype,class Itype>
 #endif
 
 #if defined(DEFAULT_DB) && defined(MANUPROC_WITH_DATABASE)
-#include <Misc/Query.h>
 
 static inline Query::Row &operator>>(Query::Row &is, fixedpoint<0> &v)
 {  long l;
@@ -267,12 +276,6 @@ static inline Query::Row &operator>>(Query::Row &is, fixedpoint<0> &v)
    v=l;
    return is;
 }
-
-template <class Ftype,class Itype>
-Query::Row &operator>>(Query::Row &is, fixedpoint_dyn<Ftype,Itype> &v);
-
-// explicit instantiation for 3.3 and 2.95
-/*template <> */ Query::Row &operator>>(Query::Row &is, fixedpoint_dyn<double,long> &v);
 
 template <int decimals,class Ftype,class Itype>
 Query::Row &operator>>(Query::Row &is, fixedpoint<decimals,Ftype,Itype> &v)
