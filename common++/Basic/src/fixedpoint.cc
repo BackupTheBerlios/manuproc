@@ -22,6 +22,7 @@
 #define _GNU_SOURCE
 #include <math.h>
 #include <cassert>
+#include <stdexcept>
 
 #if defined(__GNUC__) && __GNUC__ >=4
 # define TEMPLATEltgt template<>
@@ -87,8 +88,16 @@ fixedpoint_dyn<double,long>::fixedpoint_dyn(std::string const &s,const char *Tau
       continue;
     }
     assert(isdigit((unsigned char)(*i)));
-    scaled=scaled*10+(*i-'0');
-    if (komma) scale++;
+    static const long maximum_10=(((unsigned long)(-1))>>1)/10;
+    if (scaled>=maximum_10)
+    { // overflow
+      if (!komma) throw std::overflow_error(s);
+      else if (*i!='0') std::cerr << "precision lost parsing " << s << '\n';
+    }
+    else
+    { scaled=scaled*10+(*i-'0');
+      if (komma) scale++;
+    }
   }
   if (negative) scaled=-scaled;
 }
