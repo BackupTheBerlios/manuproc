@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.24 2005/10/19 20:53:50 christof Exp $
+// $Id: Preis.cc,v 1.25 2005/10/27 13:10:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -36,7 +36,7 @@ Preis::geldbetrag_t Preis::Wert_fr(const cP_Waehrung w,preismenge_t stueckgr) co
    float result=pfennig_cent.as_float();
    preismenge_t preism=preismenge;
    if (!preism) preism=1;
-// Währung und Stückgröße werden zusammen umgerechnet und dann erst gerundet
+// Wï¿½rung und Stckgrï¿½e werden zusammen umgerechnet und dann erst gerundet
    if (w!=waehrung) result*=Waehrung::Umrechnung(*waehrung,*w);
    if (stueckgr>=0 && preism!=stueckgr) result*=stueckgr.as_float()/preism.as_float();
    return result; // erst hier wird wieder gerundet!
@@ -85,7 +85,7 @@ Preis::geldbetrag_t Preis::Gesamtpreis(const cP_Waehrung w,int anzahl,preismenge
    bool rescale(result.Wert().Scale()>2 && !(result.Wert().Scaled()%10));
 #endif
 
-   // Währung umrechnen?
+   // Wï¿½rung umrechnen?
    if (w!=waehrung) result=result.In(w,result.preismenge);
 
 #ifdef MABELLA_EXTENSIONS
@@ -108,7 +108,7 @@ Preis::geldbetrag_t Preis::Gesamtpreis(const cP_Waehrung w,int anzahl,preismenge
 
 }
 
-// braucht man diese Routine wirklich? ich würde den anderen Gesamtpreis empfehlen CP
+// braucht man diese Routine wirklich? ich wrde den anderen Gesamtpreis empfehlen CP
 // jetzt nicht mehr
 //const Preis Preis::Gesamtpreis(int anzahl,float menge,const rabatt_t &rabatt) const
 //{  return Preis(Gesamtpreis(waehrung,anzahl,menge,rabatt),waehrung,1);

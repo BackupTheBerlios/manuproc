@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.26 2005/10/14 12:12:33 christof Exp $
+// $Id: Faden.cc,v 1.27 2005/10/27 13:10:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -111,7 +111,7 @@ int Fadenliste::add (Faden f, const unsigned r)
       index++;
    }
    if (si == sie)
-   {  // const Faden scheitert hier ... merkwürdig!
+   {  // const Faden scheitert hier ... merkwrdig!
       // warum denn mit repnumliste malnehmen ???
       // f.setAnzahl (f.getAnzahl() * repnumliste [row]);
       sumliste.push_back (f);

@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.75 2005/10/20 12:57:17 christof Exp $
+// $Id: Kunde.h,v 1.76 2005/10/27 13:10:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -433,7 +433,7 @@ friend enum Kunde::B_UPDATE_BITS_SONST &operator++(enum Kunde::B_UPDATE_BITS_SON
 #ifdef MABELLA_EXTENSIONS
 private:
 	mutable std::string cab, abi, acc; // RiBa Kontobeschreibung; Bankeinzug in Italy
-	mutable std::string iban;  // nr für LCR Verfahren (z.B. Frankreich)
+	mutable std::string iban;  // nr fr LCR Verfahren (z.B. Frankreich)
 	mutable std::string bankname; // Name der Bank in Italien 
 	void init_AuslandZahlung() const throw(SQLerror);	
 public:

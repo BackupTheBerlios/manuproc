@@ -1,4 +1,4 @@
-// $Id: graph.cc,v 1.28 2005/10/18 21:46:25 christof Exp $
+// $Id: graph.cc,v 1.29 2005/10/27 13:10:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -51,7 +51,7 @@ void usage(std::string s)
        << "\t -s --start <number>\tErster angezeigter Schritt\n"
        << "\t -l --limit <number>\tLetzter angezeigter Schritt\n"
        << "\t -o --only <number>\tNur einen Zustand anzeigen\n"
-       << "\t -h --dont-hide\tLeere Aufträge anzeigen\n"
+       << "\t -h --dont-hide\tLeere Auftrï¿½e anzeigen\n"
        << "\t -L|--live\taktuelle Datenbank anzeigen (keine Dateisammlung)\n"
        << "\t -A|--art <article>\tNur einen Artikel anzeigen\n"
        << "\n";

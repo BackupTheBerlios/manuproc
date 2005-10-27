@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.24 2005/10/19 20:53:53 christof Exp $
+// $Id: Preis.h,v 1.25 2005/10/27 13:10:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -108,7 +108,7 @@ public:
 	}
 
 	geldbetrag_t Gesamtpreis(cP_Waehrung w,int anzahl,preismenge_t menge,const rabatt_t &rabatt=rabatt_t(0.0)) const;
-	// braucht man diese Routine wirklich? ich würde den anderen Gesamtpreis empfehlen
+	// braucht man diese Routine wirklich? ich wrde den anderen Gesamtpreis empfehlen
 private:
 	const Preis Gesamtpreis(int anzahl,float menge,const rabatt_t &rabatt=rabatt_t(0.0)) const;
 public:
