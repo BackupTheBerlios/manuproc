@@ -50,28 +50,3 @@
 	= Termin? (dann fehlt ein "Produktionsbeginn am")
 
 - Grafik über Liefertermine
-
-- folgende Queries mit parameter und prepare:
-
-?x SELECT artikel, breite, farbe, id FROM artbez_0_629 WHERE id = 228279
-
-956x select warengruppe,coalesce(internwarengruppe,warengruppe),
-bestellen_bei,defaultschema,einheit,mindbestand from artikelstamm where
-id=$1
-
-912x select az.altartikelid, az.prozessid, az.menge from artikelzusammensetzung
-az where id=$1 order by az.altartikelid
-
-285x select erstellt, geaendert, riet, bemerkungen,fangfaden, schussdichte,
-variante_von from webangaben where artikel=$1
-
-282x select index,anzahl,material from webang_schuss where artikel=$1 order
-by index
-
-56x select kettscheibe, max_kettlaenge,max_fadenzahl,verlaengern,
-ausn_gaenge1, ausn_maxfd1,ausn_gaenge2,ausn_maxfd2 from webang_ketten where
-artikel=$1 order by kettscheibe desc
-
-56x select zeilennummer, anzahl, material, bindung, kettscheibe,
-ausn_gaenge,ausn_faeden from webang_faeden where artikel=$1 order by
-zeilennummer
