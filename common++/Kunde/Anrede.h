@@ -1,4 +1,4 @@
-// $Id: Anrede.h,v 1.9 2005/09/05 16:28:37 christof Exp $
+// $Id: Anrede.h,v 1.10 2005/10/27 11:37:25 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -49,7 +49,19 @@ public:
  	    	
  	  return anrede; 
  	}
- const std::string getBrAnrede() const { return branrede; }
+ const std::string getBrAnrede(const MultiL_Dict &mld=MultiL_Dict()) const 
+ 	{  if(mld.valid())
+ 	    switch(entityid)
+ 	    	{ case 1 : return const_cast<MultiL_Dict&>(mld).MLT(
+ 	    			MultiL_Dict::SEHR_GEEHRTE_H,"Sehr geehrter Herr"); break;
+ 	    	  case 2 : return const_cast<MultiL_Dict&>(mld).MLT(
+ 	    	  		MultiL_Dict::SEHR_VEREHRTE_F,"Sehr verehrte Frau"); break;
+ 	    	  case 3 : return const_cast<MultiL_Dict&>(mld).MLT(
+ 	    	  		MultiL_Dict::SEHR_GEEHRTE_DUH,"Sehr geehrte Damen und Herren"); break;
+ 	    	  default : return branrede;
+ 	    	}
+ 	 return branrede; 
+ 	}
 };
 
 
