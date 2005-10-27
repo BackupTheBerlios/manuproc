@@ -106,9 +106,9 @@ static TestReihe Rollereiplanung_(&Rollereiplanung,"Rollereiplanung","roll");
 #include <Artikel/ArtikelStamm.h>
 
 static bool MindestMenge()
-{  FertigWaren fw(ARTIKEL_TRIO,FertigWaren::eManuell,5);
+{  FertigWaren fw(ARTIKEL_TRIO,FertigWaren::eManuell,0);
    FertigWarenLager fwl(fw,FertigWarenLager::default_lagerid);
-   fwl.Einlagern(ProductionContext());
+//   fwl.Einlagern(ProductionContext());
    
    ArtikelStamm(make_value(ArtikelBase(ARTIKEL_TRIO))).setMindBest(5);
    vergleichen(Check::Menge,"minmen_Ausgangspunkt","Ausgangspunkt","a");
@@ -187,14 +187,16 @@ static bool MinMenRepair()
 
 static TestReihe MinMenRepair_(&MinMenRepair,"Mindestmenge Reparatur (bugcheck)","minMenRep");
 
+// dieser Test testet ein früheres Problem, wo die nachbestellte Menge von 
+// min(2er,0er) abgezogen und M so ohne Not negativ wurde
 static bool MinMenRepair2()
 {  vergleichen(Check::Menge,"MinMRep0","Ausgangspunkt","a");
 
-//   Check::NeedsRepair();
+   Check::NeedsRepair();
    Auftrag auftrag3=Auftrag(Auftrag::Anlegen(ppsInstanzID::Einkauf),Kunde::default_id);
    AufEintragBase AEB3=auftrag3.push_back(10,DATUM-5,ARTIKEL_TRIO,OPEN,true);
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
-   AufEintragBase AEB2=auftrag.push_back(10,DATUM,ARTIKEL_TRIO,OPEN,true);
+   AufEintragBase AEB2=auftrag.push_back(7,DATUM,ARTIKEL_TRIO,OPEN,true);
    vergleichen(Check::Menge,"MinMR2-1","Bestellung","b");   
 
    (Query("insert into fw_lager_buchung (artikelid,menge,datum,aktion,pid) "
@@ -203,15 +205,11 @@ static bool MinMenRepair2()
    Query("update auftragsentryzuordnung set menge=menge-3 "
          "where (altinstanz,altauftragid, neuinstanz,neuauftragid,neuzeilennr)=(2,2, ?,?,?)")
       << AEB3;
-//   Query("update auftragentry set bestellt=bestellt+5 "
-//         "where (instanz,auftragid,artikelid)=(?,?,?)")
-//     << 2 << 2 << ARTIKEL_TRIO;
    vergleichen(Check::Menge,"MinMR2-2","Inkonsistenz","i");   
    
    return true;
 }
 
 static TestReihe MinMenRepair2_(&MinMenRepair2,"Mindestmenge Reparatur 2 (bugcheck)","minMenR2");
-
 
 #endif

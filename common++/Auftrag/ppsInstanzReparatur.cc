@@ -1,5 +1,5 @@
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
+ *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -93,35 +93,38 @@ bool ppsInstanzReparatur::Reparatur_MindestMenge(bool analyse_only,ArtikelBase a
 bool ppsInstanzReparatur::Reparatur_0er_und_2er(AufEintrag &ae0, 
      AufEintrag &ae2, Auftrag::mengen_t &menge0er, 
      const bool analyse_only) const throw(SQLerror)
-{  bool alles_ok=true;
-   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,analyse_only);
+{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,ae0,ae2,analyse_only);
    assert(Instanz() != ppsInstanzID::Kundenauftraege);
    assert (ae2.Id()==AuftragBase::dispo_id);
    assert (ae0.Id()==AuftragBase::ungeplante_id);
+   // wir brauchen gar keine Menge ...
+   if (!menge0er) return true;
+   // falscher Artikel
    if (ae2.Artikel()!=ae0.Artikel()) return true;
+   // zu spät verfügbar
    if(ae2.getLieferdatum()>ae0.getLieferdatum()) 
    { ManuProC::Trace(AuftragBase::trace_channel,">"
-               ,NV("j.datum",ae2.getLieferdatum())
-               ,NV("i.datum",ae0.getLieferdatum()));
+               ,NV("ae2.datum",ae2.getLieferdatum())
+               ,NV("ae0.datum",ae0.getLieferdatum()));
      return true;
    }
    if (!ae2.getRestStk()) return true;
    ArtikelStamm astamm(ae0.Artikel());
-   AuftragBase::mengen_t M=AuftragBase::min(menge0er,ae2.getRestStk());
+   AuftragBase::mengen_t M=ae2.getRestStk();
+   // Im Lager die nachbestellte Menge abziehen
+   //   getMindBest() stellt sicher, dass die Datenbankabfrage nicht für jeden
+   //   Artikel erfolgt
    if (ae2.Instanz()->LagerInstanz() && astamm.getMindBest()>0)
    {  AufEintragZu::list_t nachbestellt
        = AufEintragZu::get_Referenz_list(ae2,AufEintragZu::list_kinder,
              AufEintragZu::list_ohneArtikel,AufEintragZu::list_unsorted);
-      if (ae2.getRestStk()-Summe(nachbestellt)<=0)
-         return true;
       M-=Summe(nachbestellt);
-      if (M<0) M=0;
+      // hier ist nichts zu holen
+      if (M<=0) return true;
    }
    
-   if (!M) 
-   { if (!silence_warnings) analyse("Es existieren passende 0er und 2er ohne überschneidende Menge",ae0,ae2);
-     return true;
-   }
+   M=AuftragBase::min(M,menge0er);
+   assert (!!M);
    analyse("Es existieren passende 0er und 2er",ae0,ae2,M);
    
    if(!analyse_only)
@@ -149,7 +152,7 @@ bool ppsInstanzReparatur::Reparatur_0er_und_2er(AufEintrag &ae0,
 bool ppsInstanzReparatur::Reparatur_0er_und_2er(AufEintrag &ae, 
      const bool analyse_only) const throw(SQLerror)
 {  bool alles_ok=true;
-   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,analyse_only);
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,ae,analyse_only);
    assert(Instanz() != ppsInstanzID::Kundenauftraege);
    if (ae.Id()!=AuftragBase::ungeplante_id) return true;
    AuftragBase::mengen_t menge0er=ae.getRestStk();
