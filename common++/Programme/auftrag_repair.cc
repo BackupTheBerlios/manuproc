@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.16 2005/10/25 15:04:04 christof Exp $
+// $Id: auftrag_repair.cc,v 1.17 2005/10/27 13:11:29 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -77,19 +77,25 @@ namespace { struct loopArgs
   const bool analyse_only;
   const ArtikelBase::ID aid;
   bool alles_ok;
+  bool reloop;
   ppsInstanzReparatur RI;
 
   loopArgs(std::string const&p,cH_ppsInstanz i, bool a,ArtikelBase::ID ai,
               ppsInstanzReparatur const& r)
-    : pname(p), I(i), analyse_only(a), aid(ai), alles_ok(true), RI(r) {}
+    : pname(p), I(i), analyse_only(a), aid(ai), alles_ok(true), reloop(), 
+      RI(r) {}
   void callback(AufEintrag &ae);
 };}
 
 void loopArgs::callback(AufEintrag &ae)
-{ if (actions&b_exclude)
-  { alles_ok&=RI.Reparatur_0er_und_2er(ae,analyse_only);
+{ if (reloop) return;
+  // eine erfolgreiche 0er/2er Reparatur wird im Lager auch 1er betreffen
+  // d.h. danach sind alle alten Daten hinfällig
+  if (actions&b_exclude)
+  { reloop=!RI.Reparatur_0er_und_2er(ae,analyse_only);
+    alles_ok&=!reloop;
   }
-  if (actions&b_tree)
+  if (!reloop && actions&b_tree)
   {
         try
          {AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(ae,
@@ -185,7 +191,8 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,
       else if (!(actions&b_tree)) // Meldung bei * unterdrücken
          std::cout << "\t"<< I << " 'A' nicht sinnvoll\n";
      }
-//   reload:
+     int loops2=0,limit2=10;
+   reload:
     if (actions&b_tree || actions&b_exclude)
     {  SQLFullAuftragSelector psel=
 		SQLFullAuftragSelector::sel_InstanzAlle(I->Id(),aid);
@@ -193,11 +200,13 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,
        loopArgs la(pname,I,analyse_only,aid,RI);
        SelectedFullAufList::loop(psel,la,&loopArgs::callback);
        alles_ok &= la.alles_ok;
+       if (la.reloop) { ++loops2; if (loops2<limit2) goto reload; }
 #else       
        SelectedFullAufList K(psel);
       if (actions&b_exclude)
       {  alles_ok&=RI.Reparatur_0er_und_2er(K,analyse_only);
-         // if (!alles_ok) goto reload; // eigentlich verändert diese F. K
+        // diese F. verändert zwar Teile von K (aber im Lager auch 1er an K vorbei)
+         if (!alles_ok) { ++loops2; if (loops2<limit2) goto reload; }
       }
       if (actions&b_tree)
       {for(SelectedFullAufList::iterator i = K.begin();i!=K.end(); ++i)

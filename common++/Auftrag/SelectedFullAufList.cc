@@ -1,4 +1,4 @@
-// $Id: SelectedFullAufList.cc,v 1.6 2005/10/25 12:13:45 christof Exp $
+// $Id: SelectedFullAufList.cc,v 1.7 2005/10/27 13:11:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -102,6 +102,8 @@ void SelectedFullAufList::loop(const SQLFullAuftragSelector &selector,void (*fn)
   
   if(!selector.getPostQuery().empty())
     Query(selector.getPostQuery());
+  // merke: in dieser Transaktion kann durchaus eine Menge passiert sein ...
+  tr.commit();
 }
 
 SelectedFullAufList::SelectedFullAufList
@@ -118,6 +120,7 @@ SelectedFullAufList::SelectedFullAufList
 
  if(!selector.getPostQuery().empty())
    Query(selector.getPostQuery());
+ tr.commit();
 }
 
 

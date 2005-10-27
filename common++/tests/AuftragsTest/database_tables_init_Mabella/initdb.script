@@ -24,6 +24,7 @@ createdb -E SQL_ASCII $PGDATABASE
    artikelzusammensetzung \
    artbez_3_23001 \
    artbez_3_1 \
+   artbez_12_1 \
    artbez_warengruppe \
    auftrag \
    auftragentry \
