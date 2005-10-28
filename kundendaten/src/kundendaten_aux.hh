@@ -13,7 +13,7 @@ class Data_SPreis : public RowDataBase
    Data_SPreis(int s,cH_PreisListe pl) : sortierung(s),PL(pl) {}
 
    enum Spalten  {SUCH,NOTIZ,ID};
-   virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
+   virtual cH_EntryValue Value(guint seqnr,gpointer gp) const
      {
        switch((Spalten)seqnr) 
         {
@@ -46,7 +46,7 @@ class Data_Gruppe : public RowDataBase
    Data_Gruppe(cH_Kundengruppe _kg) : kg(_kg) {}
 
    enum Spalten  {GRP_ID=0,GRP_OBID,GRP_BEZ,GRP_KOMM};
-   virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
+   virtual cH_EntryValue Value(guint seqnr,gpointer gp) const
      {
        switch((Spalten)seqnr) 
         {
