@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.59 2005/10/28 21:51:21 christof Exp $
+// $Id: SimpleTree.cc,v 1.60 2005/10/28 21:51:24 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -187,7 +187,7 @@ void SimpleTree_Basic::sel_change_cb(const Gtk::TreeModel::iterator&it,
    else
    {  Handle<TreeRow> htr=row[getStore()->m_columns.row];
       if (htr) n->push_back(Handle<const TreeRow>(htr));
-std::cerr << &*htr << '\n';
+//std::cerr << &*htr << '\n';
    }
 }
 
