@@ -1,4 +1,4 @@
-// $Id: WTelefon.cc,v 1.10 2005/06/27 16:26:14 christof Exp $
+// $Id: WTelefon.cc,v 1.11 2005/10/28 15:22:32 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig
@@ -38,7 +38,7 @@ class Data_Tel :  public RowDataBase
    public:
       Data_Tel(cH_Telefon t) : T(t){}
       enum Spalten {NUMMER,ART};
-      virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
+      virtual cH_EntryValue Value(guint seqnr,gpointer gp) const
        {
          switch((Spalten)seqnr)
           {

@@ -1,6 +1,6 @@
-// $Id: SimpleTree.cc,v 1.57 2005/06/29 13:46:56 jacek Exp $
+// $Id: SimpleTree.cc,v 1.58 2005/10/28 15:22:32 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
- *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -79,8 +79,12 @@ SimpleTree_Basic::~SimpleTree_Basic()
 void SimpleTree_Basic::on_column_edited(const Glib::ustring &path,const Glib::ustring&new_text,unsigned idx)
 {  const Gtk::TreeRow row=*getTreeModel()->get_iter(Gtk::TreeModel::Path(path));
    if (!row) return;
-   // return value?
-   getModel().signal_value_changed()(row[getStore()->m_columns.leafdata],idx,new_text);
+   cH_RowDataBase rdb=row[getStore()->m_columns.leafdata];
+   // 2do: think about optimizing if nothing changes (unlikely)
+   getModel().about_to_change(rdb);
+   bool changed=false;
+   getModel().signal_value_changed()(rdb,idx,new_text,changed);
+   getModel().has_changed(rdb);
 }
 
 void SimpleTree_Basic::on_spaltenzahl_geaendert()

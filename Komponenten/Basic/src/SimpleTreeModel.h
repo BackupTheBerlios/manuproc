@@ -1,4 +1,4 @@
-// $Id: SimpleTreeModel.h,v 1.14 2005/10/28 15:22:28 christof Exp $
+// $Id: SimpleTreeModel.h,v 1.15 2005/10/28 15:22:32 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,12 +27,18 @@
 #include <glib/gtypes.h>
 #include <RowDataBase.h>
 
+class SimpleTreeStore;
+class SimpleTree_Basic;
+
 class SimpleTreeModel : SigC::Object
 {public:
 	typedef std::vector<cH_RowDataBase> datavec_t;
 	
 	enum column_type_t { ct_string, ct_bool };
 private:
+	friend class SimpleTreeStore; // für signal_value_changed
+	friend class SimpleTree_Basic;
+	
 	datavec_t datavec;
 	std::vector<std::string> titles;
 	std::vector<bool> column_editable;
@@ -44,12 +50,12 @@ private:
 	SigC::Signal0<void> please_detach;
 	SigC::Signal0<void> please_attach;
 	// a column was changed, change data, redraw?
-	SigC::Signal3<bool,cH_RowDataBase,unsigned,const std::string &,bool &> value_changed;
+	SigC::Signal4<void,cH_RowDataBase,unsigned,const std::string &,bool &> value_changed;
 	SigC::Signal1<void,guint> title_changed;
 
 protected:
 	// sollte besser über RowDataBase::changeValue gehen, ist sauberer
-	SigC::Signal3<bool,cH_RowDataBase,unsigned,std::string const&,bool &> 
+	SigC::Signal4<void,cH_RowDataBase,unsigned,std::string const&,bool &> 
 		&signal_value_changed()
 	{  return value_changed; }
 public:
