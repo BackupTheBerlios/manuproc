@@ -1,4 +1,4 @@
-/* $Id: TreeRow.h,v 1.6 2002/11/28 17:09:42 christof Exp $ */
+/* $Id: TreeRow.h,v 1.7 2005/10/28 21:51:17 christof Exp $ */
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: TreeRow.h,v 1.6 2002/11/28 17:09:42 christof Exp $
+// $Id: TreeRow.h,v 1.7 2005/10/28 21:51:17 christof Exp $
 
 #ifndef MPC_TREEROW_H
 #define MPC_TREEROW_H
@@ -30,7 +30,7 @@ class TreeRow : public HandleContent
 {public:
 	virtual ~TreeRow() {}
 	
-	virtual const cH_EntryValue Value(guint _seqnr,gpointer _g) const = 0;
+	virtual cH_EntryValue Value(guint _seqnr,gpointer _g) const = 0;
 
 	virtual void cumulate(const cH_RowDataBase &rd) = 0;
 	virtual void deduct(const cH_RowDataBase &rd) = 0;

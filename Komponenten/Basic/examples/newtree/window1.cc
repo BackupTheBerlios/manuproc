@@ -26,7 +26,7 @@ public:
  MyRowData(int i,const std::string &s,int _i2,int _i3,const std::string &_s1)
 	: intval(i),i2(_i2),i3(_i3),stringval(s),s1(_s1) {}
 	
- virtual const cH_EntryValue Value(guint _seqnr,gpointer gp) const
+ virtual cH_EntryValue Value(guint _seqnr,gpointer gp) const
 	{	
 	 switch((Spalten)_seqnr)
 		{case SP_ATT0 : return cH_EntryValueIntString(intval);
@@ -73,7 +73,7 @@ public:
 //    sum2 -= (dynamic_cast<const MyRowData &>(*rd)).Data(2);
    }
 
-   virtual const cH_EntryValue Value(guint col,gpointer gp) const
+   virtual cH_EntryValue Value(guint col,gpointer gp) const
    {
     switch(col) 
       { case SP_SUM0 : return cH_EntryValueEmptyInt(sum0);

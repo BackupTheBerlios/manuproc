@@ -1,4 +1,4 @@
-// $Id: with_class.cc,v 1.25 2004/12/04 10:53:34 christof Exp $
+// $Id: with_class.cc,v 1.26 2005/10/28 21:51:17 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -16,7 +16,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.25 2004/12/04 10:53:34 christof Exp $
+// $Id: with_class.cc,v 1.26 2005/10/28 21:51:17 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -49,7 +49,7 @@ public:
  MyRowData(int i,const std::string &s,int _i2,int _i3,const std::string &_s1)
 	: intval(i),i2(_i2),i3(_i3),stringval(s),s1(_s1) {}
 	
- virtual const cH_EntryValue Value(guint _seqnr,gpointer gp) const
+ virtual cH_EntryValue Value(guint _seqnr,gpointer gp) const
 	{	
 	 switch((Spalten)_seqnr)
 		{case SP_ATT0 : return cH_EntryValueIntString(intval);
@@ -91,7 +91,7 @@ public:
     sum0 -= (dynamic_cast<const MyRowData &>(*rd)).Data(0);
    }
 
-   virtual const cH_EntryValue Value(guint col,gpointer gp) const
+   virtual cH_EntryValue Value(guint col,gpointer gp) const
    {
     switch(col) 
       { case SP_SUM0 : return cH_EntryValueEmptyInt(sum0);
