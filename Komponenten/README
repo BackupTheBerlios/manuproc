@@ -1,0 +1,6 @@
+porting to the newest API:
+
+the const Handle<const> return values of RowDataBase are now Handle<const>
+
+the node_selected signal argument is now Handle<TreeRow const> instead of
+	TreeRow const&.

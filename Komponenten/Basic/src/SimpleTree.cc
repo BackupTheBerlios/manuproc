@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.58 2005/10/28 15:22:32 christof Exp $
+// $Id: SimpleTree.cc,v 1.59 2005/10/28 21:51:21 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -180,13 +180,14 @@ void SimpleTree_Basic::on_title_changed(guint nr)
 }
 
 void SimpleTree_Basic::sel_change_cb(const Gtk::TreeModel::iterator&it,
-		std::vector<cH_RowDataBase> *l,std::vector<Handle<TreeRow> > *n)
+		std::vector<cH_RowDataBase> *l,std::vector<Handle<const TreeRow> > *n)
 {  Gtk::TreeRow row=*it;
    if (!row[getStore()->m_columns.childrens_deep])
       l->push_back(row[getStore()->m_columns.leafdata]);
    else
    {  Handle<TreeRow> htr=row[getStore()->m_columns.row];
-      if (htr) n->push_back(htr);
+      if (htr) n->push_back(Handle<const TreeRow>(htr));
+std::cerr << &*htr << '\n';
    }
 }
 
@@ -196,7 +197,7 @@ void SimpleTree_Basic::on_selection_changed()
      _leaf_unselected();
    else
    {  std::vector<cH_RowDataBase> leaves;
-      std::vector<Handle<TreeRow> > nodes;
+      std::vector<Handle<const TreeRow> > nodes;
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
       get_selection()->selected_foreach_iter(sigc::bind(sigc::mem_fun(*this,
       		&SimpleTree_Basic::sel_change_cb),&leaves,&nodes));
@@ -207,9 +208,9 @@ void SimpleTree_Basic::on_selection_changed()
       for (std::vector<cH_RowDataBase>::const_iterator i=leaves.begin();
       		i!=leaves.end();++i)
       	 _leaf_selected(*i);
-      for (std::vector<Handle<TreeRow> >::const_iterator i=nodes.begin();
+      for (std::vector<Handle<const TreeRow> >::const_iterator i=nodes.begin();
       		i!=nodes.end();++i)
-      	 _node_selected(**i);
+      	 _node_selected(*i);
    }
 }
 
@@ -251,7 +252,7 @@ Handle<const TreeRow> SimpleTree::getSelectedNode() const
    if (sel)
    { const Gtk::TreeRow &row=*sel;  
      if (row[getStore()->m_columns.childrens_deep])
-       return static_cast<Handle<TreeRow> >(row[getStore()->m_columns.row]);
+       return Handle<const TreeRow>(static_cast<Handle<TreeRow> >(row[getStore()->m_columns.row]));
      else
        throw notNodeSelected();
    }

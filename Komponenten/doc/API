@@ -7,7 +7,7 @@ alle Widgets sollten sich wie ein GtkEntry verhalten, d.h.
 [ - set_editable(bool) kann vorhanden sein ]
   - reset() sollte das Widget löschen
 
-darüber hinaus sollte sich das Widget wie ein SpinButton/ProgressBar
+darÃ¼ber hinaus sollte sich das Widget wie ein SpinButton/ProgressBar
 						/Adjustment verhalten:
   - set_value/get_value mit entsprechendem Typ
 

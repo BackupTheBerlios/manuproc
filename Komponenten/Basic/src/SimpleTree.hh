@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.42 2005/09/12 10:30:48 christof Exp $
+// $Id: SimpleTree.hh,v 1.43 2005/10/28 21:51:21 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -78,7 +78,7 @@ private:
 
 	SigC::Signal0<void> _leaf_unselected;
 	SigC::Signal1<void,cH_RowDataBase> _leaf_selected;
-	SigC::Signal1<void,const TreeRow &> _node_selected;
+	SigC::Signal1<void,Handle<const TreeRow> > _node_selected;
 	SigC::Signal0<void> _reorder;
 	
 	std::vector<gfloat> alignment;
@@ -96,7 +96,7 @@ private:
 	bool MouseButton(GdkEventButton *event);
 	void sel_change_cb(const Gtk::TreeModel::iterator&it,
 			std::vector<cH_RowDataBase> *l,
-			std::vector<Handle<TreeRow> > *n);
+			std::vector<Handle<const TreeRow> > *n);
         void on_column_edited(const Glib::ustring &path,
                   const Glib::ustring&new_text,unsigned idx);
 	
@@ -108,8 +108,8 @@ public:
 	{ return _leaf_selected; }
 	SigC::Signal0<void> &signal_leaf_unselected()
 	{ return _leaf_unselected; }
-	// perhaps Handle<const TreeRow> is more sensible now?
-	SigC::Signal1<void,const TreeRow &> &signal_node_selected()
+	// argument had been "const TreeRow &"
+	SigC::Signal1<void,Handle<const TreeRow> > signal_node_selected()
 	{ return _node_selected; }
 	SigC::Signal0<void> &signal_reorder()
 	{ return _reorder; }
