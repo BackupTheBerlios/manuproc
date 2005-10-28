@@ -1,6 +1,6 @@
-// $Id: SimpleTreeStore.h,v 1.51 2005/09/26 07:31:29 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.52 2005/10/28 15:22:28 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
- *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -157,6 +157,7 @@ private:
 	void save_remembered1(gpointer) { save_remembered(); }
 	void on_title_changed(guint idx);
 	void on_visibly_changed(bvector_iterator it);
+	void value_change_impl(cH_RowDataBase row,unsigned idx,std::string const& newval, bool &has_changed);
 	
 //	SigC::Signal0<void> needs_redisplay;
 	void redisplay();

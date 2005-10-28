@@ -1,6 +1,6 @@
-// $Id: SimpleTreeModel.cc,v 1.7 2005/09/12 10:30:48 christof Exp $
+// $Id: SimpleTreeModel.cc,v 1.8 2005/10/28 15:22:28 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
- *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

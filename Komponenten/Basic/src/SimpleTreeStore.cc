@@ -1,6 +1,6 @@
-// $Id: SimpleTreeStore.cc,v 1.86 2005/09/26 07:31:29 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.87 2005/10/28 15:22:28 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
- *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -229,6 +229,7 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
    getModel().signal_please_attach().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
    getModel().signal_line_appended().connect(SigC::slot(*this,&SimpleTreeStore::on_line_appended));
    getModel().signal_line_to_remove().connect(SigC::slot(*this,&SimpleTreeStore::on_line_removed));
+   getModel().signal_value_changed().connect(SigC::slot(*this,&SimpleTreeStore::value_changed_impl));
    signal_save.connect(SigC::slot(*this,&SimpleTreeStore::save_remembered1));
    signal_visibly_changed.connect(SigC::slot(*this,&SimpleTreeStore::on_visibly_changed));
   Gdk::Color c;
@@ -1075,4 +1076,8 @@ bool SimpleTreeStore::drag_data_received_vfunc(const Gtk::TreeModel::Path& dest,
 }
 bool SimpleTreeStore::row_drop_possible_vfunc(const Gtk::TreeModel::Path& dest, const Gtk::SelectionData& selection_data) const
 { return false;
+}
+
+void SimpleTreeStore::value_change_impl(cH_RowDataBase row,unsigned idx,std::string const& newval, bool &has_changed)
+{ has_changed|=row.cast_const<RowDataBase>()->changeValue(idx,gp,newval);
 }
