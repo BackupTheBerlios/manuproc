@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.53 2005/10/27 13:10:58 christof Exp $
+// $Id: AuftragBase.cc,v 1.54 2005/10/29 00:51:34 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -44,7 +44,9 @@ std::ostream &operator<<(std::ostream &o,const AuftragBase &a)
 const std::string AuftragBase::getStatusStr(AufStatVal a)
 {
  switch(a)
-   {case (AufStatVal)UNCOMMITED : return "unbest�igt"; break;
+   {case (AufStatVal)UNCOMMITED : 
+       return Ausgabe_neu::TeX_uses_UTF8 ? "unbestätigt" : "unbest�igt"; 
+       break;
     case (AufStatVal)OPEN : return "offen"; break;
     case (AufStatVal)CLOSED : return "fertig"; break;
     case (AufStatVal)STORNO : return "storno"; break;
@@ -68,7 +70,7 @@ bool AuftragBase::editierbar() const
   return true;
 }
 
-// k�nte eigentlich ersetzt werden IMHO
+// könnte eigentlich ersetzt werden IMHO
 // wird aufgerufen von rein_ins_lager (+), ArtikelInternAbbestellen (-),
 // 
 void AuftragBase::dispo_auftrag_aendern(cH_ppsInstanz instanz,const ArtikelBase artikel,const mengen_t &menge,
@@ -105,7 +107,7 @@ int AuftragBase::PassendeZeile(const ManuProC::Datum lieferdatum,const ArtikelBa
  mengen_t dummy=0;
  int znr=existEntry(artikel,lieferdatum,status,dummy);
  if(znr==none_id)
-  { // spezieller Fall fr unbestellte Lieferungen
+  { // spezieller Fall für unbestellte Lieferungen
     if (status==CLOSED && Id()==plan_auftrag_id)
        create_if_not_exists(OPEN);
     else
@@ -141,7 +143,7 @@ int AuftragBase::BestellmengeAendern(mengen_t deltamenge,
  AufEintrag(NeuAEB).MengeAendern(deltamenge,kein_dispo,
  	kein_dispo?altAEB:AufEintragBase());
 
- // dispo=> andere Richtung des Pfeils muss ge�dert werden 
+ // dispo=> andere Richtung des Pfeils muss geändert werden 
  if (!kein_dispo && altAEB.valid())
       AufEintragZu(NeuAEB).Neu(altAEB,deltamenge);
 
