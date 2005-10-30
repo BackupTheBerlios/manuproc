@@ -1,4 +1,4 @@
-// $Id: FertigWarenLager.h,v 1.24 2005/02/23 16:12:23 jacek Exp $
+// $Id: FertigWarenLager.h,v 1.25 2005/10/30 00:58:03 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -40,6 +40,7 @@ public:
  ArtikelBase::ID ArtID() const throw() { return aid; }
  friend std::ostream &operator<<(std::ostream&,const LagerError &)
  					throw();
+ std::string str() const throw();
  
 };
 
@@ -106,7 +107,7 @@ public:
       { }      		
 #endif
 
-   FertigWarenLager(FertigWarenLager &l) :
+   FertigWarenLager(const FertigWarenLager &l) :
    		LagerBase(l),
    		fw(l.fw), lagerid(l.lagerid)
    	{}

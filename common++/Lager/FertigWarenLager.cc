@@ -205,10 +205,13 @@ void FertigWarenLager::Inventur() throw(LagerError)
 }
 
 std::ostream &operator<<(std::ostream &o,const LagerError &e) throw()
-{  o<<e.Text();
-   if (e.ArtID()!=ArtikelBase::none_id)
-      o <<": internal article ID "<<itos(e.ArtID());
+{  o<<e.str();
    return o;
 }
 
-
+std::string LagerError::str() const throw()
+{ std::string res=Text();
+  if (ArtID()!=ArtikelBase::none_id)
+      res+=": internal article ID "+itos(ArtID());
+  return res;
+}
