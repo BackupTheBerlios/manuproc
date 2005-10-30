@@ -1,6 +1,7 @@
-// $Id: SimpleTree.hh,v 1.43 2005/10/28 21:51:21 christof Exp $
+// $Id: SimpleTree.hh,v 1.44 2005/10/30 00:58:40 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
+ *  written by Jacek Jakubowski and Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -171,7 +172,7 @@ private:
     }
  }
  void getSelectedRowDataBase_vec_cb(const Gtk::TreeModel::iterator&it, 
-		std::vector<cH_RowDataBase> *res);
+		std::vector<cH_RowDataBase> *res,bool include_nodes=false);
 
 public:
  struct SelectionError : public std::exception
@@ -207,8 +208,7 @@ public:
  	throw(noRowSelected,multipleRowsSelected,notLeafSelected);
  cH_RowDataBase getCursorRowDataBase() const
  	throw(noRowSelected,multipleRowsSelected,notLeafSelected);
- std::vector<cH_RowDataBase> getSelectedRowDataBase_vec() const 
- 	throw(notLeafSelected);
+ std::vector<cH_RowDataBase> getSelectedRowDataBase_vec(bool include_nodes=false) const throw();
 
 #if 1 // deprecated
  template <class T,class CT> T getSelectedRowDataBase_as2() const

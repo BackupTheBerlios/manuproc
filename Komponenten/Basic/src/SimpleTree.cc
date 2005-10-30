@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.60 2005/10/28 21:51:24 christof Exp $
+// $Id: SimpleTree.cc,v 1.61 2005/10/30 00:58:40 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -272,24 +272,25 @@ void SimpleTree_Basic::Collapse()
 // expand_row(path,false)/collapse_row(path)
 
 void SimpleTree::getSelectedRowDataBase_vec_cb(const Gtk::TreeModel::iterator&it, 
-		std::vector<cH_RowDataBase> *res)
-{  Gtk::TreeRow row=*it;
-   if (!row[getStore()->m_columns.childrens_deep])
+		std::vector<cH_RowDataBase> *res, bool include_nodes)
+{ Gtk::TreeRow row=*it;
+  if (!row[getStore()->m_columns.childrens_deep])
+      res->push_back(row[getStore()->m_columns.leafdata]);
+  else if (include_nodes)
       res->push_back(row[getStore()->m_columns.leafdata]);
 }
 
-std::vector<cH_RowDataBase> SimpleTree::getSelectedRowDataBase_vec() const
-	throw (SimpleTree::notLeafSelected)
+std::vector<cH_RowDataBase> SimpleTree::getSelectedRowDataBase_vec(bool include_nodes) const throw()
 {  std::vector<cH_RowDataBase> result;
    SimpleTree *non_const_this=const_cast<SimpleTree*>(this);
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
    get_selection()->selected_foreach_iter(sigc::bind(
    		sigc::mem_fun(*non_const_this,
-      		&SimpleTree::getSelectedRowDataBase_vec_cb),&result));
+      		&SimpleTree::getSelectedRowDataBase_vec_cb),&result,include_nodes));
 #else
    non_const_this->get_selection()->selected_foreach(SigC::bind(
    		SigC::slot(*non_const_this,
-      		&SimpleTree::getSelectedRowDataBase_vec_cb),&result));
+      		&SimpleTree::getSelectedRowDataBase_vec_cb),&result,include_nodes));
 #endif      		
    return result;
 }
