@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.19 2004/09/27 15:47:17 jacek Exp $
+// $Id: datewin.cc,v 1.20 2005/10/30 00:58:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -136,7 +136,7 @@ void datewin::setLabel(const std::string &s)
 {  set_show_tabs(!s.empty());
    set_scrollable(!s.empty());
    if (!s.empty()) datum_label->set_text(s);
-   std::cout << "datewin::setLabel("<<s<<");\n";
+//   std::cout << "datewin::setLabel("<<s<<");\n";
 }
 
 void datewin::datum_activate()
