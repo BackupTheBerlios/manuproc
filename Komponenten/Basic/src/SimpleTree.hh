@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.45 2005/10/30 00:58:49 christof Exp $
+// $Id: SimpleTree.hh,v 1.46 2005/10/30 00:58:52 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -53,6 +53,8 @@ public:
 	const_iterator end() const { return sts->end(); }
 	void set_tree_column_visibility(unsigned index,bool visible)
 	{  sts->set_tree_column_visibility(index,visible); }
+	bool ColumnVisible(unsigned index) const
+	{  return sts->ColumnVisible(index); }
 	void clear() { sts->clear(); }
 	unsigned ColumnFromIndex(unsigned i) const 
 	{  return sts->ColumnFromIndex(i); }
