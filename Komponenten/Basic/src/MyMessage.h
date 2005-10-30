@@ -15,7 +15,7 @@ public:
  {char tmp[100]; 
   std::string _msg;
   
-  snprintf(tmp,sizeof tmp,"DB-Error Code:%d\n",e.Code());
+  snprintf(tmp,sizeof tmp,"DB-Error Code:%d %s\n",e.Code(),e.State().c_str());
   _msg=tmp;
   snprintf(tmp,sizeof tmp,"DB-Error Message:%s\n",e.Message().c_str());  
   _msg+=tmp;
