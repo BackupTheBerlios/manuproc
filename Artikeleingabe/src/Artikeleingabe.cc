@@ -1,4 +1,4 @@
-// $Id: Artikeleingabe.cc,v 1.37 2005/10/30 01:01:11 christof Exp $
+// $Id: Artikeleingabe.cc,v 1.38 2005/10/30 01:01:36 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -110,7 +110,6 @@ void Artikeleingabe::on_checkbutton_offene_auftraege_toggled()
 {
  if(checkbutton_offene_auftraege->get_active())
   {
-//   optionmenu_instanz->set_History(ppsInstanzID::Kundenauftraege);
    optionmenu_instanz->set_value(cH_ppsInstanz(ppsInstanzID::Kundenauftraege));
    load_for_optionmenu_instanz();
   }   
@@ -158,8 +157,6 @@ void Artikeleingabe::artikelbox_activate()
    } catch (SQLerror &e)   {mess->Show(e);} 
  set_Data_from_artikelliste();
 
-// frame_artikel->set_sensitive(true);
-// fuer_artikel = artikelbox->get_value();
  Eingabe_fuer(artikelbox->get_value());
  fill_eingabebox(1);
  alias_warengruppe->set_extartbezid(artikelbox->getBezSchema()->Id());
@@ -175,7 +172,6 @@ void Artikeleingabe::artikelbox_activate()
 
 void Artikeleingabe::on_alias_warengruppe_activate()
 {
-// ArtikelTyp::ID t=alias_warengruppe->get_value();
  fill_eingabebox(2);
 }
 
@@ -209,7 +205,6 @@ void Artikeleingabe::set_Data_from_artikelliste()
 //cout << vec_artbase.size()<<'\n';
 // progressbar->set_show_text(true);
  progressbar->show();
-// tree->detach_from_clist();
  tree->clear();
  datavec_t datavec;
  instanz_spalte.clear();
@@ -243,7 +238,6 @@ void Artikeleingabe::set_Data_from_artikelliste()
  tree->setDataVec(datavec);
  set_tree_titels();
  tree->Expand_recursively();
-// tree->attach_to_clist();
  progressbar->hide();
  if (vec_artbase.begin()!=vec_artbase.end())
  {  Gtk::TreeModel::Path p;
@@ -286,7 +280,6 @@ void Artikeleingabe::fill_datavec(datavec_t& datavec,const ArtikelBase& AB)
 {
 try{
    vec_zeile_t vec_zeile; 
-//   cH_ArtikelBezeichnung ABez(AB);
    cH_ArtikelBezeichnung ABez(AB,artikelbox->getBezSchema()->Id());
    ArtikelBaum ABaum(AB);
    push_Artikel(vec_zeile,zeile_t(ABez,0));
@@ -304,7 +297,6 @@ void Artikeleingabe::ArtikelBaum_Pfad(ArtikelBase AB,menge_t menge,
 		datavec_t& datavec, vec_zeile_t vec_zeile, int maxrec)
 {
    cH_ArtikelBezeichnung ABez(AB,artikelbox->getBezSchema()->Id());
-//   cH_ArtikelBezeichnung ABez(AB);
    ArtikelBaum ABaum(AB);
    
    push_Artikel(vec_zeile,zeile_t(ABez,menge));
@@ -323,34 +315,29 @@ void Artikeleingabe::on_leaf_selected(cH_RowDataBase d)
 {
 //cout << "Leaf\n";
  Handle<const Data_tree> dt=d.cast_dynamic<const Data_tree>();
-// fuer_artikel = dt->Artikel();
  artikelbox->set_value(dt->Artikel());
 // artikelbox_activate(); sollte eigentlich ...
- // hmm. What is this for? CP
+ // zu bearbeitenden Artikel anzeigen
  Eingabe_fuer(dt->Artikel());
-// von_artikel = dt->Artikel2();
  Loeschen_von(dt->Artikel2());
 }
 
+#if 1
 void Artikeleingabe::on_node_selected(const TreeRow &node)
 {
 //cout << "Node\n";
-  const Data_Node &dn=dynamic_cast<const Data_Node&>(node);
-//  fuer_artikel=dn.Artikel();
-//  von_artikel = dn.Artikel2();
+  const Data_Node &dn=dynamic_cast<const Data_Node &>(node);
   Eingabe_fuer(dn.Artikel());
   Loeschen_von(dn.Artikel2());
 }
+#endif
 
 void Artikeleingabe::Eingabe_fuer(const ArtikelBase& art)
 {
  try{
-// Artikel_Bestellen_bei->set_History(ArtikelStamm(art).BestellenBei()->Id());
  Artikel_Bestellen_bei->set_value(ArtikelStamm(art).BestellenBei());
  set_Prozess(); 
-// frame_artikel->set_label("Artikel "+cH_ArtikelBezeichnung(art)->Bezeichnung());
 // frame_artikel->set_label("Artikel "+cH_ArtikelBezeichnung(art,artikelbox->getBezSchema()->Id())->Bezeichnung());
-// frame_artikel->set_sensitive(true);
  OM_Einheit->set_value(Einheit(artikelbox->get_value()));
  } catch (SQLerror &e)
  {  std::cout << "Artikeleingabe::Eingabe_fuer " << e << '\n';
@@ -397,7 +384,6 @@ void Artikeleingabe::Loeschen_von(const ArtikelBase& art)
 void Artikeleingabe::on_unselect_row()
 {
  toolbar_loeschen->hide();
-// frame_artikel->set_sensitive(false);
 }
 
 
@@ -424,7 +410,6 @@ void Artikeleingabe::on_Artikel_Bestellen_activate()
 //cout << artikelboxb->get_Artikel().Id()<<'\t'<<artikelboxb->get_Menge()
 //   <<'\t'<<artikelboxb->get_Instanz_Id()<<'\n';
   if(artikelboxb->get_Artikel().Id()==ArtikelBase::none_id )
-//     artikelboxb->get_Menge()==0 )
    {
     mess->Show("Artikel muß eingegeben werden");
     return;
@@ -436,15 +421,7 @@ void Artikeleingabe::on_Artikel_Bestellen_activate()
   ra.erzeugung=artikelboxb->get_Prozess(); 
   ArtikelBaum::new_Artikel(artikelbox->get_value(),ra);
  
-
-// wozu das?  
-//  cH_Data_tree dt=tree->getSelectedRowDataBase_as<cH_Data_tree>();
-//  artikelbox->set_value(dt->Artikel2());
-
-
   on_neuladen_clicked();
-
-//  von_artikel = artikelboxb->get_Artikel();
   Loeschen_von(artikelboxb->get_Artikel());
 }
 
@@ -493,7 +470,6 @@ void Artikeleingabe::set_tree_titels()
  tree->setTitles(t);
  for (unsigned i=0;i<tree->Cols();++i)
     tree->set_column_visibility(i,i<instanz_spalte.size());
-// tree->show_titles(false);
 }
 
 
@@ -508,8 +484,6 @@ void Artikeleingabe::on_togglebutton_edit_toggled()
 
 void Artikeleingabe::eingabe_activate()
 {
-//  ArtikelBase artikel=fuer_artikel;
-  
  try{
   save_edited_artikel();
   cH_ArtikelBezeichnung::Deregister(artikelbox->getBezSchema()->Id(),
@@ -523,8 +497,6 @@ void Artikeleingabe::eingabe_activate()
 
 void Artikeleingabe::on_einheit_activate()
 {
-//cout << "ACTIVATE  ";
-//cout <<  OM_Einheit->get_value().Bezeichnung()<<'\n';;
  ArtikelStamm::setEinheit(artikelbox->get_value(),OM_Einheit->get_value());
 }
 
@@ -540,12 +512,7 @@ void Artikeleingabe::on_kunde_activate()
   try{
   fill_eingabebox(2);
   alias_eingabe->grab_focus();
-  // diese Heuristik ist etwas fraglich CP
-// ich würde es ganz rausnehmen JJ
-//  if(alias_schema->get_value()==1) 
-//    alias_warengruppe->show();
-//  else 
-    alias_warengruppe->hide();
+  alias_warengruppe->hide();
 
   }catch(SQLerror &e) {std::cerr << e<<'\n';}
  fill_eingabebox(2);
@@ -792,6 +759,7 @@ bool Artikeleingabe::update_edited_artikel2()
    }
   int count=0;
   int memsig=vec_eingabe[0].signifikanz;
+  ArgumentList args;
   for (unsigned int i=0;i<vec_alias_eingabe.size();++i)
    {
      if(memsig!=vec_alias_eingabe[i].signifikanz)
@@ -799,15 +767,16 @@ bool Artikeleingabe::update_edited_artikel2()
         ++count;
         memsig=vec_alias_eingabe[i].signifikanz;
       }
-     if(vec_all_empty[count]==true)
-        squery += vec_alias_eingabe[i].spalte +"=null, ";
-     else
-        squery += vec_alias_eingabe[i].spalte +"='"+alias_eingabe->get_value(i)+"', ";
+     squery += vec_alias_eingabe[i].spalte +"=?,";
+     if(vec_all_empty[count]==true) 
+        args << Query::null();
+     else 
+        args << alias_eingabe->get_value(i);
    }
-  squery += " stand=now() where id='"+itos(artikelbox->get_value().Id())+"'";
-  Query::Execute(squery);
-  if (Query::Code()) return false;
-  return true;
+  squery += " stand=now() where id=?";
+  Query q(squery);
+  q << artikelbox->get_value() << args;
+  return q.LinesAffected();
 }
 
 
@@ -834,8 +803,9 @@ void Artikeleingabe::save_edited_artikel2()
    {
      squery += vec_alias_eingabe[i].spalte +",";
    }
-  squery += "stand) values ("+itos(artikelbox->get_value().Id())+",";
-//cout << von_artikel.Id()<<'\n';
+  ArgumentList args;
+  squery += "stand) values (?,";
+  args << artikelbox->get_value();
   int count=0;
   int memsig=vec_alias_eingabe[0].signifikanz;
   for (unsigned int i=0;i<vec_alias_eingabe.size();++i)
@@ -845,14 +815,16 @@ void Artikeleingabe::save_edited_artikel2()
         ++count;
         memsig=vec_alias_eingabe[i].signifikanz;
       }
+     squery+="?,";
      if(vec_all_empty[count]==true)
-        squery += "null,";
+        args << Query::null();
      else
-        squery += "'"+alias_eingabe->get_value(i)+"',";
+        args << alias_eingabe->get_value(i);
    }
   squery += "now())" ;
-  Query::Execute(squery);
-  SQLerror::test(__FILELINE__);
+  Query q(squery);
+  q << args;
+  q.Check100();
 }
 
 void Artikeleingabe::on_button_verschmelzen_clicked()
@@ -861,12 +833,9 @@ void Artikeleingabe::on_button_verschmelzen_clicked()
   ArtikelBase alt_art = artbox_verschmelzen->get_value();
 
   if(neu_art==ArtikelBase() || alt_art ==ArtikelBase()) return;
+  Transaction tr;
 
   std::vector<std::string> tabellen1; // Spaltenname = id
-  std::vector<std::string> tabellen2; // Spaltenname = artikelid
-  std::vector<std::string> tabellen3; // Spaltenname = material
-  std::vector<std::string> tabellen4; // Spaltenname = artikel
-  std::vector<std::string> tabellen5; // Spaltenname = art_id
   tabellen1.push_back("artikelstamm");
   tabellen1.push_back("artikelzusammensetzung");
   tabellen1.push_back("artbez_0_1");
@@ -880,6 +849,15 @@ void Artikeleingabe::on_button_verschmelzen_clicked()
   tabellen1.push_back("artbez_4_10000");
   tabellen1.push_back("artbez_5_1");
   tabellen1.push_back("artbez_8_1");
+  for (std::vector<std::string>::const_iterator i=tabellen1.begin();i!=tabellen1.end();++i)
+   {
+      Query("update "+*i+" set id=? where id=?") << neu_art << alt_art;
+   }
+   {
+      Query("update artikelzusammensetzung set altartikelid=? where altartikelid=?") 
+        << neu_art << alt_art;
+   }
+  std::vector<std::string> tabellen2; // Spaltenname = artikelid
   tabellen2.push_back("artikelpreise");
   tabellen2.push_back("lieferscheinentry");
   tabellen2.push_back("auftragentry");
@@ -892,49 +870,34 @@ void Artikeleingabe::on_button_verschmelzen_clicked()
   tabellen2.push_back("rohjumbo_archiv");
   tabellen2.push_back("schaertabelle");
   tabellen2.push_back("schussdichte2");
+  for (std::vector<std::string>::const_iterator i=tabellen2.begin();i!=tabellen2.end();++i)
+   {
+      Query("update "+*i+" set artikelid=? where artikelid=?") << neu_art << alt_art;
+   }
+  std::vector<std::string> tabellen3; // Spaltenname = material
   tabellen3.push_back("bl_inhalt");
   tabellen3.push_back("bl_log");
   tabellen3.push_back("rl_inhalt");
   tabellen3.push_back("rl_inhalt_old");
   tabellen3.push_back("rl_log");
-  tabellen4.push_back("ketten_garn");
-  tabellen5.push_back("maschinen_geschwindigkeit");
-  
-  Transaction tr;
-  for (std::vector<std::string>::const_iterator i=tabellen1.begin();i!=tabellen1.end();++i)
-   {
-      Query::Execute("update "+*i+" set id="+itos(neu_art.Id())
-         +" where id="+itos(alt_art.Id()));
-   }
-   {
-      Query::Execute("update artikelzusammensetzung set altartikelid="
-         +itos(neu_art.Id())
-         +" where altartikelid="+itos(alt_art.Id()));
-   }
-  for (std::vector<std::string>::const_iterator i=tabellen2.begin();i!=tabellen2.end();++i)
-   {
-      Query::Execute("update "+*i+" set artikelid="+itos(neu_art.Id())
-         +" where artikelid="+itos(alt_art.Id()));
-   }
   for (std::vector<std::string>::const_iterator i=tabellen3.begin();i!=tabellen3.end();++i)
    {
-      Query::Execute("update "+*i+" set material="+itos(neu_art.Id())
-         +" where material="+itos(alt_art.Id()));
+      Query("update "+*i+" set material=? where material=?") << neu_art << alt_art;
    }
+  std::vector<std::string> tabellen4; // Spaltenname = artikel
+  tabellen4.push_back("ketten_garn");
   for (std::vector<std::string>::const_iterator i=tabellen4.begin();i!=tabellen4.end();++i)
    {
-      Query::Execute("update "+*i+" set artikel="+itos(neu_art.Id())
-         +" where artikel="+itos(alt_art.Id()));
+      Query("update "+*i+" set artikel=? where artikel=?") << neu_art << alt_art;
    }
    {
-      Query::Execute("update ketten_garn set garn="
-         +itos(neu_art.Id())
-         +" where garn="+itos(alt_art.Id()));
+      Query("update ketten_garn set garn=? where garn=?") << neu_art << alt_art;
    }
+  std::vector<std::string> tabellen5; // Spaltenname = art_id
+  tabellen5.push_back("maschinen_geschwindigkeit");
   for (std::vector<std::string>::const_iterator i=tabellen5.begin();i!=tabellen5.end();++i)
    {
-      Query::Execute("update "+*i+" set art_id="+itos(neu_art.Id())
-         +" where art_id="+itos(alt_art.Id()));
+      Query("update "+*i+" set art_id=? where art_id=?") << neu_art << alt_art;
    }
  tr.commit();
 }
