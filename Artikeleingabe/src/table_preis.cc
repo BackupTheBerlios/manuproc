@@ -1,4 +1,4 @@
-// $Id: table_preis.cc,v 1.11 2005/10/30 01:00:42 christof Exp $
+// $Id: table_preis.cc,v 1.12 2005/10/30 01:01:11 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -143,7 +143,7 @@ table_preis::table_preis(GlademmData *gmm_data)
   preisstaffel->getModel().set_editable(SP_STAFFEL);
   preisstaffel->getModel().set_editable(SP_CURRENCY);
   preisstaffel->getModel().set_editable(SP_PER);
-  preisstaffel->set_value_data(artikelbox);
+//  preisstaffel->set_value_data(artikelbox);
 //  preisstaffel->getModel().signal_value_changed()
 //      .connect(sigc::mem_fun(*this,&table_preis::edit));
 }
@@ -221,4 +221,9 @@ void table_preis::Load()
   PrRowData::einheit=Einheit(art);
   einheit->set_text(PrRowData::einheit.Bezeichnung());
   einheit2->set_text(PrRowData::einheit.Bezeichnung());
+}
+
+void table_preis::init(ArtikelBox *a) 
+{ artikelbox=a; 
+  preisstaffel->set_value_data(artikelbox);
 }

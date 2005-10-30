@@ -1,6 +1,6 @@
-// $Id: Artikeleingabe.cc,v 1.36 2005/10/30 01:00:42 christof Exp $
+// $Id: Artikeleingabe.cc,v 1.37 2005/10/30 01:01:11 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
- *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
+ *  Copyright (C) 2004-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -75,6 +75,7 @@ Artikeleingabe::Artikeleingabe(int argc, char **argv)
  Artikel_Bestellen_bei->set_sensitive(true);
 #endif
 
+ table_preis->init(artikelbox);
  if (argc==2 && !strncmp(argv[1],"<?xml ",6))
  { try
    { TagStream ts(argv[1]);
@@ -102,7 +103,6 @@ Artikeleingabe::Artikeleingabe(int argc, char **argv)
   artikelbox_activate();
  }
  else top_notebook->set_current_page(1);
- table_preis->init(artikelbox);
 }
 
 
@@ -182,9 +182,18 @@ void Artikeleingabe::on_alias_warengruppe_activate()
 
 void Artikeleingabe::on_button_artikel_wechsel_clicked()
 {
- cH_Data_tree dt=tree->getSelectedRowDataBase_as<cH_Data_tree>();
- artikelbox->set_value(dt->Artikel());
- artikelbox_activate();
+ try 
+ {cH_Data_tree dt=tree->getSelectedRowDataBase_as<cH_Data_tree>();
+  artikelbox->set_value(dt->Artikel());
+  artikelbox_activate();
+ } catch (SimpleTree::notLeafSelected &e)
+ { try 
+   { artikelbox->set_value(tree->getSelectedNode_as<const Data_Node>()->Artikel2());
+     artikelbox_activate();
+   }
+   catch (...) {}
+ }
+ catch (...) {}
 }
 
 void Artikeleingabe::on_neuladen_clicked()
@@ -313,7 +322,7 @@ void Artikeleingabe::ArtikelBaum_Pfad(ArtikelBase AB,menge_t menge,
 void Artikeleingabe::on_leaf_selected(cH_RowDataBase d)
 {
 //cout << "Leaf\n";
- const Data_tree *dt=dynamic_cast<const Data_tree*>(&*d);
+ Handle<const Data_tree> dt=d.cast_dynamic<const Data_tree>();
 // fuer_artikel = dt->Artikel();
  artikelbox->set_value(dt->Artikel());
 // artikelbox_activate(); sollte eigentlich ...
@@ -375,33 +384,13 @@ static void clear(Gtk::Container *cont)
   }
 }
 
-// so ein Schwachsinn, sollte eher den Text ändern, als alles neu zu erzeugen
 void Artikeleingabe::Loeschen_von(const ArtikelBase& art)
 {
   if(!art) return;
-//  std::string button_text  = "Lösche\n"+cH_ArtikelBezeichnung(art)->Bezeichnung();
-//  std::string button_text2 = "Artikel\n"+cH_ArtikelBezeichnung(art)->Bezeichnung();
   std::string button_text  = "Lösche\n"+cH_ArtikelBezeichnung(art,artikelbox->getBezSchema()->Id())->Bezeichnung();
   std::string button_text2 = "Artikel\n"+cH_ArtikelBezeichnung(art,artikelbox->getBezSchema()->Id())->Bezeichnung();
-  clear(toolbar_loeschen);
-//  toolbar_loeschen->tools().clear();
-  Gtk::Image *button_artikel_delete_img = Gtk::manage(new class Gtk::Image(Gtk::StockID("gtk-stock-not"), Gtk::IconSize(3)));
-  button_artikel_delete = Gtk::manage(new class Gtk::ToolButton(*button_artikel_delete_img,
-		button_text));
-  button_artikel_delete_img->show();
-  button_artikel_delete->show();
-  toolbar_loeschen->append(*button_artikel_delete);
-  Gtk::SeparatorToolItem *separatortoolitem1 = Gtk::manage(new class Gtk::SeparatorToolItem());
-  separatortoolitem1->show();
-  toolbar_loeschen->append(*separatortoolitem1);
-  Gtk::Image *button_artikel_wechsel_img = Gtk::manage(new class Gtk::Image(Gtk::StockID("gtk-go-forward"), Gtk::IconSize(3)));
-  button_artikel_wechsel = Gtk::manage(new class Gtk::ToolButton(*button_artikel_wechsel_img, button_text2));
-  button_artikel_wechsel_img->show();
-  button_artikel_wechsel->show();
-  toolbar_loeschen->append(*button_artikel_wechsel);
-
-  button_artikel_delete ->signal_clicked().connect(SigC::slot(*static_cast<class  Artikeleingabe*>(this), &Artikeleingabe::on_button_artikel_delete_clicked));
-  button_artikel_wechsel->signal_clicked().connect(SigC::slot(*static_cast<class  Artikeleingabe*>(this), &Artikeleingabe::on_button_artikel_wechsel_clicked));
+  button_artikel_delete->set_label(button_text);
+  button_artikel_wechsel->set_label(button_text2);
   toolbar_loeschen->show();
 }
 
@@ -415,9 +404,19 @@ void Artikeleingabe::on_unselect_row()
 
 void Artikeleingabe::on_button_artikel_delete_clicked()
 {
-  cH_Data_tree dt=tree->getSelectedRowDataBase_as<cH_Data_tree>();
+ try
+ {cH_Data_tree dt=tree->getSelectedRowDataBase_as<cH_Data_tree>();
   ArtikelBaum::delete_Artikel(dt->Artikel(),dt->Artikel2());
   on_neuladen_clicked();
+ } catch (SimpleTree::notLeafSelected &e)
+ { try 
+   { Handle<const Data_Node> dt=tree->getSelectedNode_as<const Data_Node>();
+      ArtikelBaum::delete_Artikel(dt->Artikel(),dt->Artikel2());
+      on_neuladen_clicked();
+   }
+   catch (...) {}
+ }
+ catch (...) {}
 }
 
 void Artikeleingabe::on_Artikel_Bestellen_activate()
