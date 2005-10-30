@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.52 2005/10/28 15:22:28 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.53 2005/10/30 00:58:49 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -301,6 +301,7 @@ public:
 	void set_tree_column_visibility(unsigned index,bool visible);
 	
 	void redisplay_old(cH_RowDataBase row, unsigned index);
+	void redisplay_old(Gtk::TreeModel::iterator row, unsigned index);
 	
 	// all lines have changed - redisplay is needed!
 //	SigC::Signal0<void> &signal_redisplay() {  return needs_redisplay; }
