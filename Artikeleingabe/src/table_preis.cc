@@ -1,4 +1,4 @@
-// $Id: table_preis.cc,v 1.10 2005/10/24 14:33:37 christof Exp $
+// $Id: table_preis.cc,v 1.11 2005/10/30 01:00:42 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -79,7 +79,7 @@ public:
   static Einheit einheit;
   PrRowData(PreisListe::ID i, int mm, Preis p) : preisliste(i), pr(p), mindestmenge(mm)
   {}
-  virtual const cH_EntryValue Value(guint _seqnr,gpointer gp) const
+  virtual cH_EntryValue Value(guint _seqnr,gpointer gp) const
   { switch((Spalten)_seqnr)
     { case SP_PRNUM: return cH_EntryValueIntString(preisliste);
       case SP_PRNAM: return cH_EntryValueIntString(cH_PreisListe(preisliste)->Name());
@@ -91,8 +91,38 @@ public:
     }
     return cH_EntryValue();
   }
-  
+  virtual bool changeValue(guint _seqnr,gpointer _g, const Glib::ustring &newvalue);
 };
+
+bool PrRowData::changeValue(guint _seqnr,gpointer _g, const Glib::ustring &newvalue)
+{ ArtikelBox *artikelbox=static_cast<ArtikelBox*>(_g);
+  try
+  { switch (Spalten(_seqnr))
+    { case SP_STAFFEL: // alten Preis löschen
+        // neuen Preis anlegen
+        break;
+      case SP_PER:
+        { std::string::size_type bez_size=PrRowData::einheit.Bezeichnung().size();
+          std::string val2=newvalue;
+          if (val2.size()>=bez_size 
+            && val2.substr(val2.size()-bez_size-1,bez_size)==PrRowData::einheit.Bezeichnung())
+            val2.erase(val2.size()-bez_size-1,bez_size);
+          int new_base=0;
+          if (!val2.empty()) new_base=ManuProC::parse<int>(val2);
+          Preis new_preis=Preis(pr.Wert(),pr.getWaehrung(),new_base);
+          if (new_preis!=pr)
+          { Artikelpreis(cH_PreisListe(preisliste),artikelbox->get_value(),
+                    mindestmenge)
+              .changePreis(new_preis,mindestmenge);
+            pr=new_preis;
+          }
+        }
+        return true;
+    }
+    // return true;
+  } catch (...) {}
+  return false;
+}
 
 table_preis::table_preis(GlademmData *gmm_data)
         : table_preis_glade(gmm_data), artikelbox()
@@ -113,10 +143,12 @@ table_preis::table_preis(GlademmData *gmm_data)
   preisstaffel->getModel().set_editable(SP_STAFFEL);
   preisstaffel->getModel().set_editable(SP_CURRENCY);
   preisstaffel->getModel().set_editable(SP_PER);
-  preisstaffel->getModel().signal_value_changed()
-      .connect(sigc::mem_fun(*this,&table_preis::edit));
+  preisstaffel->set_value_data(artikelbox);
+//  preisstaffel->getModel().signal_value_changed()
+//      .connect(sigc::mem_fun(*this,&table_preis::edit));
 }
 
+#if 0
 bool table_preis::edit(cH_RowDataBase row,unsigned col,std::string const& val)
 { try
   { // ManuProC::parse<int>(val)
@@ -147,6 +179,7 @@ bool table_preis::edit(cH_RowDataBase row,unsigned col,std::string const& val)
   } catch (...) {}
   return false;
 }
+#endif
 
 void table_preis::preis_uebernehmen()
 {try {   

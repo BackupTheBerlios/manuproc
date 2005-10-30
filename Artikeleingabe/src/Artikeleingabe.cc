@@ -1,4 +1,4 @@
-// $Id: Artikeleingabe.cc,v 1.35 2005/10/19 20:54:26 christof Exp $
+// $Id: Artikeleingabe.cc,v 1.36 2005/10/30 01:00:42 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -604,7 +604,7 @@ void Artikeleingabe::on_button_drucken_clicked()
    pclose(f); 
 }
 
-const cH_EntryValue Data_tree::Value(guint seqnr,gpointer gp) const
+cH_EntryValue Data_tree::Value(guint seqnr,gpointer gp) const
 {
 try{
    if (vec_zeile.size()>seqnr && seqnr <MAXCOLUMN) 

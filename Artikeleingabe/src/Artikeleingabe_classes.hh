@@ -1,4 +1,4 @@
-// $Id: Artikeleingabe_classes.hh,v 1.8 2005/05/06 00:11:53 christof Exp $
+// $Id: Artikeleingabe_classes.hh,v 1.9 2005/10/30 01:00:42 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -35,7 +35,7 @@ class Data_tree : public RowDataBase
    Data_tree(vec_zeile_t _vec_zeile) 
       : vec_zeile(_vec_zeile) {}
 
-   virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const;
+   virtual cH_EntryValue Value(guint seqnr,gpointer gp) const;
 
   ArtikelBase Artikel()  const; //  {return ArtikelBase(vec_zeile[0].first->Id()) ;}
   ArtikelBase Artikel2() const; //  {
@@ -58,7 +58,7 @@ class Data_Node : public TreeRow
     virtual void deduct(const cH_RowDataBase &rd)
       {
       }
-    virtual const cH_EntryValue Value(unsigned int, void*) const
+    virtual cH_EntryValue Value(unsigned int, void*) const
     {  return cH_EntryValue();
     }
     ArtikelBase Artikel() const {return artbase;}
