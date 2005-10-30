@@ -1,4 +1,4 @@
-// $Id: Artikeleingabe.cc,v 1.38 2005/10/30 01:01:36 christof Exp $
+// $Id: Artikeleingabe.cc,v 1.39 2005/10/30 01:01:47 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -322,15 +322,13 @@ void Artikeleingabe::on_leaf_selected(cH_RowDataBase d)
  Loeschen_von(dt->Artikel2());
 }
 
-#if 1
-void Artikeleingabe::on_node_selected(const TreeRow &node)
+void Artikeleingabe::on_node_selected(Handle<const TreeRow> node)
 {
-//cout << "Node\n";
-  const Data_Node &dn=dynamic_cast<const Data_Node &>(node);
-  Eingabe_fuer(dn.Artikel());
-  Loeschen_von(dn.Artikel2());
+//std::cerr << "Node\n";
+  Handle<const Data_Node> dn=node.cast_dynamic<const Data_Node>();
+  Eingabe_fuer(dn->Artikel());
+  Loeschen_von(dn->Artikel2());
 }
-#endif
 
 void Artikeleingabe::Eingabe_fuer(const ArtikelBase& art)
 {
