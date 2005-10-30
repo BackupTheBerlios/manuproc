@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.61 2005/10/30 00:58:40 christof Exp $
+// $Id: SimpleTree.cc,v 1.62 2005/10/30 00:58:44 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -256,7 +256,7 @@ Handle<const TreeRow> SimpleTree::getSelectedNode() const
      else
        throw notNodeSelected();
    }
-   else throw noRowSelected(); // oder multipleRowsSelected()
+   else throw noNodeSelected(); // oder multipleRowsSelected()
 }
 
 void SimpleTree_Basic::Expand_recursively()
