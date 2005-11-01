@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.58 2005/10/11 09:58:43 christof Exp $
+# $Id: Makefile.am,v 1.59 2005/11/01 23:37:28 christof Exp $
 
 if WINDOWS
 WIN_LDFLAGS=-no-undefined -export-symbols libManuProC_Base@DATABASE_TYPE@.def 
@@ -47,7 +47,7 @@ libManuProC_Base_la_SOURCES=Ausgabe_neu.cc Datum.cc IOerror.cc \
 		EntryValueDatum.cc $(DB_SRCES) Trace.cc \
 		germanstring.cc TagStream.cc Tag.cc EntryValueTimeStamp.cc \
 		Global_Settings.cc EntryValueSort.cc create_parse.cc \
-		TS_base64.cc $(DLL_DEF) Interval.cc
+		TS_base64.cc $(DLL_DEF) Interval.cc fixedpoint.cc
 
 EXTRA_DIST=dbconnect.pgcc SQLerror_postgres.pgcc Transaction.pgcc \
 	Query.pgcc
