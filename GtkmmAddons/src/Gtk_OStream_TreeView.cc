@@ -1,4 +1,4 @@
-// $Id: Gtk_OStream_TreeView.cc,v 1.7 2004/04/29 14:24:40 christof Exp $
+// $Id: Gtk_OStream_TreeView.cc,v 1.8 2005/11/01 23:09:28 christof Exp $
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 2002  Adolf Petig GmbH. & Co. KG
     Developed by Christof Petig <christof.petig@wtal.de>
@@ -56,7 +56,7 @@ void Gtk::OStream::line_TreeView(const std::string &line)
       
       int column=get_ModelColumn(*coli,"text");
       if (column!=-1)
-         row.set_value(column, Glib::ustring(line.substr(b,end)));
+         row.set_value(column, Glib::ustring(line.substr(b,end!=std::string::npos?end-b:end)));
            
       ++coli;
       b=end+1;
