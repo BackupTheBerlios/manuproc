@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.62 2005/10/30 00:58:44 christof Exp $
+// $Id: SimpleTree.cc,v 1.63 2005/11/02 00:12:26 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -93,27 +93,27 @@ void SimpleTree_Basic::on_spaltenzahl_geaendert()
    {
 #if 1
       CellRendererSimpleTree *crst = Gtk::manage(new CellRendererSimpleTree(i));
-      Gtk::CellRendererText *crt = Gtk::manage(new Gtk::CellRendererText());
-      Gtk::TreeView::Column* pColumn = Gtk::manage(new Gtk::TreeView::Column(getColTitle(i)));
-      pColumn->pack_start(*crst, false);
-      pColumn->pack_start(*crt, true);
+      //Gtk::CellRendererText *crt = Gtk::manage(new Gtk::CellRendererText());
+      Gtk::TreeView::Column* pColumn = Gtk::manage(new Gtk::TreeView::Column(getColTitle(i),*crst));
+      // pColumn->pack_start(*crst, false);
+      // pColumn->pack_start(*crt, true);
       pColumn->signal_clicked().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_title_clicked),i));
-      pColumn->add_attribute(crt->property_text(),sts->m_columns.cols[i]);
+      pColumn->add_attribute(crst->property_text(),sts->m_columns.cols[i]);
       if (getStore()->OptionColor().Value())
-         pColumn->add_attribute(crt->property_background_gdk(),sts->m_columns.background);
+         pColumn->add_attribute(crst->property_background_gdk(),sts->m_columns.background);
       pColumn->add_attribute(crst->property_childrens_deep(),sts->m_columns.childrens_deep);
       unsigned idx(IndexFromColumn(i));
       if (!alignment.empty())
       {  pColumn->set_alignment(alignment[idx]);
-         crt->property_xalign()=alignment[idx];
+         crst->property_xalign()=alignment[idx];
       }
       
       if (!resizeable.empty())
        pColumn->set_resizable(resizeable[idx]);
       
       if (getModel().is_editable(idx))
-      {  crt->property_editable()=true;
-         crt->signal_edited().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_column_edited),idx));
+      {  crst->property_editable()=true;
+         crst->signal_edited().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_column_edited),idx));
       }
       append_column(*pColumn);
 #else

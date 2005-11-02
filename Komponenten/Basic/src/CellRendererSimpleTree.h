@@ -1,4 +1,4 @@
-// $Id: CellRendererSimpleTree.h,v 1.2 2005/11/02 00:12:15 christof Exp $
+// $Id: CellRendererSimpleTree.h,v 1.3 2005/11/02 00:12:26 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,11 +20,11 @@
 #ifndef KOMPONENTEN_CELLREND_SIMPLE_TREE
 #define KOMPONENTEN_CELLREND_SIMPLE_TREE
 
-#include <gtkmm/cellrenderer.h>
+#include <gtkmm/cellrenderertext.h>
 
-class CellRendererSimpleTree : public Gtk::CellRenderer
+class CellRendererSimpleTree : public Gtk::CellRendererText
 {protected:
-	typedef Gtk::CellRenderer Parent;
+	typedef Gtk::CellRendererText Parent;
 	
 	const guint column; // which column this is in
 	Glib::Property<guint> childrens_deep; // the changing property
