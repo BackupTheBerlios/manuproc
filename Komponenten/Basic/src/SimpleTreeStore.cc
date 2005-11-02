@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.89 2005/10/30 00:58:49 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.90 2005/11/02 12:38:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -1024,6 +1024,13 @@ Gtk::TreeModel::const_iterator SimpleTreeStore::getIter(const_iterator it) const
    iterinit(&res,it);
    return Gtk::TreeModel::iterator(const_cast<GtkTreeModel*>(gobj()),&res);
 #endif
+}
+
+Gtk::TreeModel::Path SimpleTreeStore::getPath(const cH_RowDataBase &data) const
+{ std::list<iterator> l=const_cast<SimpleTreeStore*>(this)->find_row(data,true);
+  // optimized search
+  if (l.empty()) return Path();
+  return getPath(l.front());
 }
 
 Gtk::TreeModel::Path SimpleTreeStore::getPath(iterator it) const

@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.46 2005/10/30 00:58:52 christof Exp $
+// $Id: SimpleTree.hh,v 1.47 2005/11/02 12:38:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -248,6 +248,8 @@ public:
  // very basic method for scrolling to a specific line - tell me if you 
  // need more - CP
  void ScrollToSelection();
+ // 0 is top, 1 is bottom, -1 is dont_care
+ void scroll_to(const cH_RowDataBase &data,gfloat where=-1);
 };
 
 #if 0

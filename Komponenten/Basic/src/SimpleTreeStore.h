@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.53 2005/10/30 00:58:49 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.54 2005/11/02 12:38:23 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -289,6 +289,8 @@ public:
 	{  return root.children.end();
 	}
 	TreeModel::const_iterator getIter(const_iterator it) const;
+	// get the path for a given data line
+        Path getPath(const cH_RowDataBase &data) const;
 
 	void setSequence(const sequence_t &seq);
 	
@@ -300,6 +302,8 @@ public:
 	{  return vec_hide_cols.at(idx); }
 	void set_tree_column_visibility(unsigned index,bool visible);
 	
+	// better use the new API (which maintains a consistent tree (e.g.sums))
+	// getModel()->about_to_change(row); XYZ; getModel()->has_changed(row);
 	void redisplay_old(cH_RowDataBase row, unsigned index);
 	void redisplay_old(Gtk::TreeModel::iterator row, unsigned index);
 	

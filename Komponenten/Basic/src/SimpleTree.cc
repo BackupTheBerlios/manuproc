@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.63 2005/11/02 00:12:26 christof Exp $
+// $Id: SimpleTree.cc,v 1.64 2005/11/02 12:38:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -98,9 +98,14 @@ void SimpleTree_Basic::on_spaltenzahl_geaendert()
       // pColumn->pack_start(*crst, false);
       // pColumn->pack_start(*crt, true);
       pColumn->signal_clicked().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_title_clicked),i));
+#warning now we could use cH_EntryValue attribute and save much space and time!!!
       pColumn->add_attribute(crst->property_text(),sts->m_columns.cols[i]);
+#warning put OptionColor into CellRenderer and save space!
       if (getStore()->OptionColor().Value())
          pColumn->add_attribute(crst->property_background_gdk(),sts->m_columns.background);
+      // we need row, deep, childrens_deep, leafdata   per row 
+      // column, optcolor are global
+      // then we can kill background and cols
       pColumn->add_attribute(crst->property_childrens_deep(),sts->m_columns.childrens_deep);
       unsigned idx(IndexFromColumn(i));
       if (!alignment.empty())
@@ -167,7 +172,20 @@ void SimpleTree_Basic::on_zuruecksetzen_clicked()
 void SimpleTree_Basic::on_neuordnen_clicked()
 {  if (!clicked_seq.empty()) getStore()->ShowDeep()=clicked_seq.size()-1;
    getStore()->fillSequence(clicked_seq);
+   std::vector<cH_RowDataBase> 
+       selection=dynamic_cast<SimpleTree*>(this)->getSelectedRowDataBase_vec();
+   if (selection.empty()) 
+       selection=dynamic_cast<SimpleTree*>(this)->getSelectedRowDataBase_vec(true);
    getStore()->setSequence(clicked_seq);
+   for (std::vector<cH_RowDataBase>::const_iterator i=selection.begin();
+         i!=selection.end();++i)
+   { Gtk::TreeModel::Path path=getStore()->getPath(*i);
+     if (!path.empty())
+     { if (i==selection.begin()) scroll_to_row(path);
+       expand_to_path(path);
+       get_selection()->select(path);
+     }
+   }
    clicked_seq.clear();
    getStore()->save_remembered();
 }
@@ -388,11 +406,21 @@ void SimpleTree_Basic::setTitles(const std::vector<std::string>& T)
 }
 
 void SimpleTree::ScrollToSelection()
-{  Glib::RefPtr<Gtk::TreeSelection> sel=get_selection();
-   if (sel->get_selected())
-      scroll_to_cell(
-      	get_model()->get_path(sel->get_selected()),
-      	*get_column(0),0.5,0.0);
+{ Glib::RefPtr<Gtk::TreeSelection> sel=get_selection();
+  if (sel->count_selected_rows())
+  { Gtk::TreeModel::Path path=*(sel->get_selected_rows().begin());
+    expand_to_path(path);
+    scroll_to_row(path,0.5);
+  }
+}
+
+void SimpleTree::scroll_to(const cH_RowDataBase &data, gfloat where)
+{ Gtk::TreeModel::Path path=getStore()->getPath(data);
+  if (!path.empty())
+  { expand_to_path(path);
+    if (where<0) scroll_to_row(path);
+    else scroll_to_row(path,where);
+  }
 }
 
 void SimpleTree_Basic::setAlignment(const std::vector<gfloat> &A)
