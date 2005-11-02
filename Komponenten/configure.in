@@ -1,9 +1,10 @@
-# $Id: configure.in,v 1.11 2003/10/17 15:13:27 christof Exp $
+# $Id: configure.in,v 1.12 2005/11/02 00:12:22 christof Exp $
 
-AC_INIT(src/ArtikelBox.hh)
+AC_PREREQ(2.50)
+AC_INIT(Komponenten, 0.4.0, [manuproc-developer-de@berlios.de])
+AM_INIT_AUTOMAKE
 
-AM_INIT_AUTOMAKE(Komponenten, 0.4.0)
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS(config.h)
 
 AC_PREFIX_DEFAULT(/usr/local)
 
