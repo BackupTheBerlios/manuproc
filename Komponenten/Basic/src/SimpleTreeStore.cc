@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.97 2005/11/03 21:30:22 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.98 2005/11/03 21:54:48 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -66,6 +66,13 @@ struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Prope
   { if (node_creation) return (*node_creation)(suminit);
     else return Handle<TreeRow>(); 
   }
+  virtual bool ColumnsAreEquivalent() const
+  { return columns_are_equivalent; }
+  virtual column_type_t get_column_type(unsigned idx) const
+  { return column_type.at(idx); }
+  virtual std::string ProgramName() const { return mem_prog; }
+  virtual std::string InstanceName() const { return mem_inst; }
+  
 	__deprecated void setTitles(const std::vector<std::string> &T)
 	{ titles=T;
 	}
@@ -129,23 +136,6 @@ void SimpleTreeModel_Properties_Proxy::set_editable(unsigned idx,bool v)
    stdProperties().set_editable(idx,v);
    title_changed(idx);
 }
-
-#if 0 // dSTM_P
-const std::string SimpleTreeModel::getColTitle(guint idx) const
-{  if (idx<titles.size()) return titles[idx];
-   return ""; 
-}
-
-bool SimpleTreeModel::is_editable(unsigned idx) const
-{  if (idx>=column_editable.size()) return false;
-   return column_editable[idx];
-}
-
-SimpleTreeModel::column_type_t SimpleTreeModel::get_column_type(unsigned idx) const
-{  if (idx>=column_type.size()) return ct_string;
-   return column_type[idx];
-}
-#endif
 #else // !deprecated
 struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Properties
 { unsigned cols;
