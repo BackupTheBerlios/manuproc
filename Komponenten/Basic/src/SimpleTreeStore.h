@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.57 2005/11/03 21:05:28 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.58 2005/11/03 21:05:34 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,6 +40,8 @@
 #  define STS_GTKMM_22_24(a,b) a
 #endif
 #define STS_VFUNC_CONST STS_GTKMM_22_24(,const)
+
+#define ST_DEPRECATED
 
 struct SimpleTreeModel_Properties
 { enum column_type_t { ct_string, ct_bool };
@@ -94,16 +96,18 @@ public:
 	
 	const SimpleTreeModel_Properties &Properties() const
 	{ return *props; }
+	class Standard;
+	Standard *stdProperties();
 #ifdef ST_DEPRECATED
-	void setTitles(const std::vector<std::string> &T);
-	void setTitleAt(unsigned idx,const std::string &s);
-	void set_editable(unsigned idx,bool v=true);
-	void set_column_type(unsigned idx, column_type_t t);
-	void set_value_data(gpointer _p) {gp = _p;}
-	void set_remember(const std::string &program, const std::string &instance);
-	void set_NewNode(NewNode_fp n)
-	{  node_creation=n; }
-	void RedisplayOnReorder() { columns_are_equivalent=false; }
+	typedef Handle<TreeRow> (*NewNode_fp)(const Handle<const TreeRow> &suminit);
+	__deprecated void setTitles(const std::vector<std::string> &T);
+	__deprecated void setTitleAt(unsigned idx,const std::string &s);
+	__deprecated void set_editable(unsigned idx,bool v=true);
+	__deprecated void set_column_type(unsigned idx, SimpleTreeModel_Properties::column_type_t t);
+	__deprecated void set_value_data(gpointer _p);
+	__deprecated void set_remember(const std::string &program, const std::string &instance);
+	__deprecated void set_NewNode(NewNode_fp n);
+	__deprecated void RedisplayOnReorder();
 #endif
 	const std::string getColTitle(guint idx) const
 	{ return Properties().Title(idx); }
@@ -164,7 +168,7 @@ class SimpleTreeStore : virtual public Glib::Object, public Gtk::TreeModel,
 
 	// einen neuen Ast erzeugen, deep ist die Spalte, v der Wert dieser Spalte
 #ifdef ST_DEPRECATED
-	typedef Handle<TreeRow> (*NewNode_fp)(const Handle<const TreeRow> &suminit);
+	typedef SimpleTreeModel_Properties_Proxy::NewNode_fp NewNode_fp;
 #endif
 	typedef SimpleTreeStoreNode Node;
 

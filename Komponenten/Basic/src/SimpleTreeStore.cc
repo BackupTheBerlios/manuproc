@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.92 2005/11/03 21:05:25 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.93 2005/11/03 21:05:34 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -43,30 +43,44 @@
 #endif
 
 #ifdef ST_DEPRECATED
-struct def_SimpleTreeModel_Properties : public SimpleTreeModel_Properties
-{
+struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Properties
+{	unsigned columns;
 	std::vector<std::string> titles;
 	std::vector<bool> column_editable;
 	std::vector<column_type_t> column_type;
-	SimpleTreeModel::NewNode_fp node_creation;
+	SimpleTreeModel_Properties_Proxy::NewNode_fp node_creation;
 	bool columns_are_equivalent;
 	gpointer gp;
 	std::string mem_prog,mem_inst;
+	std::vector<gfloat> alignment;
 
-  def_SimpleTreeModel_Properties() : node_creation() {}
-  virtual unsigned Columns() const=0;
-  virtual gpointer user_data() const
-  { return 0; }
-  virtual Glib::ustring Title(guint _seqnr) const=0;
-  virtual gfloat Alignment(guint _seqnr) const
-  { return 0.0; }
-  virtual bool editable(guint _seqnr) const
-  { return false; }
+  Standard(guint cols) : columns(cols), titles(cols), 
+      column_editable(cols), node_creation(), columns_are_equivalent(true),
+      gp(), alignment(cols) {}
+  virtual unsigned Columns() const { return columns; }
+  virtual gpointer user_data() const { return gp; }
+  virtual Glib::ustring Title(guint _seqnr) const { return titles[_seqnr]; }
+  virtual gfloat Alignment(guint _seqnr) const { return alignment[_seqnr]; }
+  virtual bool editable(guint _seqnr) const { return column_editable[_seqnr]; }
   virtual Handle<TreeRow> create_node(const Handle<const TreeRow> &suminit) const
   { if (node_creation) return (*node_creation)(suminit);
     else return Handle<TreeRow>(); 
   }
+  
+	__deprecated void setTitles(const std::vector<std::string> &T);
+	__deprecated void setTitleAt(unsigned idx,const std::string &s);
+	__deprecated void set_editable(unsigned idx,bool v=true);
+	__deprecated void set_column_type(unsigned idx, column_type_t t);
+	__deprecated void set_value_data(gpointer _p) {gp = _p;}
+	__deprecated void set_remember(const std::string &program, const std::string &instance);
+	__deprecated void set_NewNode(NewNode_fp n)
+	{  node_creation=n; }
+	__deprecated void RedisplayOnReorder() { columns_are_equivalent=false; }
 };
+
+SimpleTreeModel_Properties_Proxy::Standard *SimpleTreeModel_Properties_Proxy::stdProperties()
+{ return &dynamic_cast<SimpleTreeModel_Properties_Proxy::Standard&>(*props);
+}
 
 #if 0 // dSTM_P
 void SimpleTreeModel::setTitles(const std::vector<std::string> &T)
@@ -117,9 +131,9 @@ void SimpleTreeStore::set_remember(const std::string &program, const std::string
 
 #endif
 #else // !deprecated
-struct def_SimpleTreeModel_Properties : public SimpleTreeModel_Properties
+struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Properties
 { unsigned cols;
-  def_SimpleTreeModel_Properties(unsigned c) : cols(c) {}
+  Standard(unsigned c) : cols(c) {}
   virtual unsigned Columns() const
   { return cols; }
   virtual Glib::ustring Title(guint _seqnr) const
@@ -128,7 +142,7 @@ struct def_SimpleTreeModel_Properties : public SimpleTreeModel_Properties
 #endif // deprecated
 
 SimpleTreeModel_Properties_Proxy::SimpleTreeModel_Properties_Proxy(unsigned x)
-: props(new def_SimpleTreeModel_Properties(x))
+: props(new SimpleTreeModel_Properties_Proxy::Standard(x))
 {}
 
 SimpleTreeModel_Properties_Proxy::~SimpleTreeModel_Properties_Proxy()

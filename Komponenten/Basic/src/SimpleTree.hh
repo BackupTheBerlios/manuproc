@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.49 2005/11/03 21:05:28 christof Exp $
+// $Id: SimpleTree.hh,v 1.50 2005/11/03 21:05:34 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -37,15 +37,15 @@ public:
 
 #ifdef ST_DEPRECATED
 	void set_remember(const std::string &program, const std::string &instance) {  sts->set_remember(program,instance); }
-	void setTitles(const std::vector<std::string> &T) {  sts->getModel().setTitles(T); }
-	void setTitleAt(unsigned idx, const std::string &s) {  sts->getModel().setTitleAt(idx,s); }
+	void setTitles(const std::vector<std::string> &T) {  sts->setTitles(T); }
+	void setTitleAt(unsigned idx, const std::string &s) {  sts->setTitleAt(idx,s); }
 	void set_NewNode(SimpleTreeStore::NewNode_fp n) { sts->set_NewNode(n); }
 	void set_value_data(gpointer _p) { sts->set_value_data(_p); }
 #endif
 	guint Cols() const  { return sts->Cols();}
 
 	// these are from model
-	void setDataVec(const std::vector<cH_RowDataBase> &d) {  sts->getModel().setDataVec(d); }
+	void setDataVec(const std::vector<cH_RowDataBase> &d) {  sts->getModel()=d; }
 	const Glib::RefPtr<SimpleTreeStore> &getStore() { return sts; }
 	const Glib::RefPtr<Gtk::TreeModel> getTreeModel() { return Glib::RefPtr<Gtk::TreeModel>(sts); }
 	SimpleTreeModel &getModel() { return sts->getModel(); }
