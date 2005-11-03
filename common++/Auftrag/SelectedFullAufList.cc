@@ -1,4 +1,4 @@
-// $Id: SelectedFullAufList.cc,v 1.7 2005/10/27 13:11:28 christof Exp $
+// $Id: SelectedFullAufList.cc,v 1.8 2005/11/03 21:09:06 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -87,8 +87,9 @@ void SelectedFullAufList::genQuery(Query &q, const SQLFullAuftragSelector &selec
 
 void SelectedFullAufList::loop(const SQLFullAuftragSelector &selector,void (*fn)(void*,AufEintrag&),void *ptr)
 { Transaction tr; // we need this for portals, does not hurt anyway
-  if(!selector.getPreQuery().empty())
-    Query(selector.getPreQuery());
+  for (std::vector<std::string>::const_iterator i=selector.getPreQuery().begin();
+        i!=selector.getPreQuery().end();++i)
+    Query::Execute(*i);
     
   Query q;
   genQuery(q,selector);
@@ -100,8 +101,9 @@ void SelectedFullAufList::loop(const SQLFullAuftragSelector &selector,void (*fn)
     (*fn)(ptr,ae);
   }
   
-  if(!selector.getPostQuery().empty())
-    Query(selector.getPostQuery());
+  for (std::vector<std::string>::const_iterator i=selector.getPostQuery().begin();
+        i!=selector.getPostQuery().end();++i)
+    Query::Execute(*i);
   // merke: in dieser Transaktion kann durchaus eine Menge passiert sein ...
   tr.commit();
 }
@@ -110,16 +112,18 @@ SelectedFullAufList::SelectedFullAufList
 	(const SQLFullAuftragSelector &selector) throw(SQLerror)
 {
  Transaction tr; // we need this for portals, does not hurt anyway
- if(!selector.getPreQuery().empty())
-   Query(selector.getPreQuery());
+  for (std::vector<std::string>::const_iterator i=selector.getPreQuery().begin();
+        i!=selector.getPreQuery().end();++i)
+    Query::Execute(*i);
    
  Query q;
  genQuery(q,selector);
  q << selector.getArguments();
  q.FetchArray(aufidliste);
 
- if(!selector.getPostQuery().empty())
-   Query(selector.getPostQuery());
+  for (std::vector<std::string>::const_iterator i=selector.getPostQuery().begin();
+        i!=selector.getPostQuery().end();++i)
+    Query::Execute(*i);
  tr.commit();
 }
 

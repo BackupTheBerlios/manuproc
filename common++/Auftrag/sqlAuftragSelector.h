@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.41 2005/10/25 12:13:22 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.42 2005/11/03 21:09:06 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski
@@ -38,8 +38,8 @@ private:
  std::string clausel;
  std::string order_clausel; // will be added to query int getClausel
  			   // can be manipulated after creation
- std::string pre_query; // do it as sql-query before run main clausel
- std::string post_query; // do it as sql-query after run main clausel 
+ std::vector<std::string> pre_query; // do it as sql-query before run main clausel
+ std::vector<std::string> post_query; // do it as sql-query after run main clausel 
  
  ArgumentList arguments;
  auto_init<bool> many; // many many lines are expected, use portal
@@ -171,9 +171,9 @@ public:
 
  void setClausel(const std::string &cl) { clausel = cl;}
  void setOrderClausel(const std::string &ocl) { order_clausel = ocl;} 
- const std::string getClausel() const { return clausel+order_clausel; }
- const std::string getPreQuery() const { return pre_query; }
- const std::string getPostQuery() const { return post_query; }
+ std::string getClausel() const { return clausel+order_clausel; }
+ std::vector<std::string> const&getPreQuery() const { return pre_query; }
+ std::vector<std::string> const&getPostQuery() const { return post_query; }
  bool many_lines() const { return many; }
  prepareindex prepare() const { return prepnum; }
  ArgumentList const& getArguments() const { return arguments; }

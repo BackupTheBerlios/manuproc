@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.49 2005/10/25 12:13:14 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.50 2005/11/03 21:09:06 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Jacek Jakubowski
@@ -278,10 +278,9 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(
  tmptable+=itos(getpid())+"_"+itos(getuid());
 
  std::string query("create temp table ");
- query+=tmptable+" as (select * from "+selstr.lager.ViewTabelle()+");";
- query+=" create unique index temp_uniq on "+tmptable+" (artikelid)";
-
- pre_query=query;
+ query+=tmptable+" as (select * from "+selstr.lager.ViewTabelle()+")";
+ pre_query.push_back(query);
+ pre_query.push_back("create unique index temp_uniq on "+tmptable+" (artikelid)");
 
 // MAIN QUERY
  query="select ";
@@ -300,7 +299,6 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(
 // POST QUERY
 
  query="drop table "+tmptable;
- post_query=query;
-
+ post_query.push_back(query);
 }
 #endif
