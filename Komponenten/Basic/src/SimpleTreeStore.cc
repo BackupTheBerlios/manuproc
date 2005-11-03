@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.96 2005/11/03 21:05:44 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.97 2005/11/03 21:30:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -72,7 +72,9 @@ struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Prope
 	__deprecated void setTitleAt(unsigned idx,const std::string &s)
 	{ titles.at(idx)=s; }
 	__deprecated void set_editable(unsigned idx,bool v=true)
-	{ column_editable.at(idx)=v; }
+	{ column_editable.at(idx)=v; 
+	  if (columns_are_equivalent) columns_are_equivalent=false;
+	}
 	__deprecated void set_column_type(unsigned idx, column_type_t t)
 	{ column_type.at(idx)=t; }
 	__deprecated void set_value_data(gpointer _p) {gp = _p;}
