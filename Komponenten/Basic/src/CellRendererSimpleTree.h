@@ -1,4 +1,4 @@
-// $Id: CellRendererSimpleTree.h,v 1.4 2005/11/03 21:05:14 christof Exp $
+// $Id: CellRendererSimpleTree.h,v 1.5 2005/11/03 21:17:54 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,14 +27,7 @@ class CellRendererSimpleTree : public Gtk::CellRendererText
 	typedef Gtk::CellRendererText Parent;
 	
 	const guint column; // which column this is in
-	Glib::Property<bool> use_colors; // saturation, color set?
-	
-	// the per row changing properties
-	// perhaps combine them to save time?
-	Glib::Property<Handle<TreeRow> > row;
-	Glib::Property<guint> deep;
-	Glib::Property<guint> childrens_deep; 
-	Glib::Property<cH_RowDataBase> leafdata;
+	Glib::Property<guint> childrens_deep; // the changing property
 	
 	virtual void get_size_vfunc(Gtk::Widget& widget, const Gdk::Rectangle* cell_area, 
 			int* x_offset, int* y_offset, int* width, int* height) const;
