@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.66 2005/11/03 21:05:28 christof Exp $
+// $Id: SimpleTree.cc,v 1.67 2005/11/03 21:05:30 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -116,7 +116,7 @@ void SimpleTree_Basic::on_spaltenzahl_geaendert()
       if (!resizeable.empty())
        pColumn->set_resizable(resizeable[idx]);
       
-      if (Properties().Editable(idx))
+      if (Properties().editable(idx))
       {  crst->property_editable()=true;
          crst->signal_edited().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_column_edited),idx));
       }
@@ -191,9 +191,12 @@ void SimpleTree_Basic::on_neuordnen_clicked()
 }
 
 void SimpleTree_Basic::on_title_changed(guint nr)
-{  if (getStore()->columns_are_equivalent && getModel().is_editable(IndexFromColumn(nr)))
-      getStore()->columns_are_equivalent=false;
-   if (!getStore()->columns_are_equivalent) on_spaltenzahl_geaendert();
+{  if (Properties().ColumnsAreEquivalent())
+      assert(!Properties().editable(IndexFromColumn(nr)));
+// klingt nicht sinnvoll, sicherstellen, dass das normalerweise nur einmal 
+// aufgerufen wird
+#warning change menu, too
+   if (!Properties().ColumnsAreEquivalent()) on_spaltenzahl_geaendert();
    else get_column(nr+FIRST_COLUMN)->set_title(Properties().Title(nr));
 }
 
@@ -399,11 +402,13 @@ bool SimpleTree_Basic::MouseButton(GdkEventButton *event)
    return false;
 }
 
+#ifdef ST_DEPRECATED
 void SimpleTree_Basic::setTitles(const std::vector<std::string>& T)
 {  SimpleTreeStore_Proxy::setTitles(T);
    delete menu; menu=0;
    fillMenu();
 }
+#endif
 
 void SimpleTree::ScrollToSelection()
 { Glib::RefPtr<Gtk::TreeSelection> sel=get_selection();
