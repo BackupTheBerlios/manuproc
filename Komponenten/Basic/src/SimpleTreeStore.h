@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.55 2005/11/03 21:05:18 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.56 2005/11/03 21:05:25 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -58,6 +58,8 @@ struct SimpleTreeModel_Properties
   { return true; }
   virtual column_type_t get_column_type(unsigned idx) const
   { return ct_string; }
+  virtual std::string ProgramName() const { return std::string(); }
+  virtual std::string InstanceName() const { return std::string(); }
 };
 
 // for easily accessing model methods
@@ -88,6 +90,7 @@ public:
 	SimpleTreeModel_Properties_Proxy(unsigned cols);
 	SimpleTreeModel_Properties_Proxy(SimpleTreeModel_Properties *p)
 	: props(p) {}
+	~SimpleTreeModel_Properties_Proxy();
 #ifdef ST_DEPRECATED
 	void setTitles(const std::vector<std::string> &T);
 	void setTitleAt(unsigned idx,const std::string &s);
@@ -95,16 +98,24 @@ public:
 	void set_column_type(unsigned idx, column_type_t t);
 	void set_value_data(gpointer _p) {gp = _p;}
 	void set_remember(const std::string &program, const std::string &instance);
+	void set_NewNode(NewNode_fp n)
+	{  node_creation=n; }
+	void RedisplayOnReorder() { columns_are_equivalent=false; }
 #endif
 	const std::string getColTitle(guint idx) const
 	{ return props->Title(idx); }
 	SigC::Signal1<void,guint> &signal_title_changed()
 	{  return title_changed; }
 	bool is_editable(unsigned idx) const
-	{ return props->is_editable(idx); }
-	column_type_t get_column_type(unsigned idx) const
+	{ return props->editable(idx); }
+	SimpleTreeModel_Properties::column_type_t get_column_type(unsigned idx) const
 	{ return props->get_column_type(idx); }
 	gpointer ValueData() const { return props->ValueData(); }
+  std::string ProgramName() const { return props->ProgramName(); }
+  std::string InstanceName() const { return props->InstanceName(); }
+  Handle<TreeRow> create_node(const Handle<const TreeRow> &suminit) const
+  { return props->create_node(suminit); }
+  bool ColumnsAreEquivalent() const { return props->ColumnsAreEquivalent(); }
 };
 
 struct SimpleTreeStoreNode
@@ -320,9 +331,6 @@ public:
 	{  return please_attach; }
 	const std::string getColTitle(guint idx) const;
 	
-	void set_NewNode(NewNode_fp n)
-	{  node_creation=n; }
-	
 	const_iterator begin() const
 	{  return root.children.begin();
 	}
@@ -363,8 +371,6 @@ public:
 	unsigned visible_size() { return currseq.size(); }
 	void setSortierspalte(unsigned idx=invisible_column, bool invert=false);
 	bool getInvert() const { return invert_sortierspalte; }	
-	
-	void RedisplayOnReorder() { columns_are_equivalent=false; }
 };
 
 #endif

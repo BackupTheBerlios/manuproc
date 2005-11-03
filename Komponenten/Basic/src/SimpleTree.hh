@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.47 2005/11/02 12:38:22 christof Exp $
+// $Id: SimpleTree.hh,v 1.48 2005/11/03 21:05:25 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -35,19 +35,22 @@ public:
 		sts(SimpleTreeStore::create(max_cols)) 
 	{}
 
+#ifdef ST_DEPRECATED
 	void set_remember(const std::string &program, const std::string &instance) {  sts->set_remember(program,instance); }
+	void setTitles(const std::vector<std::string> &T) {  sts->getModel().setTitles(T); }
+	void setTitleAt(unsigned idx, const std::string &s) {  sts->getModel().setTitleAt(idx,s); }
+	void set_NewNode(SimpleTreeStore::NewNode_fp n) { sts->set_NewNode(n); }
+	void set_value_data(gpointer _p) { sts->set_value_data(_p); }
+#endif
 	guint Cols() const  { return sts->Cols();}
 
 	// these are from model
 	void setDataVec(const std::vector<cH_RowDataBase> &d) {  sts->getModel().setDataVec(d); }
-	void setTitles(const std::vector<std::string> &T) {  sts->getModel().setTitles(T); }
-	void setTitleAt(unsigned idx, const std::string &s) {  sts->getModel().setTitleAt(idx,s); }
 	const Glib::RefPtr<SimpleTreeStore> &getStore() { return sts; }
 	const Glib::RefPtr<Gtk::TreeModel> getTreeModel() { return Glib::RefPtr<Gtk::TreeModel>(sts); }
 	SimpleTreeModel &getModel() { return sts->getModel(); }
 	const Glib::RefPtr<const SimpleTreeStore> getStore() const { return Glib::RefPtr<const SimpleTreeStore>(sts); }
 	const std::string getColTitle(guint idx) const { return sts->getColTitle(idx); }
-	void set_NewNode(SimpleTreeStore::NewNode_fp n) { sts->set_NewNode(n); }
 
 	const_iterator begin() const { return sts->begin(); }
 	const_iterator end() const { return sts->end(); }
@@ -63,9 +66,8 @@ public:
 	const SimpleTreeStore::sequence_t &get_seq() const {return sts->get_seq();}
 	
 	void set_column_visibility(unsigned index,bool on) { sts->set_tree_column_visibility(index,on); }
-	void set_value_data(gpointer _p) { sts->set_value_data(_p); }
 	
-	void redisplay(cH_RowDataBase row, unsigned index) {  sts->redisplay_old(row,index); }
+	__deprecated void redisplay(cH_RowDataBase row, unsigned index) {  sts->redisplay_old(row,index); }
 	// the fast variant
 	void redisplay(Gtk::TreeModel::iterator iter, unsigned index) {  sts->redisplay_old(iter,index); }
 };

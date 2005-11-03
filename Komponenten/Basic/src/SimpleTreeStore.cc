@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.91 2005/11/03 21:05:21 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.92 2005/11/03 21:05:25 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -42,6 +42,7 @@
 #define getuid() 0
 #endif
 
+#ifdef ST_DEPRECATED
 struct def_SimpleTreeModel_Properties : public SimpleTreeModel_Properties
 {
 	std::vector<std::string> titles;
@@ -66,6 +67,73 @@ struct def_SimpleTreeModel_Properties : public SimpleTreeModel_Properties
     else return Handle<TreeRow>(); 
   }
 };
+
+#if 0 // dSTM_P
+void SimpleTreeModel::setTitles(const std::vector<std::string> &T)
+{  titles=T;
+   for (guint i=0;i<T.size();++i) title_changed(i);
+}
+
+void SimpleTreeModel::setTitleAt(unsigned idx, const std::string &s)
+{ assert(idx<titles.size());
+  titles[idx]=s;
+  title_changed(idx);
+}
+
+const std::string SimpleTreeModel::getColTitle(guint idx) const
+{  if (idx<titles.size()) return titles[idx];
+   return ""; 
+}
+
+bool SimpleTreeModel::is_editable(unsigned idx) const
+{  if (idx>=column_editable.size()) return false;
+   return column_editable[idx];
+}
+
+SimpleTreeModel::column_type_t SimpleTreeModel::get_column_type(unsigned idx) const
+{  if (idx>=column_type.size()) return ct_string;
+   return column_type[idx];
+}
+
+void SimpleTreeModel::set_editable(unsigned idx,bool v)
+{  if (idx>=column_editable.size()) column_editable.resize(idx+1);
+   column_editable[idx]=v;
+   title_changed(idx);
+}
+
+void SimpleTreeModel::set_column_type(unsigned idx, column_type_t t)
+{  if (idx>=column_type.size()) column_type.resize(idx+1);
+   column_type[idx]=t;
+   title_changed(idx);
+}
+
+void SimpleTreeStore::set_remember(const std::string &program, const std::string &instance)
+{  if (ProgramName()!=program || mem_inst!=instance)
+   {  mem_prog=program;
+      mem_inst=instance;
+      load_remembered();
+   }
+}
+
+#endif
+#else // !deprecated
+struct def_SimpleTreeModel_Properties : public SimpleTreeModel_Properties
+{ unsigned cols;
+  def_SimpleTreeModel_Properties(unsigned c) : cols(c) {}
+  virtual unsigned Columns() const
+  { return cols; }
+  virtual Glib::ustring Title(guint _seqnr) const
+  { return "title"; }
+};
+#endif // deprecated
+
+SimpleTreeModel_Properties_Proxy::SimpleTreeModel_Properties_Proxy(unsigned x)
+: props(new def_SimpleTreeModel_Properties(x))
+{}
+
+SimpleTreeModel_Properties_Proxy::~SimpleTreeModel_Properties_Proxy()
+{ delete props;
+}
 
 void SimpleTreeModel_Proxy::setModel(SimpleTreeModel &_model)
 {  if (model_is_ours) { delete model; model_is_ours=false; }
@@ -102,7 +170,7 @@ void SimpleTreeStore::default_save(const std::string&program, const std::string&
 void SimpleTreeStore::save_remembered() const
 {  std::pair<std::string,std::string> value;
 
-   if (block_save || (mem_prog.empty() && mem_inst.empty())) return;
+   if (block_save || (ProgramName().empty() && InstanceName().empty())) return;
    unsigned int sichtbar=0,bit=1;
    for (std::vector<bool>::const_iterator i=vec_hide_cols.begin();
    		bit && i!=vec_hide_cols.end();++i,bit<<=1)
@@ -124,12 +192,12 @@ void SimpleTreeStore::save_remembered() const
    
    // additional flags from derived widgets?
 
-   default_save(mem_prog, mem_inst, value);
+   default_save(ProgramName(), InstanceName(), value);
 }
 
 void SimpleTreeStore::load_remembered()
-{  if (mem_prog.empty() && mem_inst.empty()) return;
-   std::pair<std::string,std::string> value=default_load(mem_prog, mem_inst);
+{  if (ProgramName().empty() && InstanceName().empty()) return;
+   std::pair<std::string,std::string> value=default_load(ProgramName(), InstanceName());
 
 //   titles_bool=value.second.find('T')==std::string::npos;
    expandieren_bool=value.second.find('E')==std::string::npos;
@@ -160,14 +228,6 @@ void SimpleTreeStore::load_remembered()
    on_visibly_changed(bvector_iterator());
    signal_save(0);
    block_save=false;
-}
-
-void SimpleTreeStore::set_remember(const std::string &program, const std::string &instance)
-{  if (mem_prog!=program || mem_inst!=instance)
-   {  mem_prog=program;
-      mem_inst=instance;
-      load_remembered();
-   }
 }
 
 static const unsigned col1=0xffff,col0=0xcfff;
@@ -225,9 +285,11 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
 	  Glib::ObjectBase( typeid(SimpleTreeStore) ), //register a custom GType.
 	  Glib::Object(), //The custom GType is actually registered here.
 #endif	  
-          columns_are_equivalent(true),
-	  node_creation(), columns(max_col), max_column(max_col),
-	  showdeep(), gp(), 
+//          columns_are_equivalent(true),
+//	  node_creation(), 
+          SimpleTreeModel_Properties_Proxy(max_col),
+          columns(max_col), max_column(max_col),
+	  showdeep(), // gp(), 
 	  auffuellen_bool(), expandieren_bool(), block_save(),
 	  color_bool(),
 	  sortierspalte(invisible_column), invert_sortierspalte(), 
@@ -248,7 +310,7 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
   for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
     (*i) = true;
    defaultSequence();
-   getModel().signal_title_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_title_changed));
+   signal_title_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_title_changed));
 //   getModel().signal_redraw_needed().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
    getModel().signal_please_detach().connect(please_detach.slot());
    getModel().signal_please_attach().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
@@ -297,7 +359,7 @@ void SimpleTreeStore::on_title_changed(guint idx)
 }
 
 const std::string SimpleTreeStore::getColTitle(guint idx) const
-{  return getModel().getColTitle(currseq[idx]);
+{  return SimpleTreeModel_Properties_Proxy::getColTitle(currseq[idx]);
 }
 
 void SimpleTreeStore::defaultSequence()
@@ -344,8 +406,8 @@ void SimpleTreeStore::redisplay()
 // liste loeschen
  root.children.clear();
 
- std::vector<cH_RowDataBase>::const_iterator i=getDataVec().begin();
- std::vector<cH_RowDataBase>::const_iterator j=getDataVec().end();
+ SimpleTreeModel::const_iterator i=getModel().begin();
+ SimpleTreeModel::const_iterator j=getModel().end();
 
 // neu einordnen, Summen berechnen
  for(; i!=j; ++i)
@@ -462,8 +524,8 @@ SimpleTreeStore::iterator SimpleTreeStore::MoveTree(iterator current_iter,
    Node &oldnode=current_iter->second;
    Node newnode(deep,oldnode.parent,oldnode.leafdata,child_s_deep);
 
-   if (node_creation) 
-   {  Handle<TreeRow> htr= (*node_creation)(&*oldnode.row);
+//   if (node_creation) 
+   {  Handle<TreeRow> htr= create_node(oldnode.row);
       newnode.row=htr;
       // leaves have no row (so initial sum is always 0), 
       // so we need to cumulate their data
@@ -515,7 +577,7 @@ void SimpleTreeStore::setSequence(const sequence_t &neu)
       save_remembered();
       spaltenzahl_geaendert();
    }
-   else if (columns_are_equivalent)
+   else if (ColumnsAreEquivalent())
    {  for (unsigned i=0;i<Cols();++i) title_changed(i);
    }
    else spaltenzahl_geaendert();
@@ -1114,5 +1176,5 @@ bool SimpleTreeStore::row_drop_possible_vfunc(const Gtk::TreeModel::Path& dest, 
 }
 
 void SimpleTreeStore::value_change_impl(cH_RowDataBase row,unsigned idx,std::string const& newval, bool &has_changed)
-{ has_changed|=row.cast_const<RowDataBase>()->changeValue(idx,gp,newval);
+{ has_changed|=row.cast_const<RowDataBase>()->changeValue(idx,ValueData(),newval);
 }
