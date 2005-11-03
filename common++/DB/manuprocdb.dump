@@ -3,6 +3,7 @@
 --
 
 SET search_path = public, pg_catalog;
+SET client_encoding = 'LATIN9';
 
 DROP TRIGGER "RI_ConstraintTrigger_11646935" ON public.lieferscheinentry;
 DROP TRIGGER "RI_ConstraintTrigger_11646934" ON public.lieferschein;
@@ -2293,6 +2294,7 @@ COPY auftrag_prozess (auftragid, zeilennr, prozessid, datum, instanz, letzteplan
 --
 
 COPY banken (bankindex, blz, name) FROM stdin;
+3	99999999	Musterbank
 \.
 
 
@@ -2757,8 +2759,8 @@ COPY text_bausteine (textid, sprid, text_lang, kommentar) FROM stdin;
 --
 
 COPY kunden (kundennr, sortname, idnr, firma, postanwvor, strasse, postanwnach, hsnr, plz, postfach, postfplz, ort, planumsatz, umsatz, mitarbeiter, kundenumsatz, stand, flaeche, kalkulation, ktonr, blz, preisliste, rabatt, notiz, rechnung_an, bankeinzug, rng_an_postfach, extbezschemaid, extartbezid, lieferadresse, rechnungsadresse, typ, verein, skontofrist, bankindex, entsorgung, waehrungid, einzugrabatt, lkz, skontosatz, verknr_old, gruppennr, zeilenrabatt, buchungskonto, unsere_kundennr, lieferantenkonto, gegenkonto, ku_verkaeufer, sonder_pliste, landid, betreuer, anz_firmenpapier, anz_weissespapier, zahlungsart, lieferung_frei_haus, aktiv, preisauto, showean, auf_notiz, lief_notiz, rng_notiz, debitorenkonto, name2, gebdatum, branr, lieferung_an, ab_an_rngadresse, verknr, mwst) FROM stdin;
-1	\N	\N	Musterfabrik	\N	Musterstr	\N	12	12345	\N	\N	Musterhausen	0	\N	\N	0.00	2005-01-01 10:57:10+01	0	\N	123456	\n	1	0.0	\n	1	f	f	\N	\N	t	t	RL	\N	8	2015	f	1	1.0	D	3.00	99	0	t	\N	\N	\N	\N	99	\N	1	\N	1	2	1	\N	t	t	f				1	\N	\N	\N	\N	f	99	t
-2	\N	\N	Kunde	\N	Musterstr	\N	12	12345	\N	\N	Musterhausen	0	\N	\N	0.00	2005-01-01 10:57:10+01	0	\N	123456	\n	1	0.0	\n	1	f	f	\N	\N	t	t	RL	\N	8	2015	f	1	1.0	D	3.00	99	0	t	\N	\N	\N	\N	99	\N	1	\N	1	2	1	\N	t	t	f				1	\N	\N	\N	\N	f	99	t
+1	\N	\N	Musterfabrik	\N	Musterstr	\N	12	12345	\N	\N	Musterhausen	0	\N	\N	0.00	2005-01-01 10:57:10+01	0	\N	123456	\N	1	0.0	\n	1	f	f	\N	\N	t	t	RL	\N	8	3	f	1	1.0	D	3.00	99	0	t	\N	\N	\N	\N	99	\N	1	\N	1	2	1	\N	t	t	f				1	\N	\N	\N	\N	f	99	t
+2	\N	\N	Kunde	\N	Musterstr	\N	12	12345	\N	\N	Musterhausen	0	\N	\N	0.00	2005-01-01 10:57:10+01	0	\N	123456	\N	1	0.0	\n	1	f	f	\N	\N	t	t	RL	\N	8	3	f	1	1.0	D	3.00	99	0	t	\N	\N	\N	\N	99	\N	1	\N	1	2	1	\N	t	t	f				1	\N	\N	\N	\N	f	99	t
 \.
 
 
