@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.20 2005/08/18 09:01:12 jacek Exp $
+# $Id: Makefile.am,v 1.21 2005/11/03 21:08:54 christof Exp $
 
 AM_CXXFLAGS= @COMMONXX_INCLUDES@ 
 LDADD=@LIBS@ @COMMONXX_LIBS@
@@ -9,7 +9,7 @@ AM_LDFLAGS= @COMMONXX_LDFLAGS@
 
 noinst_PROGRAMS= checkInstanzen Instanzen createDynEnums \
 	db_upgrade auftrag_repair createDynDescr \
-	warp_order_align createDynConfig
+	warp_order_align createDynConfig blz_einlesen
 EXTRA_PROGRAMS = checkGeliefert Zuordnung_zeigen adjust_store
 
 checkInstanzen_SOURCES = checkInstanzen.cc
@@ -23,6 +23,7 @@ auftrag_repair_SOURCES= auftrag_repair.cc
 Zuordnung_zeigen_SOURCES=Zuordnung_zeigen.cc
 db_upgrade_SOURCES=db_upgrade.cc
 warp_order_align_SOURCES=warp_order_align.cc
+blz_einlesen_SOURCES=blz_einlesen.cc
 
 CLEANFILES= *~ 
 
