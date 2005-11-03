@@ -1,4 +1,4 @@
-// $Id: SimpleTreeModel.cc,v 1.9 2005/11/03 21:05:18 christof Exp $
+// $Id: SimpleTreeModel.cc,v 1.10 2005/11/03 21:05:21 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,31 +18,6 @@
  */
 
 #include <SimpleTreeModel.h>
-
-struct def_SimpleTreeModel_Properties : public SimpleTreeModel_Properties
-{
-	std::vector<std::string> titles;
-	std::vector<bool> column_editable;
-	std::vector<column_type_t> column_type;
-	SimpleTreeModel::NewNode_fp node_creation;
-	bool columns_are_equivalent;
-	gpointer gp;
-	std::string mem_prog,mem_inst;
-
-  def_SimpleTreeModel_Properties() : node_creation() {}
-  virtual unsigned Columns() const=0;
-  virtual gpointer user_data() const
-  { return 0; }
-  virtual Glib::ustring Title(guint _seqnr) const=0;
-  virtual gfloat Alignment(guint _seqnr) const
-  { return 0.0; }
-  virtual bool editable(guint _seqnr) const
-  { return false; }
-  virtual Handle<TreeRow> create_node(const Handle<const TreeRow> &suminit) const
-  { if (node_creation) return (*node_creation)(suminit);
-    else return Handle<TreeRow>(); 
-  }
-};
 
 void SimpleTreeModel::append_line(const cH_RowDataBase &row)
 {  datavec.push_back(row);
@@ -74,40 +49,3 @@ void SimpleTreeModel::setDataVec(const std::vector<cH_RowDataBase> &d)
    please_attach();
 }
 
-void SimpleTreeModel::setTitles(const std::vector<std::string> &T)
-{  titles=T;
-   for (guint i=0;i<T.size();++i) title_changed(i);
-}
-
-void SimpleTreeModel::setTitleAt(unsigned idx, const std::string &s)
-{ assert(idx<titles.size());
-  titles[idx]=s;
-  title_changed(idx);
-}
-
-const std::string SimpleTreeModel::getColTitle(guint idx) const
-{  if (idx<titles.size()) return titles[idx];
-   return ""; 
-}
-
-bool SimpleTreeModel::is_editable(unsigned idx) const
-{  if (idx>=column_editable.size()) return false;
-   return column_editable[idx];
-}
-
-SimpleTreeModel::column_type_t SimpleTreeModel::get_column_type(unsigned idx) const
-{  if (idx>=column_type.size()) return ct_string;
-   return column_type[idx];
-}
-
-void SimpleTreeModel::set_editable(unsigned idx,bool v)
-{  if (idx>=column_editable.size()) column_editable.resize(idx+1);
-   column_editable[idx]=v;
-   title_changed(idx);
-}
-
-void SimpleTreeModel::set_column_type(unsigned idx, column_type_t t)
-{  if (idx>=column_type.size()) column_type.resize(idx+1);
-   column_type[idx]=t;
-   title_changed(idx);
-}
