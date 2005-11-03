@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.94 2005/11/03 21:05:38 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.95 2005/11/03 21:05:41 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -66,13 +66,18 @@ struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Prope
   { if (node_creation) return (*node_creation)(suminit);
     else return Handle<TreeRow>(); 
   }
-  
-	__deprecated void setTitles(const std::vector<std::string> &T);
-	__deprecated void setTitleAt(unsigned idx,const std::string &s);
-	__deprecated void set_editable(unsigned idx,bool v=true);
-	__deprecated void set_column_type(unsigned idx, column_type_t t);
+	__deprecated void setTitles(const std::vector<std::string> &T)
+	{ titles=T;
+	}
+	__deprecated void setTitleAt(unsigned idx,const std::string &s)
+	{ titles.at(idx)=s; }
+	__deprecated void set_editable(unsigned idx,bool v=true)
+	{ column_editable.at(idx)=v; }
+	__deprecated void set_column_type(unsigned idx, column_type_t t)
+	{ column_type.at(idx)=t; }
 	__deprecated void set_value_data(gpointer _p) {gp = _p;}
-	__deprecated void set_remember(const std::string &program, const std::string &instance);
+	__deprecated void set_remember(const std::string &program, const std::string &instance)
+	{ mem_prog=program; mem_inst=instance; }
 	__deprecated void set_NewNode(NewNode_fp n)
 	{  node_creation=n; }
 	__deprecated void RedisplayOnReorder() { columns_are_equivalent=false; }
@@ -86,18 +91,44 @@ void SimpleTreeModel_Properties_Proxy::set_NewNode(NewNode_fp n)
 { stdProperties().set_NewNode(n);
 }
 
-#if 0 // dSTM_P
-void SimpleTreeModel::setTitles(const std::vector<std::string> &T)
-{  titles=T;
-   for (guint i=0;i<T.size();++i) title_changed(i);
+void SimpleTreeModel_Properties_Proxy::set_value_data(gpointer p)
+{ stdProperties().set_value_data(p);
 }
 
-void SimpleTreeModel::setTitleAt(unsigned idx, const std::string &s)
-{ assert(idx<titles.size());
-  titles[idx]=s;
+void SimpleTreeModel_Properties_Proxy::setTitles(const std::vector<std::string> &T)
+{  stdProperties().setTitles(T);
+   if (Properties().ColumnsAreEquivalent())
+     for (guint i=0;i<T.size();++i) title_changed(i);
+   // this uses knowledge about SimpleTree to make it more efficient!
+   // redisplay
+   else title_changed(0);
+}
+
+void SimpleTreeModel_Properties_Proxy::RedisplayOnReorder()
+{ stdProperties().RedisplayOnReorder();
+}
+
+void SimpleTreeModel_Properties_Proxy::set_remember(const std::string &program, const std::string &instance)
+{ if (Properties().ProgramName()!=program || Properties().InstanceName()!=instance)
+  { stdProperties().set_remember(program,instance);
+#warning load
+//    dynamic_cast<SimpleTreeModel*>(this)->load_remembered();
+  }
+}
+
+void SimpleTreeModel_Properties_Proxy::setTitleAt(unsigned idx, const std::string &s)
+{ assert(idx<Properties().Columns());
+  stdProperties().setTitleAt(idx,s);
   title_changed(idx);
 }
 
+void SimpleTreeModel_Properties_Proxy::set_editable(unsigned idx,bool v)
+{  assert(idx<Properties().Columns());
+   stdProperties().set_editable(idx,v);
+   title_changed(idx);
+}
+
+#if 0 // dSTM_P
 const std::string SimpleTreeModel::getColTitle(guint idx) const
 {  if (idx<titles.size()) return titles[idx];
    return ""; 
@@ -112,27 +143,6 @@ SimpleTreeModel::column_type_t SimpleTreeModel::get_column_type(unsigned idx) co
 {  if (idx>=column_type.size()) return ct_string;
    return column_type[idx];
 }
-
-void SimpleTreeModel::set_editable(unsigned idx,bool v)
-{  if (idx>=column_editable.size()) column_editable.resize(idx+1);
-   column_editable[idx]=v;
-   title_changed(idx);
-}
-
-void SimpleTreeModel::set_column_type(unsigned idx, column_type_t t)
-{  if (idx>=column_type.size()) column_type.resize(idx+1);
-   column_type[idx]=t;
-   title_changed(idx);
-}
-
-void SimpleTreeStore::set_remember(const std::string &program, const std::string &instance)
-{  if (ProgramName()!=program || mem_inst!=instance)
-   {  mem_prog=program;
-      mem_inst=instance;
-      load_remembered();
-   }
-}
-
 #endif
 #else // !deprecated
 struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Properties
