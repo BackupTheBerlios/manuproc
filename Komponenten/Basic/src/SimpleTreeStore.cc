@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.95 2005/11/03 21:05:41 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.96 2005/11/03 21:05:44 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -338,7 +338,7 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
   for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
     (*i) = true;
    defaultSequence();
-   signal_title_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_title_changed));
+   SimpleTreeModel_Properties_Proxy::signal_title_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_title_changed));
 //   getModel().signal_redraw_needed().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
    getModel().signal_please_detach().connect(please_detach.slot());
    getModel().signal_please_attach().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
