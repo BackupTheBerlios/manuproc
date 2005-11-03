@@ -1,4 +1,4 @@
-// $Id: CellRendererSimpleTree.cc,v 1.4 2005/11/02 00:12:26 christof Exp $
+// $Id: CellRendererSimpleTree.cc,v 1.5 2005/11/03 21:05:14 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -67,7 +67,17 @@ static void create_plus_minus()
 CellRendererSimpleTree::CellRendererSimpleTree(guint col)
 	: Glib::ObjectBase(typeid(CellRendererSimpleTree)),
 	  column(col), childrens_deep(*this,"childrens_deep",0)
-{  property_mode() = Gtk::CELL_RENDERER_MODE_ACTIVATABLE;
+{ property_mode() = Gtk::CELL_RENDERER_MODE_ACTIVATABLE;
+  Gdk::Color c;
+  c.set_rgb(col1,col1,col1); colors.push_back(c); // white
+  c.set_rgb(col1,col0,col0); colors.push_back(c); // red
+  c.set_rgb(col1,col1,col0); colors.push_back(c); // yellow
+  c.set_rgb(col0,col1,col0); colors.push_back(c); // green
+  c.set_rgb(col0,col1,col1); colors.push_back(c); // cyan
+  c.set_rgb(col0,col0,col1); colors.push_back(c); // blue
+  c.set_rgb(col1,col0,col1); colors.push_back(c); // magenta
+  c.set_rgb(col0,col0,col0); colors.push_back(c); // dark grey
+  assert(colors.size()==num_colors);
 }
 
 void CellRendererSimpleTree::get_size_vfunc(Gtk::Widget& widget, const Gdk::Rectangle* cell_area, 
