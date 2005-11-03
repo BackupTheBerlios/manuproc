@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.59 2005/11/03 21:05:38 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.60 2005/11/03 21:24:13 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -46,6 +46,7 @@
 struct SimpleTreeModel_Properties
 { enum column_type_t { ct_string, ct_bool };
 
+  virtual ~SimpleTreeModel_Properties() {}
   virtual unsigned Columns() const=0;
   virtual gpointer ValueData() const
   { return 0; }
