@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.67 2005/11/03 21:05:30 christof Exp $
+// $Id: SimpleTree.cc,v 1.68 2005/11/03 21:05:38 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -486,3 +486,9 @@ void SimpleTree_Basic::debug()
   getStore()->signal_rows_reordered().connect(SigC::bind(&sig3piI,"rows_reordered"));
 }
 
+// deprecated proxies
+void SimpleTreeStore_Proxy::set_remember(const std::string &program, const std::string &instance) {  sts->set_remember(program,instance); }
+void SimpleTreeStore_Proxy::setTitles(const std::vector<std::string> &T) {  sts->setTitles(T); }
+void SimpleTreeStore_Proxy::setTitleAt(unsigned idx, const std::string &s) {  sts->setTitleAt(idx,s); }
+void SimpleTreeStore_Proxy::set_NewNode(SimpleTreeStore::NewNode_fp n) { sts->set_NewNode(n); }
+void SimpleTreeStore_Proxy::set_value_data(gpointer _p) { sts->set_value_data(_p); }

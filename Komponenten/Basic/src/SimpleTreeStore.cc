@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.93 2005/11/03 21:05:34 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.94 2005/11/03 21:05:38 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -78,8 +78,12 @@ struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Prope
 	__deprecated void RedisplayOnReorder() { columns_are_equivalent=false; }
 };
 
-SimpleTreeModel_Properties_Proxy::Standard *SimpleTreeModel_Properties_Proxy::stdProperties()
-{ return &dynamic_cast<SimpleTreeModel_Properties_Proxy::Standard&>(*props);
+SimpleTreeModel_Properties_Proxy::Standard &SimpleTreeModel_Properties_Proxy::stdProperties()
+{ return dynamic_cast<SimpleTreeModel_Properties_Proxy::Standard&>(*props);
+}
+
+void SimpleTreeModel_Properties_Proxy::set_NewNode(NewNode_fp n)
+{ stdProperties().set_NewNode(n);
 }
 
 #if 0 // dSTM_P

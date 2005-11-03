@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.50 2005/11/03 21:05:34 christof Exp $
+// $Id: SimpleTree.hh,v 1.51 2005/11/03 21:05:38 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -36,11 +36,11 @@ public:
 	{}
 
 #ifdef ST_DEPRECATED
-	void set_remember(const std::string &program, const std::string &instance) {  sts->set_remember(program,instance); }
-	void setTitles(const std::vector<std::string> &T) {  sts->setTitles(T); }
-	void setTitleAt(unsigned idx, const std::string &s) {  sts->setTitleAt(idx,s); }
-	void set_NewNode(SimpleTreeStore::NewNode_fp n) { sts->set_NewNode(n); }
-	void set_value_data(gpointer _p) { sts->set_value_data(_p); }
+	__deprecated void set_remember(const std::string &program, const std::string &instance);
+	__deprecated void setTitles(const std::vector<std::string> &T);
+	__deprecated void setTitleAt(unsigned idx, const std::string &s);
+	__deprecated void set_NewNode(SimpleTreeStore::NewNode_fp n);
+	__deprecated void set_value_data(gpointer _p);
 #endif
 	guint Cols() const  { return sts->Cols();}
 

@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.58 2005/11/03 21:05:34 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.59 2005/11/03 21:05:38 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -97,7 +97,7 @@ public:
 	const SimpleTreeModel_Properties &Properties() const
 	{ return *props; }
 	class Standard;
-	Standard *stdProperties();
+	Standard &stdProperties();
 #ifdef ST_DEPRECATED
 	typedef Handle<TreeRow> (*NewNode_fp)(const Handle<const TreeRow> &suminit);
 	__deprecated void setTitles(const std::vector<std::string> &T);
