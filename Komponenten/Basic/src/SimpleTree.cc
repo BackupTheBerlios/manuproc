@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.65 2005/11/03 21:05:18 christof Exp $
+// $Id: SimpleTree.cc,v 1.66 2005/11/03 21:05:28 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -101,7 +101,7 @@ void SimpleTree_Basic::on_spaltenzahl_geaendert()
    {
 #if 1
       CellRendererSimpleTree *crst = Gtk::manage(new CellRendererSimpleTree(i));
-      Gtk::TreeView::Column* pColumn = Gtk::manage(new Gtk::TreeView::Column(getColTitle(i),*crst));
+      Gtk::TreeView::Column* pColumn = Gtk::manage(new Gtk::TreeView::Column(Properties().Title(i),*crst));
       pColumn->signal_clicked().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_title_clicked),i));
       pColumn->add_attribute(crst->property_text(),sts->m_columns.cols[i]);
       if (getStore()->OptionColor().Value())
@@ -116,13 +116,13 @@ void SimpleTree_Basic::on_spaltenzahl_geaendert()
       if (!resizeable.empty())
        pColumn->set_resizable(resizeable[idx]);
       
-      if (getModel().is_editable(idx))
+      if (Properties().Editable(idx))
       {  crst->property_editable()=true;
          crst->signal_edited().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_column_edited),idx));
       }
       append_column(*pColumn);
 #else
-      append_column(getColTitle(i),sts->m_columns.cols[i]);
+      append_column(Properties().Title(i),sts->m_columns.cols[i]);
 #endif      
    }
 // (gtk_tree_view_set_headers_clickable): assertion `tree_view->priv->model != NULL'
@@ -160,7 +160,7 @@ void SimpleTree_Basic::on_abbrechen_clicked()
       clicked_seq.clear();
       // Titel wiederherstellen
       for (unsigned i=0;i<Cols();++i) 
-         get_column(i+FIRST_COLUMN)->set_title(getColTitle(i));
+         get_column(i+FIRST_COLUMN)->set_title(Properties().Title(i));
 }
 
 void SimpleTree_Basic::on_zuruecksetzen_clicked()
@@ -194,7 +194,7 @@ void SimpleTree_Basic::on_title_changed(guint nr)
 {  if (getStore()->columns_are_equivalent && getModel().is_editable(IndexFromColumn(nr)))
       getStore()->columns_are_equivalent=false;
    if (!getStore()->columns_are_equivalent) on_spaltenzahl_geaendert();
-   else get_column(nr+FIRST_COLUMN)->set_title(getColTitle(nr));
+   else get_column(nr+FIRST_COLUMN)->set_title(Properties().Title(nr));
 }
 
 void SimpleTree_Basic::sel_change_cb(const Gtk::TreeModel::iterator&it,
@@ -357,7 +357,7 @@ void SimpleTree_Basic::fillMenu()
   spalten_menu->append(*tomi);
   tomi->show();
    for (guint i=0;i<Cols();++i)
-      add_mitem(spalten_menu,getColTitle(i),getStore()->ShowColumn(i));
+      add_mitem(spalten_menu,Properties().Title(i),getStore()->ShowColumn(i));
 
   Gtk::MenuItem *optionen=add_mitem(menu,"Optionen");
   Gtk::Menu *optionen_menu=manage(new Gtk::Menu);

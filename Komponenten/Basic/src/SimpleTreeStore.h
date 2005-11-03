@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.56 2005/11/03 21:05:25 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.57 2005/11/03 21:05:28 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -91,6 +91,9 @@ public:
 	SimpleTreeModel_Properties_Proxy(SimpleTreeModel_Properties *p)
 	: props(p) {}
 	~SimpleTreeModel_Properties_Proxy();
+	
+	const SimpleTreeModel_Properties &Properties() const
+	{ return *props; }
 #ifdef ST_DEPRECATED
 	void setTitles(const std::vector<std::string> &T);
 	void setTitleAt(unsigned idx,const std::string &s);
@@ -103,19 +106,19 @@ public:
 	void RedisplayOnReorder() { columns_are_equivalent=false; }
 #endif
 	const std::string getColTitle(guint idx) const
-	{ return props->Title(idx); }
+	{ return Properties().Title(idx); }
 	SigC::Signal1<void,guint> &signal_title_changed()
 	{  return title_changed; }
 	bool is_editable(unsigned idx) const
-	{ return props->editable(idx); }
+	{ return Properties().editable(idx); }
 	SimpleTreeModel_Properties::column_type_t get_column_type(unsigned idx) const
-	{ return props->get_column_type(idx); }
-	gpointer ValueData() const { return props->ValueData(); }
-  std::string ProgramName() const { return props->ProgramName(); }
-  std::string InstanceName() const { return props->InstanceName(); }
+	{ return Properties().get_column_type(idx); }
+	gpointer ValueData() const { return Properties().ValueData(); }
+  std::string ProgramName() const { return Properties().ProgramName(); }
+  std::string InstanceName() const { return Properties().InstanceName(); }
   Handle<TreeRow> create_node(const Handle<const TreeRow> &suminit) const
-  { return props->create_node(suminit); }
-  bool ColumnsAreEquivalent() const { return props->ColumnsAreEquivalent(); }
+  { return Properties().create_node(suminit); }
+  bool ColumnsAreEquivalent() const { return Properties().ColumnsAreEquivalent(); }
 };
 
 struct SimpleTreeStoreNode

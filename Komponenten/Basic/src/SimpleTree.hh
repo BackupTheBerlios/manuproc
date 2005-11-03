@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.48 2005/11/03 21:05:25 christof Exp $
+// $Id: SimpleTree.hh,v 1.49 2005/11/03 21:05:28 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -70,6 +70,7 @@ public:
 	__deprecated void redisplay(cH_RowDataBase row, unsigned index) {  sts->redisplay_old(row,index); }
 	// the fast variant
 	void redisplay(Gtk::TreeModel::iterator iter, unsigned index) {  sts->redisplay_old(iter,index); }
+	const SimpleTreeModel_Properties &Properties() const { return sts->Properties(); }
 };
 
 namespace Gtk { class Menu; }
