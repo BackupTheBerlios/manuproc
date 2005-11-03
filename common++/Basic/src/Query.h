@@ -1,4 +1,4 @@
-// $Id: Query.h,v 1.9 2005/10/25 12:14:00 christof Exp $
+// $Id: Query.h,v 1.10 2005/11/03 21:09:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Christof Petig
@@ -45,7 +45,7 @@ extern "C" {
 #endif
 
 #ifndef OLD_ECPG
-#define USE_PARAMETERS
+//#define USE_PARAMETERS
 #endif
 
 // please access this class under the new alias "Query::Row"

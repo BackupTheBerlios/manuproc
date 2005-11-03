@@ -1,4 +1,4 @@
-// $Id: dbconnect.pgcc,v 1.22 2005/10/20 12:57:32 christof Exp $
+// $Id: dbconnect.pgcc,v 1.23 2005/11/03 21:09:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,6 +25,7 @@
 #include <Misc/dbconnect.h>
 #include <Misc/string0.h>
 #include <Misc/Global_Settings.h>
+#include <Misc/Ausgabe_neu.h>
 #ifdef OLD_ECPG
 #define ECPGdo300
 #else
@@ -103,6 +104,11 @@ void ManuProC::dbconnect(const Connection &c) throw(SQLerror)
 	ECPGt_EOIT, ECPGt_EORT);}
    SQLerror::test("dbconnect,datestyle=ISO");
    Global_Settings::database_connected();
+
+   if(Ausgabe_neu::TeX_uses_UTF8)    
+       Query ("set names 'utf-8'");
+   else
+       Query ("set names 'latin1'");
 }
 
 void ManuProC::dbdisconnect(const std::string &name) throw(SQLerror)

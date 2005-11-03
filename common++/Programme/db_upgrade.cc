@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.45 2005/08/24 15:15:17 christof Exp $
+// $Id: db_upgrade.cc,v 1.46 2005/11/03 21:09:09 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -161,7 +161,12 @@ int main(int argc,char *argv[])
   check_column("buchung","kurs","numeric(12,5)");
   check_column("buchung","buchung_grp","integer");
   check_column("buchung","belegref","text");
+  check_column("buchung","buchdatum","date");
      
+  // mahnlauf fuer Mahnwesen
+  check_column("mahnlauf","gedruckt","date");
+  if(check_column("mahnlauf","mahnstufe","integer"))
+    { Query_nt("alter table mahnlauf alter mahnstufe set not null"); }
 
   // neue definitive Priorität bei den Zuordnungen
   // allerdings muss der Index auftragsentryzuordnung_altauftr noch
