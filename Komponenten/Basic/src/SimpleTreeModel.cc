@@ -1,4 +1,4 @@
-// $Id: SimpleTreeModel.cc,v 1.8 2005/10/28 15:22:28 christof Exp $
+// $Id: SimpleTreeModel.cc,v 1.9 2005/11/03 21:05:18 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,6 +18,31 @@
  */
 
 #include <SimpleTreeModel.h>
+
+struct def_SimpleTreeModel_Properties : public SimpleTreeModel_Properties
+{
+	std::vector<std::string> titles;
+	std::vector<bool> column_editable;
+	std::vector<column_type_t> column_type;
+	SimpleTreeModel::NewNode_fp node_creation;
+	bool columns_are_equivalent;
+	gpointer gp;
+	std::string mem_prog,mem_inst;
+
+  def_SimpleTreeModel_Properties() : node_creation() {}
+  virtual unsigned Columns() const=0;
+  virtual gpointer user_data() const
+  { return 0; }
+  virtual Glib::ustring Title(guint _seqnr) const=0;
+  virtual gfloat Alignment(guint _seqnr) const
+  { return 0.0; }
+  virtual bool editable(guint _seqnr) const
+  { return false; }
+  virtual Handle<TreeRow> create_node(const Handle<const TreeRow> &suminit) const
+  { if (node_creation) return (*node_creation)(suminit);
+    else return Handle<TreeRow>(); 
+  }
+};
 
 void SimpleTreeModel::append_line(const cH_RowDataBase &row)
 {  datavec.push_back(row);

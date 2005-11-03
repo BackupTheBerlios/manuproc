@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.64 2005/11/02 12:38:22 christof Exp $
+// $Id: SimpleTree.cc,v 1.65 2005/11/03 21:05:18 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,6 +28,8 @@
 #  include <sigc++/bind.h>
 #endif
 #include <iostream>
+
+#define FIRST_COLUMN 1
 
 void SimpleTree_Basic::detach()
 {  set_model(Glib::RefPtr<Gtk::TreeModel>());
@@ -89,23 +91,21 @@ void SimpleTree_Basic::on_column_edited(const Glib::ustring &path,const Glib::us
 
 void SimpleTree_Basic::on_spaltenzahl_geaendert()
 {  remove_all_columns();
+#if FIRST_COLUMN==1 // hide normal tree expanders
+   append_column(*Gtk::manage(new Gtk::TreeViewColumn("tree")));
+//   get_column(0)->set_visible(false);
+   get_column(0)->set_sizing(Gtk::TREE_VIEW_COLUMN_FIXED);
+   get_column(0)->set_fixed_width(1);
+#endif
    for (unsigned int i=0;i<Cols();++i)
    {
 #if 1
       CellRendererSimpleTree *crst = Gtk::manage(new CellRendererSimpleTree(i));
-      //Gtk::CellRendererText *crt = Gtk::manage(new Gtk::CellRendererText());
       Gtk::TreeView::Column* pColumn = Gtk::manage(new Gtk::TreeView::Column(getColTitle(i),*crst));
-      // pColumn->pack_start(*crst, false);
-      // pColumn->pack_start(*crt, true);
       pColumn->signal_clicked().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_title_clicked),i));
-#warning now we could use cH_EntryValue attribute and save much space and time!!!
       pColumn->add_attribute(crst->property_text(),sts->m_columns.cols[i]);
-#warning put OptionColor into CellRenderer and save space!
       if (getStore()->OptionColor().Value())
          pColumn->add_attribute(crst->property_background_gdk(),sts->m_columns.background);
-      // we need row, deep, childrens_deep, leafdata   per row 
-      // column, optcolor are global
-      // then we can kill background and cols
       pColumn->add_attribute(crst->property_childrens_deep(),sts->m_columns.childrens_deep);
       unsigned idx(IndexFromColumn(i));
       if (!alignment.empty())
@@ -139,9 +139,9 @@ void SimpleTree_Basic::on_title_clicked(unsigned nr)
       else 
 	{
 	 std::string tmptit=std::string("(")+itos(clicked_seq.size())+")";
-	 if(get_column(nr)->get_title().size()>=3)
-	   tmptit+=get_column(nr)->get_title().substr(3);
-	 get_column(nr)->set_title(tmptit);
+	 if(get_column(nr+FIRST_COLUMN)->get_title().size()>=3)
+	   tmptit+=get_column(nr+FIRST_COLUMN)->get_title().substr(3);
+	 get_column(nr+FIRST_COLUMN)->set_title(tmptit);
 	
 	}
    }
@@ -160,7 +160,7 @@ void SimpleTree_Basic::on_abbrechen_clicked()
       clicked_seq.clear();
       // Titel wiederherstellen
       for (unsigned i=0;i<Cols();++i) 
-         get_column(i)->set_title(getColTitle(i));
+         get_column(i+FIRST_COLUMN)->set_title(getColTitle(i));
 }
 
 void SimpleTree_Basic::on_zuruecksetzen_clicked()
@@ -194,7 +194,7 @@ void SimpleTree_Basic::on_title_changed(guint nr)
 {  if (getStore()->columns_are_equivalent && getModel().is_editable(IndexFromColumn(nr)))
       getStore()->columns_are_equivalent=false;
    if (!getStore()->columns_are_equivalent) on_spaltenzahl_geaendert();
-   else get_column(nr)->set_title(getColTitle(nr));
+   else get_column(nr+FIRST_COLUMN)->set_title(getColTitle(nr));
 }
 
 void SimpleTree_Basic::sel_change_cb(const Gtk::TreeModel::iterator&it,

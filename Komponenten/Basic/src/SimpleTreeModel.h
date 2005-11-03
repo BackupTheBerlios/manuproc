@@ -1,4 +1,4 @@
-// $Id: SimpleTreeModel.h,v 1.15 2005/10/28 15:22:32 christof Exp $
+// $Id: SimpleTreeModel.h,v 1.16 2005/11/03 21:05:18 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,19 +30,17 @@
 class SimpleTreeStore;
 class SimpleTree_Basic;
 
+// this is only a container, properties of the data belong into STM_Properties
+
 class SimpleTreeModel : SigC::Object
 {public:
 	typedef std::vector<cH_RowDataBase> datavec_t;
 	
-	enum column_type_t { ct_string, ct_bool };
 private:
 	friend class SimpleTreeStore; // für signal_value_changed
 	friend class SimpleTree_Basic;
 	
 	datavec_t datavec;
-	std::vector<std::string> titles;
-	std::vector<bool> column_editable;
-	std::vector<column_type_t> column_type;
 
 	SigC::Signal1<void,cH_RowDataBase> line_appended;
 	SigC::Signal1<void,cH_RowDataBase> line_to_remove;
@@ -51,7 +49,6 @@ private:
 	SigC::Signal0<void> please_attach;
 	// a column was changed, change data, redraw?
 	SigC::Signal4<void,cH_RowDataBase,unsigned,const std::string &,bool &> value_changed;
-	SigC::Signal1<void,guint> title_changed;
 
 protected:
 	// sollte besser über RowDataBase::changeValue gehen, ist sauberer
@@ -59,23 +56,36 @@ protected:
 		&signal_value_changed()
 	{  return value_changed; }
 public:
+	// more STLish names
+	void push_back(const cH_RowDataBase &row)
+	{ append_line(row); }
+	void erase(const cH_RowDataBase &row)
+	{ remove_line(row); }
+	void clear();
+	void operator=(const datavec_t &d)
+	{ setDataVec(d); }
+	typedef datavec_t::const_iterator const_iterator;
+	typedef datavec_t::iterator iterator;
+	typedef datavec_t::size_type size_type;
+	const_iterator begin() const { return datavec.begin(); }
+	const_iterator end() const { return datavec.end(); }
+	iterator begin() { return datavec.begin(); }
+	iterator end() { return datavec.end(); }
+	bool empty() { return datavec.empty(); }
+	size_type size() { return datavec.size(); }
+
+	// please prefer the more STLish variants
 	void append_line(const cH_RowDataBase &row);
 	void remove_line(const cH_RowDataBase &row);
-	void clear();
 	
 	void setDataVec(const datavec_t &d);
 	const datavec_t &getDataVec() const
 	{  return datavec; }
-	void setTitles(const std::vector<std::string> &T);
-	void setTitleAt(unsigned idx,const std::string &s);
-	const std::string getColTitle(guint idx) const;
 
 	SigC::Signal1<void,cH_RowDataBase> &signal_line_appended()
 	{  return line_appended; }
 	SigC::Signal1<void,cH_RowDataBase> &signal_line_to_remove()
 	{  return line_to_remove; }
-	SigC::Signal1<void,guint> &signal_title_changed()
-	{  return title_changed; }
 	// a big reorganization is about to occur
 	SigC::Signal0<void> &signal_please_detach()
 	{  return please_detach; }
@@ -87,11 +97,6 @@ public:
 	{  signal_line_to_remove()(row); }
 	void has_changed(const cH_RowDataBase &row)
 	{  signal_line_appended()(row); }
-	
-	bool is_editable(unsigned idx) const;
-	column_type_t get_column_type(unsigned idx) const;
-	void set_editable(unsigned idx,bool v=true);
-	void set_column_type(unsigned idx, column_type_t t);
 };
 
 #endif

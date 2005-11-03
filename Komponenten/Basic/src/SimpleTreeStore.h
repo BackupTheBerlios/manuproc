@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.54 2005/11/02 12:38:23 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.55 2005/11/03 21:05:18 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -41,6 +41,25 @@
 #endif
 #define STS_VFUNC_CONST STS_GTKMM_22_24(,const)
 
+struct SimpleTreeModel_Properties
+{ enum column_type_t { ct_string, ct_bool };
+
+  virtual unsigned Columns() const=0;
+  virtual gpointer ValueData() const
+  { return 0; }
+  virtual Glib::ustring Title(guint _seqnr) const=0;
+  virtual gfloat Alignment(guint _seqnr) const
+  { return 0.0; }
+  virtual bool editable(guint _seqnr) const
+  { return false; }
+  virtual Handle<TreeRow> create_node(const Handle<const TreeRow> &suminit) const
+  { return Handle<TreeRow>(); }
+  virtual bool ColumnsAreEquivalent() const
+  { return true; }
+  virtual column_type_t get_column_type(unsigned idx) const
+  { return ct_string; }
+};
+
 // for easily accessing model methods
 class SimpleTreeModel_Proxy
 {protected:
@@ -54,11 +73,38 @@ public:
 	const SimpleTreeModel &getModel() const { return *model; }
 	void setModel(SimpleTreeModel &model);
 
-	void setDataVec(const SimpleTreeModel::datavec_t &d) {  model->setDataVec(d); }
-	const SimpleTreeModel::datavec_t &getDataVec() const { return model->getDataVec(); }
-	void setTitles(const std::vector<std::string> &T) {  model->setTitles(T); }
-	void setTitleAt(unsigned idx, const std::string &s) {  model->setTitleAt(idx,s); }
+	__deprecated void setDataVec(const SimpleTreeModel::datavec_t &d) {  model->setDataVec(d); }
+	__deprecated const SimpleTreeModel::datavec_t &getDataVec() const { return model->getDataVec(); }
+//	void setTitles(const std::vector<std::string> &T) {  model->setTitles(T); }
+//	void setTitleAt(unsigned idx, const std::string &s) {  model->setTitleAt(idx,s); }
 	void clear() { model->clear(); }
+};
+
+class SimpleTreeModel_Properties_Proxy
+{protected:
+	SimpleTreeModel_Properties *props;
+	SigC::Signal1<void,guint> title_changed;
+public:
+	SimpleTreeModel_Properties_Proxy(unsigned cols);
+	SimpleTreeModel_Properties_Proxy(SimpleTreeModel_Properties *p)
+	: props(p) {}
+#ifdef ST_DEPRECATED
+	void setTitles(const std::vector<std::string> &T);
+	void setTitleAt(unsigned idx,const std::string &s);
+	void set_editable(unsigned idx,bool v=true);
+	void set_column_type(unsigned idx, column_type_t t);
+	void set_value_data(gpointer _p) {gp = _p;}
+	void set_remember(const std::string &program, const std::string &instance);
+#endif
+	const std::string getColTitle(guint idx) const
+	{ return props->Title(idx); }
+	SigC::Signal1<void,guint> &signal_title_changed()
+	{  return title_changed; }
+	bool is_editable(unsigned idx) const
+	{ return props->is_editable(idx); }
+	column_type_t get_column_type(unsigned idx) const
+	{ return props->get_column_type(idx); }
+	gpointer ValueData() const { return props->ValueData(); }
 };
 
 struct SimpleTreeStoreNode
@@ -98,11 +144,14 @@ void swap(SimpleTreeStoreNode &a,SimpleTreeStoreNode &b);
 
 class SimpleTreeStore : virtual public Glib::Object, public Gtk::TreeModel, 
 		public Gtk::TreeDragSource, public Gtk::TreeDragDest,
-		public SimpleTreeModel_Proxy
+		public SimpleTreeModel_Proxy,
+		public SimpleTreeModel_Properties_Proxy
 {public:
 
 	// einen neuen Ast erzeugen, deep ist die Spalte, v der Wert dieser Spalte
+#ifdef ST_DEPRECATED
 	typedef Handle<TreeRow> (*NewNode_fp)(const Handle<const TreeRow> &suminit);
+#endif
 	typedef SimpleTreeStoreNode Node;
 
 	// sadly there's no real const_iterator
@@ -120,26 +169,22 @@ protected:
 	friend class SimpleTree_Basic;
 	sequence_t currseq; 
 	SimpleTreeStoreNode root;
-	bool columns_are_equivalent;
 
 private:
-	NewNode_fp node_creation;
 
 	guint columns;
 	guint max_column;
 	guint showdeep;  // nicht hier ben�igt
 	std::vector<bool> vec_hide_cols; // index is index
-	gpointer gp;
 
 	bool auffuellen_bool; 
 	bool expandieren_bool;
 	bool block_save;
 	bool color_bool; // or in Widget?, kann in SimpleTree, muss dann aber mitgespeichert werden
 
-	std::string mem_prog,mem_inst;
-	
 	std::vector<Gdk::Color> colors;
 	static const unsigned num_colors=8;
+	// vielleicht noch in Properties?
 	unsigned sortierspalte;
 	bool invert_sortierspalte;
 
@@ -260,15 +305,11 @@ public:
 	guint Cols() const  { return columns;}
 	guint MaxCol() const  { return max_column;}
 
-	void set_value_data(gpointer _p) {gp = _p;}
-	gpointer ValueData() const { return gp; }
-
 	const sequence_t &get_seq() const {return currseq;}
 	void defaultSequence();
 	void fillSequence(sequence_t &seq,bool standard=false) const;
 	void fillSequence() { fillSequence(currseq,true); }
 
-	void set_remember(const std::string &program, const std::string &instance);
 	SigC::Signal1<void,guint> &signal_title_changed()
 	{  return title_changed; }
 	SigC::Signal0<void> &signal_spaltenzahl_geaendert()

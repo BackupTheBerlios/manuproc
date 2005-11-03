@@ -1,4 +1,4 @@
-/* $Id: RowDataBase.h,v 1.9 2005/10/28 15:22:28 christof Exp $ */
+/* $Id: RowDataBase.h,v 1.10 2005/11/03 21:05:18 christof Exp $ */
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: RowDataBase.h,v 1.9 2005/10/28 15:22:28 christof Exp $
+// $Id: RowDataBase.h,v 1.10 2005/11/03 21:05:18 christof Exp $
 
 #ifndef KOMPONENTEN_ROWDATA_H
 #define KOMPONENTEN_ROWDATA_H
@@ -28,11 +28,11 @@
 //#include <cassert>
 #include <glibmm/ustring.h>
 
-class RowDataBase : public HandleContent
+struct RowDataBase : HandleContent
 {
-public:
- virtual cH_EntryValue Value(guint _seqnr,gpointer _g) const=0;
  virtual ~RowDataBase(){}
+
+ virtual cH_EntryValue Value(guint _seqnr,gpointer _g) const=0;
  virtual bool changeValue(guint _seqnr,gpointer _g, const Glib::ustring &newvalue)
  { return false; } // true bedeutet: Wert geändert
 };
