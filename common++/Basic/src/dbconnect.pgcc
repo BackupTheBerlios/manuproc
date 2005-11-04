@@ -1,4 +1,4 @@
-// $Id: dbconnect.pgcc,v 1.23 2005/11/03 21:09:09 christof Exp $
+// $Id: dbconnect.pgcc,v 1.24 2005/11/04 07:57:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -94,21 +94,18 @@ void ManuProC::dbconnect(const Connection &c) throw(SQLerror)
        exec sql connect to :connstr as :NAME USER :USR;
     }
    SQLerror::test("dbconnect");
+
+   // this is not a server side call but a client side call
    exec sql at :NAME set autocommit to on;
    SQLerror::test("dbconnect,autocommit");
-//   exec sql at :NAME set datestyle to 'ISO';
-//   SQLerror::test("dbconnect,datestyle=ISO");
-   // actually current ecpg accepts this
-   // ex ec sql at :NAME set datestyle to 'ISO';
-   { ECPGdo(__LINE__, ECPGdo300 NAME, "set datestyle to 'ISO'", 
-	ECPGt_EOIT, ECPGt_EORT);}
-   SQLerror::test("dbconnect,datestyle=ISO");
-   Global_Settings::database_connected();
 
+   // TODO: make this connection the default
+   Query::Execute("set datestyle to 'ISO'");
    if(Ausgabe_neu::TeX_uses_UTF8)    
-       Query ("set names 'utf-8'");
+       Query::Execute("set names 'utf-8'");
    else
-       Query ("set names 'latin1'");
+       Query::Execute("set names 'latin1'");
+   Global_Settings::database_connected();
 }
 
 void ManuProC::dbdisconnect(const std::string &name) throw(SQLerror)
