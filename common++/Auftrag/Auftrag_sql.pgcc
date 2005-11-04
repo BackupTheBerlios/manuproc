@@ -87,7 +87,7 @@ void Auftrag::Zahlart(cH_Zahlungsart zart) throw(SQLerror)
 }
 
 
-
+#if 0 // höcht gefährlich und vermutlich nicht benutzt
 void Auftrag::deleteEintrag(int zeilennr) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("ZNr",zeilennr));
@@ -97,7 +97,7 @@ void Auftrag::deleteEintrag(int zeilennr) throw(SQLerror)
  Query("lock table auftragentry in share row exclusive mode");
  Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
 	<< Instanz() << Id() << zeilennr;
- SQLerror::test(__FILELINE__"Auftragszeile l�schen");
+ SQLerror::test(__FILELINE__"Auftragszeile löschen");
 
  Query("update auftragentry set zeilennr=zeilennr-1 "
  	"where zeilennr>? and (instanz,auftragid)=(?,?)")
@@ -107,32 +107,36 @@ void Auftrag::deleteEintrag(int zeilennr) throw(SQLerror)
  
  tr.commit();
 }
+#endif
 
 Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
 : AuftragBase(_auftrag), zahlart(Zahlungsart::none_id), labelid(0)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
   int waehrungsid;
+  int i_status,zahlartid;
   Query q("select kundennr,datum,stat,youraufnr,bemerkung,"
           "waehrung,rabatt,zahlungsziel,zahlart,notiz,verknr "
           "from auftrag where (instanz,auftragid)=(?,?)");
-  q << Instanz()->Id() << Id();
-  q >> Query::MapNull(kundennr,ManuProcEntity<>::none_id)
-    >> Query::MapNull(datum,ManuProC::Datum::today())
-    >> status
-    >> Query::MapNull(youraufnr)
-    >> Query::MapNull(bemerkung)
-    >> Query::MapNull(waehrungsid,Waehrung::default_id)
-    >> Query::MapNull(auftragsrabatt)
+  q << Instanz() << Id();
+  q >> Query::Row::MapNull(kundennr,ManuProcEntity<>::none_id)
+    >> Query::Row::MapNull(datum,ManuProC::Datum::today())
+    >> i_status
+    >> Query::Row::MapNull(youraufnr)
+    >> Query::Row::MapNull(bemerkung)
+    >> Query::Row::MapNull(waehrungsid,Waehrung::default_id)
+    >> Query::Row::MapNull(auftragsrabatt)
     >> zahlziel
-    >> Query::MapNull(zahlart,Zahlungsart::none_id)
-    >> Query::MapNull(notiz)
-    >> Query::MapNull(verknr);
-  waehrung=cP_Waehrung(waehrungsid);
+    >> Query::Row::MapNull(zahlartid,Zahlungsart::none_id)
+    >> Query::Row::MapNull(notiz)
+    >> Query::Row::MapNull(verknr);
+  waehrung=cP_Waehrung(Waehrung::ID(waehrungsid));
+  status=AufStatVal(i_status);
+  zahlart=zahlartid;
   notiz_valid=true;
   
  ExtraColumns ec("auftrag","instanz","auftragid");
- ec << INSTANZ << AUFTRAGID;
+ ec << Instanz() << Id();
  labelid = ec.get<int>("label");
  
  youraufnr_cache[*this]=youraufnr;
@@ -291,7 +295,7 @@ void Auftrag::setBemerkung(const std::string &bem) throw(SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
   (Query("update auftrag set bemerkung=? where (instanz,auftragid)=(?,?)")
-   << Query::NullIf(bem) << Instanz()->Id() << Id()).Check100();
+   << Query::NullIf(bem) << Instanz() << Id()).Check100();
   bemerkung=bem;
 }
 
@@ -300,6 +304,6 @@ void Auftrag::setVerknr(const Kunde::ID vid) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
  (Query("update auftrag set verknr=? where (instanz,auftragid)=(?,?)")
-   << Query::NullIf(vid,Kunde::none_id) << Instanz()->Id() << Id()).Check100();
+   << Query::NullIf(vid,Kunde::none_id) << Instanz() << Id()).Check100();
  verknr=vid;
 }

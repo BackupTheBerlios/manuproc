@@ -1,4 +1,4 @@
-// $Id: warp_order_align.cc,v 1.5 2005/11/04 16:33:57 christof Exp $
+// $Id: warp_order_align.cc,v 1.6 2005/11/04 16:34:02 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -73,7 +73,11 @@ int main()
       { std::cout << *orderentry << " falscher Artikel "
             << orderentry->Artikel() << "!=" <<j->Artikel() <<'\n';
       _delete:
-        a->deleteEintrag(idx);
+        // verschiebt leider alle nachfolgenden Zeilen ...
+        // a->deleteEintrag(i->Maschine()*10+idx);
+        (Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
+            << AufEintragBase(*orderentry)).Check100();
+        delete orderentry;
         goto reload;
       }
       if (orderentry->getStueck()!=j->Gaenge()*kpk.Kettlaenge())
@@ -86,6 +90,7 @@ int main()
             << orderentry->getGeliefert() << "!=" << (j->Gaenge()*kpk.Abgeschnitten()) <<'\n';
         orderentry->abschreiben(j->Gaenge()*kpk.Abgeschnitten()-orderentry->getGeliefert().as_int());
       }
+      delete orderentry;
     }
     if (idx<10)
     { int lines=(Query("delete from auftragentry where (instanz,auftragid)=(?,?) "
