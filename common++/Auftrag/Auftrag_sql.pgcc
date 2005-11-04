@@ -112,62 +112,29 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
 : AuftragBase(_auftrag), zahlart(Zahlungsart::none_id), labelid(0)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
- exec sql begin declare section;
- int AUFTRAGID = Id();
- int INSTANZ =int(Instanz());
- int KUNDENNR;
- char DATUM[11];
- char ZAHLZIEL[11];
- int STATUS;
- char YOURAUFNR[21];
- char *BEMERKUNG=0;
- int WAEHRUNG;
- float RABATT;
- int IZAHLZIEL;
- int ZAHLART;
- int NONE_ID;
- char *NOTIZ=0;
- int INVALID_ENTITY;
- int DEFAULT_WID;
- int VERKNR,IVERKNR;
- exec sql end declare section;
- INVALID_ENTITY=ManuProcEntity<>::none_id;
-
- NONE_ID=Zahlungsart::none_id;
- DEFAULT_WID=Waehrung::default_id;
-
-//if(Instanz()==ppsInstanzID::Kundenauftraege)
-//ECPGdebug(true,stdout);
- exec sql select coalesce(kundennr,:INVALID_ENTITY), date(coalesce(datum,now())), 
- 		stat, coalesce(youraufnr,''), coalesce(bemerkung,''),
-		 coalesce(waehrung,:DEFAULT_WID),coalesce(rabatt,0),
-		zahlungsziel, coalesce(zahlart,:NONE_ID),
-		coalesce(notiz,''),verknr
-	into 	:KUNDENNR, :DATUM, :STATUS, :YOURAUFNR, :BEMERKUNG,
-		 :WAEHRUNG,:RABATT,:ZAHLZIEL:IZAHLZIEL, :ZAHLART,
-		:NOTIZ,:VERKNR:IVERKNR
-	from auftrag where (auftragid,instanz) = (:AUFTRAGID,:INSTANZ) ;
- SQLerror::test(__FILELINE__"Auftrag laden");
-
-
+  int waehrungsid;
+  Query q("select kundennr,datum,stat,youraufnr,bemerkung,"
+          "waehrung,rabatt,zahlungsziel,zahlart,notiz,verknr "
+          "from auftrag where (instanz,auftragid)=(?,?)");
+  q << Instanz()->Id() << Id();
+  q >> Query::MapNull(kundennr,ManuProcEntity<>::none_id)
+    >> Query::MapNull(datum,ManuProC::Datum::today())
+    >> status
+    >> Query::MapNull(youraufnr)
+    >> Query::MapNull(bemerkung)
+    >> Query::MapNull(waehrungsid,Waehrung::default_id)
+    >> Query::MapNull(auftragsrabatt)
+    >> zahlziel
+    >> Query::MapNull(zahlart,Zahlungsart::none_id)
+    >> Query::MapNull(notiz)
+    >> Query::MapNull(verknr);
+  waehrung=cP_Waehrung(waehrungsid);
+  notiz_valid=true;
+  
  ExtraColumns ec("auftrag","instanz","auftragid");
  ec << INSTANZ << AUFTRAGID;
  labelid = ec.get<int>("label");
-
- kundennr = KUNDENNR;
- datum.from_postgres(DATUM);
-// wrkstatus = LOADED;
- status = (AufStatVal)STATUS;
- youraufnr = YOURAUFNR;
- bemerkung = BEMERKUNG;
- waehrung = cP_Waehrung(Waehrung::ID(WAEHRUNG));
- auftragsrabatt = RABATT;
- zahlziel = (IZAHLZIEL==0) ? ManuProC::Datum(ZAHLZIEL):ManuProC::Datum();
- zahlart = cH_Zahlungsart(ZAHLART);
- notiz=NOTIZ;
- notiz_valid=true;
- verknr = IVERKNR == 0 ? VERKNR : Kunde::none_id;
- ECPGfree_auto_mem();
+ 
  youraufnr_cache[*this]=youraufnr;
 }
 
@@ -322,34 +289,17 @@ Auftrag::Auftrag(Anlegen2 AB, long kdnr, const std::string &yaufnr) throw(SQLerr
 
 void Auftrag::setBemerkung(const std::string &bem) throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
- exec sql begin declare section;
- int AUFTRAGID=Id();
- int INSTANZ=int(Instanz());
- const char *BEMERKUNG=bem.c_str();
- exec sql end declare section;
-
- exec sql update auftrag set bemerkung= nullif(:BEMERKUNG,'')
-	where auftragid= :AUFTRAGID and instanz=:INSTANZ;
- SQLerror::test("setBemerkung: update bemerkung");
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
+  (Query("update auftrag set bemerkung=? where (instanz,auftragid)=(?,?)")
+   << Query::NullIf(bem) << Instanz()->Id() << Id()).Check100();
+  bemerkung=bem;
 }
 
 
 void Auftrag::setVerknr(const Kunde::ID vid) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
- exec sql begin declare section;
- int AUFTRAGID=Id();
- int INSTANZ=int(Instanz());
- int VERKNR=vid;
- int IVERKNR=0;
- exec sql end declare section;
-
- if(vid==Kunde::none_id)
-   IVERKNR=-1;
-
- exec sql update auftrag set verknr=:VERKNR:IVERKNR
-	where auftragid= :AUFTRAGID and instanz=:INSTANZ;
- SQLerror::test("setVerknr: update verknr");
+ (Query("update auftrag set verknr=? where (instanz,auftragid)=(?,?)")
+   << Query::NullIf(vid,Kunde::none_id) << Instanz()->Id() << Id()).Check100();
  verknr=vid;
 }
