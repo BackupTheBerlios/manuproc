@@ -1,4 +1,4 @@
-// $Id: Pointer.h,v 1.5 2002/10/24 14:06:49 thoma Exp $
+// $Id: Pointer.h,v 1.6 2005/11/04 09:22:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -56,6 +56,9 @@ public:
 	// difference to handles: I cant do this with the object itself
 	void *ref() const
 	{  return (void*)_data;
+	}
+	bool operator!() const
+	{ return !_data;
 	}
 };
 #endif
