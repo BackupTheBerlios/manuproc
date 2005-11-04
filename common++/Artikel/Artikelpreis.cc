@@ -142,11 +142,11 @@ Artikelpreis::Artikelpreis(const cH_PreisListe liste,const ArtikelBase &a,
     PreisListe::ID plid=liste->RealId();
     
     std::string query("select 0 as priority,");
-    query+=sel_preis+", mindestmenge, preismenge, waehrung"
+    query+=sel_preis+", mindestmenge, preismenge"
 	      	" from artikelpreise where (artikelid,kundennr)=(?,?)";
     if(liste->isDepending())
       {query+=" UNION "
-              "(select 1 as priority,preis,mindestmenge,preismenge,waehrung"
+              "(select 1 as priority,preis,mindestmenge,preismenge"
               " from artikelpreise where (artikelid,kundennr)=("+
               itos(a.Id())+","+itos(liste->Id())+"))"
               " order by mindestmenge,priority";
@@ -156,14 +156,17 @@ Artikelpreis::Artikelpreis(const cH_PreisListe liste,const ArtikelBase &a,
       q << a.Id() << plid;
       payload_t pyl(!q.Result(), false);
       FetchIStream is;
+      int WAEHRUNG=Waehrung::default_id;
+      if (!!liste->getWaehrung()) 
+         WAEHRUNG=liste->getWaehrung()->Id();
+
       if (!q.Result())
       {  while ((q>>is).good())
          { geldbetrag_t PREIS;
       	   preismenge_t PREISMENGE;
-           int WAEHRUNG;
            int MINDESTMENGE, PRIOR;
            is >> PRIOR >> PREIS >> FetchIStream::MapNull(MINDESTMENGE,1) 
-           	>> FetchIStream::MapNull(PREISMENGE,1) >> WAEHRUNG;
+           	>> FetchIStream::MapNull(PREISMENGE,1);
            is.ThrowIfNotEmpty(__FUNCTION__);
 	  pyl.preis[MINDESTMENGE]=
 		Preis(PREIS,Waehrung::ID(WAEHRUNG),PREISMENGE);
