@@ -1,4 +1,4 @@
-// $Id: warp_order_align.cc,v 1.4 2004/11/15 10:07:21 christof Exp $
+// $Id: warp_order_align.cc,v 1.5 2005/11/04 16:33:57 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -50,6 +50,7 @@ int main()
       else throw;
     }
     assert(a);
+  reload:
     KettplanKette kpk(*i);
     std::vector<ArtikelGang> ag=kpk.get_artikel_sorted();
     unsigned idx=1;
@@ -69,16 +70,30 @@ int main()
         orderentry=new AufEintrag(aeb);
       }
       if (orderentry->Artikel()!=j->Artikel())
-        std::cout << *orderentry << " falscher Artikel " 
+      { std::cout << *orderentry << " falscher Artikel "
             << orderentry->Artikel() << "!=" <<j->Artikel() <<'\n';
+      _delete:
+        a->deleteEintrag(idx);
+        goto reload;
+      }
       if (orderentry->getStueck()!=j->Gaenge()*kpk.Kettlaenge())
-        std::cout << *orderentry << " falsche Menge " 
+      { std::cout << *orderentry << " falsche Menge " 
             << orderentry->getStueck() << "!=" << (j->Gaenge()*kpk.Kettlaenge()) <<'\n';
+        goto _delete;
+      }
       if (orderentry->getGeliefert()!=j->Gaenge()*kpk.Abgeschnitten())
       { std::cout << *orderentry << " Lieferung " 
             << orderentry->getGeliefert() << "!=" << (j->Gaenge()*kpk.Abgeschnitten()) <<'\n';
         orderentry->abschreiben(j->Gaenge()*kpk.Abgeschnitten()-orderentry->getGeliefert().as_int());
       }
+    }
+    if (idx<10)
+    { int lines=(Query("delete from auftragentry where (instanz,auftragid)=(?,?) "
+        "and zeilennr between ? and ?") << AuftragBase(*a) 
+          << i->Maschine()*10+idx << i->Maschine()*10+9).LinesAffected();
+      if (lines)
+        std::cout << i->Maschine() << "/" << i->Schaerdatum() << ": " 
+          << lines << " zusätzliche Zeilen gelöscht.\n";
     }
   }
   ManuProC::dbdisconnect();
