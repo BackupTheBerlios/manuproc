@@ -19,6 +19,7 @@
 
 #include "ppsInstanz.h"
 #include <Artikel/ArtikelStamm.h>
+#include <Misc/Ausgabe_neu.h> // UTF8
 
 ppsInstanz::ppsInstanz(ID iid)
  : instid(iid),
@@ -119,12 +120,25 @@ cH_ppsInstanz ppsInstanz::getProduktionsInstanz(const ArtikelStamm &artikel)
    return cH_ppsInstanz(I->LagerFuer());
 }
 
-
+static unsigned utf8len(unsigned char x)
+{ if (!(x&0x80)) return 1;
+  if ((x&0xe0)==0xc0) return 2;
+  if ((x&0xf0)==0xe0) return 3;
+  if ((x&0xf8)==0xf0) return 4;
+  if ((x&0xfc)==0xf8) return 5;
+  /* if ((x&0xfe)==0xfc) */ return 6;
+}
 
 std::string ppsInstanz::shortName() const
 {
   std::string s=Name();
-  s=s.substr(0,2);
+  if (s.size()<=2) return s;
+  int len=2;
+  if (Ausgabe_neu::TeX_uses_UTF8)
+  { len=utf8len(s[0]);
+    len+=utf8len(s[len]);
+  }
+  s=s.substr(0,len);
   return s;
 }
 
