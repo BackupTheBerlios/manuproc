@@ -1,4 +1,4 @@
-// $Id: table_preis.cc,v 1.12 2005/10/30 01:01:11 christof Exp $
+// $Id: table_preis.cc,v 1.13 2005/11/04 08:10:49 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -26,6 +26,7 @@
 #include <Misc/FetchIStream.h>
 #include <Misc/EntryValueFixed.h>
 #include <Misc/create_parse.h>
+#include <Misc/compiler_ports.h>
 
 void table_preis::andere_Liste()
 { // Laden und Staffelung anzeigen 
@@ -167,7 +168,7 @@ bool table_preis::edit(cH_RowDataBase row,unsigned col,std::string const& val)
           if (!val2.empty()) new_base=ManuProC::parse<int>(val2);
           Preis new_preis=Preis(prd->pr.Wert(),prd->pr.getWaehrung(),new_base);
           if (new_preis!=prd->pr)
-          { Artikelpreis(cH_PreisListe(prd->preisliste),artikelbox->get_value(),
+          { Artikelpreis(make_value(cH_PreisListe(prd->preisliste)),artikelbox->get_value(),
                     prd->mindestmenge)
               .changePreis(new_preis,prd->mindestmenge);
             const_cast<Preis&>(prd->pr)=new_preis;
