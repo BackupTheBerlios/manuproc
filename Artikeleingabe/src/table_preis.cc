@@ -1,4 +1,4 @@
-// $Id: table_preis.cc,v 1.13 2005/11/04 08:10:49 christof Exp $
+// $Id: table_preis.cc,v 1.14 2005/11/04 08:13:38 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -112,7 +112,7 @@ bool PrRowData::changeValue(guint _seqnr,gpointer _g, const Glib::ustring &newva
           if (!val2.empty()) new_base=ManuProC::parse<int>(val2);
           Preis new_preis=Preis(pr.Wert(),pr.getWaehrung(),new_base);
           if (new_preis!=pr)
-          { Artikelpreis(cH_PreisListe(preisliste),artikelbox->get_value(),
+          { Artikelpreis(make_value(cH_PreisListe(preisliste)),artikelbox->get_value(),
                     mindestmenge)
               .changePreis(new_preis,mindestmenge);
             pr=new_preis;
@@ -140,10 +140,10 @@ table_preis::table_preis(GlademmData *gmm_data)
   align[SP_STAFFEL]=1;
   align[SP_PRNUM]=1;
   preisstaffel->setAlignment(align);
-  preisstaffel->getModel().set_editable(SP_PRICE);
-  preisstaffel->getModel().set_editable(SP_STAFFEL);
-  preisstaffel->getModel().set_editable(SP_CURRENCY);
-  preisstaffel->getModel().set_editable(SP_PER);
+  preisstaffel->getStore()->set_editable(SP_PRICE);
+  preisstaffel->getStore()->set_editable(SP_STAFFEL);
+  preisstaffel->getStore()->set_editable(SP_CURRENCY);
+  preisstaffel->getStore()->set_editable(SP_PER);
 //  preisstaffel->set_value_data(artikelbox);
 //  preisstaffel->getModel().signal_value_changed()
 //      .connect(sigc::mem_fun(*this,&table_preis::edit));
