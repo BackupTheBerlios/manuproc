@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.101 2005/11/07 07:29:40 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.102 2005/11/07 07:30:08 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -778,32 +778,32 @@ unsigned SimpleTreeStore::IterStamp() const
 }
 
 bool SimpleTreeStore::iter_valid(vfunc_constiter_t iter) const
-{  return iter STS_GTKMM_22_24(->stamp,.get_stamp())==IterStamp();
+{  return iter .get_stamp()==IterStamp();
 }
 
 SimpleTreeStore::iterator &SimpleTreeStore::iterconv(vfunc_iter_t iter)
 {  assert(iter_valid(iter));
-   return reinterpret_cast<SimpleTreeStore::iterator&>(iter STS_GTKMM_22_24(,.gobj())->user_data);
+   return reinterpret_cast<SimpleTreeStore::iterator&>(iter.gobj()->user_data);
 }
 
 const SimpleTreeStore::iterator &SimpleTreeStore::iterconv(vfunc_constiter_t iter) const
 {  if (!iter_valid(iter))
-   {  std::cerr << "iterconv: iterator mismatch " << iter STS_GTKMM_22_24(->stamp,.get_stamp()) << "!=" << IterStamp()
-   	<< " user_data=" << iter STS_GTKMM_22_24(->,.gobj()->)user_data << '\n';
+   {  std::cerr << "iterconv: iterator mismatch " << iter .get_stamp() << "!=" << IterStamp()
+   	<< " user_data=" << iter.gobj()->user_data << '\n';
       abort();
    }
-   return reinterpret_cast<const SimpleTreeStore::iterator&>(iter STS_GTKMM_22_24(->,.gobj()->)user_data);
+   return reinterpret_cast<const SimpleTreeStore::iterator&>(iter.gobj()->user_data);
 }
 
 void SimpleTreeStore::iterinit(vfunc_iter_t iter,const const_iterator &schema) const
-{  assert(3*sizeof(iter STS_GTKMM_22_24(->,.gobj()->)user_data)>=sizeof(SimpleTreeStore::const_iterator));
-   STS_GTKMM_22_24(iter->stamp=stamp, iter.set_stamp(stamp));
-   reinterpret_cast<SimpleTreeStore::const_iterator&>(iter STS_GTKMM_22_24(->,.gobj()->)user_data)=schema;
+{  assert(3*sizeof(iter.gobj()->user_data)>=sizeof(SimpleTreeStore::const_iterator));
+    iter.set_stamp(stamp);
+   reinterpret_cast<SimpleTreeStore::const_iterator&>(iter.gobj()->user_data)=schema;
    iter.set_model_gobject(const_cast<GtkTreeModel*>(Gtk::TreeModel::gobj()));
-   ManuProC::Trace(trace_channel,__FUNCTION__,iter STS_GTKMM_22_24(->stamp,.get_stamp()),
-   		iter STS_GTKMM_22_24(->,.gobj()->)user_data,
-   		iter STS_GTKMM_22_24(->,.gobj()->)user_data2,
-   		iter STS_GTKMM_22_24(->,.gobj()->)user_data3);
+   ManuProC::Trace(trace_channel,__FUNCTION__,iter .get_stamp(),
+   		iter.gobj()->user_data,
+   		iter.gobj()->user_data2,
+   		iter.gobj()->user_data3);
 }
 
 void SimpleTreeStore::iterclear(vfunc_iter_t iter) const
@@ -829,9 +829,9 @@ void SimpleTreeStore::iterinit(vfunc_iter_t iter,const iterator &schema) const
 	VALUE_SET(string,(val).c_str())
 
 void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter, 
-		int column, STS_GTKMM_22_24(GValue*,Glib::ValueBase&) value) STS_VFUNC_CONST
-{  if (!iter_valid(iter STS_GTKMM_22_24(->gobj(),))) return;
-   Node &nd=iterconv(iter STS_GTKMM_22_24(->gobj(),))->second;
+		int column, Glib::ValueBase& value) STS_VFUNC_CONST
+{  if (!iter_valid(iter )) return;
+   Node &nd=iterconv(iter )->second;
    switch(e_spalten(column))
    {  case s_row: VALUE_INIT(row);
          return;
@@ -875,7 +875,7 @@ void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter,
 
 bool SimpleTreeStore::iter_next_vfunc(vfunc_constiter_t iter, vfunc_iter_t iter_next) const
 {
-   ManuProC::Trace _t(trace_channel, __FUNCTION__,iter STS_GTKMM_22_24(,.gobj())->user_data);
+   ManuProC::Trace _t(trace_channel, __FUNCTION__,iter.gobj()->user_data);
    if (!iter_valid(iter)) { iterclear(iter_next); return false; }
 
    iterator old=iterconv(iter),newit=old;
@@ -884,12 +884,12 @@ bool SimpleTreeStore::iter_next_vfunc(vfunc_constiter_t iter, vfunc_iter_t iter_
    newit++;
    if (newit==old->second.parent->children.end()) return false;
    iterinit(iter_next,newit);
-   ManuProC::Trace(trace_channel,"new iter",iter_next STS_GTKMM_22_24(,.gobj())->user_data);
+   ManuProC::Trace(trace_channel,"new iter",iter_next.gobj()->user_data);
    return true;
 }
 
 bool SimpleTreeStore::iter_children_vfunc(vfunc_constiter_t parent, vfunc_iter_t iter) const
-{  ManuProC::Trace _t(trace_channel, __FUNCTION__,parent STS_GTKMM_22_24(,.gobj())->user_data);
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,parent.gobj()->user_data);
    iterclear(iter);
    if (!iter_valid(parent)) return false;
    iterator p=iterconv(parent);
@@ -913,7 +913,7 @@ int SimpleTreeStore::iter_n_root_children_vfunc() const
 }
 
 bool SimpleTreeStore::iter_nth_child_vfunc(vfunc_constiter_t parent, int n, vfunc_iter_t iter) const
-{  ManuProC::Trace _t(trace_channel, __FUNCTION__,parent?parent STS_GTKMM_22_24(,.gobj())->user_data:0,n);
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,parent?parent.gobj()->user_data:0,n);
    iterator res,end;
    iterclear(iter);
    {  if (!iter_valid(parent)) return false;
@@ -947,7 +947,7 @@ bool SimpleTreeStore::iter_nth_root_child_vfunc(int n, vfunc_iter_t iter) const
 }
 
 bool SimpleTreeStore::iter_parent_vfunc(vfunc_constiter_t child, vfunc_iter_t iter) const
-{  ManuProC::Trace _t(trace_channel, __FUNCTION__,child STS_GTKMM_22_24(,.gobj())->user_data);
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,child.gobj()->user_data);
    iterclear(iter);
    if (!iter_valid(child)) return false;
    iterator c=iterconv(child);
@@ -960,15 +960,15 @@ bool SimpleTreeStore::iter_parent_vfunc(vfunc_constiter_t child, vfunc_iter_t it
 
 Gtk::TreeModel::Path SimpleTreeStore::get_path_vfunc(const Gtk::TreeModel::iterator& iter) STS_VFUNC_CONST
 { ManuProC::Trace _t(trace_channel, __FUNCTION__,iter->gobj()->user_data);
-  if (!iter_valid(iter STS_GTKMM_22_24(->gobj(),))) 
+  if (!iter_valid(iter )) 
      return Path();
-  return getPath(iterconv(iter STS_GTKMM_22_24(->gobj(),)));
+  return getPath(iterconv(iter ));
 }
 
 bool SimpleTreeStore::get_iter_vfunc(const Path& path, vfunc_iter_t iter) const
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,path.to_string());
    
-   STS_GTKMM_22_24(iterator,const_iterator) 
+   const_iterator 
    		res=root.children.begin(),  end=root.children.end();
    
    iterclear(iter);

@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.62 2005/11/07 07:29:40 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.63 2005/11/07 07:30:08 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -35,11 +35,11 @@
 #include <BaseObjects/Model_ref_bvector.h>
 
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
-#  define STS_GTKMM_22_24(a,b) b
+#  define b b
 #else
-#  define STS_GTKMM_22_24(a,b) a
+#  define b a
 #endif
-#define STS_VFUNC_CONST STS_GTKMM_22_24(,const)
+#define STS_VFUNC_CONST const
 
 #ifndef SIMPLE_TREE_NO_COMPAT
 #define ST_DEPRECATED
@@ -243,8 +243,8 @@ private:
 	std::list<iterator> find_row(const cH_RowDataBase &,bool optimize=false);
 	bool find_row(Node &parent,const cH_RowDataBase &,bool optimize,std::list<iterator> &result);
 
-   typedef STS_GTKMM_22_24(const GtkTreeIter*,const TreeModel::iterator&) vfunc_constiter_t;
-   typedef STS_GTKMM_22_24(GtkTreeIter*,TreeModel::iterator&) vfunc_iter_t;
+   typedef const TreeModel::iterator& vfunc_constiter_t;
+   typedef TreeModel::iterator& vfunc_iter_t;
 
    unsigned IterStamp() const;
    iterator &iterconv(vfunc_iter_t iter);
