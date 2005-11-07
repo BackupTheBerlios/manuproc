@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.54 2005/11/07 07:31:21 christof Exp $
+// $Id: SimpleTree.hh,v 1.55 2005/11/07 09:03:44 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -156,13 +156,13 @@ public:
 	{}
 	SimpleTree(SimpleTreeModel_Properties &props) : SimpleTree_Basic(props)
 	{}
-	__deprecated SimpleTree(guint maxcol, const std::vector<std::string>& T
+	__deprecated_ctor SimpleTree(guint maxcol, const std::vector<std::string>& T
                                 ,const std::vector<cH_RowDataBase>& D)
 	: SimpleTree_Basic(maxcol)
 	{  setTitles(T);
 	   setDataVec(D);
 	}
-	__deprecated SimpleTree(guint maxcol, const std::vector<std::string>& T)
+	__deprecated_ctor SimpleTree(guint maxcol, const std::vector<std::string>& T)
 	: SimpleTree_Basic(maxcol)
 	{  setTitles(T);
 	}	
