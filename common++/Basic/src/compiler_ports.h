@@ -1,4 +1,4 @@
-// $Id: compiler_ports.h,v 1.7 2005/06/17 15:35:48 christof Exp $
+// $Id: compiler_ports.h,v 1.8 2005/11/07 09:06:54 christof Exp $
 
 // this macros cater for the various incompatible compilers
 
@@ -22,6 +22,12 @@
 #define __deprecated    __attribute__((deprecated))
 #else
 #define __deprecated
+#endif
+
+#if ( __GNUC__ == 3 && __GNUC_MINOR__ > 3 ) || __GNUC__ > 3
+#define __deprecated_ctor    __attribute__((deprecated))
+#else
+#define __deprecated_ctor
 #endif
 
 #if defined(__GNUC__)
