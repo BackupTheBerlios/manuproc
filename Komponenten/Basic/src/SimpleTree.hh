@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.51 2005/11/03 21:05:38 christof Exp $
+// $Id: SimpleTree.hh,v 1.52 2005/11/07 07:29:27 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -34,6 +34,9 @@ public:
 	SimpleTreeStore_Proxy(unsigned int max_cols) : 
 		sts(SimpleTreeStore::create(max_cols)) 
 	{}
+	SimpleTreeStore_Proxy(SimpleTreeModel_Properties &props) : 
+		sts(SimpleTreeStore::create(props)) 
+	{}
 
 #ifdef ST_DEPRECATED
 	__deprecated void set_remember(const std::string &program, const std::string &instance);
@@ -51,6 +54,9 @@ public:
 	SimpleTreeModel &getModel() { return sts->getModel(); }
 	const Glib::RefPtr<const SimpleTreeStore> getStore() const { return Glib::RefPtr<const SimpleTreeStore>(sts); }
 	const std::string getColTitle(guint idx) const { return sts->getColTitle(idx); }
+	
+	void setProperties(SimpleTreeModel_Properties &props)
+	{ sts->setProperties(props); }
 
 	const_iterator begin() const { return sts->begin(); }
 	const_iterator end() const { return sts->end(); }
@@ -91,7 +97,8 @@ private:
 	
 	std::vector<gfloat> alignment;
 	std::vector<bool> resizeable;	
-	
+
+        void init();	
 	void on_title_changed(guint nr);
 	void on_selection_changed();
 	void on_redisplay();
@@ -110,6 +117,7 @@ private:
 	
 public:
 	SimpleTree_Basic(unsigned max_col);
+	SimpleTree_Basic(SimpleTreeModel_Properties &props);
 	~SimpleTree_Basic();
 	
 	SigC::Signal1<void,cH_RowDataBase> &signal_leaf_selected()
@@ -145,13 +153,15 @@ public:
 	// attr is not needed any longer
 	SimpleTree(guint maxcol) : SimpleTree_Basic(maxcol)
 	{}
-	SimpleTree(guint maxcol, const std::vector<std::string>& T
+	SimpleTree(SimpleTreeModel_Properties &props) : SimpleTree_Basic(props)
+	{}
+	__deprecated SimpleTree(guint maxcol, const std::vector<std::string>& T
                                 ,const std::vector<cH_RowDataBase>& D)
 	: SimpleTree_Basic(maxcol)
 	{  setTitles(T);
 	   setDataVec(D);
 	}
-	SimpleTree(guint maxcol, const std::vector<std::string>& T)
+	__deprecated SimpleTree(guint maxcol, const std::vector<std::string>& T)
 	: SimpleTree_Basic(maxcol)
 	{  setTitles(T);
 	}	

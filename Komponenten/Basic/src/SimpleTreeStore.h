@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.60 2005/11/03 21:24:13 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.61 2005/11/07 07:29:27 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -41,7 +41,9 @@
 #endif
 #define STS_VFUNC_CONST STS_GTKMM_22_24(,const)
 
+#ifndef SIMPLE_TREE_NO_COMPAT
 #define ST_DEPRECATED
+#endif
 
 struct SimpleTreeModel_Properties
 { enum column_type_t { ct_string, ct_bool };
@@ -63,6 +65,8 @@ struct SimpleTreeModel_Properties
   { return ct_string; }
   virtual std::string ProgramName() const { return std::string(); }
   virtual std::string InstanceName() const { return std::string(); }
+  /*virtual */ bool resizable(guint _seqnr) const { return true; }
+  /* fixed_width etc. ? */
 };
 
 // for easily accessing model methods
@@ -88,28 +92,19 @@ public:
 class SimpleTreeModel_Properties_Proxy
 {protected:
 	SimpleTreeModel_Properties *props;
+	bool we_own_props;
 	SigC::Signal1<void,guint> title_changed;
 public:
 	SimpleTreeModel_Properties_Proxy(unsigned cols);
 	SimpleTreeModel_Properties_Proxy(SimpleTreeModel_Properties *p)
-	: props(p) {}
+	: props(p), we_own_props() {}
 	~SimpleTreeModel_Properties_Proxy();
 	
+	void setProperties(SimpleTreeModel_Properties &p);
 	const SimpleTreeModel_Properties &Properties() const
 	{ return *props; }
 	class Standard;
 	Standard &stdProperties();
-#ifdef ST_DEPRECATED
-	typedef Handle<TreeRow> (*NewNode_fp)(const Handle<const TreeRow> &suminit);
-	__deprecated void setTitles(const std::vector<std::string> &T);
-	__deprecated void setTitleAt(unsigned idx,const std::string &s);
-	__deprecated void set_editable(unsigned idx,bool v=true);
-	__deprecated void set_column_type(unsigned idx, SimpleTreeModel_Properties::column_type_t t);
-	__deprecated void set_value_data(gpointer _p);
-	__deprecated void set_remember(const std::string &program, const std::string &instance);
-	__deprecated void set_NewNode(NewNode_fp n);
-	__deprecated void RedisplayOnReorder();
-#endif
 	const std::string getColTitle(guint idx) const
 	{ return Properties().Title(idx); }
 	SigC::Signal1<void,guint> &signal_title_changed()
@@ -124,6 +119,17 @@ public:
   Handle<TreeRow> create_node(const Handle<const TreeRow> &suminit) const
   { return Properties().create_node(suminit); }
   bool ColumnsAreEquivalent() const { return Properties().ColumnsAreEquivalent(); }
+#ifdef ST_DEPRECATED
+	typedef Handle<TreeRow> (*NewNode_fp)(const Handle<const TreeRow> &suminit);
+	__deprecated void setTitles(const std::vector<std::string> &T);
+	__deprecated void setTitleAt(unsigned idx,const std::string &s);
+	__deprecated void set_editable(unsigned idx,bool v=true);
+	__deprecated void set_column_type(unsigned idx, SimpleTreeModel_Properties::column_type_t t);
+	__deprecated void set_value_data(gpointer _p);
+	__deprecated void set_remember(const std::string &program, const std::string &instance);
+	__deprecated void set_NewNode(NewNode_fp n);
+	__deprecated void RedisplayOnReorder();
+#endif
 };
 
 struct SimpleTreeStoreNode
@@ -225,6 +231,7 @@ private:
 	
 //	SigC::Signal0<void> needs_redisplay;
 	void redisplay();
+	void init();
 	void insertLine(Node &parent,const cH_RowDataBase &d, 
 			sequence_t::const_iterator q,guint deep,
 			bool summe_aktualisieren);
@@ -263,7 +270,6 @@ private:
    virtual Gtk::TreeModelFlags get_flags_vfunc() STS_VFUNC_CONST;
    virtual int get_n_columns_vfunc() STS_VFUNC_CONST;
    virtual GType get_column_type_vfunc(int index) STS_VFUNC_CONST;
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
    virtual void get_value_vfunc(vfunc_constiter_t iter, int column, Glib::ValueBase& value) const;
    bool iter_next_vfunc(vfunc_constiter_t iter, vfunc_iter_t iter_next) const;
    virtual bool iter_children_vfunc(vfunc_constiter_t parent, vfunc_iter_t iter) const;
@@ -274,16 +280,6 @@ private:
    virtual bool iter_nth_root_child_vfunc(int n, vfunc_iter_t iter) const;
    virtual bool iter_parent_vfunc(vfunc_constiter_t child, vfunc_iter_t iter) const;
    virtual bool get_iter_vfunc(const Path& path, vfunc_iter_t iter) const;
-#else
-   virtual void get_value_vfunc(const TreeModel::iterator& iter, int column, GValue* value);
-   virtual bool iter_next_vfunc(vfunc_iter_t iter);
-   virtual bool iter_children_vfunc(vfunc_iter_t iter, vfunc_constiter_t parent);
-   virtual bool iter_has_child_vfunc(vfunc_constiter_t iter);
-   virtual int iter_n_children_vfunc(vfunc_constiter_t iter);
-   virtual bool iter_nth_child_vfunc(vfunc_iter_t iter, vfunc_constiter_t parent, int n);
-   virtual bool iter_parent_vfunc(vfunc_iter_t iter, vfunc_constiter_t child);
-   virtual bool get_iter_vfunc(vfunc_iter_t iter, const Path& path);
-#endif
    virtual Path get_path_vfunc(const TreeModel::iterator& iter) STS_VFUNC_CONST;
    
    void resort(SimpleTreeStoreNode&, unsigned);
@@ -296,6 +292,7 @@ private:
         };
 
 	SimpleTreeStore(int max_col); // use create instead of this ctor
+	SimpleTreeStore(SimpleTreeModel_Properties &props);
 public:
 	struct ModelColumns : public Gtk::TreeModelColumnRecord
 	{  // since we would also need to 
@@ -319,6 +316,10 @@ public:
 	ModelColumns m_columns;
 
 	static Glib::RefPtr<SimpleTreeStore> create(int max_colidx);
+	static Glib::RefPtr<SimpleTreeStore> create(SimpleTreeModel_Properties &props);
+#ifdef ST_DEPRECATED
+	__deprecated void set_remember(const std::string &program, const std::string &instance);
+#endif
 	
 	void set_showdeep(int i) {showdeep=i;}
 	guint Cols() const  { return columns;}

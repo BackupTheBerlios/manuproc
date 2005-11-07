@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.99 2005/11/07 07:28:59 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.100 2005/11/07 07:29:27 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -107,11 +107,10 @@ void SimpleTreeModel_Properties_Proxy::RedisplayOnReorder()
 { stdProperties().RedisplayOnReorder();
 }
 
-void SimpleTreeModel_Properties_Proxy::set_remember(const std::string &program, const std::string &instance)
+void SimpleTreeStore::set_remember(const std::string &program, const std::string &instance)
 { if (Properties().ProgramName()!=program || Properties().InstanceName()!=instance)
   { stdProperties().set_remember(program,instance);
-#warning load
-//    dynamic_cast<SimpleTreeModel*>(this)->load_remembered();
+    load_remembered();
   }
 }
 
@@ -138,8 +137,16 @@ struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Prope
 #endif // deprecated
 
 SimpleTreeModel_Properties_Proxy::SimpleTreeModel_Properties_Proxy(unsigned x)
-: props(new SimpleTreeModel_Properties_Proxy::Standard(x))
+: props(new SimpleTreeModel_Properties_Proxy::Standard(x)), we_own_props(true)
 {}
+
+void SimpleTreeModel_Properties_Proxy::setProperties(SimpleTreeModel_Properties &p)
+{ if (we_own_props) 
+  { delete props; 
+    we_own_props=false;
+  } 
+  props=&p;
+}
 
 SimpleTreeModel_Properties_Proxy::~SimpleTreeModel_Properties_Proxy()
 { delete props;
@@ -274,19 +281,8 @@ void SimpleTreeStore::on_visibly_changed(bvector_iterator it)
    setSequence(currseq);
 }
 
-SimpleTreeStore::SimpleTreeStore(int max_col)
-	: 
-	  Glib::ObjectBase( typeid(SimpleTreeStore) ), //register a custom GType.
-	  Glib::Object(), //The custom GType is actually registered here.
-          SimpleTreeModel_Properties_Proxy(max_col),
-          columns(max_col), max_column(max_col),
-	  showdeep(),
-	  auffuellen_bool(), expandieren_bool(), block_save(),
-	  color_bool(),
-	  sortierspalte(invisible_column), invert_sortierspalte(), 
-	  stamp(reinterpret_cast<long>(this)),
-	  m_columns(max_col)
-{  
+void SimpleTreeStore::init()
+{
   //We need to specify a particular get_type() from one of the virtual base classes, but they should
   //both return the same piece of data.
   {static bool inited=false;
@@ -318,6 +314,35 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
   c.set_rgb(col1,col0,col1); colors.push_back(c); // magenta
   c.set_rgb(col0,col0,col0); colors.push_back(c); // dark grey
   assert(colors.size()==num_colors);
+  load_remembered();
+}
+
+SimpleTreeStore::SimpleTreeStore(int max_col)
+	: 
+	  Glib::ObjectBase( typeid(SimpleTreeStore) ), //register a custom GType.
+	  Glib::Object(), //The custom GType is actually registered here.
+          SimpleTreeModel_Properties_Proxy(max_col),
+          columns(max_col), max_column(max_col),
+	  showdeep(), auffuellen_bool(), expandieren_bool(true), block_save(),
+	  color_bool(true), 
+	  sortierspalte(invisible_column), invert_sortierspalte(), 
+	  stamp(reinterpret_cast<long>(this)),
+	  m_columns(max_col)
+{ init();
+}
+
+SimpleTreeStore::SimpleTreeStore(SimpleTreeModel_Properties &props)
+	: 
+	  Glib::ObjectBase( typeid(SimpleTreeStore) ), //register a custom GType.
+	  Glib::Object(), //The custom GType is actually registered here.
+          SimpleTreeModel_Properties_Proxy(&props),
+          columns(props.Columns()), max_column(props.Columns()),
+	  showdeep(), auffuellen_bool(), expandieren_bool(true), block_save(),
+	  color_bool(true), 
+	  sortierspalte(invisible_column), invert_sortierspalte(), 
+	  stamp(reinterpret_cast<long>(this)),
+	  m_columns(props.Columns())
+{ init();
 }
 
 // eigentlich müssen versteckte Spalten gar nicht hinzugenommen werden
@@ -1054,6 +1079,11 @@ void SimpleTreeStore::setSortierspalte(unsigned s,bool i)
 Glib::RefPtr<SimpleTreeStore> SimpleTreeStore::create(int cols)
 {
   return Glib::RefPtr<SimpleTreeStore>( new SimpleTreeStore(cols));
+}
+
+Glib::RefPtr<SimpleTreeStore> SimpleTreeStore::create(SimpleTreeModel_Properties &props)
+{
+  return Glib::RefPtr<SimpleTreeStore>( new SimpleTreeStore(props));
 }
 
 bool SimpleTreeStore::row_draggable_vfunc(const Gtk::TreeModel::Path& path) const

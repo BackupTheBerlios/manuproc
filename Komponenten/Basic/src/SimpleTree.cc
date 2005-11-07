@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.68 2005/11/03 21:05:38 christof Exp $
+// $Id: SimpleTree.cc,v 1.69 2005/11/07 07:29:27 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -61,8 +61,7 @@ void SimpleTree_Basic::attach()
 //{  detach(); attach();
 //}
 
-SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
-	: SimpleTreeStore_Proxy(maxcol), button_press_vfunc(), menu()
+void SimpleTree_Basic::init()
 {  on_spaltenzahl_geaendert();
    
    getStore()->signal_title_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_title_changed));
@@ -72,6 +71,16 @@ SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
    fillMenu();
    signal_button_press_event().connect(SigC::slot(*this,&SimpleTree_Basic::MouseButton),false);
    getStore()->signal_spaltenzahl_geaendert().connect(SigC::slot(*this,&SimpleTree_Basic::on_spaltenzahl_geaendert));
+}
+
+SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
+	: SimpleTreeStore_Proxy(maxcol), button_press_vfunc(), menu()
+{ init();
+}
+
+SimpleTree_Basic::SimpleTree_Basic(SimpleTreeModel_Properties &props)
+	: SimpleTreeStore_Proxy(props), button_press_vfunc(), menu()
+{ init();
 }
 
 SimpleTree_Basic::~SimpleTree_Basic()
