@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.70 2005/11/07 07:31:21 christof Exp $
+// $Id: SimpleTree.cc,v 1.71 2005/11/07 07:31:33 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -200,7 +200,8 @@ void SimpleTree_Basic::on_neuordnen_clicked()
 }
 
 void SimpleTree_Basic::on_title_changed(guint nr)
-{  if (Properties().ColumnsAreEquivalent())
+{  if (nr!=SimpleTreeStore::invisible_column 
+            && Properties().ColumnsAreEquivalent())
       assert(!Properties().editable(IndexFromColumn(nr)));
    delete menu; menu=0;
    // ineffizient ...
