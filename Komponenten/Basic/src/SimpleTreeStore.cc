@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.104 2005/11/07 07:30:44 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.105 2005/11/07 07:31:21 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -96,11 +96,7 @@ void SimpleTreeModel_Properties_Proxy::set_value_data(gpointer p)
 
 void SimpleTreeModel_Properties_Proxy::setTitles(const std::vector<std::string> &T)
 {  stdProperties().setTitles(T);
-   if (Properties().ColumnsAreEquivalent())
-     for (guint i=0;i<T.size();++i) title_changed(i);
-   // this uses knowledge about SimpleTree to make it more efficient!
-   // redisplay
-   else title_changed(0);
+   title_changed(SimpleTreeStore::invisible_column);
 }
 
 void SimpleTreeModel_Properties_Proxy::RedisplayOnReorder()
@@ -123,6 +119,7 @@ void SimpleTreeModel_Properties_Proxy::setTitleAt(unsigned idx, const std::strin
 void SimpleTreeModel_Properties_Proxy::set_editable(unsigned idx,bool v)
 {  assert(idx<Properties().Columns());
    stdProperties().set_editable(idx,v);
+   // might not be enough
    title_changed(idx);
 }
 #else // !deprecated
@@ -378,9 +375,11 @@ SimpleTreeStore::ModelColumns::ModelColumns(int _cols)
 }
 
 void SimpleTreeStore::on_title_changed(guint idx)
-{  unsigned col=ColumnFromIndex(idx);
-   ManuProC::Trace(trace_channel,__FUNCTION__,idx,col);
-   if (col!=invisible_column) title_changed(col);
+{ if (idx==invisible_column) title_changed(idx);
+  { unsigned col=ColumnFromIndex(idx);
+    ManuProC::Trace(trace_channel,__FUNCTION__,idx,col);
+    if (col!=invisible_column) title_changed(col);
+  }
 }
 
 const std::string SimpleTreeStore::getColTitle(guint idx) const
@@ -598,12 +597,13 @@ void SimpleTreeStore::setSequence(const sequence_t &neu, bool optimize)
    ++stamp;
    currseq=neu; // Spaltenzahl anpassen?
    if (currseq.size()!=columns || !ColumnsAreEquivalent() || !optimize)
-   {  columns=currseq.size();
-      save_remembered();
-      spaltenzahl_geaendert();
+   { columns=currseq.size();
+     save_remembered();
+     spaltenzahl_geaendert();
    }
    else
-   {  for (unsigned i=0;i<Cols();++i) title_changed(i);
+   { save_remembered();
+     title_changed(invisible_column);
    }
    redisplay();
 }
@@ -1115,3 +1115,5 @@ bool SimpleTreeStore::row_drop_possible_vfunc(const Gtk::TreeModel::Path& dest, 
 void SimpleTreeStore::value_change_impl(cH_RowDataBase row,unsigned idx,std::string const& newval, bool &has_changed)
 { has_changed|=row.cast_const<RowDataBase>()->changeValue(idx,ValueData(),newval);
 }
+
+const unsigned SimpleTreeStore::invisible_column;

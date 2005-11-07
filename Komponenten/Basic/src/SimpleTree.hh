@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.53 2005/11/07 07:30:44 christof Exp $
+// $Id: SimpleTree.hh,v 1.54 2005/11/07 07:31:21 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -53,7 +53,7 @@ public:
 	const Glib::RefPtr<Gtk::TreeModel> getTreeModel() { return Glib::RefPtr<Gtk::TreeModel>(sts); }
 	SimpleTreeModel &getModel() { return sts->getModel(); }
 	const Glib::RefPtr<const SimpleTreeStore> getStore() const { return Glib::RefPtr<const SimpleTreeStore>(sts); }
-	const std::string getColTitle(guint idx) const { return sts->getColTitle(idx); }
+	const std::string getColTitle(guint nr) const { return sts->getColTitle(nr); }
 
         // we_own -> SimpleTree deletes object	
 	void setProperties(SimpleTreeModel_Properties &props, bool we_own=false)

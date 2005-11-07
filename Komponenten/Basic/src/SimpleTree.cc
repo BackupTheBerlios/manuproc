@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.69 2005/11/07 07:29:27 christof Exp $
+// $Id: SimpleTree.cc,v 1.70 2005/11/07 07:31:21 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -110,7 +110,7 @@ void SimpleTree_Basic::on_spaltenzahl_geaendert()
    {
 #if 1
       CellRendererSimpleTree *crst = Gtk::manage(new CellRendererSimpleTree(i));
-      Gtk::TreeView::Column* pColumn = Gtk::manage(new Gtk::TreeView::Column(Properties().Title(i),*crst));
+      Gtk::TreeView::Column* pColumn = Gtk::manage(new Gtk::TreeView::Column(getColTitle(i),*crst));
       pColumn->signal_clicked().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_title_clicked),i));
       pColumn->add_attribute(crst->property_text(),sts->m_columns.cols[i]);
       if (getStore()->OptionColor().Value())
@@ -131,7 +131,7 @@ void SimpleTree_Basic::on_spaltenzahl_geaendert()
       }
       append_column(*pColumn);
 #else
-      append_column(Properties().Title(i),sts->m_columns.cols[i]);
+      append_column(getColTitle(i),sts->m_columns.cols[i]);
 #endif      
    }
 // (gtk_tree_view_set_headers_clickable): assertion `tree_view->priv->model != NULL'
@@ -169,7 +169,7 @@ void SimpleTree_Basic::on_abbrechen_clicked()
       clicked_seq.clear();
       // Titel wiederherstellen
       for (unsigned i=0;i<Cols();++i) 
-         get_column(i+FIRST_COLUMN)->set_title(Properties().Title(i));
+         get_column(i+FIRST_COLUMN)->set_title(getColTitle(i));
 }
 
 void SimpleTree_Basic::on_zuruecksetzen_clicked()
@@ -202,11 +202,14 @@ void SimpleTree_Basic::on_neuordnen_clicked()
 void SimpleTree_Basic::on_title_changed(guint nr)
 {  if (Properties().ColumnsAreEquivalent())
       assert(!Properties().editable(IndexFromColumn(nr)));
-// klingt nicht sinnvoll, sicherstellen, dass das normalerweise nur einmal 
-// aufgerufen wird
-#warning change menu, too
-   if (!Properties().ColumnsAreEquivalent()) on_spaltenzahl_geaendert();
-   else get_column(nr+FIRST_COLUMN)->set_title(Properties().Title(nr));
+   delete menu; menu=0;
+   // ineffizient ...
+   fillMenu();
+   if (nr==SimpleTreeStore::invisible_column 
+       || !Properties().ColumnsAreEquivalent()) 
+     on_spaltenzahl_geaendert();
+   else 
+     get_column(nr+FIRST_COLUMN)->set_title(getColTitle(nr));
 }
 
 void SimpleTree_Basic::sel_change_cb(const Gtk::TreeModel::iterator&it,

@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.65 2005/11/07 07:30:44 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.66 2005/11/07 07:31:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -100,6 +100,7 @@ public:
 	Standard &stdProperties();
 	const std::string getColTitle(guint idx) const
 	{ return Properties().Title(idx); }
+	// invisible_column means all titles have changed
 	SigC::Signal1<void,guint> &signal_title_changed()
 	{  return title_changed; }
 	bool is_editable(unsigned idx) const
