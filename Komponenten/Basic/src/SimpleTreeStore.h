@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.64 2005/11/07 07:30:27 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.65 2005/11/07 07:30:44 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -93,7 +93,7 @@ public:
 	: props(p), we_own_props() {}
 	~SimpleTreeModel_Properties_Proxy();
 	
-	void setProperties(SimpleTreeModel_Properties &p);
+	void setProperties(SimpleTreeModel_Properties &p, bool we_own=false);
 	const SimpleTreeModel_Properties &Properties() const
 	{ return *props; }
 	class Standard;
@@ -313,7 +313,7 @@ public:
 #ifdef ST_DEPRECATED
 	__deprecated void set_remember(const std::string &program, const std::string &instance);
 #endif
-	void setProperties(SimpleTreeModel_Properties &p);
+	void setProperties(SimpleTreeModel_Properties &p,bool we_own=false);
 	
 	void set_showdeep(int i) {showdeep=i;}
 	guint Cols() const  { return columns;}

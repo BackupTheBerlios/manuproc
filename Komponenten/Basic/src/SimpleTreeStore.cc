@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.103 2005/11/07 07:30:25 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.104 2005/11/07 07:30:44 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -140,18 +140,17 @@ SimpleTreeModel_Properties_Proxy::SimpleTreeModel_Properties_Proxy(unsigned x)
 : props(new SimpleTreeModel_Properties_Proxy::Standard(x)), we_own_props(true)
 {}
 
-void SimpleTreeModel_Properties_Proxy::setProperties(SimpleTreeModel_Properties &p)
+void SimpleTreeModel_Properties_Proxy::setProperties(SimpleTreeModel_Properties &p, bool we_own)
 { assert(p.Columns()==props->Columns());
   // the number of TreeModelColumns can not easily be changed
   if (we_own_props) 
-  { delete props; 
-    we_own_props=false;
-  } 
+    delete props; 
   props=&p;
+  we_own_props=we_own;
 }
 
-void SimpleTreeStore::setProperties(SimpleTreeModel_Properties &p)
-{ SimpleTreeModel_Properties_Proxy::setProperties(p);
+void SimpleTreeStore::setProperties(SimpleTreeModel_Properties &p, bool we_own)
+{ SimpleTreeModel_Properties_Proxy::setProperties(p, we_own);
   if (p.ProgramName().empty() && p.InstanceName().empty()) 
   { spaltenzahl_geaendert();
     redisplay();

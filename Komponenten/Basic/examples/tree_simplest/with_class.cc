@@ -1,4 +1,4 @@
-// $Id: with_class.cc,v 1.27 2005/11/07 07:29:40 christof Exp $
+// $Id: with_class.cc,v 1.28 2005/11/07 07:30:44 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -16,7 +16,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.27 2005/11/07 07:29:40 christof Exp $
+// $Id: with_class.cc,v 1.28 2005/11/07 07:30:44 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -201,8 +201,9 @@ public:
 
 with_class::with_class()
 {  std::vector <cH_RowDataBase> datavec;
-   MyProperties props;
-   treebase->setProperties(props);
+   MyProperties *props=new MyProperties;
+   // we pass ownership of props to treebase
+   treebase->setProperties(props,true);
 #if 0
    datavec.push_back(new MyRowData(1,"X",2,3,"A"));
    datavec.push_back(new MyRowData(2,"Y",2,3,"A"));
