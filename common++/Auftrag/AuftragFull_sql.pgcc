@@ -52,7 +52,7 @@ AufEintragBase AuftragFull::push_back(AuftragBase::mengen_t bestellt,
   return newAEB;
 }
 
-
+#if 0 // kann nicht sinnvoll funktionieren!
 void AuftragFull::deleteEintrag(int zeilennr, int idx) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
@@ -60,6 +60,7 @@ void AuftragFull::deleteEintrag(int zeilennr, int idx) throw(SQLerror)
  iterator i = begin()+idx;
  eintragliste.erase(i);    
 }
+#endif
 
 AuftragFull::AuftragFull(const AuftragBase& auftrag,bool with_storno) throw(SQLerror)
 	: Auftrag(auftrag)
