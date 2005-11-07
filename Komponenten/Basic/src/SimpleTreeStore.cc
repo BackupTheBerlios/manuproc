@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.100 2005/11/07 07:29:27 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.101 2005/11/07 07:29:40 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -141,11 +141,22 @@ SimpleTreeModel_Properties_Proxy::SimpleTreeModel_Properties_Proxy(unsigned x)
 {}
 
 void SimpleTreeModel_Properties_Proxy::setProperties(SimpleTreeModel_Properties &p)
-{ if (we_own_props) 
+{ assert(p.Columns()==props->Columns());
+  // the number of TreeModelColumns can not easily be changed
+  if (we_own_props) 
   { delete props; 
     we_own_props=false;
   } 
   props=&p;
+}
+
+void SimpleTreeStore::setProperties(SimpleTreeModel_Properties &p)
+{ SimpleTreeModel_Properties_Proxy::setProperties(p);
+  if (p.ProgramName().empty() && p.InstanceName().empty()) 
+  { spaltenzahl_geaendert();
+    redisplay();
+  }
+  else load_remembered();
 }
 
 SimpleTreeModel_Properties_Proxy::~SimpleTreeModel_Properties_Proxy()
@@ -240,7 +251,7 @@ void SimpleTreeStore::load_remembered()
       b=e+1;
    }
    auffuellen_bool=value.second.find('a')!=std::string::npos;
-   // Men und Anzeige anpassen
+   // adapt Menu and display
    block_save=true;
    on_visibly_changed(bvector_iterator());
    signal_save(0);
@@ -278,7 +289,8 @@ void SimpleTreeStore::on_visibly_changed(bvector_iterator it)
 #endif
    }
   }
-   setSequence(currseq);
+   bool optimize= it!=bvector_iterator();
+   setSequence(currseq, optimize);
 }
 
 void SimpleTreeStore::init()
@@ -582,19 +594,18 @@ SimpleTreeStore::iterator SimpleTreeStore::MoveTree(iterator current_iter,
    return current_iter;
 }
 
-void SimpleTreeStore::setSequence(const sequence_t &neu)
+void SimpleTreeStore::setSequence(const sequence_t &neu, bool optimize)
 {  please_detach();
    ++stamp;
    currseq=neu; // Spaltenzahl anpassen?
-   if (currseq.size()!=columns)
+   if (currseq.size()!=columns || !ColumnsAreEquivalent() || !optimize)
    {  columns=currseq.size();
       save_remembered();
       spaltenzahl_geaendert();
    }
-   else if (ColumnsAreEquivalent())
+   else
    {  for (unsigned i=0;i<Cols();++i) title_changed(i);
    }
-   else spaltenzahl_geaendert();
    redisplay();
 }
 

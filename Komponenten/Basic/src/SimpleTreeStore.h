@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.61 2005/11/07 07:29:27 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.62 2005/11/07 07:29:40 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -320,6 +320,7 @@ public:
 #ifdef ST_DEPRECATED
 	__deprecated void set_remember(const std::string &program, const std::string &instance);
 #endif
+	void setProperties(SimpleTreeModel_Properties &p);
 	
 	void set_showdeep(int i) {showdeep=i;}
 	guint Cols() const  { return columns;}
@@ -350,7 +351,7 @@ public:
 	// get the path for a given data line
         Path getPath(const cH_RowDataBase &data) const;
 
-	void setSequence(const sequence_t &seq);
+	void setSequence(const sequence_t &seq, bool optimize=true);
 	
 	unsigned ColumnFromIndex(unsigned) const;
 	unsigned IndexFromColumn(unsigned c) const

@@ -1,4 +1,4 @@
-// $Id: with_class.cc,v 1.26 2005/10/28 21:51:17 christof Exp $
+// $Id: with_class.cc,v 1.27 2005/11/07 07:29:40 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -16,7 +16,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.26 2005/10/28 21:51:17 christof Exp $
+// $Id: with_class.cc,v 1.27 2005/11/07 07:29:40 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -36,7 +36,7 @@ void with_class::on_Beenden_activate()
 
 enum Spalten
 {  SP_ATT0, SP_ATT1, SP_ATT2, SP_ATT3, SP_ATT4, 
-   SP_SUM0 /* , SP_SUM1, SP_SUM2 */ };
+   SP_SUM0, SP_ANZ /* , SP_SUM1, SP_SUM2 */ };
 
 class MyRowData : public RowDataBase
 {
@@ -130,6 +130,29 @@ public:
 };
 #endif
 
+// tree and data properties
+class MyProperties : public SimpleTreeModel_Properties
+{ virtual unsigned Columns() const { return SP_ANZ; }
+  virtual Glib::ustring Title(guint _seqnr) const
+  { switch (_seqnr)
+    { case SP_ATT0: return "Integer";
+      case SP_ATT1: return "String";
+      case SP_ATT2: return "something else";
+      case SP_ATT3: return "something";
+      case SP_ATT4: return "else";
+      case SP_SUM0: return "summe 1";
+    //   case SP_SUM1: return "summe 2";
+    //   case SP_SUM2: return "summe 3";
+      default: return Glib::ustring();
+    }
+  }
+  virtual bool ColumnsAreEquivalent() const { return false; }
+  virtual std::string ProgramName() const { return "(example)"; }
+  virtual std::string InstanceName() const { return "with_class"; }
+  virtual Handle<TreeRow> create_node(const Handle<const TreeRow> &suminit) const
+  { return SumNode::create(suminit); }
+};
+
 void with_class::on_leaf_selected(cH_RowDataBase d)
 {  //const MyRowData *dt=dynamic_cast<const MyRowData*>(&*d);
 // cH_MyRowData dt(d); // looks better, eh?
@@ -146,7 +169,7 @@ void with_class::on_leaf_selected(cH_RowDataBase d)
 void with_class::on_button_data_clicked()
 {
 try{
-// geht beides
+// both works
 //  cH_MyRowData dt=treebase->getSelectedRowDataBase_as<cH_MyRowData>();
   cH_MyRowData dt(treebase->getSelectedRowDataBase_as<cH_MyRowData>());
   std::cout << "Data " << dt->Data(0) << ',' << dt->Data(1) << ',' << dt->Data(2) << '\n';
@@ -177,17 +200,9 @@ public:
 };
 
 with_class::with_class()
-{  std::vector <std::string> v(treebase->Cols());
-   v[SP_ATT0]="Integer";
-   v[SP_ATT1]="String";
-   v[SP_ATT2]="something else";
-   v[SP_ATT3]="something";
-   v[SP_ATT4]="else";
-   v[SP_SUM0]="summe 1";
-//   v[SP_SUM1]="summe 2";
-//   v[SP_SUM2]="summe 3";
-   treebase->setTitles(v);
-   std::vector <cH_RowDataBase> datavec;
+{  std::vector <cH_RowDataBase> datavec;
+   MyProperties props;
+   treebase->setProperties(props);
 #if 0
    datavec.push_back(new MyRowData(1,"X",2,3,"A"));
    datavec.push_back(new MyRowData(2,"Y",2,3,"A"));
@@ -209,7 +224,6 @@ with_class::with_class()
    datavec.push_back(new MyRowData(1,"1955",25,855,"50m"));
    datavec.push_back(new MyRowData(1,"1955",40,210,"Jumbo ein ganz langer Text"));
 #endif
-   treebase->set_NewNode(&SumNode::create);
    treebase->setDataVec(datavec);
    
    treebase->signal_leaf_selected().connect(SigC::slot(*this,&with_class::on_leaf_selected));
@@ -221,6 +235,4 @@ with_class::with_class()
       std::cout << "=" << of.Sum() << '\n';
    }
 #endif   
-   treebase->set_remember("(example)","with_class");
-   treebase->getStore()->RedisplayOnReorder();
 }
