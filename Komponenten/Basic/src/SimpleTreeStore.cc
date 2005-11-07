@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.98 2005/11/03 21:54:48 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.99 2005/11/07 07:28:59 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,8 +17,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// property_editable
-
 #include <SimpleTreeStore.h>
 #include <Misc/Global_Settings.h>
 #include <unistd.h> // getuid
@@ -28,15 +26,7 @@
 #include <gtkmm/treepath.h>
 #include <Misc/EntryValueSort.h>
 //#include <Misc/EntryValueInvert.h>
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
-#  include <sigc++/compatibility.h>
-#endif
-
-// we need use the old Glib::Object code
-#if GTKMM_MAJOR_VERSION==2 && (GTKMM_MINOR_VERSION<2 \
-	|| (GTKMM_MINOR_VERSION==2 && GTKMM_MICRO_VERSION<10))
-#  define OLD_MODEL 
-#endif
+#include <sigc++/compatibility.h>
 
 #ifdef __MINGW32__
 #define getuid() 0
@@ -252,18 +242,6 @@ void SimpleTreeStore::load_remembered()
 
 static const unsigned col1=0xffff,col0=0xcfff;
 
-#ifdef OLD_MODEL
-namespace {
-class MyTreeModel_Class : public Glib::Class
-{public:
-	const Glib::Class& init();
-	static void class_init_function(void* g_class, void* class_data);
-};
-}
-
-static MyTreeModel_Class myclass;
-#endif
-
 void SimpleTreeStore::on_visibly_changed(bvector_iterator it)
 { if (it!=bvector_iterator())
   {if (!*it) // Spalte versteckt
@@ -298,25 +276,17 @@ void SimpleTreeStore::on_visibly_changed(bvector_iterator it)
 
 SimpleTreeStore::SimpleTreeStore(int max_col)
 	: 
-#ifdef OLD_MODEL	
-	  Glib::ObjectBase("SimpleTree_MyTreeModel"),
-	  Glib::Object(Glib::ConstructParams(myclass.init(), (char*) 0)),
-#else
 	  Glib::ObjectBase( typeid(SimpleTreeStore) ), //register a custom GType.
 	  Glib::Object(), //The custom GType is actually registered here.
-#endif	  
-//          columns_are_equivalent(true),
-//	  node_creation(), 
           SimpleTreeModel_Properties_Proxy(max_col),
           columns(max_col), max_column(max_col),
-	  showdeep(), // gp(), 
+	  showdeep(),
 	  auffuellen_bool(), expandieren_bool(), block_save(),
 	  color_bool(),
 	  sortierspalte(invisible_column), invert_sortierspalte(), 
 	  stamp(reinterpret_cast<long>(this)),
 	  m_columns(max_col)
 {  
-#ifndef OLD_MODEL
   //We need to specify a particular get_type() from one of the virtual base classes, but they should
   //both return the same piece of data.
   {static bool inited=false;
@@ -325,7 +295,6 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
      inited=true;
    }
   }
-#endif
   vec_hide_cols.resize(Cols());
   for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
     (*i) = true;
@@ -794,9 +763,7 @@ void SimpleTreeStore::iterinit(vfunc_iter_t iter,const const_iterator &schema) c
 {  assert(3*sizeof(iter STS_GTKMM_22_24(->,.gobj()->)user_data)>=sizeof(SimpleTreeStore::const_iterator));
    STS_GTKMM_22_24(iter->stamp=stamp, iter.set_stamp(stamp));
    reinterpret_cast<SimpleTreeStore::const_iterator&>(iter STS_GTKMM_22_24(->,.gobj()->)user_data)=schema;
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2   
    iter.set_model_gobject(const_cast<GtkTreeModel*>(Gtk::TreeModel::gobj()));
-#endif   
    ManuProC::Trace(trace_channel,__FUNCTION__,iter STS_GTKMM_22_24(->stamp,.get_stamp()),
    		iter STS_GTKMM_22_24(->,.gobj()->)user_data,
    		iter STS_GTKMM_22_24(->,.gobj()->)user_data2,
@@ -805,28 +772,17 @@ void SimpleTreeStore::iterinit(vfunc_iter_t iter,const const_iterator &schema) c
 
 void SimpleTreeStore::iterclear(vfunc_iter_t iter) const
 {  ManuProC::Trace(trace_channel,__FUNCTION__);
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
    iter=TreeModel::iterator();
-#else
-   memset(iter,0,sizeof(*iter));
-#endif
 }
 
 void SimpleTreeStore::iterinit(vfunc_iter_t iter,const iterator &schema) const
 {  iterinit(iter,static_cast<const_iterator>(schema));
 }
 
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
 #define VALUE_INIT0(type) \
 	g_value_init(value.gobj(),(type))
 #define VALUE_SET(type,val) \
 	g_value_set_##type(value.gobj(),(val))
-#else
-#define VALUE_INIT0(type) \
-	g_value_init(value,(type))
-#define VALUE_SET(type,val) \
-	g_value_set_##type(value,(val))
-#endif	
 
 #define VALUE_INIT3(type2,name,val) \
 	VALUE_INIT0(m_columns.name.type()); \
@@ -881,13 +837,8 @@ void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter,
    }
 }
 
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
 bool SimpleTreeStore::iter_next_vfunc(vfunc_constiter_t iter, vfunc_iter_t iter_next) const
 {
-#else
-bool SimpleTreeStore::iter_next_vfunc(vfunc_iter_t iter)
-{  GtkTreeIter *iter_next=iter;
-#endif
    ManuProC::Trace _t(trace_channel, __FUNCTION__,iter STS_GTKMM_22_24(,.gobj())->user_data);
    if (!iter_valid(iter)) { iterclear(iter_next); return false; }
 
@@ -901,11 +852,7 @@ bool SimpleTreeStore::iter_next_vfunc(vfunc_iter_t iter)
    return true;
 }
 
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
 bool SimpleTreeStore::iter_children_vfunc(vfunc_constiter_t parent, vfunc_iter_t iter) const
-#else
-bool SimpleTreeStore::iter_children_vfunc(vfunc_iter_t iter, vfunc_constiter_t parent) 
-#endif
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,parent STS_GTKMM_22_24(,.gobj())->user_data);
    iterclear(iter);
    if (!iter_valid(parent)) return false;
@@ -925,27 +872,14 @@ int SimpleTreeStore::iter_n_children_vfunc(vfunc_constiter_t iter) STS_VFUNC_CON
    return iterconv(iter)->second.children.size();
 }
 
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
 int SimpleTreeStore::iter_n_root_children_vfunc() const
 {  return root.children.size();
 }
-#endif
 
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
 bool SimpleTreeStore::iter_nth_child_vfunc(vfunc_constiter_t parent, int n, vfunc_iter_t iter) const
-#else
-bool SimpleTreeStore::iter_nth_child_vfunc(vfunc_iter_t iter, vfunc_constiter_t parent, int n)
-#endif
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,parent?parent STS_GTKMM_22_24(,.gobj())->user_data:0,n);
    iterator res,end;
    iterclear(iter);
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION<=2
-   if (!parent)
-   {  res=root.children.begin();
-      end=root.children.end();
-   }
-   else
-#endif   
    {  if (!iter_valid(parent)) return false;
       iterator p=iterconv(parent);
       res=p->second.children.begin();
@@ -961,7 +895,6 @@ bool SimpleTreeStore::iter_nth_child_vfunc(vfunc_iter_t iter, vfunc_constiter_t 
    return true;
 }
 
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
 bool SimpleTreeStore::iter_nth_root_child_vfunc(int n, vfunc_iter_t iter) const
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,n);
    iterclear(iter);
@@ -976,13 +909,8 @@ bool SimpleTreeStore::iter_nth_root_child_vfunc(int n, vfunc_iter_t iter) const
    iterinit(iter,res); 
    return true;
 }
-#endif
 
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
 bool SimpleTreeStore::iter_parent_vfunc(vfunc_constiter_t child, vfunc_iter_t iter) const
-#else
-bool SimpleTreeStore::iter_parent_vfunc(vfunc_iter_t iter, vfunc_constiter_t child)
-#endif
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,child STS_GTKMM_22_24(,.gobj())->user_data);
    iterclear(iter);
    if (!iter_valid(child)) return false;
@@ -1001,11 +929,7 @@ Gtk::TreeModel::Path SimpleTreeStore::get_path_vfunc(const Gtk::TreeModel::itera
   return getPath(iterconv(iter STS_GTKMM_22_24(->gobj(),)));
 }
 
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
 bool SimpleTreeStore::get_iter_vfunc(const Path& path, vfunc_iter_t iter) const
-#else
-bool SimpleTreeStore::get_iter_vfunc(vfunc_iter_t iter, const Path& path)
-#endif
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,path.to_string());
    
    STS_GTKMM_22_24(iterator,const_iterator) 
@@ -1025,41 +949,6 @@ bool SimpleTreeStore::get_iter_vfunc(vfunc_iter_t iter, const Path& path)
    }
    return false;
 }
-
-#ifdef OLD_MODEL
-void MyTreeModel_Class::class_init_function(void* g_class, void* class_data)
-{
-}
-
-const Glib::Class& MyTreeModel_Class::init()
-{
-    if (!gtype_)
-    {
-        class_init_func_ = &MyTreeModel_Class::class_init_function;
-
-        static const GTypeInfo derived_info = 
-        {
-            sizeof(GObjectClass),
-            NULL,
-            NULL,
-            class_init_func_,
-            NULL,
-            NULL,
-            sizeof(GObject),
-            0,
-            0,
-            NULL,
-        };
-        
-        gtype_ = g_type_register_static(G_TYPE_OBJECT, "SimpleTree_MyTreeModel",
-            &derived_info, GTypeFlags(0));
-
-        Gtk::TreeModel::add_interface(get_type());
-    }
-
-    return *this;
-}
-#endif
 
 SimpleTreeStore::iterator SimpleTreeStore::iterbyValue(Node &parent,const cH_EntryValue &val) const
 {  return parent.children.find(val);
@@ -1109,28 +998,16 @@ void SimpleTreeStoreNode::fix_pointer()
 
 Gtk::TreeModel::iterator SimpleTreeStore::getIter(iterator it) const
 {
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
    TreeModel::iterator res;
    iterinit(res,it);
    return res;
-#else
-   GtkTreeIter res;
-   iterinit(&res,it);
-   return Gtk::TreeModel::iterator(const_cast<GtkTreeModel*>(gobj()),&res);
-#endif
 }
 
 Gtk::TreeModel::const_iterator SimpleTreeStore::getIter(const_iterator it) const
 {  
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
    TreeModel::iterator res;
    iterinit(res,it);
    return res;
-#else
-   GtkTreeIter res;
-   iterinit(&res,it);
-   return Gtk::TreeModel::iterator(const_cast<GtkTreeModel*>(gobj()),&res);
-#endif
 }
 
 Gtk::TreeModel::Path SimpleTreeStore::getPath(const cH_RowDataBase &data) const
