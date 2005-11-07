@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.102 2005/11/07 07:30:08 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.103 2005/11/07 07:30:25 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -754,15 +754,15 @@ void SimpleTreeStore::set_tree_column_visibility(unsigned index,bool visible)
 //   on_visibly_changed(vec_hide_cols.begin()+index);
 }
 
-Gtk::TreeModelFlags SimpleTreeStore::get_flags_vfunc() STS_VFUNC_CONST
+Gtk::TreeModelFlags SimpleTreeStore::get_flags_vfunc() const
 {  return Gtk::TreeModelFlags(0);
   //Gtk::TREE_MODEL_ITERS_PERSIST; // Gtk::TreeModelFlags(0); 
 }
-int SimpleTreeStore::get_n_columns_vfunc() STS_VFUNC_CONST
+int SimpleTreeStore::get_n_columns_vfunc() const
 {  return unsigned(s_text_start)+max_column; }
 
 // speed this up by an array?
-GType SimpleTreeStore::get_column_type_vfunc(int index) STS_VFUNC_CONST
+GType SimpleTreeStore::get_column_type_vfunc(int index) const
 {  switch(e_spalten(index))
    {  case s_row: return m_columns.row.type();
       case s_deep: return m_columns.deep.type();
@@ -829,7 +829,7 @@ void SimpleTreeStore::iterinit(vfunc_iter_t iter,const iterator &schema) const
 	VALUE_SET(string,(val).c_str())
 
 void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter, 
-		int column, Glib::ValueBase& value) STS_VFUNC_CONST
+		int column, Glib::ValueBase& value) const
 {  if (!iter_valid(iter )) return;
    Node &nd=iterconv(iter )->second;
    switch(e_spalten(column))
@@ -898,12 +898,12 @@ bool SimpleTreeStore::iter_children_vfunc(vfunc_constiter_t parent, vfunc_iter_t
    return true;
 }
 
-bool SimpleTreeStore::iter_has_child_vfunc(vfunc_constiter_t iter) STS_VFUNC_CONST
+bool SimpleTreeStore::iter_has_child_vfunc(vfunc_constiter_t iter) const
 {  if (!iter_valid(iter)) return false;
    return !(iterconv(iter)->second.children.empty());
 }
 
-int SimpleTreeStore::iter_n_children_vfunc(vfunc_constiter_t iter) STS_VFUNC_CONST
+int SimpleTreeStore::iter_n_children_vfunc(vfunc_constiter_t iter) const
 {  if (!iter_valid(iter)) return 0;
    return iterconv(iter)->second.children.size();
 }
@@ -958,7 +958,7 @@ bool SimpleTreeStore::iter_parent_vfunc(vfunc_constiter_t child, vfunc_iter_t it
    return true;
 }
 
-Gtk::TreeModel::Path SimpleTreeStore::get_path_vfunc(const Gtk::TreeModel::iterator& iter) STS_VFUNC_CONST
+Gtk::TreeModel::Path SimpleTreeStore::get_path_vfunc(const Gtk::TreeModel::iterator& iter) const
 { ManuProC::Trace _t(trace_channel, __FUNCTION__,iter->gobj()->user_data);
   if (!iter_valid(iter )) 
      return Path();

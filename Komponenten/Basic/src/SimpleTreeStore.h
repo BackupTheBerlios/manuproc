@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.63 2005/11/07 07:30:08 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.64 2005/11/07 07:30:27 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,13 +33,6 @@
 #include <utility>
 #include <map>
 #include <BaseObjects/Model_ref_bvector.h>
-
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
-#  define b b
-#else
-#  define b a
-#endif
-#define STS_VFUNC_CONST const
 
 #ifndef SIMPLE_TREE_NO_COMPAT
 #define ST_DEPRECATED
@@ -267,9 +260,9 @@ private:
    virtual bool drag_data_received_vfunc(const Gtk::TreeModel::Path& dest, const Gtk::SelectionData& selection_data);
    virtual bool row_drop_possible_vfunc(const Gtk::TreeModel::Path& dest, const Gtk::SelectionData& selection_data) const;
 
-   virtual Gtk::TreeModelFlags get_flags_vfunc() STS_VFUNC_CONST;
-   virtual int get_n_columns_vfunc() STS_VFUNC_CONST;
-   virtual GType get_column_type_vfunc(int index) STS_VFUNC_CONST;
+   virtual Gtk::TreeModelFlags get_flags_vfunc() const;
+   virtual int get_n_columns_vfunc() const;
+   virtual GType get_column_type_vfunc(int index) const;
    virtual void get_value_vfunc(vfunc_constiter_t iter, int column, Glib::ValueBase& value) const;
    bool iter_next_vfunc(vfunc_constiter_t iter, vfunc_iter_t iter_next) const;
    virtual bool iter_children_vfunc(vfunc_constiter_t parent, vfunc_iter_t iter) const;
@@ -280,7 +273,7 @@ private:
    virtual bool iter_nth_root_child_vfunc(int n, vfunc_iter_t iter) const;
    virtual bool iter_parent_vfunc(vfunc_constiter_t child, vfunc_iter_t iter) const;
    virtual bool get_iter_vfunc(const Path& path, vfunc_iter_t iter) const;
-   virtual Path get_path_vfunc(const TreeModel::iterator& iter) STS_VFUNC_CONST;
+   virtual Path get_path_vfunc(const TreeModel::iterator& iter) const;
    
    void resort(SimpleTreeStoreNode&, unsigned);
    void test();
