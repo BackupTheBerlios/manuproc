@@ -1,4 +1,4 @@
-// $Id: ExtraColumns.h,v 1.6 2004/10/20 07:33:08 christof Exp $
+// $Id: ExtraColumns.h,v 1.7 2005/11/08 14:36:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -49,7 +49,9 @@ private:
     
     void Execute_if_complete();
 
+#ifdef HAVE_LIBPQ_INT_H
     Query::Row::Fake fake_istream(const std::string &column);
+#endif
     void register_table(const std::string &table, const std::vector<std::string> &keycols);
     std::string from_where() const;
 public:
@@ -69,10 +71,12 @@ public:
        Execute_if_complete();
        return *this;
     }
+#ifdef HAVE_LIBPQ_INT_H    
     template <class T>
      T get(const std::string &column, const T &def_value=T())
     { return fake_istream(column).FetchMap(def_value);
     }
+#endif
 };
 
 #endif

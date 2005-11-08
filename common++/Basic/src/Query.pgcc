@@ -1,4 +1,4 @@
-// $Id: Query.pgcc,v 1.17 2005/10/25 12:14:00 christof Exp $
+// $Id: Query.pgcc,v 1.18 2005/11/08 14:36:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -451,6 +451,7 @@ unsigned Query::Lines() {
 	return sqlca.sqlerrd[2]; 
 }
 
+#ifdef HAVE_LIBPQ_INT_H
 #include <internal/libpq-int.h>
 
 void Query_Row::Fake::init()
@@ -493,4 +494,6 @@ Query_Row::Fake::~Fake()
      PQclear(const_cast<PGresult*>(result));
    }
 }
+#endif
+
 #endif

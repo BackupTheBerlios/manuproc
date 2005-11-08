@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.46 2005/10/12 09:23:05 christof Exp $
+# $Id: configure.in,v 1.47 2005/11/08 14:36:31 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(libcommon++, 0.0, [manuproc-developer-de@berlios.de])
@@ -66,6 +66,12 @@ then
   #include <libpq-fe.h>
   int main() {  PQprepare((PGconn*)NULL,"name","select true",0,NULL); }
   	],[AC_DEFINE(HAVE_PQPREPARE, 1, [Define to 1 if PQprepare is available in libpq.])
+  		AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)])
+  AC_MSG_CHECKING(for working libpq-int.h)
+  AC_COMPILE_IFELSE([
+  #include <internal/libpq-int.h>
+  int main() {  PGresult *res; res->ntups=1; }
+  	],[AC_DEFINE(HAVE_LIBPQ_INT_H, 1, [Define to 1 if libpq-int.h is includeable.])
   		AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)])
   CXXFLAGS="$tmp_CXXFLAGS"
 else

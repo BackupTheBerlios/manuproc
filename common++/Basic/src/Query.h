@@ -1,4 +1,4 @@
-// $Id: Query.h,v 1.11 2005/11/04 16:33:57 christof Exp $
+// $Id: Query.h,v 1.12 2005/11/08 14:36:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Christof Petig
@@ -52,7 +52,9 @@ extern "C" {
 class Query_Row
 {public:
 	struct check_eol { check_eol() {} };
+#ifdef HAVE_LIBPQ_INT_H	
 	class Fake;
+#endif
 private:
 	int naechstesFeld;
 	/* const */ int zeile;
@@ -159,6 +161,7 @@ public:
 	void ThrowIfNotEmpty(const char *where);
 };
 
+#ifdef HAVE_LIBPQ_INT_H
 // one time internal (fake) result (mostly a hack)
 class Query_Row::Fake : public Query_Row
 { 	  std::string value;
@@ -171,7 +174,7 @@ public:
           Fake(const Fake &);
           ~Fake();
 };
-
+#endif
 
 struct Query_types
 {	template <class T>
