@@ -1,6 +1,7 @@
 CFLAGS=-Wall -fPIC  \
-	-I/usr/include/postgresql/server \
+	-I/usr/include/postgresql/8.1/server \
 	-I/usr/include/postgresql/8.0/server \
+	-I/usr/include/postgresql/server \
 	-I/usr/include/postgresql \
 	-I/usr/lib/postgresql/include
 
