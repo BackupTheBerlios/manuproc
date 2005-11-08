@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.36 2004/11/18 16:45:44 christof Exp $
+# $Id: configure.in,v 1.37 2005/11/08 15:57:43 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(ManuProC_Base,0.6.4, [manuproc-developer-de@berlios.de])
@@ -84,6 +84,32 @@ int main() {  ECPGdo(20, "test", "select true",ECPGt_EOIT, ECPGt_EORT); }
 	],[AC_DEFINE(OLD_ECPG, 1, [Define to 1 if you use ecpg 2.9.])
 		AC_MSG_RESULT([old (-2.9.0)])],
 	[AC_MSG_RESULT([new (3.0.0+)])])
+    AC_MSG_CHECKING(for PQprepare)
+    AC_COMPILE_IFELSE([
+    #include <libpq-fe.h>
+    int main() {  PQprepare((PGconn*)NULL,"name","select true",0,NULL); }
+          ],[AC_DEFINE(HAVE_PQPREPARE, 1, [Define to 1 if PQprepare is available in libpq.])
+                  AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)])
+    
+    AC_MSG_CHECKING(for postgresql server includes)
+    for serverdir in /usr/include/postgresql /usr/include/postgresql/?.? 
+    do 
+      if test -d $serverdir/server
+        then LIBPQ_INT_CFLAGS="-I$serverdir/server $LIBPQ_INT_CFLAGS"
+      fi
+    done
+    AC_MSG_RESULT($LIBPQ_INT_CFLAGS)
+    AC_SUBST(LIBPQ_INT_CFLAGS)
+
+    AC_MSG_CHECKING(for working libpq-int.h)
+    CXXFLAGS="$CXXFLAGS $LIBPQ_INT_CFLAGS"
+    AC_COMPILE_IFELSE([
+    #include <libpq-fe.h>
+    #include <internal/libpq-int.h>
+    int main() {  PGresult *res; res->ntups=1; }
+          ],[AC_DEFINE(HAVE_LIBPQ_INT_H, 1, [Define to 1 if libpq-int.h is includeable.])
+                  AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)])
+  
    CXXFLAGS="$tmp_CXXFLAGS"
    
    AC_MSG_CHECKING(for standard database name)
