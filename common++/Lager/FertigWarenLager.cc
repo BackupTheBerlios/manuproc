@@ -148,6 +148,10 @@ void FertigWarenLager::Buchen(FertigWaren::e_buchen buchen,
 
 void FertigWarenLager::Inventur() throw(LagerError)
 {
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
+	NV("artikel",fw.Artikel()),
+	NV("menge",fw.Stk(FertigWaren::Rein)),
+     	NV("aktion",char(fw.Aktion())));
  assert(fw.Artikel().Id() != ArtikelBase::none_id);
 
  Zeitpunkt_new z;
@@ -165,6 +169,7 @@ void FertigWarenLager::Inventur() throw(LagerError)
  fw.setZeit(z);
   
  int buchmenge=fw.Stk(FertigWaren::AsIs)-alte_menge;
+  ManuProC::Trace(AuftragBase::trace_channel, "",NV1(alte_menge), NV1(buchmenge));
  fw.setBestand(fw.Stk(FertigWaren::AsIs));
 
 #warning NO NEGATIV AMOUNT NOW
@@ -185,10 +190,9 @@ void FertigWarenLager::Inventur() throw(LagerError)
 
 
  if(buchmenge > 0)
-   rein_ins_lager(fw.Artikel(),fw.Stk(FertigWaren::Rein),false);
- else
- if(buchmenge < 0)
-   raus_aus_lager(fw.Artikel(),fw.Stk(FertigWaren::Raus),false);
+   rein_ins_lager(fw.Artikel(),buchmenge,false);
+ else if (buchmenge < 0)
+   raus_aus_lager(fw.Artikel(),-buchmenge,false);
 
  fw.setStk(buchmenge);
 
