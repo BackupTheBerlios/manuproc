@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.55 2005/11/07 09:03:44 christof Exp $
+// $Id: SimpleTree.hh,v 1.56 2005/11/09 09:29:30 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -96,8 +96,8 @@ private:
 	SigC::Signal1<void,Handle<const TreeRow> > _node_selected;
 	SigC::Signal0<void> _reorder;
 	
-	std::vector<gfloat> alignment;
-	std::vector<bool> resizeable;	
+//	std::vector<gfloat> alignment;
+//	std::vector<bool> resizeable;	
 
         void init();	
 	void on_title_changed(guint nr);
@@ -138,10 +138,10 @@ public:
 
 	void Expand_recursively();
 	void Collapse();
-	void setTitles(const std::vector<std::string> &T);
-	void setAlignment(const std::vector<gfloat> &A);
-	void setResizeable(const std::vector<bool> &R);	
-	void setResizeable(const bool b);		
+	__deprecated void setTitles(const std::vector<std::string> &T);
+	__deprecated void setAlignment(const std::vector<gfloat> &A);
+	__deprecated void setResizeable(const std::vector<bool> &R);	
+	__deprecated void setResizeable(const bool b);		
 	
 	void debug();
 };

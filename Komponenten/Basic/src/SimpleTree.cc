@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.71 2005/11/07 07:31:33 christof Exp $
+// $Id: SimpleTree.cc,v 1.72 2005/11/09 09:29:30 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -116,14 +116,11 @@ void SimpleTree_Basic::on_spaltenzahl_geaendert()
       if (getStore()->OptionColor().Value())
          pColumn->add_attribute(crst->property_background_gdk(),sts->m_columns.background);
       pColumn->add_attribute(crst->property_childrens_deep(),sts->m_columns.childrens_deep);
+
       unsigned idx(IndexFromColumn(i));
-      if (!alignment.empty())
-      {  pColumn->set_alignment(alignment[idx]);
-         crst->property_xalign()=alignment[idx];
-      }
-      
-      if (!resizeable.empty())
-       pColumn->set_resizable(resizeable[idx]);
+      pColumn->set_alignment(Properties().Alignment(idx));
+      crst->property_xalign()=Properties().Alignment(idx);
+      pColumn->set_resizable(Properties().resizeable(idx));
       
       if (Properties().editable(idx))
       {  crst->property_editable()=true;
@@ -442,21 +439,16 @@ void SimpleTree::scroll_to(const cH_RowDataBase &data, gfloat where)
 }
 
 void SimpleTree_Basic::setAlignment(const std::vector<gfloat> &A)
-{  assert(A.size()==sts->MaxCol());
-   alignment=A;
-   on_spaltenzahl_geaendert();
+{  sts->setAlignment(A);
 }
 
 void SimpleTree_Basic::setResizeable(const std::vector<bool> &R)
-{  assert(R.size()==sts->MaxCol());
-   resizeable=R;
-   on_spaltenzahl_geaendert();
+{ sts->setResizeable(R);
 }
 
 void SimpleTree_Basic::setResizeable(const bool b)
 {
- std::vector<bool> vb(sts->MaxCol(),b);
- SimpleTree_Basic::setResizeable(vb);
+ SimpleTree_Basic::setResizeable(std::vector<bool>(sts->MaxCol(),b));
 }
 
 static void sig0(const char * const x)

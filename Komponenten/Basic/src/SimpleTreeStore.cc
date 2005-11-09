@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.105 2005/11/07 07:31:21 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.106 2005/11/09 09:29:30 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -43,10 +43,11 @@ struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Prope
 	gpointer gp;
 	std::string mem_prog,mem_inst;
 	std::vector<gfloat> alignment;
+	std::vector<bool> v_resizeable;
 
   Standard(guint cols) : columns(cols), titles(cols), 
       column_editable(cols), node_creation(), columns_are_equivalent(true),
-      gp(), alignment(cols) {}
+      gp(), alignment(cols), v_resizeable(cols,true) {}
   virtual unsigned Columns() const { return columns; }
   virtual gpointer user_data() const { return gp; }
   virtual Glib::ustring Title(guint _seqnr) const { return titles[_seqnr]; }
@@ -62,6 +63,7 @@ struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Prope
   { return column_type.at(idx); }
   virtual std::string ProgramName() const { return mem_prog; }
   virtual std::string InstanceName() const { return mem_inst; }
+  virtual bool resizeable(guint _seqnr) const { return v_resizeable.at(_seqnr); }
   
 	__deprecated void setTitles(const std::vector<std::string> &T)
 	{ titles=T;
@@ -79,7 +81,16 @@ struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Prope
 	{ mem_prog=program; mem_inst=instance; }
 	__deprecated void set_NewNode(NewNode_fp n)
 	{  node_creation=n; }
-	__deprecated void RedisplayOnReorder() { columns_are_equivalent=false; }
+	__deprecated void RedisplayOnReorder()
+	{ columns_are_equivalent=false; }
+	__deprecated void setAlignment(const std::vector<gfloat> &A)
+	{ assert(A.size()==Columns());
+	  alignment=A;
+	}
+	__deprecated void setResizeable(const std::vector<bool> &R)
+	{ assert(R.size()==Columns());
+	  v_resizeable=R;
+	}
 };
 
 SimpleTreeModel_Properties_Proxy::Standard &SimpleTreeModel_Properties_Proxy::stdProperties()
@@ -121,6 +132,18 @@ void SimpleTreeModel_Properties_Proxy::set_editable(unsigned idx,bool v)
    stdProperties().set_editable(idx,v);
    // might not be enough
    title_changed(idx);
+}
+
+void SimpleTreeModel_Properties_Proxy::setResizeable(const std::vector<bool> &R)
+{ assert(R.size()==Properties().Columns());
+  stdProperties().setResizeable(R);
+  title_changed(SimpleTreeStore::invisible_column);
+}
+
+void SimpleTreeModel_Properties_Proxy::setAlignment(const std::vector<gfloat> &R)
+{ assert(R.size()==Properties().Columns());
+  stdProperties().setAlignment(R);
+  title_changed(SimpleTreeStore::invisible_column);
 }
 #else // !deprecated
 struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Properties

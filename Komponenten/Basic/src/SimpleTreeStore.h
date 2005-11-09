@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.66 2005/11/07 07:31:22 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.67 2005/11/09 09:29:31 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -58,7 +58,7 @@ struct SimpleTreeModel_Properties
   { return ct_string; }
   virtual std::string ProgramName() const { return std::string(); }
   virtual std::string InstanceName() const { return std::string(); }
-  /*virtual */ bool resizable(guint _seqnr) const { return true; }
+  virtual bool resizeable(guint _seqnr) const { return true; }
   /* fixed_width etc. ? */
 };
 
@@ -122,6 +122,8 @@ public:
 	__deprecated void set_value_data(gpointer _p);
 	__deprecated void set_remember(const std::string &program, const std::string &instance);
 	__deprecated void set_NewNode(NewNode_fp n);
+	__deprecated void setAlignment(const std::vector<gfloat> &A);
+	__deprecated void setResizeable(const std::vector<bool> &R);
 	__deprecated void RedisplayOnReorder();
 #endif
 };
