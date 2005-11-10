@@ -1,4 +1,4 @@
-// $Id: createDynConfig.cc,v 1.4 2005/08/18 09:01:12 jacek Exp $
+// $Id: createDynConfig.cc,v 1.5 2005/11/10 12:10:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynConfig.cc,v 1.4 2005/08/18 09:01:12 jacek Exp $
+// $Id: createDynConfig.cc,v 1.5 2005/11/10 12:10:23 christof Exp $
 
 
 #include <Misc/dbconnect.h>
@@ -28,6 +28,9 @@
 #include <iostream>
 #include <Misc/Zeitpunkt_new.h>
 #include <Artikel/Einheiten.h>
+#include <Misc/Ausgabe_neu.h>
+
+extern bool Ausgabe_neu::TeX_uses_UTF8;
 
 std::string toIdentifier(const std::string &s)
 {  std::string res;
@@ -48,7 +51,8 @@ std::string toIdentifier(const std::string &s)
 }
 
 int main()
-{  try
+{Ausgabe_neu::TeX_uses_UTF8=false;
+  try
    {  ManuProC::dbconnect();
       Transaction tr;
       FetchIStream is;
