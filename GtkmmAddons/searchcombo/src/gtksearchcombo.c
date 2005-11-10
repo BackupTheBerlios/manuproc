@@ -715,7 +715,7 @@ gtk_searchcombo_entry_changed     (GtkEntry      *entry,
       GtkWidget *list =0;
 
       DEBUG(printf("narrow try\n"));
-      if (searchcombo->case_sensitive) string_compare = strncmp;
+      if (searchcombo->case_sensitive) string_compare = (int(*)(const char*,const char*,guint))strncmp;
 
       gtk_widget_hide (searchcombo->popwin);
 
@@ -928,7 +928,7 @@ static gint gtk_searchcombo_complete(GtkSearchCombo *searchcombo)
     
     cmpl = g_completion_new ((GCompletionFunc)gtk_searchcombo_func);
     if (!searchcombo->case_sensitive) 
-       g_completion_set_compare(cmpl, g_strncasecmp);
+       g_completion_set_compare(cmpl, (GCompletionStrncmpFunc)g_strncasecmp);
     g_completion_add_items (cmpl, GTK_LIST (searchcombo->list)->children);
 
 //    pos = GTK_EDITABLE (searchcombo->entry)->current_pos;
