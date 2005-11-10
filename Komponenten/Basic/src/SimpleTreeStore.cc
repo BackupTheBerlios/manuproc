@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.109 2005/11/10 18:10:24 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.110 2005/11/10 18:10:29 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -237,34 +237,37 @@ void SimpleTreeStore::load_remembered()
 
    expandieren_bool=value.second.find('E')==std::string::npos;
    color_bool=value.second.find('C')==std::string::npos;
+   auffuellen_bool=value.second.find('a')!=std::string::npos;
    
+   block_save=true;
+   // ShowColumn will signal views (and update the menu)
    std::string::size_type k0=value.second.find(','),k1=std::string::npos;
    if (k0!=std::string::npos) 
    {  guint sichtbar=strtoul(value.second.substr(0,k0).c_str(),0,10),bit=1;
       for (guint j=0;j<MaxCol();++j,bit<<=1)
-         vec_hide_cols[j]=!bit ? Properties().visible_default(j) : !(sichtbar&bit);
+         ShowColumn(j)=!bit ? Properties().visible_default(j) : !(sichtbar&bit);
       k1=value.second.find(',',k0+1);
    }
-   else
+   else // kein Wert gesetzt
    {  for (guint j=0;j<MaxCol();++j)
-         vec_hide_cols[j]=Properties().visible_default(j);
+      {  ShowColumn(j)=Properties().visible_default(j);
+      }
    }
    if (k1!=std::string::npos)
    {  showdeep=strtoul(value.second.substr(k0+1,k1-(k0+1)).c_str(),0,10);
    }
 
    sequence_t s;
-   auffuellen_bool=false;
    for (std::string::size_type b=0;;)
    {  std::string::size_type e=value.first.find(',',b);
       if (e==std::string::npos) break;
       s.push_back(strtoul(value.first.substr(b,e-b).c_str(),0,10));
       b=e+1;
    }
-   auffuellen_bool=value.second.find('a')!=std::string::npos;
+   fillSequence(s,true);
+
    // adapt Menu and display
-   block_save=true;
-   on_visibly_changed(bvector_iterator());
+   setSequence(s);
    signal_save(0);
    block_save=false;
 }
@@ -272,7 +275,8 @@ void SimpleTreeStore::load_remembered()
 static const unsigned col1=0xffff,col0=0xcfff;
 
 void SimpleTreeStore::on_visibly_changed(bvector_iterator it)
-{ if (it!=bvector_iterator())
+{ if (block_save) return;
+  if (it!=bvector_iterator())
   {if (!*it) // Spalte versteckt
    {  for (sequence_t::iterator i=currseq.begin();i!=currseq.end();)
       {  if (!ColumnVisible(*i))

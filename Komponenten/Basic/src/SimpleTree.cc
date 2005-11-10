@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.75 2005/11/10 18:10:08 christof Exp $
+// $Id: SimpleTree.cc,v 1.76 2005/11/10 18:10:29 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -203,7 +203,6 @@ void SimpleTree_Basic::on_neuordnen_clicked()
 
 void SimpleTree_Basic::on_column_changed(guint nr)
 {  delete menu; 
-std::cerr << "column changed\n";
    menu=0;
    fillMenu();
    on_spalten_geaendert();
