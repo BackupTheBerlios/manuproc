@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.56 2005/11/09 09:29:30 christof Exp $
+// $Id: SimpleTree.hh,v 1.57 2005/11/10 08:24:17 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -95,6 +95,7 @@ private:
 	SigC::Signal1<void,cH_RowDataBase> _leaf_selected;
 	SigC::Signal1<void,Handle<const TreeRow> > _node_selected;
 	SigC::Signal0<void> _reorder;
+	SigC::Signal3<void,const cH_RowDataBase &,int,bool&> clicked_sig;
 	
 //	std::vector<gfloat> alignment;
 //	std::vector<bool> resizeable;	
@@ -115,7 +116,7 @@ private:
 			std::vector<Handle<const TreeRow> > *n);
         void on_column_edited(const Glib::ustring &path,
                   const Glib::ustring&new_text,unsigned idx);
-	
+	static bool clicked_impl(SimpleTree_Basic *_this, const cH_RowDataBase &row, int col_idx);
 public:
 	SimpleTree_Basic(unsigned max_col);
 	SimpleTree_Basic(SimpleTreeModel_Properties &props);
@@ -130,6 +131,7 @@ public:
 	{ return _node_selected; }
 	SigC::Signal0<void> &signal_reorder()
 	{ return _reorder; }
+	SigC::Signal3<void,const cH_RowDataBase&,int,bool&> &signal_clicked();
 	
 	void detach();
 	void attach();

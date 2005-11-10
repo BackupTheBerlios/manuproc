@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.72 2005/11/09 09:29:30 christof Exp $
+// $Id: SimpleTree.cc,v 1.73 2005/11/10 08:24:17 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -497,3 +497,15 @@ void SimpleTreeStore_Proxy::setTitles(const std::vector<std::string> &T) {  sts-
 void SimpleTreeStore_Proxy::setTitleAt(unsigned idx, const std::string &s) {  sts->setTitleAt(idx,s); }
 void SimpleTreeStore_Proxy::set_NewNode(SimpleTreeStore::NewNode_fp n) { sts->set_NewNode(n); }
 void SimpleTreeStore_Proxy::set_value_data(gpointer _p) { sts->set_value_data(_p); }
+
+bool SimpleTree_Basic::clicked_impl(SimpleTree_Basic *_this, const cH_RowDataBase &row, int col_idx)
+{  bool handled=false;
+   _this->clicked_sig(row,col_idx,handled);
+   return handled;
+}
+
+SigC::Signal3<void,const cH_RowDataBase &,int,bool&> 
+	  &SimpleTree_Basic::signal_clicked()
+{ button_press_vfunc=&SimpleTree_Basic::clicked_impl;
+  return clicked_sig;
+}
