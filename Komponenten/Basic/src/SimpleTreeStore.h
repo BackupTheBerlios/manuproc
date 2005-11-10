@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.68 2005/11/10 18:10:02 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.69 2005/11/10 18:10:08 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,6 +24,7 @@
 #include <gtkmm/treemodel.h>
 #include <gtkmm/treedragsource.h>
 #include <gtkmm/treedragdest.h>
+#include <gtkmm/treeviewcolumn.h>
 #include <RowDataBase.h>
 #include <TreeRow.h>
 #include <deque>
@@ -59,7 +60,10 @@ struct SimpleTreeModel_Properties : sigc::trackable
   virtual std::string ProgramName() const { return std::string(); }
   virtual std::string InstanceName() const { return std::string(); }
   virtual bool resizeable(guint _seqnr) const { return true; }
-  /* fixed_width etc. ? */
+  virtual Gtk::TreeViewColumnSizing get_sizing(guint _seqnr) const
+  // is this a sane default?
+  { return Gtk::TREE_VIEW_COLUMN_AUTOSIZE; }
+  virtual int get_fixed_width(guint _seqnr) const { return 0; }
   
   sigc::signal1<void,guint> column_changed;
 };

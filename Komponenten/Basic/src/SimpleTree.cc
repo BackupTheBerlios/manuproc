@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.74 2005/11/10 18:10:02 christof Exp $
+// $Id: SimpleTree.cc,v 1.75 2005/11/10 18:10:08 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -123,6 +123,9 @@ void SimpleTree_Basic::on_spalten_geaendert()
       pColumn->set_alignment(Properties().Alignment(idx));
       crst->property_xalign()=Properties().Alignment(idx);
       pColumn->set_resizable(Properties().resizeable(idx));
+      pColumn->set_sizing(Properties().get_sizing(idx));
+      if (Properties().get_sizing(idx)==Gtk::TREE_VIEW_COLUMN_FIXED)
+        pColumn->set_fixed_width(Properties().get_fixed_width(idx));
       
       if (Properties().editable(idx))
       {  crst->property_editable()=true;
