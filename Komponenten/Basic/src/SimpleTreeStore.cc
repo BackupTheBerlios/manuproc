@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.107 2005/11/10 18:10:02 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.108 2005/11/10 18:10:13 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -163,12 +163,7 @@ void SimpleTreeModel_Properties_Proxy::setProperties(SimpleTreeModel_Properties 
 void SimpleTreeStore::setProperties(SimpleTreeModel_Properties &p, bool we_own)
 { SimpleTreeModel_Properties_Proxy::setProperties(p, we_own);
   column_changed(invisible_column);
-  if (p.ProgramName().empty() && p.InstanceName().empty()) 
-  { // eigentlich müssten hier alle visuellen Eigenschaften zurückgesetzt werden
-    spalten_geaendert();
-    redisplay();
-  }
-  else load_remembered();
+  load_remembered();
 }
 
 SimpleTreeModel_Properties_Proxy::~SimpleTreeModel_Properties_Proxy()
@@ -236,10 +231,10 @@ void SimpleTreeStore::save_remembered() const
 }
 
 void SimpleTreeStore::load_remembered()
-{  if (ProgramName().empty() && InstanceName().empty()) return;
-   std::pair<std::string,std::string> value=default_load(ProgramName(), InstanceName());
+{  std::pair<std::string,std::string> value;
+   if (!ProgramName().empty() || !InstanceName().empty())
+     value=default_load(ProgramName(), InstanceName());
 
-//   titles_bool=value.second.find('T')==std::string::npos;
    expandieren_bool=value.second.find('E')==std::string::npos;
    color_bool=value.second.find('C')==std::string::npos;
    
@@ -247,8 +242,12 @@ void SimpleTreeStore::load_remembered()
    if (k0!=std::string::npos) 
    {  guint sichtbar=strtoul(value.second.substr(0,k0).c_str(),0,10),bit=1;
       for (guint j=0;j<MaxCol();++j,bit<<=1)
-         vec_hide_cols[j]=!bit ? true : !(sichtbar&bit);
+         vec_hide_cols[j]=!bit ? Properties.visible_default(j) : !(sichtbar&bit);
       k1=value.second.find(',',k0+1);
+   }
+   else
+   {  for (guint j=0;j<MaxCol();++j,bit<<=1)
+         vec_hide_cols[j]=Properties.visible_default(j);
    }
    if (k1!=std::string::npos)
    {  showdeep=strtoul(value.second.substr(k0+1,k1-(k0+1)).c_str(),0,10);

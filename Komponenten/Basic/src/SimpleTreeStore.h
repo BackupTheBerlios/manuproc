@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.69 2005/11/10 18:10:08 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.70 2005/11/10 18:10:13 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -64,6 +64,7 @@ struct SimpleTreeModel_Properties : sigc::trackable
   // is this a sane default?
   { return Gtk::TREE_VIEW_COLUMN_AUTOSIZE; }
   virtual int get_fixed_width(guint _seqnr) const { return 0; }
+  virtual bool visible_default(guint _seqnr) const { return true; }
   
   sigc::signal1<void,guint> column_changed;
 };
