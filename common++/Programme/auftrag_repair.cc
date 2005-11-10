@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.18 2005/11/10 12:10:14 christof Exp $
+// $Id: auftrag_repair.cc,v 1.19 2005/11/10 12:10:29 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -110,8 +110,9 @@ void loopArgs::callback(AufEintrag &ae)
   // eine erfolgreiche 0er/2er Reparatur wird im Lager auch 1er betreffen
   // d.h. danach sind alle alten Daten hinfällig
   if (actions&b_exclude)
-  { reloop=!RI.Reparatur_0er_und_2er(ae,analyse_only);
-    alles_ok&=!reloop;
+  { bool geaendert=false;
+    alles_ok&=RI.Reparatur_0er_und_2er(ae,analyse_only,geaendert);
+    reloop=geaendert;
   }
 }
 

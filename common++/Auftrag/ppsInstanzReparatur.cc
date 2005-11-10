@@ -92,7 +92,7 @@ bool ppsInstanzReparatur::Reparatur_MindestMenge(bool analyse_only,ArtikelBase a
 
 bool ppsInstanzReparatur::Reparatur_0er_und_2er(AufEintrag &ae0, 
      AufEintrag &ae2, Auftrag::mengen_t &menge0er, 
-     const bool analyse_only) const throw(SQLerror)
+     const bool analyse_only, bool &geaendert) const throw(SQLerror)
 {  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,ae0,ae2,analyse_only);
    assert(Instanz() != ppsInstanzID::Kundenauftraege);
    assert (ae2.Id()==AuftragBase::dispo_id);
@@ -138,6 +138,7 @@ bool ppsInstanzReparatur::Reparatur_0er_und_2er(AufEintrag &ae0,
           ae0.MengeAendern(-M2,true,k->AEB);
           AufEintrag::ArtikelInternNachbestellen(Instanz(),M2,ae0.getLieferdatum(),
                           ae0.Artikel(),k->AEB);
+          geaendert=true;
 
           M_rest-=M2;
           if(!M_rest) break;
@@ -150,7 +151,7 @@ bool ppsInstanzReparatur::Reparatur_0er_und_2er(AufEintrag &ae0,
 }
 
 bool ppsInstanzReparatur::Reparatur_0er_und_2er(AufEintrag &ae, 
-     const bool analyse_only) const throw(SQLerror)
+     const bool analyse_only, bool& geaendert) const throw(SQLerror)
 {  bool alles_ok=true;
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,ae,analyse_only);
    assert(Instanz() != ppsInstanzID::Kundenauftraege);
@@ -162,7 +163,7 @@ bool ppsInstanzReparatur::Reparatur_0er_und_2er(AufEintrag &ae,
        ae.Artikel(),AuftragBase::dispo_id,OPEN,ManuProC::Datum(),true));
    for (SelectedFullAufList::iterator j=auftraglist1.begin();j!=auftraglist1.end();++j)
    { assert(j->Id()==AuftragBase::dispo_id);
-     alles_ok &= Reparatur_0er_und_2er(ae,*j,menge0er,analyse_only);
+     alles_ok &= Reparatur_0er_und_2er(ae,*j,menge0er,analyse_only,geaendert);
      if(!menge0er) break;
    }
    return alles_ok;
@@ -173,6 +174,7 @@ bool ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al,
 {  bool alles_ok=true;
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,analyse_only);
    assert(Instanz() != ppsInstanzID::Kundenauftraege);
+   bool geaendert=false;
    
    // Vorsicht, dass al hiernach nicht verändert wird (remove/push)
    std::vector<SelectedFullAufList::iterator> zweier;
@@ -187,7 +189,7 @@ bool ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al,
        if (!menge0er) continue;
        
       for(std::vector<SelectedFullAufList::iterator>::const_iterator j=zweier.begin();j!=zweier.end();++j)
-       {  alles_ok &= Reparatur_0er_und_2er(*i,**j,menge0er,analyse_only);
+       {  alles_ok &= Reparatur_0er_und_2er(*i,**j,menge0er,analyse_only,geaendert);
          if(!menge0er) break;
        }
     }
