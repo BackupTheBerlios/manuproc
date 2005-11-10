@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.106 2005/11/09 09:29:30 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.107 2005/11/10 18:10:02 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -39,14 +39,13 @@ struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Prope
 	std::vector<bool> column_editable;
 	std::vector<column_type_t> column_type;
 	SimpleTreeModel_Properties_Proxy::NewNode_fp node_creation;
-	bool columns_are_equivalent;
 	gpointer gp;
 	std::string mem_prog,mem_inst;
 	std::vector<gfloat> alignment;
 	std::vector<bool> v_resizeable;
 
   Standard(guint cols) : columns(cols), titles(cols), 
-      column_editable(cols), node_creation(), columns_are_equivalent(true),
+      column_editable(cols), node_creation(), 
       gp(), alignment(cols), v_resizeable(cols,true) {}
   virtual unsigned Columns() const { return columns; }
   virtual gpointer user_data() const { return gp; }
@@ -57,8 +56,6 @@ struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Prope
   { if (node_creation) return (*node_creation)(suminit);
     else return Handle<TreeRow>(); 
   }
-  virtual bool ColumnsAreEquivalent() const
-  { return columns_are_equivalent; }
   virtual column_type_t get_column_type(unsigned idx) const
   { return column_type.at(idx); }
   virtual std::string ProgramName() const { return mem_prog; }
@@ -72,7 +69,6 @@ struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Prope
 	{ titles.at(idx)=s; }
 	__deprecated void set_editable(unsigned idx,bool v=true)
 	{ column_editable.at(idx)=v; 
-	  if (columns_are_equivalent) columns_are_equivalent=false;
 	}
 	__deprecated void set_column_type(unsigned idx, column_type_t t)
 	{ column_type.at(idx)=t; }
@@ -81,8 +77,6 @@ struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Prope
 	{ mem_prog=program; mem_inst=instance; }
 	__deprecated void set_NewNode(NewNode_fp n)
 	{  node_creation=n; }
-	__deprecated void RedisplayOnReorder()
-	{ columns_are_equivalent=false; }
 	__deprecated void setAlignment(const std::vector<gfloat> &A)
 	{ assert(A.size()==Columns());
 	  alignment=A;
@@ -107,11 +101,7 @@ void SimpleTreeModel_Properties_Proxy::set_value_data(gpointer p)
 
 void SimpleTreeModel_Properties_Proxy::setTitles(const std::vector<std::string> &T)
 {  stdProperties().setTitles(T);
-   title_changed(SimpleTreeStore::invisible_column);
-}
-
-void SimpleTreeModel_Properties_Proxy::RedisplayOnReorder()
-{ stdProperties().RedisplayOnReorder();
+   column_changed(SimpleTreeStore::invisible_column);
 }
 
 void SimpleTreeStore::set_remember(const std::string &program, const std::string &instance)
@@ -124,26 +114,26 @@ void SimpleTreeStore::set_remember(const std::string &program, const std::string
 void SimpleTreeModel_Properties_Proxy::setTitleAt(unsigned idx, const std::string &s)
 { assert(idx<Properties().Columns());
   stdProperties().setTitleAt(idx,s);
-  title_changed(idx);
+  column_changed(idx);
 }
 
 void SimpleTreeModel_Properties_Proxy::set_editable(unsigned idx,bool v)
 {  assert(idx<Properties().Columns());
    stdProperties().set_editable(idx,v);
    // might not be enough
-   title_changed(idx);
+   column_changed(idx);
 }
 
 void SimpleTreeModel_Properties_Proxy::setResizeable(const std::vector<bool> &R)
 { assert(R.size()==Properties().Columns());
   stdProperties().setResizeable(R);
-  title_changed(SimpleTreeStore::invisible_column);
+  column_changed(SimpleTreeStore::invisible_column);
 }
 
 void SimpleTreeModel_Properties_Proxy::setAlignment(const std::vector<gfloat> &R)
 { assert(R.size()==Properties().Columns());
   stdProperties().setAlignment(R);
-  title_changed(SimpleTreeStore::invisible_column);
+  column_changed(SimpleTreeStore::invisible_column);
 }
 #else // !deprecated
 struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Properties
@@ -164,15 +154,18 @@ void SimpleTreeModel_Properties_Proxy::setProperties(SimpleTreeModel_Properties 
 { assert(p.Columns()==props->Columns());
   // the number of TreeModelColumns can not easily be changed
   if (we_own_props) 
-    delete props; 
+    delete props;
   props=&p;
   we_own_props=we_own;
+  props->column_changed.connect(column_changed.slot());
 }
 
 void SimpleTreeStore::setProperties(SimpleTreeModel_Properties &p, bool we_own)
 { SimpleTreeModel_Properties_Proxy::setProperties(p, we_own);
+  column_changed(invisible_column);
   if (p.ProgramName().empty() && p.InstanceName().empty()) 
-  { spaltenzahl_geaendert();
+  { // eigentlich müssten hier alle visuellen Eigenschaften zurückgesetzt werden
+    spalten_geaendert();
     redisplay();
   }
   else load_remembered();
@@ -326,8 +319,6 @@ void SimpleTreeStore::init()
   for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
     (*i) = true;
    defaultSequence();
-   SimpleTreeModel_Properties_Proxy::signal_title_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_title_changed));
-//   getModel().signal_redraw_needed().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
    getModel().signal_please_detach().connect(please_detach.slot());
    getModel().signal_please_attach().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
    getModel().signal_line_appended().connect(SigC::slot(*this,&SimpleTreeStore::on_line_appended));
@@ -397,13 +388,15 @@ SimpleTreeStore::ModelColumns::ModelColumns(int _cols)
    }
 }
 
-void SimpleTreeStore::on_title_changed(guint idx)
-{ if (idx==invisible_column) title_changed(idx);
+#if 0
+void SimpleTreeStore::on_column_changed(guint idx)
+{ if (idx==invisible_column) column_changed(idx);
   { unsigned col=ColumnFromIndex(idx);
     ManuProC::Trace(trace_channel,__FUNCTION__,idx,col);
-    if (col!=invisible_column) title_changed(col);
+    if (col!=invisible_column) column_changed(col);
   }
 }
+#endif
 
 const std::string SimpleTreeStore::getColTitle(guint idx) const
 {  return SimpleTreeModel_Properties_Proxy::getColTitle(currseq[idx]);
@@ -615,19 +608,14 @@ SimpleTreeStore::iterator SimpleTreeStore::MoveTree(iterator current_iter,
    return current_iter;
 }
 
+// optimize ist nun unnötig (da Ausnahme)
 void SimpleTreeStore::setSequence(const sequence_t &neu, bool optimize)
 {  please_detach();
    ++stamp;
    currseq=neu; // Spaltenzahl anpassen?
-   if (currseq.size()!=columns || !ColumnsAreEquivalent() || !optimize)
-   { columns=currseq.size();
-     save_remembered();
-     spaltenzahl_geaendert();
-   }
-   else
-   { save_remembered();
-     title_changed(invisible_column);
-   }
+   columns=currseq.size();
+   save_remembered();
+   spalten_geaendert();
    redisplay();
 }
 

@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.67 2005/11/09 09:29:31 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.68 2005/11/10 18:10:02 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -38,7 +38,7 @@
 #define ST_DEPRECATED
 #endif
 
-struct SimpleTreeModel_Properties
+struct SimpleTreeModel_Properties : sigc::trackable
 { enum column_type_t { ct_string, ct_bool };
 
   virtual ~SimpleTreeModel_Properties() {}
@@ -52,14 +52,16 @@ struct SimpleTreeModel_Properties
   { return false; }
   virtual Handle<TreeRow> create_node(const Handle<const TreeRow> &suminit) const
   { return Handle<TreeRow>(); }
-  virtual bool ColumnsAreEquivalent() const
-  { return true; }
+//  virtual bool ColumnsAreEquivalent() const
+//  { return true; }
   virtual column_type_t get_column_type(unsigned idx) const
   { return ct_string; }
   virtual std::string ProgramName() const { return std::string(); }
   virtual std::string InstanceName() const { return std::string(); }
   virtual bool resizeable(guint _seqnr) const { return true; }
   /* fixed_width etc. ? */
+  
+  sigc::signal1<void,guint> column_changed;
 };
 
 // for easily accessing model methods
@@ -67,6 +69,7 @@ class SimpleTreeModel_Proxy
 {protected:
 	SimpleTreeModel *model;
 	bool model_is_ours:1; // whether we need to destroy the model
+
 public:
 	SimpleTreeModel_Proxy();
 	~SimpleTreeModel_Proxy();
@@ -77,8 +80,6 @@ public:
 
 	__deprecated void setDataVec(const SimpleTreeModel::datavec_t &d) {  model->setDataVec(d); }
 	__deprecated const SimpleTreeModel::datavec_t &getDataVec() const { return model->getDataVec(); }
-//	void setTitles(const std::vector<std::string> &T) {  model->setTitles(T); }
-//	void setTitleAt(unsigned idx, const std::string &s) {  model->setTitleAt(idx,s); }
 	void clear() { model->clear(); }
 };
 
@@ -86,7 +87,9 @@ class SimpleTreeModel_Properties_Proxy
 {protected:
 	SimpleTreeModel_Properties *props;
 	bool we_own_props;
-	SigC::Signal1<void,guint> title_changed;
+
+	// The layout of the column has changed (rebuild column+menu)
+	SigC::Signal1<void,guint> column_changed;
 public:
 	SimpleTreeModel_Properties_Proxy(unsigned cols);
 	SimpleTreeModel_Properties_Proxy(SimpleTreeModel_Properties *p)
@@ -100,19 +103,19 @@ public:
 	Standard &stdProperties();
 	const std::string getColTitle(guint idx) const
 	{ return Properties().Title(idx); }
-	// invisible_column means all titles have changed
-	SigC::Signal1<void,guint> &signal_title_changed()
-	{  return title_changed; }
+	// invisible_column means all columns have changed
+	SigC::Signal1<void,guint> &signal_column_changed()
+	{  return column_changed; }
 	bool is_editable(unsigned idx) const
 	{ return Properties().editable(idx); }
 	SimpleTreeModel_Properties::column_type_t get_column_type(unsigned idx) const
 	{ return Properties().get_column_type(idx); }
 	gpointer ValueData() const { return Properties().ValueData(); }
-  std::string ProgramName() const { return Properties().ProgramName(); }
-  std::string InstanceName() const { return Properties().InstanceName(); }
-  Handle<TreeRow> create_node(const Handle<const TreeRow> &suminit) const
-  { return Properties().create_node(suminit); }
-  bool ColumnsAreEquivalent() const { return Properties().ColumnsAreEquivalent(); }
+	std::string ProgramName() const { return Properties().ProgramName(); }
+	std::string InstanceName() const { return Properties().InstanceName(); }
+	Handle<TreeRow> create_node(const Handle<const TreeRow> &suminit) const
+	{ return Properties().create_node(suminit); }
+//	bool ColumnsAreEquivalent() const { return Properties().ColumnsAreEquivalent(); }
 #ifdef ST_DEPRECATED
 	typedef Handle<TreeRow> (*NewNode_fp)(const Handle<const TreeRow> &suminit);
 	__deprecated void setTitles(const std::vector<std::string> &T);
@@ -124,7 +127,7 @@ public:
 	__deprecated void set_NewNode(NewNode_fp n);
 	__deprecated void setAlignment(const std::vector<gfloat> &A);
 	__deprecated void setResizeable(const std::vector<bool> &R);
-	__deprecated void RedisplayOnReorder();
+//	__deprecated void RedisplayOnReorder();
 #endif
 };
 
@@ -214,14 +217,12 @@ private:
 	void save_remembered() const;
 	void load_remembered();
 
-	SigC::Signal1<void,guint> title_changed;
 	SigC::Signal0<void> please_detach;
 	SigC::Signal0<void> please_attach;
-	SigC::Signal0<void> spaltenzahl_geaendert;
+	SigC::Signal0<void> spalten_geaendert;
 	SigC::Signal1<void,gpointer> signal_save;
 	SigC::Signal1<void,bvector_iterator> signal_visibly_changed;
 	void save_remembered1(gpointer) { save_remembered(); }
-	void on_title_changed(guint idx);
 	void on_visibly_changed(bvector_iterator it);
 	void value_change_impl(cH_RowDataBase row,unsigned idx,std::string const& newval, bool &has_changed);
 	
@@ -327,10 +328,8 @@ public:
 	void fillSequence(sequence_t &seq,bool standard=false) const;
 	void fillSequence() { fillSequence(currseq,true); }
 
-	SigC::Signal1<void,guint> &signal_title_changed()
-	{  return title_changed; }
-	SigC::Signal0<void> &signal_spaltenzahl_geaendert()
-	{  return spaltenzahl_geaendert; }
+	SigC::Signal0<void> &signal_spalten_geaendert()
+	{  return spalten_geaendert; }
 	SigC::Signal0<void> &signal_please_detach()
 	{  return please_detach; }
 	SigC::Signal0<void> &signal_please_attach()

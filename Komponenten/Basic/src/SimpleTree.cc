@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.73 2005/11/10 08:24:17 christof Exp $
+// $Id: SimpleTree.cc,v 1.74 2005/11/10 18:10:02 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -62,15 +62,17 @@ void SimpleTree_Basic::attach()
 //}
 
 void SimpleTree_Basic::init()
-{  on_spaltenzahl_geaendert();
-   
-   getStore()->signal_title_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_title_changed));
+{  on_spalten_geaendert();
+
    get_selection()->signal_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_selection_changed));
+   // stammt eigentlich aus Prefs_proxy   
+   getStore()->signal_column_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_column_changed));
+   // Store
    getStore()->signal_please_detach().connect(SigC::slot(*this,&SimpleTree_Basic::detach));
    getStore()->signal_please_attach().connect(SigC::slot(*this,&SimpleTree_Basic::attach));
+   getStore()->signal_spalten_geaendert().connect(SigC::slot(*this,&SimpleTree_Basic::on_spalten_geaendert));
    fillMenu();
    signal_button_press_event().connect(SigC::slot(*this,&SimpleTree_Basic::MouseButton),false);
-   getStore()->signal_spaltenzahl_geaendert().connect(SigC::slot(*this,&SimpleTree_Basic::on_spaltenzahl_geaendert));
 }
 
 SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
@@ -98,7 +100,7 @@ void SimpleTree_Basic::on_column_edited(const Glib::ustring &path,const Glib::us
    getModel().has_changed(rdb);
 }
 
-void SimpleTree_Basic::on_spaltenzahl_geaendert()
+void SimpleTree_Basic::on_spalten_geaendert()
 {  remove_all_columns();
 #if FIRST_COLUMN==1 // hide normal tree expanders
    append_column(*Gtk::manage(new Gtk::TreeViewColumn("tree")));
@@ -196,18 +198,12 @@ void SimpleTree_Basic::on_neuordnen_clicked()
    getStore()->save_remembered();
 }
 
-void SimpleTree_Basic::on_title_changed(guint nr)
-{  if (nr!=SimpleTreeStore::invisible_column 
-            && Properties().ColumnsAreEquivalent())
-      assert(!Properties().editable(IndexFromColumn(nr)));
-   delete menu; menu=0;
-   // ineffizient ...
+void SimpleTree_Basic::on_column_changed(guint nr)
+{  delete menu; 
+std::cerr << "column changed\n";
+   menu=0;
    fillMenu();
-   if (nr==SimpleTreeStore::invisible_column 
-       || !Properties().ColumnsAreEquivalent()) 
-     on_spaltenzahl_geaendert();
-   else 
-     get_column(nr+FIRST_COLUMN)->set_title(getColTitle(nr));
+   on_spalten_geaendert();
 }
 
 void SimpleTree_Basic::sel_change_cb(const Gtk::TreeModel::iterator&it,
@@ -478,8 +474,8 @@ static void sig3piI(const Gtk::TreeModel::Path&p,const Gtk::TreeModel::iterator&
 void SimpleTree_Basic::debug()
 { getStore()->signal_please_detach().connect(SigC::bind(&sig0,"please_detach"));
   getStore()->signal_please_attach().connect(SigC::bind(&sig0,"please_attach"));
-  getStore()->signal_spaltenzahl_geaendert().connect(SigC::bind(&sig0,"spaltenzahl_geaendert"));
-  getStore()->signal_title_changed().connect(SigC::bind(&sig1i,"title_changed"));
+  getStore()->signal_spalten_geaendert().connect(SigC::bind(&sig0,"spalten_geaendert"));
+  getStore()->signal_column_changed().connect(SigC::bind(&sig1i,"column_changed"));
   getModel().signal_line_appended().connect(SigC::bind(&sig1r,"line_appended"));
   getModel().signal_line_to_remove().connect(SigC::bind(&sig1r,"line_to_remove"));
   getModel().signal_please_detach().connect(SigC::bind(&sig0,"Model::please_detach"));

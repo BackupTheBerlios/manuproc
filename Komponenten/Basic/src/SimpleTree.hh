@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.57 2005/11/10 08:24:17 christof Exp $
+// $Id: SimpleTree.hh,v 1.58 2005/11/10 18:10:02 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -101,7 +101,7 @@ private:
 //	std::vector<bool> resizeable;	
 
         void init();	
-	void on_title_changed(guint nr);
+	void on_column_changed(guint nr);
 	void on_selection_changed();
 	void on_redisplay();
 	void on_title_clicked(unsigned no);
@@ -109,7 +109,7 @@ private:
 	void on_neuordnen_clicked();
 	void on_zuruecksetzen_clicked();
 	void on_abbrechen_clicked();
-	void on_spaltenzahl_geaendert();
+	void on_spalten_geaendert();
 	bool MouseButton(GdkEventButton *event);
 	void sel_change_cb(const Gtk::TreeModel::iterator&it,
 			std::vector<cH_RowDataBase> *l,
