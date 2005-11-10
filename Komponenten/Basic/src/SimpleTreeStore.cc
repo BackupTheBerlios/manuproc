@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.108 2005/11/10 18:10:13 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.109 2005/11/10 18:10:24 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -242,12 +242,12 @@ void SimpleTreeStore::load_remembered()
    if (k0!=std::string::npos) 
    {  guint sichtbar=strtoul(value.second.substr(0,k0).c_str(),0,10),bit=1;
       for (guint j=0;j<MaxCol();++j,bit<<=1)
-         vec_hide_cols[j]=!bit ? Properties.visible_default(j) : !(sichtbar&bit);
+         vec_hide_cols[j]=!bit ? Properties().visible_default(j) : !(sichtbar&bit);
       k1=value.second.find(',',k0+1);
    }
    else
-   {  for (guint j=0;j<MaxCol();++j,bit<<=1)
-         vec_hide_cols[j]=Properties.visible_default(j);
+   {  for (guint j=0;j<MaxCol();++j)
+         vec_hide_cols[j]=Properties().visible_default(j);
    }
    if (k1!=std::string::npos)
    {  showdeep=strtoul(value.second.substr(k0+1,k1-(k0+1)).c_str(),0,10);
