@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.17 2005/10/27 13:11:29 christof Exp $
+// $Id: auftrag_repair.cc,v 1.18 2005/11/10 12:10:14 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -89,13 +89,8 @@ namespace { struct loopArgs
 
 void loopArgs::callback(AufEintrag &ae)
 { if (reloop) return;
-  // eine erfolgreiche 0er/2er Reparatur wird im Lager auch 1er betreffen
-  // d.h. danach sind alle alten Daten hinfällig
-  if (actions&b_exclude)
-  { reloop=!RI.Reparatur_0er_und_2er(ae,analyse_only);
-    alles_ok&=!reloop;
-  }
-  if (!reloop && actions&b_tree)
+  // erst lokal Reparieren, sonst passiert das nie
+  if (actions&b_tree)
   {
         try
          {AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(ae,
@@ -111,6 +106,12 @@ void loopArgs::callback(AufEintrag &ae)
          {  std::cout << "Exception " << e.what() << '\n';
             alles_ok=false;
          }
+  }
+  // eine erfolgreiche 0er/2er Reparatur wird im Lager auch 1er betreffen
+  // d.h. danach sind alle alten Daten hinfällig
+  if (actions&b_exclude)
+  { reloop=!RI.Reparatur_0er_und_2er(ae,analyse_only);
+    alles_ok&=!reloop;
   }
 }
 

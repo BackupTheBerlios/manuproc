@@ -552,6 +552,8 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
          }
       }
    }
+   ManuProC::Trace(AuftragBase::trace_channel,"",NV1(menge),NV1(ae.getRestStk()),
+         NV("prod_selbst",ae.Instanz()->ProduziertSelbst()));
    if (menge>ae.getRestStk()
    	&& (!ae.Instanz()->ProduziertSelbst() || raise_prodselbst))
    {  analyse("mehr v.o. benötigt als noch offen",ae,menge,ae.getRestStk());
