@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.111 2005/11/11 07:55:51 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.112 2005/11/11 08:11:58 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -48,7 +48,7 @@ struct SimpleTreeModel_Properties_Proxy::Standard : public SimpleTreeModel_Prope
       column_editable(cols), node_creation(), 
       gp(), alignment(cols), v_resizeable(cols,true) {}
   virtual unsigned Columns() const { return columns; }
-  virtual gpointer user_data() const { return gp; }
+  virtual gpointer ValueData() const { return gp; }
   virtual Glib::ustring Title(guint _seqnr) const { return titles[_seqnr]; }
   virtual gfloat Alignment(guint _seqnr) const { return alignment[_seqnr]; }
   virtual bool editable(guint _seqnr) const { return column_editable[_seqnr]; }
