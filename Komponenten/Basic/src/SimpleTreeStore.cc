@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.110 2005/11/10 18:10:29 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.111 2005/11/11 07:55:51 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -162,8 +162,8 @@ void SimpleTreeModel_Properties_Proxy::setProperties(SimpleTreeModel_Properties 
 
 void SimpleTreeStore::setProperties(SimpleTreeModel_Properties &p, bool we_own)
 { SimpleTreeModel_Properties_Proxy::setProperties(p, we_own);
-  column_changed(invisible_column);
   load_remembered();
+  column_changed(invisible_column);
 }
 
 SimpleTreeModel_Properties_Proxy::~SimpleTreeModel_Properties_Proxy()
