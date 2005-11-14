@@ -52,13 +52,14 @@ FP_STR(double,long long)
 template <>
 double fixedpoint_dyn<double,long>::as_float() const
 { // I don't know why *pow(10,-Scale()) does not work ...
-#if !defined(__GNUC__ ) || __GNUC__<3
+#if !defined(__GNUC__ ) || __GNUC__<3 || defined(__MINGW32__)
   return scaled/pow(10,Scale());
 #else
   return scaled/exp10(Scale());
 #endif
 }
 
+#ifdef DEFAULT_DB
 // template <class Ftype,class Itype>
 template <>
 Query::Row &operator>>(Query::Row &is, fixedpoint_dyn<double,long> &v)
@@ -101,3 +102,4 @@ fixedpoint_dyn<double,long>::fixedpoint_dyn(std::string const &s,const char *Tau
   }
   if (negative) scaled=-scaled;
 }
+#endif
