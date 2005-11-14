@@ -1,0 +1,16 @@
+# List of source files containing translatable strings.
+./src/kundendaten.cc
+./src/windowTop_glade.cc
+./src/windowTop.cc
+./src/dialogInfo_glade.cc
+./src/dialogInfo.cc
+./src/dialogBestaetigen_glade.cc
+./src/dialogBestaetigen.cc
+./src/dialogError_glade.cc
+./src/dialogError.cc
+./src/window_neue_Kundennummer_glade.cc
+./src/window_neue_Kundennummer.cc
+./src/window_neue_bank_anlegen_glade.cc
+./src/window_neue_bank_anlegen.cc
+./src/window_Dialog_Bestaetigen_glade.cc
+./src/window_Dialog_Bestaetigen.cc

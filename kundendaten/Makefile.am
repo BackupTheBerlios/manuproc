@@ -1,5 +1,5 @@
 # $Id$
 
-SUBDIRS = src 
+SUBDIRS = po src 
 
 EXTRA_DIST = AUTHORS TODO README configure 

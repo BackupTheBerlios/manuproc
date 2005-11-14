@@ -6,5 +6,5 @@
   <program_name>kundendaten</program_name>
   <language>C++</language>
   <gnome_support>FALSE</gnome_support>
-  <gettext_support>FALSE</gettext_support>
+  <gettext_support>TRUE</gettext_support>
 </glade-project>
