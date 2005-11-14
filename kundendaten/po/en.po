@@ -1,0 +1,531 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kundendaten 0.0\n"
+"Report-Msgid-Bugs-To: manuproc-developer-de@berlios.de\n"
+"POT-Creation-Date: 2005-11-11 23:27+0100\n"
+"PO-Revision-Date: 2005-11-12 22:21+0100\n"
+"Last-Translator: Christof Petig <christof@petig-baender.de>\n"
+"Language-Team: english <en@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/windowTop_glade.cc:76 src/windowTop_glade.cc:545
+msgid "Schließen"
+msgstr "close"
+
+#: src/windowTop_glade.cc:80 src/windowTop_glade.cc:553
+msgid "Neu"
+msgstr "new"
+
+#: src/windowTop_glade.cc:85 src/windowTop_glade.cc:561
+msgid "leeren"
+msgstr "clear"
+
+#: src/windowTop_glade.cc:91 src/window_neue_Kundennummer_glade.cc:76
+msgid "Gruppe"
+msgstr "group"
+
+#: src/windowTop_glade.cc:94
+msgid "label8"
+msgstr ""
+
+#: src/windowTop_glade.cc:98
+msgid "Suche"
+msgstr "Search"
+
+#: src/windowTop_glade.cc:100
+msgid "aktiv"
+msgstr "active"
+
+#: src/windowTop_glade.cc:102
+msgid "  Stand:"
+msgstr ""
+
+#: src/windowTop_glade.cc:106
+msgid "Status"
+msgstr ""
+
+#: src/windowTop_glade.cc:111
+msgid "Kundenkontakt"
+msgstr ""
+
+#: src/windowTop_glade.cc:115
+msgid "Firma / Vorname"
+msgstr ""
+
+#: src/windowTop_glade.cc:119
+msgid "Postanw. (davor)"
+msgstr ""
+
+#: src/windowTop_glade.cc:124
+msgid "Postanw. (danach)"
+msgstr ""
+
+#: src/windowTop_glade.cc:129
+msgid "Hausnummer"
+msgstr ""
+
+#: src/windowTop_glade.cc:133
+msgid "Straße"
+msgstr ""
+
+#: src/windowTop_glade.cc:138
+msgid "Ort"
+msgstr "City"
+
+#: src/windowTop_glade.cc:142
+msgid "PLZ"
+msgstr ""
+
+#: src/windowTop_glade.cc:147
+msgid "Postfach"
+msgstr ""
+
+#: src/windowTop_glade.cc:151
+msgid "Postfach PLZ"
+msgstr ""
+
+#: src/windowTop_glade.cc:156
+msgid "Landeskennzahl"
+msgstr ""
+
+#: src/windowTop_glade.cc:160
+msgid "Firma2 / Name"
+msgstr ""
+
+#: src/windowTop_glade.cc:164
+msgid "Anrede"
+msgstr ""
+
+#: src/windowTop_glade.cc:167
+msgid "Anschrift"
+msgstr ""
+
+#: src/windowTop_glade.cc:171
+msgid "IDNr"
+msgstr ""
+
+#: src/windowTop_glade.cc:175
+msgid "Sortiername"
+msgstr ""
+
+#: src/windowTop_glade.cc:178
+msgid "Adresse"
+msgstr ""
+
+#: src/windowTop_glade.cc:182
+msgid "Kunde"
+msgstr "Customer"
+
+#: src/windowTop_glade.cc:186
+msgid "Geburtstag"
+msgstr ""
+
+#: src/windowTop_glade.cc:190
+msgid "Verein"
+msgstr ""
+
+#: src/windowTop_glade.cc:195
+msgid "Notiz"
+msgstr ""
+
+#: src/windowTop_glade.cc:197
+msgid "qm"
+msgstr ""
+
+#: src/windowTop_glade.cc:202
+msgid "Fläche"
+msgstr ""
+
+#: src/windowTop_glade.cc:207
+msgid "Mitarbeiter"
+msgstr ""
+
+#: src/windowTop_glade.cc:212
+msgid "Umsatz"
+msgstr ""
+
+#: src/windowTop_glade.cc:217
+msgid "Kundenumsatz"
+msgstr ""
+
+#: src/windowTop_glade.cc:222
+msgid "Planumsatz"
+msgstr ""
+
+#: src/windowTop_glade.cc:225
+msgid "Firma"
+msgstr ""
+
+#: src/windowTop_glade.cc:227
+msgid "Rechnung an Postfach"
+msgstr ""
+
+#: src/windowTop_glade.cc:228
+msgid "AB an Rng.-Adresse"
+msgstr ""
+
+#: src/windowTop_glade.cc:231
+msgid "Option"
+msgstr ""
+
+#: src/windowTop_glade.cc:236
+msgid "Artikelbezeichnung"
+msgstr ""
+
+#: src/windowTop_glade.cc:242
+msgid "Rechnung an"
+msgstr ""
+
+#: src/windowTop_glade.cc:248
+msgid "Lieferung an"
+msgstr ""
+
+#: src/windowTop_glade.cc:250
+msgid "Auftragsadresse"
+msgstr ""
+
+#: src/windowTop_glade.cc:251
+msgid "Lieferadresse"
+msgstr ""
+
+#: src/windowTop_glade.cc:252
+msgid "Rechnungsadresse"
+msgstr ""
+
+#: src/windowTop_glade.cc:256
+msgid "Adresse ist eine"
+msgstr ""
+
+#: src/windowTop_glade.cc:260
+msgid "Ablauf"
+msgstr ""
+
+#: src/windowTop_glade.cc:265
+msgid "Verkäufer"
+msgstr ""
+
+#: src/windowTop_glade.cc:269
+msgid "Betreuer"
+msgstr ""
+
+#: src/windowTop_glade.cc:273
+msgid "Eigene KdNr. bzw. LiefNr."
+msgstr ""
+
+#: src/windowTop_glade.cc:278
+msgid "Kreditorenkonto"
+msgstr ""
+
+#: src/windowTop_glade.cc:283
+msgid "Debitorenkonto"
+msgstr ""
+
+#: src/windowTop_glade.cc:288
+msgid "Sachkonto"
+msgstr ""
+
+#: src/windowTop_glade.cc:291
+msgid "Buchung"
+msgstr ""
+
+#: src/windowTop_glade.cc:296
+msgid "Firmenpapier"
+msgstr ""
+
+#: src/windowTop_glade.cc:301
+msgid "Weißes Papier"
+msgstr ""
+
+#: src/windowTop_glade.cc:304
+msgid "Rechnungsdruck (Anzahl)"
+msgstr ""
+
+#: src/windowTop_glade.cc:307
+msgid "Eigene Daten"
+msgstr ""
+
+#: src/windowTop_glade.cc:312
+msgid "Details"
+msgstr "Details"
+
+#: src/windowTop_glade.cc:313
+msgid "Entsorgung"
+msgstr ""
+
+#: src/windowTop_glade.cc:316
+msgid "Zahlungsart"
+msgstr ""
+
+#: src/windowTop_glade.cc:320
+msgid "Konto Nr."
+msgstr ""
+
+#: src/windowTop_glade.cc:324 src/window_neue_bank_anlegen_glade.cc:60
+msgid "BLZ"
+msgstr ""
+
+#: src/windowTop_glade.cc:326
+msgid "Banknamen ändern"
+msgstr ""
+
+#: src/windowTop_glade.cc:328
+msgid "Bankeinzug"
+msgstr ""
+
+#: src/windowTop_glade.cc:330
+msgid "bei"
+msgstr ""
+
+#: src/windowTop_glade.cc:332
+msgid "Bankverbindung"
+msgstr ""
+
+#: src/windowTop_glade.cc:334
+msgid "DTAUS"
+msgstr ""
+
+#: src/windowTop_glade.cc:335
+msgid "ABI"
+msgstr ""
+
+#: src/windowTop_glade.cc:336
+msgid "CAB"
+msgstr ""
+
+#: src/windowTop_glade.cc:345
+msgid "Bank"
+msgstr ""
+
+#: src/windowTop_glade.cc:346
+msgid "ACC"
+msgstr ""
+
+#: src/windowTop_glade.cc:350
+msgid "RIBA"
+msgstr ""
+
+#: src/windowTop_glade.cc:351
+msgid "IBAN"
+msgstr ""
+
+#: src/windowTop_glade.cc:360
+msgid "LCR"
+msgstr ""
+
+#: src/windowTop_glade.cc:363 src/windowTop_glade.cc:364
+#: src/windowTop_glade.cc:365 src/windowTop_glade.cc:396
+msgid "Tage"
+msgstr ""
+
+#: src/windowTop_glade.cc:376
+msgid "Skontofrist"
+msgstr ""
+
+#: src/windowTop_glade.cc:378 src/windowTop_glade.cc:379
+#: src/windowTop_glade.cc:380 src/windowTop_glade.cc:403
+#: src/windowTop_glade.cc:413
+msgid "%"
+msgstr ""
+
+#: src/windowTop_glade.cc:391
+msgid "Skontosatz"
+msgstr ""
+
+#: src/windowTop_glade.cc:394
+msgid "Skonto"
+msgstr ""
+
+#: src/windowTop_glade.cc:401
+msgid "Zahlungsfrist"
+msgstr ""
+
+#: src/windowTop_glade.cc:408
+msgid "Einzugrabatt"
+msgstr ""
+
+#: src/windowTop_glade.cc:414
+msgid "Zeilenrabatt"
+msgstr ""
+
+#: src/windowTop_glade.cc:417
+msgid "Rabatt"
+msgstr ""
+
+#: src/windowTop_glade.cc:421
+msgid "Währung"
+msgstr ""
+
+#: src/windowTop_glade.cc:423
+msgid "Lieferung frei Haus"
+msgstr ""
+
+#: src/windowTop_glade.cc:426
+msgid "Lieferbedingungen"
+msgstr ""
+
+#: src/windowTop_glade.cc:429
+msgid "Zahlung & Rabatt"
+msgstr ""
+
+#: src/windowTop_glade.cc:431
+msgid ""
+"Preisliste\n"
+"löschen"
+msgstr ""
+
+#: src/windowTop_glade.cc:433
+msgid "Hinzufügen"
+msgstr ""
+
+#: src/windowTop_glade.cc:438
+msgid "Preisautomatik"
+msgstr ""
+
+#: src/windowTop_glade.cc:441
+msgid "Preislisten"
+msgstr ""
+
+#: src/windowTop_glade.cc:445
+msgid "Zahlung / Preislisten"
+msgstr "Payment / Price lists"
+
+#: src/windowTop_glade.cc:454
+msgid "Notiz (firmenbezogen)"
+msgstr ""
+
+#: src/windowTop_glade.cc:458
+msgid ""
+"Kontaktperson\n"
+"löschen"
+msgstr ""
+
+#: src/windowTop_glade.cc:463
+msgid "Position"
+msgstr ""
+
+#: src/windowTop_glade.cc:470
+msgid "Kontaktpersonen"
+msgstr "Contacts"
+
+#: src/windowTop_glade.cc:473 src/windowTop_glade.cc:485
+#: src/windowTop_glade.cc:497 src/windowTop_glade.cc:569
+#: src/windowTop_glade.cc:577 src/windowTop_glade.cc:585
+msgid "speichern"
+msgstr ""
+
+#: src/windowTop_glade.cc:481
+msgid "Auftragsnotiz"
+msgstr ""
+
+#: src/windowTop_glade.cc:493
+msgid "Lieferscheinnotiz"
+msgstr ""
+
+#: src/windowTop_glade.cc:505
+msgid "Rechnungsnotiz"
+msgstr ""
+
+#: src/windowTop_glade.cc:510
+msgid "Notizen"
+msgstr "Notes"
+
+#: src/windowTop_glade.cc:516
+msgid "alle Gruppen"
+msgstr ""
+
+#: src/windowTop_glade.cc:520 src/windowTop_glade.cc:593
+msgid "zuweisen"
+msgstr ""
+
+#: src/windowTop_glade.cc:525 src/windowTop_glade.cc:601
+msgid "löschen"
+msgstr ""
+
+#: src/windowTop_glade.cc:532
+msgid "zugewiesene Gruppen"
+msgstr ""
+
+#: src/windowTop_glade.cc:536
+msgid "Gruppierung"
+msgstr "Grouping"
+
+#: src/windowTop_glade.cc:1173 src/windowTop_glade.cc:1185
+#: src/windowTop_glade.cc:1200
+msgid "Die Eingabe muß mit 'Enter' abgeschlossen werden."
+msgstr ""
+
+#: src/windowTop_glade.cc:1469
+msgid "Die Eingabe der Bankleitzahl muß mit 'Enter' abgeschlossen werden."
+msgstr ""
+
+#: src/windowTop_glade.cc:1543 src/windowTop_glade.cc:1551
+#: src/windowTop_glade.cc:1586
+msgid "5-stellig mit führender 0"
+msgstr ""
+
+#: src/windowTop_glade.cc:1617
+msgid "25-stellig mit LKZ"
+msgstr ""
+
+#: src/windowTop_glade.cc:2260
+msgid "Kundendaten"
+msgstr ""
+
+#: src/dialogInfo_glade.cc:64 src/dialogError_glade.cc:64
+msgid "Information"
+msgstr ""
+
+#: src/dialogBestaetigen_glade.cc:62
+msgid "Kundennr"
+msgstr ""
+
+#: src/dialogBestaetigen_glade.cc:94
+msgid "Vergabe der Kundennummer"
+msgstr ""
+
+#: src/window_neue_Kundennummer_glade.cc:62
+msgid "Name / Firma"
+msgstr ""
+
+#: src/window_neue_Kundennummer_glade.cc:66
+msgid "Nur ändern, wenn sie genau wissen, was Sie tun"
+msgstr ""
+
+#: src/window_neue_Kundennummer_glade.cc:68
+msgid "neue Nummer"
+msgstr ""
+
+#: src/window_neue_Kundennummer_glade.cc:72
+msgid "Vorname / Name2"
+msgstr ""
+
+#: src/window_neue_Kundennummer_glade.cc:171
+msgid "Vergabe einer neuen Kundennummer"
+msgstr ""
+
+#: src/window_neue_bank_anlegen_glade.cc:59
+msgid "Bankname"
+msgstr ""
+
+#: src/window_neue_bank_anlegen_glade.cc:67
+msgid "label13"
+msgstr ""
+
+#: src/window_neue_bank_anlegen_glade.cc:118
+msgid "Neue Bank anlegen"
+msgstr ""
+
+#: src/window_Dialog_Bestaetigen_glade.cc:58
+msgid "label14"
+msgstr ""
+
+#: src/window_Dialog_Bestaetigen_glade.cc:76
+msgid "Bestätigen"
+msgstr ""

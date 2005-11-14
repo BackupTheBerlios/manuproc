@@ -1,3 +1,9 @@
+2005-11-11  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (ACLOCAL_AMFLAGS): New variable.
+	(EXTRA_DIST): Add config.rpath, mkinstalldirs, m4/ChangeLog.
+	* configure.in (AC_OUTPUT): Add po/Makefile.in.
+
 
 2002/11/22 18:14:40 CET
 	update files from .glade file
