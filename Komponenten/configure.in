@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.14 2005/11/14 07:40:22 christof Exp $
+# $Id: configure.in,v 1.15 2005/11/14 07:43:48 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(Komponenten, 0.4.0, [manuproc-developer-de@berlios.de])
@@ -30,6 +30,18 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",
 dnl Add the languages which your application supports here.
 ALL_LINGUAS="en"
 AM_GNU_GETTEXT([external])
+
+if test -z "${DATADIRNAME}"
+then DATADIRNAME=share
+fi
+dnl Set PACKAGE_LOCALE_DIR in config.h.
+if test "x${prefix}" = "xNONE"; then
+  AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${ac_default_prefix}/${DATADIRNAME}/locale",
+		[the location of locale files])
+else
+  AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${prefix}/${DATADIRNAME}/locale",
+		[the location of locale files])
+fi
 
 KOMPONENTEN2_INCLUDES="$COMMONXX_INCLUDES $COMMONGTK2_INCLUDES -I\$(top_srcdir)/src"
 KOMPONENTEN2_LDFLAGS="$COMMONXX_LDFLAGS $COMMONGTK2_LDFLAGS"
