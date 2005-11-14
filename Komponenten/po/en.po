@@ -1,0 +1,65 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ManuProC_Widgets 0.0\n"
+"Report-Msgid-Bugs-To: manuproc-developer-de@berlios.de\n"
+"POT-Creation-Date: 2005-11-13 00:40+0100\n"
+"PO-Revision-Date: 2005-11-13 00:35+0100\n"
+"Last-Translator: Christof Petig <christof@petig-baender.de>\n"
+"Language-Team: english <en@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/KundenBox2.cc:49
+msgid "Id"
+msgstr ""
+
+#: src/KundenBox2.cc:49
+msgid "Name"
+msgstr ""
+
+#: src/KundenBox2.cc:49
+msgid "Ort"
+msgstr "City"
+
+#: src/WTelefon.cc:67
+msgid " (privat)"
+msgstr " (private)"
+
+#: src/WTelefon.cc:165 src/WTelefon_glade.cc:73
+msgid "Nummer"
+msgstr "Number"
+
+#: src/WTelefon.cc:166
+#, fuzzy
+msgid "Art"
+msgstr "Type"
+
+#: src/WTelefon_glade.cc:59
+msgid "Nummer l_oe_schen"
+msgstr "Delete Number"
+
+#: src/WTelefon_glade.cc:65
+msgid "Land"
+msgstr "Country"
+
+#: src/WTelefon_glade.cc:69
+msgid "Vorwahl"
+msgstr ""
+
+#: src/WTelefon_glade.cc:77
+msgid "Durchwahl"
+msgstr ""
+
+#: src/WTelefon_glade.cc:84
+msgid "Text"
+msgstr ""
+
+#: src/WTelefon_glade.cc:89
+msgid "Neue Nummer eingeben"
+msgstr "Enter new number"
