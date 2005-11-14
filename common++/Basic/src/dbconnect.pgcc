@@ -1,4 +1,4 @@
-// $Id: dbconnect.pgcc,v 1.24 2005/11/04 07:57:59 christof Exp $
+// $Id: dbconnect.pgcc,v 1.25 2005/11/14 07:37:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -104,7 +104,11 @@ void ManuProC::dbconnect(const Connection &c) throw(SQLerror)
    if(Ausgabe_neu::TeX_uses_UTF8)    
        Query::Execute("set names 'utf-8'");
    else
+#ifndef PETIG_EXTENSIONS
        Query::Execute("set names 'latin1'");
+#else
+       Query::Execute("set names 'latin9'");
+#endif
    Global_Settings::database_connected();
 }
 
