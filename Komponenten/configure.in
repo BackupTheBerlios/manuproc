@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.13 2005/11/03 21:05:34 christof Exp $
+# $Id: configure.in,v 1.14 2005/11/14 07:40:22 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(Komponenten, 0.4.0, [manuproc-developer-de@berlios.de])
@@ -22,6 +22,15 @@ PETIG_CHECK_COMMONXX
 PKG_CHECK_MODULES(dummy,[gtkmm-2.4 >= 2.4.0])
 PETIG_CHECK_COMMONGTK2
 
+GETTEXT_PACKAGE=ManuProC_Widgets
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",
+		[the gettext domain])
+
+dnl Add the languages which your application supports here.
+ALL_LINGUAS="en"
+AM_GNU_GETTEXT([external])
+
 KOMPONENTEN2_INCLUDES="$COMMONXX_INCLUDES $COMMONGTK2_INCLUDES -I\$(top_srcdir)/src"
 KOMPONENTEN2_LDFLAGS="$COMMONXX_LDFLAGS $COMMONGTK2_LDFLAGS"
 KOMPONENTEN2_LIBS="\$(top_srcdir)/src/libKomponenten.a $COMMONXX_LIBS $COMMONGTK2_LIBS"
@@ -29,7 +38,7 @@ AC_SUBST(KOMPONENTEN2_INCLUDES)
 AC_SUBST(KOMPONENTEN2_LDFLAGS)
 AC_SUBST(KOMPONENTEN2_LIBS)
 
-AC_OUTPUT(Makefile src/Makefile examples/Makefile \
+AC_OUTPUT(Makefile src/Makefile examples/Makefile  po/Makefile.in\
 	examples/artikelbox/Makefile examples/eingabe/Makefile 
 	examples/tree_simplest/Makefile examples/MVC/Makefile
 	examples/newtree/Makefile)

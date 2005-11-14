@@ -1,4 +1,4 @@
-// $Id: KundenBox2.cc,v 1.7 2005/05/03 09:54:03 jacek Exp $
+// $Id: KundenBox2.cc,v 1.8 2005/11/14 07:40:23 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -17,6 +17,26 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "config.h"
+#ifdef ENABLE_NLS
+#  include <libintl.h>
+#  undef _
+#  define _(String) dgettext (GETTEXT_PACKAGE, String)
+#  ifdef gettext_noop
+#    define N_(String) gettext_noop (String)
+#  else
+#    define N_(String) (String)
+#  endif
+#else
+#  define textdomain(String) (String)
+#  define gettext(String) (String)
+#  define dgettext(Domain,Message) (Message)
+#  define dcgettext(Domain,Message,Type) (Message)
+#  define bindtextdomain(Domain,Directory) (Domain)
+#  define _(String) (String)
+#  define N_(String) (String)
+#endif
+
 #include "KundenBox2.hh"
 
 KundenBox2::KundenBox2()
@@ -26,7 +46,7 @@ KundenBox2::KundenBox2()
   _string2_="coalesce(ort,'')";
   _int_="kundennr";
   _none_id_=Kunde::none_id;  
-  setLabel("Id","Name","Ort");
+  setLabel(_("Id"),_("Name"),_("Ort"));
   show_string2(true);
 }
 

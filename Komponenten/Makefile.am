@@ -1,2 +1,6 @@
 
-SUBDIRS=src examples
+SUBDIRS=po src examples
+
+ACLOCAL_AMFLAGS = -I m4
+
+EXTRA_DIST = config.rpath m4/ChangeLog
