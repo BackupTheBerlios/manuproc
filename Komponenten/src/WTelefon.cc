@@ -1,4 +1,4 @@
-// $Id: WTelefon.cc,v 1.11 2005/10/28 15:22:32 christof Exp $
+// $Id: WTelefon.cc,v 1.12 2005/11/14 07:43:35 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig
@@ -18,6 +18,25 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "config.h"
+#ifdef ENABLE_NLS
+#  include <libintl.h>
+#  undef _
+#  define _(String) dgettext (GETTEXT_PACKAGE, String)
+#  ifdef gettext_noop
+#    define N_(String) gettext_noop (String)
+#  else
+#    define N_(String) (String)
+#  endif
+#else
+#  define textdomain(String) (String)
+#  define gettext(String) (String)
+#  define dgettext(Domain,Message) (Message)
+#  define dcgettext(Domain,Message,Type) (Message)
+#  define bindtextdomain(Domain,Directory) (Domain)
+#  define _(String) (String)
+#  define N_(String) (String)
+#endif
 #include <gtkmm/adjustment.h>
 #include "WTelefon.hh"
 #include <Gtk_OStream.h>
@@ -45,7 +64,7 @@ class Data_Tel :  public RowDataBase
             case NUMMER :  return cH_EntryValueIntString(T->Text());
             case ART    :  
                std::string s=T->ArtString();
-               if(T->isPrivat()) s+=" (privat)";
+               if(T->isPrivat()) s+=_(" (privat)");
                return cH_EntryValueIntString(s);
           }
          return cH_EntryValueIntString();
@@ -143,8 +162,8 @@ std::cout << "loschen\n";
 void WTelefon::setTitels()
 {
   std::vector<std::string> s;
-  s.push_back("Nummer");
-  s.push_back("Art");
+  s.push_back(_("Nummer"));
+  s.push_back(_("Art"));
   tree->setTitles(s);
 }
 
