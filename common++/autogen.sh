@@ -2,6 +2,7 @@
 
 chmod u+x autogen.sh tests/AuftragsTest/test_all.script \
 	tests/AuftragsTest/clean_db tests/AuftragsTest/where_are_the_tables
+if test ! -e Misc ; then ln -s Aux Misc ; fi
 
 if test ! -f install-sh ; then touch install-sh ; fi
 
