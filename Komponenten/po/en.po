@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ManuProC_Widgets 0.0\n"
 "Report-Msgid-Bugs-To: manuproc-developer-de@berlios.de\n"
-"POT-Creation-Date: 2005-11-15 11:09+0100\n"
+"POT-Creation-Date: 2005-11-15 11:20+0100\n"
 "PO-Revision-Date: 2005-11-13 00:35+0100\n"
 "Last-Translator: Christof Petig <christof@petig-baender.de>\n"
 "Language-Team: english <en@li.org>\n"
@@ -36,12 +36,11 @@ msgid "Nummer"
 msgstr "Number"
 
 #: src/WTelefon.cc:149
-#, fuzzy
 msgid "Art"
 msgstr "Type"
 
 #: src/WTelefon_glade.cc:59
-msgid "Nummer l_oe_schen"
+msgid "Nummer löschen"
 msgstr "Delete Number"
 
 #: src/WTelefon_glade.cc:65
