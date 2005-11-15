@@ -1,4 +1,4 @@
-// $Id: WTelefon.cc,v 1.12 2005/11/14 07:43:35 christof Exp $
+// $Id: WTelefon.cc,v 1.13 2005/11/15 13:18:29 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig
@@ -19,24 +19,7 @@
  */
 
 #include "config.h"
-#ifdef ENABLE_NLS
-#  include <libintl.h>
-#  undef _
-#  define _(String) dgettext (GETTEXT_PACKAGE, String)
-#  ifdef gettext_noop
-#    define N_(String) gettext_noop (String)
-#  else
-#    define N_(String) (String)
-#  endif
-#else
-#  define textdomain(String) (String)
-#  define gettext(String) (String)
-#  define dgettext(Domain,Message) (Message)
-#  define dcgettext(Domain,Message,Type) (Message)
-#  define bindtextdomain(Domain,Directory) (Domain)
-#  define _(String) (String)
-#  define N_(String) (String)
-#endif
+#include <Misc/i18n.h>
 #include <gtkmm/adjustment.h>
 #include "WTelefon.hh"
 #include <Gtk_OStream.h>

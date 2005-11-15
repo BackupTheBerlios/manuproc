@@ -1,4 +1,4 @@
-// $Id: KundenBox2.cc,v 1.9 2005/11/14 07:43:48 christof Exp $
+// $Id: KundenBox2.cc,v 1.10 2005/11/15 13:18:29 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -18,25 +18,7 @@
  */
 
 #include "config.h"
-#ifdef ENABLE_NLS
-#  include <libintl.h>
-#  undef _
-#  define _(String) dgettext (GETTEXT_PACKAGE, String)
-#  ifdef gettext_noop
-#    define N_(String) gettext_noop (String)
-#  else
-#    define N_(String) (String)
-#  endif
-#else
-#  define textdomain(String) (String)
-#  define gettext(String) (String)
-#  define dgettext(Domain,Message) (Message)
-#  define dcgettext(Domain,Message,Type) (Message)
-#  define bindtextdomain(Domain,Directory) (Domain)
-#  define _(String) (String)
-#  define N_(String) (String)
-#endif
-
+#include <Misc/i18n.h>
 #include "KundenBox2.hh"
 
 KundenBox2::KundenBox2()
