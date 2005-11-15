@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.74 2005/10/20 12:57:20 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.75 2005/11/15 17:47:16 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -466,7 +466,12 @@ void Kunde::update_e(UpdateBitsBank e)
      else if (i==B_Zahlungsart ) query += "zahlungsart = "+itos(zahlungsart()->Id())+",";
      else if (i==B_Lieferantenkonto ) query += "lieferantenkonto = "+itos(getLieferantenkonto())+",";
      else if (i==B_Gegenkonto  ) query += "gegenkonto = "+itos(getGegenkonto())+",";     
-     else if (i==B_Debitorenkonto  ) query += "debitorenkonto = "+itos(getDebitorenkonto())+",";
+     else if (i==B_Debitorenkonto  ) 
+        {query += "debitorenkonto = ";
+         if(getDebitorenkonto()==0) query+=" null ,";
+         else query+=itos(getDebitorenkonto())+",";
+        }
+
    }
  query += "stand  = now() where kundennr = "+itos(Id());
  Query::Execute(query);
