@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.49 2005/11/08 15:57:25 christof Exp $
+# $Id: configure.in,v 1.50 2005/11/15 09:56:23 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(libcommon++, 0.0, [manuproc-developer-de@berlios.de])
@@ -182,6 +182,26 @@ else
 	AC_MSG_RESULT([disabled])
 fi
 
+GETTEXT_PACKAGE=ManuProC_Base
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [the gettext domain])
+
+dnl Add the languages which your application supports here.
+ALL_LINGUAS="en"
+AM_GNU_GETTEXT([external])
+
+if test -z "${DATADIRNAME}"
+then DATADIRNAME=share
+fi
+dnl Set PACKAGE_LOCALE_DIR in config.h.
+if test "x${prefix}" = "xNONE"; then
+  AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${ac_default_prefix}/${DATADIRNAME}/locale",
+		[the location of locale files])
+else
+  AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${prefix}/${DATADIRNAME}/locale",
+		[the location of locale files])
+fi
+
 COMMONXX_INCLUDES="$ECPG_INCLUDES -I\$(top_srcdir) $SIGC_CFLAGS"
 COMMONXX_LDFLAGS="$ECPG_LDFLAGS -L\$(top_srcdir)"
 COMMONXX_LIBS="-lcommon++ $ECPG_LIBS $SIGC_LIBS"
@@ -189,7 +209,7 @@ AC_SUBST(COMMONXX_INCLUDES)
 AC_SUBST(COMMONXX_LDFLAGS)
 AC_SUBST(COMMONXX_LIBS)
 
-AC_OUTPUT(Makefile Artikel/Makefile Auftrag/Makefile \
+AC_OUTPUT(Makefile Artikel/Makefile Auftrag/Makefile  po/Makefile.in\
 	Aux/Makefile Bank/Makefile ExtBezSchema/Makefile Ketten/Makefile \
 	Kunde/Makefile Lieferschein/Makefile ostream/Makefile \
 	tests/Makefile tests/AuftragsTest/Makefile \

@@ -41,12 +41,13 @@ echo This script runs automake/-conf, configure and make...
 echo You did remember necessary arguments for configure, right?
 echo
 
-libtoolize --force --copy
-autoheader$AC_POSTFIX
 if test -f /usr/share/aclocal/petig.m4
 then aclocal$AM_POSTFIX
 else aclocal$AM_POSTFIX -I macros
 fi
+libtoolize --force --copy
+gettextize
+autoheader$AC_POSTFIX
 automake$AM_POSTFIX --add-missing --copy --gnu
 autoconf$AC_POSTFIX
 ./configure $* && $MAKE

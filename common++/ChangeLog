@@ -1,3 +1,9 @@
+2005-11-15  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (ACLOCAL_AMFLAGS): New variable.
+	(EXTRA_DIST): New variable.
+	* configure.in (AC_OUTPUT): Add po/Makefile.in.
+
 Fri, 23 Feb 2001 17:45:34 +0100
 	initial split into Basic parts (to get used elsewhere)
 	and advanced Manuproc features
