@@ -1,5 +1,8 @@
 #!/bin/sh
 
+chmod u+x autogen.sh tests/AuftragsTest/test_all.script \
+	tests/AuftragsTest/clean_db tests/AuftragsTest/where_are_the_tables
+
 if test ! -f install-sh ; then touch install-sh ; fi
 
 MAKE=`which gnumake`
@@ -46,6 +49,7 @@ then aclocal$AM_POSTFIX
 else aclocal$AM_POSTFIX -I macros
 fi
 libtoolize --force --copy
+gettextize
 autoheader$AC_POSTFIX
 automake$AM_POSTFIX --add-missing --copy --gnu
 autoconf$AC_POSTFIX
