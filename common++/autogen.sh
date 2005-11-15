@@ -46,7 +46,6 @@ then aclocal$AM_POSTFIX
 else aclocal$AM_POSTFIX -I macros
 fi
 libtoolize --force --copy
-gettextize
 autoheader$AC_POSTFIX
 automake$AM_POSTFIX --add-missing --copy --gnu
 autoconf$AC_POSTFIX
