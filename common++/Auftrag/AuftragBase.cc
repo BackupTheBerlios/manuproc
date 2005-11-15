@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.54 2005/10/29 00:51:34 christof Exp $
+// $Id: AuftragBase.cc,v 1.55 2005/11/15 09:56:43 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,6 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <Misc/i18n.h>
 #include <Auftrag/AuftragBase.h>
 #include <Auftrag/Auftrag.h>
 #include<stdio.h>
@@ -45,11 +46,10 @@ const std::string AuftragBase::getStatusStr(AufStatVal a)
 {
  switch(a)
    {case (AufStatVal)UNCOMMITED : 
-       return Ausgabe_neu::TeX_uses_UTF8 ? "unbestätigt" : "unbest�igt"; 
-       break;
-    case (AufStatVal)OPEN : return "offen"; break;
-    case (AufStatVal)CLOSED : return "fertig"; break;
-    case (AufStatVal)STORNO : return "storno"; break;
+       return Ausgabe_neu::TeX_uses_UTF8 ? _("unbestätigt") : "unbest�igt"; 
+    case (AufStatVal)OPEN : return _("offen");
+    case (AufStatVal)CLOSED : return _("fertig");
+    case (AufStatVal)STORNO : return _("storno");
     case (AufStatVal)NOSTAT : break;
    }
  return "-";
