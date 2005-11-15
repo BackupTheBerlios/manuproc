@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.55 2005/11/15 09:56:43 christof Exp $
+// $Id: AuftragBase.cc,v 1.56 2005/11/15 09:56:46 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -246,3 +246,13 @@ AuftragBase::mengen_t AuftragBase::Gesamtmenge(int stueck,const mengen_t &menge)
 std::string AuftragBase::ID2string(ID id)
 { return Formatiere((unsigned long)id,0,6,"","",'0');
 }
+
+#if defined(ENABLE_NLS)
+namespace { struct gettext_init { gettext_init(); }; }
+gettext_init init;
+gettext_init::gettext_init()
+{
+   bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
+   bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+}
+#endif
