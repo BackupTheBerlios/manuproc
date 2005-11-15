@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ManuProC_Widgets 0.0\n"
 "Report-Msgid-Bugs-To: manuproc-developer-de@berlios.de\n"
-"POT-Creation-Date: 2005-11-13 00:40+0100\n"
+"POT-Creation-Date: 2005-11-15 11:09+0100\n"
 "PO-Revision-Date: 2005-11-13 00:35+0100\n"
 "Last-Translator: Christof Petig <christof@petig-baender.de>\n"
 "Language-Team: english <en@li.org>\n"
@@ -15,27 +15,27 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/KundenBox2.cc:49
+#: src/KundenBox2.cc:31
 msgid "Id"
 msgstr ""
 
-#: src/KundenBox2.cc:49
+#: src/KundenBox2.cc:31
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
-#: src/KundenBox2.cc:49
+#: src/KundenBox2.cc:31
 msgid "Ort"
 msgstr "City"
 
-#: src/WTelefon.cc:67
+#: src/WTelefon.cc:50
 msgid " (privat)"
 msgstr " (private)"
 
-#: src/WTelefon.cc:165 src/WTelefon_glade.cc:73
+#: src/WTelefon.cc:148 src/WTelefon_glade.cc:73
 msgid "Nummer"
 msgstr "Number"
 
-#: src/WTelefon.cc:166
+#: src/WTelefon.cc:149
 #, fuzzy
 msgid "Art"
 msgstr "Type"
@@ -50,11 +50,11 @@ msgstr "Country"
 
 #: src/WTelefon_glade.cc:69
 msgid "Vorwahl"
-msgstr ""
+msgstr "Area"
 
 #: src/WTelefon_glade.cc:77
 msgid "Durchwahl"
-msgstr ""
+msgstr "Extension"
 
 #: src/WTelefon_glade.cc:84
 msgid "Text"
@@ -63,3 +63,47 @@ msgstr ""
 #: src/WTelefon_glade.cc:89
 msgid "Neue Nummer eingeben"
 msgstr "Enter new number"
+
+#: src/SimpleTree.cc:362
+msgid "Zurücksetzen"
+msgstr "Reset"
+
+#: src/SimpleTree.cc:363
+msgid "Abbrechen"
+msgstr "Cancel"
+
+#: src/SimpleTree.cc:364
+msgid "Neuordnen"
+msgstr "Reorder"
+
+#: src/SimpleTree.cc:366
+msgid "Sichtbare Spalten"
+msgstr "Visible columns"
+
+#: src/SimpleTree.cc:375
+msgid "Optionen"
+msgstr "Options"
+
+#: src/SimpleTree.cc:378
+msgid ""
+"Auffüllen mit Standardreihenfolge\n"
+"(statt der aktuellen)"
+msgstr ""
+"Pad with standard order\n"
+"(instead of current order)"
+
+#: src/SimpleTree.cc:380
+msgid "Ausgewählte Spalten aufklappen"
+msgstr "Expand selected columns"
+
+#: src/SimpleTree.cc:381
+msgid "Tiefe farblich markieren"
+msgstr "Color code depth"
+
+#: src/SimpleTree.cc:384
+msgid "Alles aufklappen"
+msgstr "Expand all"
+
+#: src/SimpleTree.cc:385
+msgid "Alles zuklappen"
+msgstr "Close all"

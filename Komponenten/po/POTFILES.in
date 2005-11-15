@@ -2,3 +2,4 @@
 ./src/KundenBox2.cc
 ./src/WTelefon.cc
 ./src/WTelefon_glade.cc
+./src/SimpleTree.cc

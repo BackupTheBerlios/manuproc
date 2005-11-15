@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.78 2005/11/15 13:18:21 christof Exp $
+// $Id: SimpleTree.cc,v 1.79 2005/11/15 13:18:38 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,6 +17,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "config.h"
+#include <Misc/i18n.h>
 #include <SimpleTree.hh>
 #include <Misc/itos.h>
 #include <gtkmm/menu.h>
@@ -357,11 +359,11 @@ void SimpleTree_Basic::fillMenu()
 {  assert(menu==0); 
   menu=new Gtk::Menu();
   // Hauptmenü
-  add_mitem(menu,"Zurücksetzen",SigC::slot(*this,&SimpleTree_Basic::on_zuruecksetzen_clicked));
-  add_mitem(menu,"Abbrechen",SigC::slot(*this,&SimpleTree_Basic::on_abbrechen_clicked));
-  add_mitem(menu,"Neuordnen",SigC::slot(*this,&SimpleTree_Basic::on_neuordnen_clicked));
+  add_mitem(menu,_("Zurücksetzen"),SigC::slot(*this,&SimpleTree_Basic::on_zuruecksetzen_clicked));
+  add_mitem(menu,_("Abbrechen"),SigC::slot(*this,&SimpleTree_Basic::on_abbrechen_clicked));
+  add_mitem(menu,_("Neuordnen"),SigC::slot(*this,&SimpleTree_Basic::on_neuordnen_clicked));
 
-  Gtk::MenuItem *spalten=add_mitem(menu,"Sichtbare Spalten");
+  Gtk::MenuItem *spalten=add_mitem(menu,_("Sichtbare Spalten"));
   Gtk::Menu *spalten_menu=manage(new Gtk::Menu);
   spalten->set_submenu(*spalten_menu);
   Gtk::TearoffMenuItem *tomi=manage(new Gtk::TearoffMenuItem());
@@ -370,17 +372,17 @@ void SimpleTree_Basic::fillMenu()
    for (guint i=0;i<getStore()->MaxCol();++i)
       add_mitem(spalten_menu,Properties().Title(i),getStore()->ShowColumn(i));
 
-  Gtk::MenuItem *optionen=add_mitem(menu,"Optionen");
+  Gtk::MenuItem *optionen=add_mitem(menu,_("Optionen"));
   Gtk::Menu *optionen_menu=manage(new Gtk::Menu);
-  add_mitem(optionen_menu,"Spaltenüberschriften anzeigen")->set_sensitive(false); // Model
-  add_mitem(optionen_menu,"Auffüllen mit Standardreihenfolge\n"
-	  	"(statt der aktuellen)",getStore()->OptionAuffullen());
-  add_mitem(optionen_menu,"Ausgewählte Spalten aufklappen",getStore()->OptionExpandieren());
-  add_mitem(optionen_menu,"Tiefe farblich markieren",getStore()->OptionColor());
+//  add_mitem(optionen_menu,_("Spaltenüberschriften anzeigen"))->set_sensitive(false); // Model
+  add_mitem(optionen_menu,_("Auffüllen mit Standardreihenfolge\n"
+	  	"(statt der aktuellen)"),getStore()->OptionAuffullen());
+  add_mitem(optionen_menu,_("Ausgewählte Spalten aufklappen"),getStore()->OptionExpandieren());
+  add_mitem(optionen_menu,_("Tiefe farblich markieren"),getStore()->OptionColor());
 
   optionen->set_submenu(*optionen_menu);
-  add_mitem(menu,"Alles aufklappen",SigC::slot(*this,&SimpleTree_Basic::Expand_recursively));
-  add_mitem(menu,"Alles zuklappen",SigC::slot(*this,&SimpleTree_Basic::Collapse));
+  add_mitem(menu,_("Alles aufklappen"),SigC::slot(*this,&SimpleTree_Basic::Expand_recursively));
+  add_mitem(menu,_("Alles zuklappen"),SigC::slot(*this,&SimpleTree_Basic::Collapse));
 }
 
 bool SimpleTree_Basic::MouseButton(GdkEventButton *event)
