@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.50 2005/11/15 09:56:23 christof Exp $
+# $Id: configure.in,v 1.51 2005/11/15 09:56:34 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(libcommon++, 0.0, [manuproc-developer-de@berlios.de])
@@ -209,7 +209,7 @@ AC_SUBST(COMMONXX_INCLUDES)
 AC_SUBST(COMMONXX_LDFLAGS)
 AC_SUBST(COMMONXX_LIBS)
 
-AC_OUTPUT(Makefile Artikel/Makefile Auftrag/Makefile  po/Makefile.in\
+AC_OUTPUT(Makefile Artikel/Makefile Auftrag/Makefile  po/Makefile.in \
 	Aux/Makefile Bank/Makefile ExtBezSchema/Makefile Ketten/Makefile \
 	Kunde/Makefile Lieferschein/Makefile ostream/Makefile \
 	tests/Makefile tests/AuftragsTest/Makefile \
@@ -217,4 +217,3 @@ AC_OUTPUT(Makefile Artikel/Makefile Auftrag/Makefile  po/Makefile.in\
    Programme/Makefile DynamicEnums/Makefile Instanzen/Makefile \
    Vertrieb/Makefile \
    BaseObjects/Makefile  tests/AuftragsTest/graph/Makefile)
-

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.39 2005/09/15 09:48:16 christof Exp $
+# $Id: Makefile.am,v 1.40 2005/11/15 09:56:34 christof Exp $
 
 SUBDIRS=AuftragsTest
 
@@ -61,7 +61,7 @@ CLEANFILES= *~ $(LINKS) $(EXTRA_PROGRAMS)
 
 LINKS=testHandles.cc testKW.cc test_pgsql_conv.cc FetchIStream.pgcc \
 	fixedpoint.cc Zeitpunkt.cc long.cc mvc.cc trace.cc mvc2.cc \
-	vectormap.cc intmap.cc rexml.cc interval.cc
+	vectormap.cc intmap.cc rexml.cc interval.cc extra_cols.cc
 
 $(LINKS):
 	ln -sf ../Basic/examples/$@ .

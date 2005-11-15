@@ -1,7 +1,7 @@
 SUBDIRS= DynamicEnums Misc BaseObjects ostream Artikel Auftrag Bank \
 		ExtBezSchema Ketten \
 		Kunde Lieferschein Material Lager Faeden Instanzen \
-		Vertrieb . Programme tests 
+		Vertrieb . Programme tests po
 
 	
 lib_LIBRARIES=libcommon++.a
@@ -29,4 +29,4 @@ Misc:
 
 ACLOCAL_AMFLAGS = -I m4
 
-EXTRA_DIST = config.rpath m4/ChangeLog
+EXTRA_DIST = config.rpath m4/ChangeLog  config.rpath m4/ChangeLog
