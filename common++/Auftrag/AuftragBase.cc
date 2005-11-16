@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.56 2005/11/15 09:56:46 christof Exp $
+// $Id: AuftragBase.cc,v 1.57 2005/11/16 09:12:14 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -249,7 +249,7 @@ std::string AuftragBase::ID2string(ID id)
 
 #if defined(ENABLE_NLS)
 namespace { struct gettext_init { gettext_init(); }; }
-gettext_init init;
+static gettext_init init;
 gettext_init::gettext_init()
 {
    bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
