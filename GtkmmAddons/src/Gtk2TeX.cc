@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: Gtk2TeX.cc,v 1.13 2005/11/16 09:33:14 christof Exp $
+// $Id: Gtk2TeX.cc,v 1.14 2005/11/16 09:33:28 christof Exp $
 
 #include "Gtk2TeX.h"
 #include "gtkhacks.h"
@@ -65,8 +65,9 @@ static void TreeView2Table_sub(std::ostream &os,const Gtk::TreeView *cl,
       for (Glib::ListHandle<Gtk::TreeViewColumn*>::const_iterator x=cols.begin(),xend=cols.end(),next=x;x!=xend;x=next,x2=next2)
       {  guint multicol=1;
          
+         ++next; ++next2;
          if (skip_first && !x2) continue;
-         for (++next,++next2;next!=xend;++next,++next2)
+         for (;next!=xend;++next,++next2)
          {  if (fl.multicolumn && get_text(y,*next).empty()
             	&& (*next)->get_alignment()<0.9)
                ++multicol;
