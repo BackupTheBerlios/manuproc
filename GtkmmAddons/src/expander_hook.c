@@ -1,5 +1,5 @@
 #include <gtk/gtkexpander.h>
-#include <gtk/gtkpaned.h>
+#include <gtk/gtkhpaned.h>
 #include <gtk/gtkbox.h>
 
 static void 
