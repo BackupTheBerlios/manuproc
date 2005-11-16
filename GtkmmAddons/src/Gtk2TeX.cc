@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: Gtk2TeX.cc,v 1.14 2005/11/16 09:33:28 christof Exp $
+// $Id: Gtk2TeX.cc,v 1.15 2005/11/16 09:33:36 christof Exp $
 
 #include "Gtk2TeX.h"
 #include "gtkhacks.h"
@@ -48,7 +48,8 @@ static void TreeView2Table_sub(std::ostream &os,const Gtk::TreeView *cl,
    // gtkmm2 seems to have problems with const pointers so we trick
    Glib::ListHandle<Gtk::TreeViewColumn*> cols=const_cast<Gtk::TreeView*>(cl)->get_columns();
    for (Glib::ListHandle<Gtk::TreeViewColumn*>::const_iterator x=cols.begin();x!=cols.end();++x,++x2)
-   {  Glib::ustring content=get_text(y,*x);
+   {  if (skip_first && !x2) continue;
+      Glib::ustring content=get_text(y,*x);
       
       if (!content.empty())
       {  if (is_lines(content))
