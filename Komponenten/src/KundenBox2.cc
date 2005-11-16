@@ -1,4 +1,4 @@
-// $Id: KundenBox2.cc,v 1.10 2005/11/15 13:18:29 christof Exp $
+// $Id: KundenBox2.cc,v 1.11 2005/11/16 09:12:29 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -60,7 +60,7 @@ void KundenBox2::EinschraenkenKdGr(Kundengruppe::ID kgrid)
 
 #if defined(ENABLE_NLS)
 namespace { struct gettext_init { gettext_init(); }; }
-gettext_init init;
+static gettext_init init;
 gettext_init::gettext_init()
 {
    bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
