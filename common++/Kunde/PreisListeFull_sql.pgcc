@@ -209,10 +209,14 @@ void PreisListeFull::load_preisliste(bool with_artbez,
          {is >> Query::Row::MapNull(beztext);
           po.b.push_back(cH_EntryValueIntString(beztext));
          }
+       #ifdef GLOB_SET_EAN_SIGN_BASENAME    
        if(mit_ean) {is >> Query::Row::MapNull(beztext);
                     po.b.push_back(cH_EntryValueIntString(beztext));}
+       #endif
+       #ifdef GLOB_SET_BEZ_SIGN_BASENAME          
        if(mit_bez) {is >> Query::Row::MapNull(beztext);
                     po.b.push_back(cH_EntryValueIntString(beztext));}
+       #endif
       }
     is  >> ARTIKELID >> PREIS >> PREISMENGE >> MINDMENGE >> PARENT;  
 

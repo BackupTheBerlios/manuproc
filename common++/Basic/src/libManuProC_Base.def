@@ -142,6 +142,7 @@ EXPORTS
 	_ZN9TagStreamC2Ev 
 	_ZN9TagStreamD1Ev 
 	_ZN9TagStreamD2Ev 
+	_ZNK10fixedpointILi2EdlE6StringEbjPKcS2_c 
 	_ZNK12germanstringltERKS_ 
 	_ZNK13Kalenderwoche5error4whatEv 
 	_ZNK13Zeitpunkt_new12calculate_TZEi 
