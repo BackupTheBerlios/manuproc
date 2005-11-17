@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.47 2005/11/17 11:41:46 christof Exp $
+// $Id: db_upgrade.cc,v 1.48 2005/11/17 11:42:03 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -87,7 +87,7 @@ int main(int argc,char *argv[])
   ManuProC::PrintUncaughtExceptions();
   ManuProC::dbconnect();
 
-  // �tere Dinge
+  // ältere Dinge
   check_column("kunden","aktiv","boolean");
   check_column("kunden","preisauto","boolean");
   check_column("kunden","showean","boolean");
@@ -105,7 +105,7 @@ int main(int argc,char *argv[])
   check_column("kunden","branr","smallint");
   check_column("kunden","gebdatum","date");
   
-  // Auftragsbest�igung an andere Adresse
+  // Auftragsbestätigung an andere Adresse
   check_column("kunden","ab_an_rngadresse","bool");
   
   // Provisionsaten in Rechnung
@@ -129,7 +129,7 @@ int main(int argc,char *argv[])
   check_column("lieferscheinentry","status","smallint");
 
   
-  // Verk�ferspezifische Daten
+  // Verkäuferspezifische Daten
 	// es gibt noch die alte Spalte verknr mit anderem Nummernkreis,
 	// wegfallen soll. Danach vknr -> verknr umbennenen
   check_column("ku_verkaeufer","vknr","numeric(5)");
@@ -168,7 +168,7 @@ int main(int argc,char *argv[])
   if(check_column("mahnlauf","mahnstufe","integer"))
     { Query_nt("alter table mahnlauf alter mahnstufe set not null"); }
 
-  // neue definitive Priorit� bei den Zuordnungen
+  // neue definitive Priorität bei den Zuordnungen
   // allerdings muss der Index auftragsentryzuordnung_altauftr noch
   // geaendert werden (muss prioritaet beinhalten)
   check_column("auftragsentryzuordnung","prioritaet","timestamp with time zone");
@@ -186,9 +186,9 @@ int main(int argc,char *argv[])
   // schaerangaben nun in webangaben mit drin
   if (!check_table("webangaben"))
   {  check_column("webang_faeden","kettscheibe","integer");
-     // fr geteilte Ketten (Kantketten)
+     // für geteilte Ketten (Kantketten)
      check_column("webang_faeden","max_kettlaenge","integer");
-     // fr kombinierte Ketten
+     // für kombinierte Ketten
      check_column("webang_faeden","max_fadenzahl","integer"); 
 
      // references?     
@@ -268,7 +268,7 @@ int main(int argc,char *argv[])
   check_column("ku_preisliste","fkt_parent","numeric(8,3)");
   check_column("ku_preisliste","add_parent","numeric(8,3)");
 
-  // fr Vertrieb-Modul, Provisionen, etc.
+  // für Vertrieb-Modul, Provisionen, etc.
   check_column("prov_verkaeufer","rabatt","numeric(5,2)");
   
   // eigentlich nur für shindo?
