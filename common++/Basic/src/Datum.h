@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.32 2005/10/11 09:58:30 christof Exp $ */
+/* $Id: Datum.h,v 1.33 2005/11/17 17:35:27 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -103,6 +103,9 @@ public:
 	/// in Europäisches Format wandeln
 	void write_euro(char *b,unsigned int sz) const throw(Datumsfehler);
 	std::string write_euro() const throw(Datumsfehler);
+	// for later i18n
+	std::string to_locale() const throw(Datumsfehler)
+	{ return write_euro(); }
 	/// Gültigkeit testen
 	void teste() const throw(Datumsfehler);
 	/// Datumsformat automatisch raten
