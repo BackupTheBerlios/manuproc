@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.80 2005/11/18 09:55:52 christof Exp $
+// $Id: SimpleTree.cc,v 1.81 2005/11/21 18:23:46 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -384,6 +384,12 @@ void SimpleTree_Basic::fillMenu()
   optionen->set_submenu(*optionen_menu);
   add_mitem(menu,_("Alles aufklappen"),SigC::slot(*this,&SimpleTree_Basic::Expand_recursively));
   add_mitem(menu,_("Alles zuklappen"),SigC::slot(*this,&SimpleTree_Basic::Collapse));
+  
+  // separator
+  for (std::list<std::pair<sigc::signal0<void>,Glib::ustring> >::iterator i=user_menuitems.begin();
+        i!=user_menuitems.end();++i)
+  { add_mitem(menu,i->second,i->first.make_slot());
+  }
 }
 
 bool SimpleTree_Basic::MouseButton(GdkEventButton *event)
@@ -509,4 +515,14 @@ SigC::Signal3<void,const cH_RowDataBase &,int,bool&>
 	  &SimpleTree_Basic::signal_clicked()
 { button_press_vfunc=&SimpleTree_Basic::clicked_impl;
   return clicked_sig;
+}
+
+sigc::signal0<void> &SimpleTree_Basic::addMenuItem(Glib::ustring const& text)
+{ std::list<int>::size_type idx=user_menuitems.size();
+  user_menuitems.resize(idx+1);
+  user_menuitems.back().second=text;
+  if (menu)
+  { add_mitem(menu,text,user_menuitems.back().first.make_slot());
+  }
+  return user_menuitems.back().first;
 }

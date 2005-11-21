@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.hh,v 1.26 2004/11/29 16:25:38 christof Exp $
+// $Id: ArtikelBox.hh,v 1.27 2005/11/21 18:23:46 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.26 2004/11/29 16:25:38 christof Exp $
+// $Id: ArtikelBox.hh,v 1.27 2005/11/21 18:23:46 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -98,15 +98,6 @@ class ArtikelBox : public Gtk::EventBox
 // friend class SigC::ObjectSlot1_<void,unsigned int,ArtikelBox>;
 // friend class SigC::ObjectSlot1_<int,_GdkEventButton *,ArtikelBox>;
 
- // defautvalues for new article
- struct st_default 
- {   ppsInstanz::ID bestelle_bei; 
-     Einheit::ID einheit; 
-     
-     st_default() ; 
- };
- st_default Default_IEP;
- 
  struct BreitenSuche_switch_arg
  {  cH_ExtBezSchema s;
     unsigned i,sp,l;
@@ -161,6 +152,10 @@ class ArtikelBox : public Gtk::EventBox
  Gtk::SearchCombo *active_sc;
  
  Gtk::Tooltips tooltips;
+ 
+ typedef ArtikelBase (*artikel_anlegen_funcptr_t)(cH_ExtBezSchema const&s,
+	    std::map<int,std::vector<cH_EntryValue> > const& felder);
+ artikel_anlegen_funcptr_t artikel_anlegen_funcptr;
 
  // ---- internal methods ----
  void searchFunc(int *cont, GtkSCContext newsearch, guint sp, guint l) throw(SQLerror);
@@ -184,6 +179,8 @@ class ArtikelBox : public Gtk::EventBox
  void Benutzerprofil_speichern();
  void Benutzerprofil_laden();
  void Neuer_Eintrag();
+ static ArtikelBase Neuer_Eintrag_ext(cH_ExtBezSchema const&s,
+	    std::map<int,std::vector<cH_EntryValue> > const& felder);
  void Neuer_Eintrag_automatisch(Gtk::CheckMenuItem *cmi);
  void AlleArtikelAnzeigen(Gtk::CheckMenuItem *cmi);
  void AlleArtikelAnzeigenId(Gtk::CheckMenuItem *cmi);
@@ -266,10 +263,6 @@ public:
 */	
 	void AddUserMenu(const std::string &text, gpointer data);
 	void ClearUserMenus();
-
-   void set_Default_Einheit(const Einheit::ID& e){ Default_IEP.einheit=e;}
-   void set_Default_Instanz(const ppsInstanz::ID& i){ Default_IEP.bestelle_bei=i;}
-
 
 	void EinWarenkorb(PreisListe::ID pid)
 	  {joinstring = " join artikelpreise ap on (id=artikelid) ";

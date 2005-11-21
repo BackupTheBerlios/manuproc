@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.31 2005/05/06 00:08:52 christof Exp $
+// $Id: ArtikelBox.cc,v 1.32 2005/11/21 18:23:46 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -42,16 +42,9 @@
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Artikel/ArtikelBaum.h>
 
-ArtikelBox::st_default::st_default()
-:
-#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
-   bestelle_bei(ppsInstanzID::Rollerei), 
-#else
-   bestelle_bei(ppsInstanzID::None),
-#endif
-  einheit(Einheit(Einheit::default_id))
-{}
-
+#include <Misc/TagStream.h>
+#include <Misc/create_parse.h>
+#include <Misc/mystream.h>
 
 void ArtikelBox::selectFunc(unsigned sp,unsigned l) throw(SQLerror)
 {
@@ -391,7 +384,7 @@ Gtk::Container* ArtikelBox::init_table(int l)
    block_selection(), \
   schema(sch), gewaehltesSchema(sch->Id()), tr("",false), tr2("",false),\
   oberstes(), menu(),  pixmap(), label_typ(), label(),  \
-  active_sc()
+  active_sc(), artikel_anlegen_funcptr(&ArtikelBox::Neuer_Eintrag_ext)
 
 ArtikelBox::ArtikelBox(const cH_ExtBezSchema &_schema)  throw(SQLerror)
 : USUAL_INIT(_schema)
@@ -792,14 +785,50 @@ void ArtikelBox::Benutzerprofil_speichern()
 }
 
 void ArtikelBox::Neuer_Eintrag()
-{
-  /* testen, ob Artikel schon existiert */
+{ /* testen, ob Artikel schon existiert, warum nicht anzeigen? */
   if(artikel_exist(false)!=ArtikelBase::none_id) 
     {
       std::cerr<<"FEHLER: Artikel existiert schon\n";
       return; 
     }
+  std::map<int,std::vector<cH_EntryValue> > felder;
+  
+  for (unsigned int j=0;j<combos.size();++j)
+  { for (unsigned int i=0; i<combos[j].size(); ++i)
+      felder[signifikanz[j]].push_back(cH_EntryValueIntString(combos[j][i]->get_text()));
+  }
+  ArtikelBase newart=(*artikel_anlegen_funcptr)(schema,felder);
+  if (!!newart) set_value(newart);
+}
 
+ArtikelBase ArtikelBox::Neuer_Eintrag_ext(cH_ExtBezSchema const&s,
+	    std::map<int,std::vector<cH_EntryValue> > const& felder)
+{
+  TagStream ts;
+  Tag &neu_anlegen=ts.push_back(Tag("neu_anlegen"));
+  neu_anlegen.setAttr("warengruppe",ManuProC::create<int>(s->Typ().Id()));
+  neu_anlegen.setAttr("schema",ManuProC::create<int>(s->Id()));
+
+  for (std::map<int,std::vector<cH_EntryValue> >::const_iterator j=felder.begin()
+        ;j!=felder.end();++j)
+  { Tag &part=neu_anlegen.push_back(Tag("part"));
+    part.setAttr("signifikanz",ManuProC::create<int>(j->first));
+    for (std::vector<cH_EntryValue>::const_iterator i=j->second.begin()
+        ; i!=j->second.end(); ++i)
+    { part.push_back(Tag("content",(*i)->getStrVal()));
+    }
+  }
+  mystream ms;
+  ts.write(ms,true);
+  std::string arg=ms.str();
+  if (!fork())
+  { execlp("artikeleingabe","artikeleingabe",arg.c_str(),0);
+    perror("artikeleingabe");
+    exit(errno);
+  }
+  return ArtikelBase();
+
+#if 0
  try {
 // hier (und weiter unten) sollte man irgendwann mal 'ID' und 'EAN-Code' in die 
 // Tabellenspalten der jeweiligen Schemata umwandeln.
@@ -859,6 +888,7 @@ void ArtikelBox::Neuer_Eintrag()
   activate();
   tr.commit();
   }catch (SQLerror &e)   {  /*std::cerr << e << '\n';*/}
+#endif  
 }
 
 void ArtikelBox::where_what(std::string& where, std::string& what, bool jumbo)

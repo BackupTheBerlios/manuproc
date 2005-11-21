@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.58 2005/11/10 18:10:02 christof Exp $
+// $Id: SimpleTree.hh,v 1.59 2005/11/21 18:23:46 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -90,6 +90,8 @@ class SimpleTree_Basic : public Gtk::TreeView, public SimpleTreeStore_Proxy
 private:
 	sequence_t clicked_seq;
 	Gtk::Menu *menu;
+	// a vector copies its items on adding, this is not a good idea with signals
+	std::list<std::pair<sigc::signal0<void>,Glib::ustring> > user_menuitems;
 
 	SigC::Signal0<void> _leaf_unselected;
 	SigC::Signal1<void,cH_RowDataBase> _leaf_selected;
@@ -146,6 +148,8 @@ public:
 	__deprecated void setResizeable(const bool b);		
 	
 	void debug();
+	
+	sigc::signal0<void> &addMenuItem(Glib::ustring const& text);
 };
 
 // I put the more esoteric features here, so they may not confuse the
