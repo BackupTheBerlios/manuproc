@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.36 2005/11/21 18:21:53 christof Exp $
+# $Id: Makefile.am,v 1.37 2005/11/21 18:21:57 christof Exp $
 AM_CXXFLAGS= @COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
@@ -31,7 +31,8 @@ libManuProC_Widgets_a_SOURCES=EingabeBox.cc \
 		Association.cc Event.cc TooltipView.cc \
 		SimpleTreeStore_test.cc CellRendererSimpleTree.cc \
 		TreeModelDebug.cc int_ImageButton.cc \
-		IntStringBox_gui.cc IntStringBox.cc IntStringBox_glade.cc
+		IntStringBox_gui.cc IntStringBox.cc IntStringBox_glade.cc \
+		IntStringPopup_glade.cc
 
 dummy_SOURCES=datewin.cc datewin_glade.cc
 
