@@ -19,6 +19,7 @@
 
 #include "ppsInstanz.h"
 #include <Misc/FetchIStream.h>
+#include <Misc/i18n.h>
 
 FetchIStream &operator>>(FetchIStream &is, ppsInstanz::ID &v)
 {  int i;
@@ -61,6 +62,7 @@ void ppsInstanz::get_name() throw(SQLerror)
       "einlagern_in,automatisch_einlagern,typ,externe_bestellung,"
       "overview,alt_group_nr "
       "from prod_instanz where insid=?") << instid >> *this;
+ name=dbgettext(name);
 }
 
 

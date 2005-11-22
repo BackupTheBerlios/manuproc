@@ -1,4 +1,4 @@
-// $Id: createDynConfig.cc,v 1.7 2005/11/17 11:42:02 christof Exp $
+// $Id: createDynConfig.cc,v 1.8 2005/11/22 13:04:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynConfig.cc,v 1.7 2005/11/17 11:42:02 christof Exp $
+// $Id: createDynConfig.cc,v 1.8 2005/11/22 13:04:34 christof Exp $
 
 
 #include <Misc/dbconnect.h>
@@ -35,13 +35,13 @@ extern bool Ausgabe_neu::TeX_uses_UTF8;
 std::string toIdentifier(const std::string &s)
 {  std::string res;
    for (std::string::const_iterator i=s.begin();i!=s.end();++i)
-   {  if (*i==0xe4) res+="ae";
-      else if (*i==0xf6) res+="oe";
-      else if (*i==0xfc) res+="ue";
-      else if (*i==0xdf) res+="ss";
-      else if (*i==0xc4) res+="Ae";
-      else if (*i==0xd6) res+="Oe";
-      else if (*i==0xdc) res+="Ue";
+   {  if (*i==char(0xe4)) res+="ae";
+      else if (*i==char(0xf6)) res+="oe";
+      else if (*i==char(0xfc)) res+="ue";
+      else if (*i==char(0xdf)) res+="ss";
+      else if (*i==char(0xc4)) res+="Ae";
+      else if (*i==char(0xd6)) res+="Oe";
+      else if (*i==char(0xdc)) res+="Ue";
       else if (('A'<=*i && *i<='Z') || ('a'<=*i && *i<='z')
    	|| (i!=s.begin() && '0'<=*i && *i<='9'))
          res+=*i;

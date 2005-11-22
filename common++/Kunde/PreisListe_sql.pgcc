@@ -1,5 +1,4 @@
-
-// $Id: PreisListe_sql.pgcc,v 1.17 2005/10/20 12:57:42 christof Exp $
+// $Id: PreisListe_sql.pgcc,v 1.18 2005/11/22 13:04:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +21,7 @@
 #include <Misc/Transaction.h>
 #include <Misc/Waehrung.h>
 #include <Misc/Query.h>
+#include <Misc/i18n.h>
 
 exec sql include sqlca;
 
@@ -68,6 +68,7 @@ PreisListe::PreisListe(ID _id) throw(SQLerror)
      >> Query::Row::MapNull(add_parent)
      >> Query::check_eol();
 
+   name=dbgettext(name);
    waehrung=cP_Waehrung((Waehrung::ID)WAEHID);
    rabatt_gesetzt=IBRUTTOSATZ!=-1;
    art=(PlArt)ART;

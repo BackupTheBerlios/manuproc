@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.23 2005/10/12 08:59:39 christof Exp $
+// $Id: ExtBezSchema.h,v 1.24 2005/11/22 13:04:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -226,6 +226,8 @@ public:
 
  bool operator==(const ExtBezSchema &b) const
  { return Id()==b.Id() && Typ()==b.Typ(); }
+ 
+ static std::vector<ID> getSchemaIDs(ArtikelTyp t);
  
 };
 

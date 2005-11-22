@@ -1,6 +1,7 @@
-// $Id: ArtikelBezeichnung.h,v 1.24 2005/06/17 15:17:06 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.25 2005/11/22 13:04:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG
+ *  written by Jacek Jakubowski & Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -85,16 +86,16 @@ private:
  ArtikelBezeichnung(const ArtikelBezeichnung &b);
  void setID(const ArtikelBase &id) throw(SQLerror);
 
-// nur über cH_ArtikelBezeichnung verwenden !!!
+// nur Ã¼ber cH_ArtikelBezeichnung verwenden !!!
  ArtikelBezeichnung(const ArtikelBase &artikel,
  	const ExtBezSchema::ID schema=ExtBezSchema::default_id) throw();
 
-/// Artikel zu der externen Bezeichnung für einen Kunden erzeugen 
+/// Artikel zu der externen Bezeichnung fÃ¼r einen Kunden erzeugen 
 /// (ID nach Bezeichnung ermitteln)
 /// Vorsicht: Der Artikeltyp muss stimmen!
  ArtikelBezeichnung(int signifikanz, const std::vector<cH_EntryValue> &values, const cH_ExtBezSchema &schema) throw(SQLerror);
 
-// keine Datenbankkzugriffe nötig, ArtikelBase wird bereits übergeben
+// keine Datenbankkzugriffe nÃ¶tig, ArtikelBase wird bereits Ã¼bergeben
  ArtikelBezeichnung(const ArtikelBase &artikel, const std::vector<cH_EntryValueIntString> &values, const cH_ExtBezSchema &schema) throw(); 
 
 public:
@@ -156,8 +157,21 @@ public:
  bool Jumbo() const { return (*this)[schema->JumboIndex()]->getStrVal()==schema->JumboBez(); }
 #endif
 
-  static void Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase &art,
+  static __deprecated void Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase &art,
   	const std::string &columns, const std::string &values);
+  // sinnvollere API
+  static void Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase &art,
+  	std::vector<std::string> const& columns,
+  	std::vector<std::string> const& values);
+  // existiert dieser Artikel schon fÃ¼r einen anderen Kunden?
+//  static ArtikelBase Vorhanden(ArtikelTyp::ID atid, // spÃ¤ter?
+//  	std::vector<std::string> const& columns,
+//  	std::vector<std::string> const& values);
+  static ArtikelBase Vorhanden(ArtikelTyp::ID atid, int signifikanz,
+  	std::vector<cH_EntryValue> const& values);
+  static ArtikelBase Vorhanden(const cH_ExtBezSchema &schema, int signifikanz,
+  	std::vector<cH_EntryValue> const& values);
+
   static std::string Tabellenname(const cH_ExtBezSchema &s);
  
 // deprecated
@@ -194,7 +208,7 @@ public:
 	// recommended variant!
 	cH_ArtikelBezeichnung(const ArtikelBase &artikel,const ExtBezSchema::ID id=ExtBezSchema::default_id) throw(SQLerror);
 
-/// Artikel zu der externen Bezeichnung für einen Kunden erzeugen 
+/// nach der externen Bezeichnung fÃ¼r einen Kunden suchen
 /// (ID nach Bezeichnung ermitteln)
 	cH_ArtikelBezeichnung(int signifikanz, const std::vector<cH_EntryValue> &values, const cH_ExtBezSchema &schema) throw(SQLerror)
 		: Handle<const ArtikelBezeichnung>(new ArtikelBezeichnung(signifikanz,values,schema))

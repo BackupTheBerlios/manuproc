@@ -1,6 +1,6 @@
-// $Id: ExtBezSchema_sql.pgcc,v 1.25 2005/10/20 12:57:48 christof Exp $
+// $Id: ExtBezSchema_sql.pgcc,v 1.26 2005/11/22 13:04:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include <Misc/Transaction.h>
 #include <Misc/itos.h>
 #include <Misc/FetchIStream.h>
+#include <Misc/i18n.h>
 
 cH_ExtBezSchema::cache_t cH_ExtBezSchema::cache;
 
@@ -48,6 +49,7 @@ FetchIStream &operator>>(FetchIStream &is, ExtBezSchema::BezKomp &b)
 #ifndef PETIG_EXTENSIONS
    is >> FetchIStream::MapNull(b.textid,(MultiL_Dict::LangTXT)0);
 #endif
+   b.bezkomptext=dbgettext(b.bezkomptext);
    return is;
 }
 
@@ -121,3 +123,10 @@ size_t ExtBezSchema::psigsize(bool psig) const
 #if !defined(__GNUC__) || __GNUC__ > 2
 const ExtBezSchema::ID ExtBezSchema::default_id;
 #endif
+
+std::vector<ExtBezSchema::ID> ExtBezSchema::getSchemaIDs(ArtikelTyp t)
+{ std::vector<ID> result;
+  (Query("select distinct extartbezid from extbezschema where artikeltyp=?")
+    << t.Id()).FetchArray(result);
+  return result;
+}

@@ -473,12 +473,13 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
    {  if (ae.Instanz()==i->AEB.Instanz() && i->AEB.Id()!=AuftragBase::dispo_id)
       {  if (!silence_warnings)
            analyse("(Roh-Artikel wird auf gleicher Instanz bestellt)",ae,i->AEB,i->Menge);
+         goto inst_compare_end;
       }
       if (ae.Instanz()==i->AEB.Instanz())
       {  if (i->AEB.Id()!=AuftragBase::dispo_id)
          {  if (!silence_warnings)
 // Vorerst deaktiviert   
-               analyse("Eltern auf gleicher Instanz müssen 2er sein",ae,i->AEB,i->Menge);
+               analyse("(Eltern auf gleicher Instanz sollten 2er sein)",ae,i->AEB,i->Menge);
             goto inst_compare_end;
            weg:
             if (!analyse_only) AufEintragZu::remove(i->AEB,ae);

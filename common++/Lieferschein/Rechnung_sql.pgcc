@@ -269,7 +269,7 @@ void Rechnung::push_back(unsigned &lineno,ArtikelBase art,
 	  provsatz,Preis());
     if (!!material) 
       push_back(lineno,material,lfrsid,lfrsznr,stk,
-	  1.2*float(menge/1000.0)*faeden*(dtex/10000.0),
+	  1.3*float(menge/1000.0)*faeden*(dtex/10000.0),
 	  Preis(),rabatt,provsatz,Preis());
   }
 #endif

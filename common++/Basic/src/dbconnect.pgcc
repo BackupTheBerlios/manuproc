@@ -1,4 +1,4 @@
-// $Id: dbconnect.pgcc,v 1.25 2005/11/14 07:37:57 christof Exp $
+// $Id: dbconnect.pgcc,v 1.26 2005/11/22 13:04:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,9 +32,11 @@
 #define ECPGdo300 0,1,
 #endif
 
-#if 0 // def __MINGW32__
-extern "C" { int snprintf(char *str, size_t size, const  char  *format, ...); }
-#endif
+static std::string current_db_name;
+
+std::string ManuProC::get_dbname()
+{ return current_db_name;
+}
 
 void ManuProC::dbconnect(const Connection &c) throw(SQLerror)
 {  exec sql begin declare section;
@@ -110,6 +112,7 @@ void ManuProC::dbconnect(const Connection &c) throw(SQLerror)
        Query::Execute("set names 'latin9'");
 #endif
    Global_Settings::database_connected();
+   current_db_name=NAME;
 }
 
 void ManuProC::dbdisconnect(const std::string &name) throw(SQLerror)
@@ -134,8 +137,11 @@ void ManuProC::dbdefault(const std::string &name) throw(SQLerror)
    if (name.empty()) NAME=DEFAULT_DB;
    else NAME=name.c_str();
    
-   exec sql set connection to :NAME;
+   // ex ec sql set connection to :NAME;
+   // 8.1 does not parse this correctly, hand code it ...
+   ECPGsetconn(__LINE__,NAME);
    SQLerror::test("dbdefault");
+   current_db_name=name;
 }
 
 void ManuProC::setDTstyle(char *style) throw(SQLerror)

@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.35 2005/10/19 20:53:55 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.36 2005/11/22 13:04:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -228,37 +228,6 @@ const cH_EntryValue *ArtikelBezeichnung::const_sigiterator::operator->() const
 
 std::string ArtikelBezeichnung::Tabellenname(const cH_ExtBezSchema &s)
 {  return "artbez_"+itos(s->Typ().Id())+"_"+itos(s->Id());
-}
-
-void ArtikelBezeichnung::Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase &art,
-  	const std::string &columns, const std::string &values)
-{  std::string col="(id,"+columns+",";
-   std::string val="("+itos(art.Id())+","+values+",";
-#if defined(MABELLA_EXTENSIONS)  && defined(MANUPROC_DYNAMICENUMS_CREATED)
-  if(schema->Id()==ExtBezSchema::default_id && 
-	ArtikelTyp::hasAttribute(schema->Typ(),
-	  ManuProC::DynamicEnums::ArtikelTyp_Attributes::mit_ean))
-     {
-     col +="ean,";
-     val += EAN::next_value(schema->Typ())+",";
-     }  
-#endif
-
-#if defined MABELLA_EXTENSIONS && defined(MANUPROC_DYNAMICENUMS_CREATED)
-   int prozess=40; // Rollen allgemein   
-   if(ArtikelTyp::hasAttribute(schema->Typ(),
-	  ManuProC::DynamicEnums::ArtikelTyp_Attributes::bez_as_view))
-     {col+="prozess,uid,";
-      val+=itos(prozess)+","+itos(getuid())+","; 
-     }
-#endif
-
-   assert(col[col.size()-1]==',' && val[val.size()-1]==',');
-   col[col.size()-1]=')';
-   val[val.size()-1]=')';
-
-   Query("insert into "+Tabellenname(schema) +" "+ col+" values "+val);
-   SQLerror::test(__FILELINE__,100);
 }
 
 const ArtikelBezeichnung &ArtikelBezeichnung::operator=(const ArtikelBezeichnung &b)

@@ -1,4 +1,4 @@
-// $Id: Query.pgcc,v 1.18 2005/11/08 14:36:31 christof Exp $
+// $Id: Query.pgcc,v 1.19 2005/11/22 13:04:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -120,7 +120,7 @@ std::string Query_Row::getFieldName() const
 /// QUERY
 
 #ifdef USE_PARAMETERS
-struct connection
+struct connection_s
 {	char const *	name;
         PGconn *	connection;
         // ...
@@ -128,7 +128,7 @@ struct connection
 
 extern "C"
 {
-struct connection *ECPGget_connection(char const *name);
+struct connection_s *ECPGget_connection(char const *name);
 }
 
 void Query::raise(std::string const& state, int code, std::string const& message, std::string const& detail)

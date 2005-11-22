@@ -1,4 +1,4 @@
-// $Id: Waehrung_sql.pgcc,v 1.17 2005/10/20 12:57:44 christof Exp $
+// $Id: Waehrung_sql.pgcc,v 1.18 2005/11/22 13:04:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,8 +19,7 @@
 
 #include<Misc/Waehrung.h>
 #include <Misc/FetchIStream.h>
-
-exec sql include sqlca;
+#include <Misc/i18n.h>
 
 Waehrung::Waehrung(WaehID id)  throw(SQLerror)
 : wid(id)
@@ -33,6 +32,9 @@ Waehrung::Waehrung(WaehID id)  throw(SQLerror)
  r >> Query::Row::MapNull(lang,kurz)
    >> Query::Row::MapNull(tex,kurz) 
    >> faktor >> Query::check_eol();
+ kurz=dbgettext(kurz);
+ lang=dbgettext(lang);
+ tex=dbgettext(tex);
 }
 
 cP_Waehrung::cache_t cP_Waehrung::cache;

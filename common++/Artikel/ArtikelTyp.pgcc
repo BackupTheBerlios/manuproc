@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.pgcc,v 1.19 2005/10/12 08:59:38 christof Exp $
+// $Id: ArtikelTyp.pgcc,v 1.20 2005/11/22 13:04:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,7 @@
 #include <Misc/SQLerror.h>
 #include <Misc/ExtraColumns.h>
 #include <DynamicEnums/DynamicDescr.h>
+#include <Misc/i18n.h>
 exec sql include sqlca;
 
 std::map<ArtikelTyp::ID,std::vector<bool> > ArtikelTyp::attributes;
@@ -84,15 +85,9 @@ ArtikelTyp::ArtikelTyp(const ArtikelBase &ab,ID id) throw (SQLerror)
 }
 
 std::string ArtikelTyp::get_string(ID t)
-{
-  exec sql begin declare section;
-   char TYP[50];
-   int id=t;
-  exec sql end declare section;
-  exec sql select text into :TYP from artbez_warengruppe  where id  = :id;
- SQLerror::test(__FILELINE__,100);
- if (sqlca.sqlcode) *TYP = 0;
- return TYP;
+{ std::string TYP;
+  Query("select text from artbez_warengruppe  where id=?") << t >> TYP;
+  return dbgettext(TYP);
 }
 
 
