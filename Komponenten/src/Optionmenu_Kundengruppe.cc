@@ -1,4 +1,4 @@
-// $Id: Optionmenu_Kundengruppe.cc,v 1.2 2005/06/24 10:40:04 christof Exp $
+// $Id: Optionmenu_Kundengruppe.cc,v 1.3 2005/11/22 13:03:33 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,6 +21,7 @@
 #include "Optionmenu_Kundengruppe.hh"
 #include <Gtk_OStream.h>
 #include <SelectMatching.h>
+#include <Misc/i18n.h>
 
 Optionmenu_Kundengruppe::Optionmenu_Kundengruppe()
 { fuelle_menu();
@@ -40,10 +41,10 @@ void Optionmenu_Kundengruppe::fuelle_menu()
   Gtk::OStream os(this);
   for(std::vector<cH_Kundengruppe>::iterator i=V.begin();i!=V.end();++i)
    {
-     os << (*i)->GrpName();  
+     os << dbgettext((*i)->GrpName());
      os.flush((void*)(*i)->Id());
    }
-  os << "-- Alle Gruppen --"; os.flush((void*)(KundengruppeID::None));
+  os << _("-- Alle Gruppen --"); os.flush((void*)(KundengruppeID::None));
 }
 
 namespace Gtk {

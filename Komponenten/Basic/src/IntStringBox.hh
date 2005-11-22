@@ -1,4 +1,4 @@
-// $Id: IntStringBox.hh,v 1.2 2005/11/22 13:00:22 christof Exp $
+// $Id: IntStringBox.hh,v 1.3 2005/11/22 13:03:33 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -38,11 +38,12 @@ class IntStringBox : public IntStringBox_gui
 	ManuProcEntity<>::ID id;
 	Transaction tr,tr2,tr3;
 
-   bool eingeschraenkt:1;
    std::string einschraenkung;
    std::string joinstring;
 
-   bool string_2_info_only;
+   bool eingeschraenkt:1;
+   bool string_2_info_only:1;
+   bool translate:1;
 
    bool try_to_get_id();
 
@@ -52,10 +53,8 @@ protected:
 
 public:
 	IntStringBox(ManuProcEntity<>::ID __none_id=ManuProcEntity<>::none_id);
-	// das findet aber nicht unbedingt meine Zustimmung, schließlich soll
-	// das eine _Int_String Box sein ...
+
    void setLabel(const std::string &nr,const std::string &name,const std::string& namez="");
-   void setLabel(long int nr);
 
 	ManuProcEntity<>::ID get_value() const { return id; }
 	void set_value(ManuProcEntity<>::ID i,const std::string &s,const std::string &sz="") ;

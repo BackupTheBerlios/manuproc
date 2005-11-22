@@ -1,4 +1,4 @@
-// $Id: IntStringBox.cc,v 1.1 2005/11/21 18:21:53 christof Exp $
+// $Id: IntStringBox.cc,v 1.2 2005/11/22 13:03:33 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
  *  1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -100,10 +100,9 @@ gint IntStringBox::try_grab_focus(GtkWidget *w,gpointer gp)
 IntStringBox::IntStringBox(ManuProcEntity<>::ID __none_id) 
 : id(__none_id),tr("",false), tr2("",false), 
 tr3("",false),
-#ifdef MABELLA_EXTENSIONS
   eingeschraenkt(false),
-#endif   
   string_2_info_only(false),
+  translate(false),
   _none_id_(__none_id)
 {
  show_string2(false);

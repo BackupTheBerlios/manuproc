@@ -1,4 +1,4 @@
-// $Id: Optionmenu_AuftragLabel.cc,v 1.3 2005/09/07 14:18:06 christof Exp $
+// $Id: Optionmenu_AuftragLabel.cc,v 1.4 2005/11/22 13:03:33 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,7 +21,8 @@
 #include "Optionmenu_AuftragLabel.hh"
 #include <Gtk_OStream.h>
 #include <SelectMatching.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
+#include <Misc/i18n.h>
 
 Optionmenu_AuftragLabel::Optionmenu_AuftragLabel()
 { fuelle_menu();
@@ -43,7 +44,7 @@ try
  { 
  Query q("select alid,bezeichnung,kurz from auftrag_label order by bezeichnung");
 
- FetchIStream fi=q.Fetch();
+ Query::Row fi=q.Fetch();
 
  int count=0;
 
@@ -53,6 +54,8 @@ try
     std::string kurz;
     unsigned int id;    
     fi >> id >> bez >> kurz;
+    bez=dbgettext(bez);
+    kurz=dbgettext(kurz);
     t_ << "("+(id==0?"  ":kurz)+") "+bez;
     t_.flush((gpointer)id);
     if(id==0)

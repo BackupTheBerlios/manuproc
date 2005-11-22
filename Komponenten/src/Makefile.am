@@ -1,5 +1,5 @@
-# $Id: Makefile.am,v 1.58 2005/10/18 21:48:14 christof Exp $
-AM_CXXFLAGS=@CXXFLAGS@  \
+# $Id: Makefile.am,v 1.59 2005/11/22 13:03:33 christof Exp $
+AM_CXXFLAGS=@CXXFLAGS@  -DCOMPILE_KOMPONENTEN \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
@@ -26,7 +26,10 @@ LINKS= EingabeBox.cc EingabeBox.hh datewin.cc datewin.h \
 	bvector_item_CheckMenuItem.hh SimpleTreeStore_test.cc \
 	CellRendererSimpleTree.h CellRendererSimpleTree.cc \
 	TreeModelDebug.cc TreeModelDebug.h SearchComboContent.hh \
-	SearchCombo.hh MyMessage.h int_ImageButton.hh int_ImageButton.cc
+	SearchCombo.hh MyMessage.h int_ImageButton.hh int_ImageButton.cc \
+	IntStringBox.hh IntStringBox.cc IntStringBox_glade.cc \
+	IntStringBox_sql.pgcc IntStringBox_gui.hh IntStringBox_glade.hh \
+	IntStringBox_gui.cc
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
@@ -42,7 +45,7 @@ oldheaders=\
    Optionmenu_Instanz.hh Artikel_Bestellen.hh \
    Optionmenu_Warengruppe.hh PPixmap.hh \
    Optionmenu_Einheit.hh PreisBox.hh WTelefon.hh \
-   IntStringBox.hh IntStringBox_gui.hh PersonenBox.hh \
+   IntStringBox.hh PersonenBox.hh \
    LandesBox.hh KundenBox2.hh ZahlungsArtBox.hh
 
 lib_LIBRARIES= libKomponenten.a
@@ -52,8 +55,7 @@ libKomponenten_a_SOURCES= \
 	datewin.cc \
 		logwin.cc EingabeBox.cc \
 		datewin_glade.cc \
-	IntStringBox_gui.cc \
-	IntStringBox.cc \
+	IntStringBox.cc IntStringBox_glade.cc \
 	bool_CheckButton.cc \
 	int_SpinButton.cc string_Entry.cc \
 	SimpleTreeModel.cc SimpleTreeStore.cc \
@@ -62,7 +64,7 @@ libKomponenten_a_SOURCES= \
 	FlashingPixmap.cc LabelSpin.cc \
 	MyWindow.cc MyScale.cc logwin.cc TreeViewUtility.cc \
 	bool_properties.cc bool_ImageButton.cc \
-	IntStringBox_glade.cc IntStringPopup_glade.cc \
+	IntStringBox_gui.cc IntStringPopup_glade.cc \
 	string_Label.cc Event.cc Association.cc \
         CellRendererSimpleTree.cc ArtikelBox.cc \
         KundenBox2.cc int_ImageButton.cc \

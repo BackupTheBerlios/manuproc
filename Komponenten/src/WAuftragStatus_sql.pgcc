@@ -24,7 +24,6 @@
 WAuftragStatus::WAuftragStatus()
 {
   fuelleMenu();
-//  show();  // sollte das Widget dadrüber tun!
 }
 
 void WAuftragStatus::set_value(AufStatVal a)

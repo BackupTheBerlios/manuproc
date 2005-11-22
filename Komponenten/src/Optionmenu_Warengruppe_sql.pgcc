@@ -23,7 +23,8 @@
 #include <Gtk_OStream.h>
 exec sql include sqlca;
 #include <SelectMatching.h>
-#include <Aux/itos.h>
+#include <Misc/itos.h>
+#include <Misc/i18n.h>
 
 Optionmenu_Warengruppe::Optionmenu_Warengruppe(int extartbezid)
 {
@@ -75,7 +76,7 @@ void Optionmenu_Warengruppe::set_extartbezid(int extartbezid)
    }
  exec sql close Win_ein;
  tr.close();
-  os << "-- Alle Gruppen --"; os.flush((void*)(ArtikelTyp::none_id));
+  os << _("-- Alle Gruppen --"); os.flush((void*)(ArtikelTyp::none_id));
  }
   get_menu()->signal_deactivate().connect(activate.slot());
 }

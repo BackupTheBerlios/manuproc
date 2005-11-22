@@ -3,3 +3,5 @@
 ./src/WTelefon.cc
 ./src/WTelefon_glade.cc
 ./src/SimpleTree.cc
+src/Optionmenu_Kundengruppe.cc
+src/Optionmenu_Warengruppe_sql.pgcc
