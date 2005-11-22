@@ -1,4 +1,4 @@
-// $Id: IntStringBox.hh,v 1.1 2005/11/21 18:21:53 christof Exp $
+// $Id: IntStringBox.hh,v 1.2 2005/11/22 13:00:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -21,7 +21,7 @@
 #  include "IntStringBox_gui.hh"
 #  define _INTSTRINGBOX_HH
 
-#include <Aux/Transaction.h>
+#include <Misc/Transaction.h>
 #include <BaseObjects/ManuProcEntity.h>
 
 class IntStringBox : public IntStringBox_gui
