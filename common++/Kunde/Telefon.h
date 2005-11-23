@@ -1,4 +1,4 @@
-// $Id: Telefon.h,v 1.16 2003/04/24 13:44:37 jacek Exp $
+// $Id: Telefon.h,v 1.17 2005/11/23 13:12:38 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -32,7 +32,7 @@ class cH_Telefon;
 class Telefon : public ManuProcHandle<>
 {
 public:
- const static int Landeskennzahl=49;
+ static const int Landeskennzahl=49;
  const static int Vorwahl=202;
 
  
