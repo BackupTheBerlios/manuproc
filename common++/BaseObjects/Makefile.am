@@ -15,7 +15,8 @@ libBaseObjects.a: $(libBaseObjects_a_OBJECTS) $(libBaseObjects_a_DEPENDENCIES) M
 CLEANFILES= *~ 
 
 LINKS=MVC.h Model.h ModelPlex.h RadioModel.h Model_ref_bvector.h \
-	SignalPlex.h
+	SignalPlex.h ManuProcEntity.h ManuProcEntity.cc ManuProcEintrag.h \
+	ManuProcVorgang.h
 
 BUILT_SOURCES=$(LINKS)
 
