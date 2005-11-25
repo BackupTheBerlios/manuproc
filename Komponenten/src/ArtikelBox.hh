@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.hh,v 1.28 2005/11/25 12:45:47 christof Exp $
+// $Id: ArtikelBox.hh,v 1.29 2005/11/25 12:45:58 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.28 2005/11/25 12:45:47 christof Exp $
+// $Id: ArtikelBox.hh,v 1.29 2005/11/25 12:45:58 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -153,9 +153,11 @@ class ArtikelBox : public Gtk::EventBox
  
  Gtk::Tooltips tooltips;
  
- typedef ArtikelBase (*artikel_anlegen_funcptr_t)(cH_ExtBezSchema const&s,
-	    std::map<int,std::vector<cH_EntryValue> > const& felder);
+ typedef ArtikelBase (*artikel_anlegen_funcptr_t)(gpointer user_data,
+ 		cH_ExtBezSchema const&s,
+	 	std::map<int,std::vector<cH_EntryValue> > const& felder);
  artikel_anlegen_funcptr_t artikel_anlegen_funcptr;
+ gpointer artikel_anlegen_gptr;
 
  // ---- internal methods ----
  void searchFunc(int *cont, GtkSCContext newsearch, guint sp, guint l) throw(SQLerror);
@@ -179,7 +181,7 @@ class ArtikelBox : public Gtk::EventBox
  void Benutzerprofil_speichern();
  void Benutzerprofil_laden();
  void Neuer_Eintrag();
- static ArtikelBase Neuer_Eintrag_ext(cH_ExtBezSchema const&s,
+ static ArtikelBase Neuer_Eintrag_ext(gpointer ud, cH_ExtBezSchema const&s,
 	    std::map<int,std::vector<cH_EntryValue> > const& felder);
  void Neuer_Eintrag_automatisch(Gtk::CheckMenuItem *cmi);
  void AlleArtikelAnzeigen(Gtk::CheckMenuItem *cmi);
@@ -294,8 +296,9 @@ public:
 	// nette Dinge für jeden (?)
 	static std::string Tabellenname(cH_ExtBezSchema s);
 	
-	void AnlegenCall(artikel_anlegen_funcptr_t f)
+	void AnlegenCall(artikel_anlegen_funcptr_t f,gpointer ud=0)
 	{ artikel_anlegen_funcptr=f;
+	  artikel_anlegen_gptr=ud;
 	}
 };
 #endif

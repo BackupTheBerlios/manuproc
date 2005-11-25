@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.32 2005/11/21 18:23:46 christof Exp $
+// $Id: ArtikelBox.cc,v 1.33 2005/11/25 12:45:58 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -384,7 +384,8 @@ Gtk::Container* ArtikelBox::init_table(int l)
    block_selection(), \
   schema(sch), gewaehltesSchema(sch->Id()), tr("",false), tr2("",false),\
   oberstes(), menu(),  pixmap(), label_typ(), label(),  \
-  active_sc(), artikel_anlegen_funcptr(&ArtikelBox::Neuer_Eintrag_ext)
+  active_sc(), artikel_anlegen_funcptr(&ArtikelBox::Neuer_Eintrag_ext), \
+  artikel_anlegen_gptr()
 
 ArtikelBox::ArtikelBox(const cH_ExtBezSchema &_schema)  throw(SQLerror)
 : USUAL_INIT(_schema)
@@ -797,11 +798,11 @@ void ArtikelBox::Neuer_Eintrag()
   { for (unsigned int i=0; i<combos[j].size(); ++i)
       felder[signifikanz[j]].push_back(cH_EntryValueIntString(combos[j][i]->get_text()));
   }
-  ArtikelBase newart=(*artikel_anlegen_funcptr)(schema,felder);
+  ArtikelBase newart=(*artikel_anlegen_funcptr)(artikel_anlegen_gptr,schema,felder);
   if (!!newart) set_value(newart);
 }
 
-ArtikelBase ArtikelBox::Neuer_Eintrag_ext(cH_ExtBezSchema const&s,
+ArtikelBase ArtikelBox::Neuer_Eintrag_ext(gpointer ud,cH_ExtBezSchema const&s,
 	    std::map<int,std::vector<cH_EntryValue> > const& felder)
 {
   TagStream ts;
@@ -827,68 +828,6 @@ ArtikelBase ArtikelBox::Neuer_Eintrag_ext(cH_ExtBezSchema const&s,
     exit(errno);
   }
   return ArtikelBase();
-
-#if 0
- try {
-// hier (und weiter unten) sollte man irgendwann mal 'ID' und 'EAN-Code' in die 
-// Tabellenspalten der jeweiligen Schemata umwandeln.
-// Dazu brauchte man dann wohl ein get_[id|ean]_spaltenname()
-// in ExtBezSchema, oder?
- /* testen ob ID oder EAN eingetragen => FEHLER */
- // sollte wohl eher angezeigt werden CP
- for (unsigned j=0;j<combos.size();++j)
-  for (unsigned i=0; i<combos[j].size(); ++i)
-   { 
-     if (labels[j][i]->get_text()=="ID" && combos[j][i]->get_text() !="")
-      { std::cerr<<"FEHLER: ID darf nicht vorgegeben werden: Feld freilassen\n";
-        return;
-      }
-#ifdef MABELLA_EXTENSIONS      
-     if (labels[j][i]->get_text()=="EAN-Code" && combos[j][i]->get_text() !="")
-      { std::cerr<<"FEHLER: EAN darf nicht vorgegeben werden: Feld freilassen\n";
-        return;
-      }
-#endif
-   }
-  int db_id,db_id_jumbo;
-  Transaction tr;
-
-  db_id=ArtikelStamm::Anlegen(schema->Typ().Id(),schema->Id(),
-  	Default_IEP.bestelle_bei,Default_IEP.einheit).Id();
-
-  std::string where, what;
-  where_what(where,what,false);
-  assert(where[where.size()-1]==')' && what[what.size()-1]==')');
-  where[where.size()-1]=' ';
-  what[what.size()-1]=' ';
-  ArtikelBezeichnung::Anlegen(schema,ArtikelBase(db_id),where,what);
-
-#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED // Jumborollen anlegen ?
- if (Default_IEP.bestelle_bei==ppsInstanzID::Rollerei)
- {  ArtikelBase::ID jumbo_id=artikel_exist(true);
-    if(!jumbo_id)
-      {
-        db_id_jumbo=ArtikelStamm::Anlegen(schema->Typ().Id(),schema->Id(),
-	  	ppsInstanzID::Bandlager,EinheitID::m).Id();
-	where=what="";
-        where_what(where,what,true);
-        assert(where[where.size()-1]==')' && what[what.size()-1]==')');
-        where[where.size()-1]=' ';
-        what[what.size()-1]=' ';
-        ArtikelBezeichnung::Anlegen(schema,ArtikelBase(db_id_jumbo),where,what);
-      }
-    if (jumbo_id && db_id!=jumbo_id)
-       ArtikelBaum::Anlegen(ArtikelBase(db_id),ArtikelBase(jumbo_id),ProzessID::Rollen,get_menge_from_artikelbox());
-  }
-#endif
-
-  artikel=ArtikelBase(db_id);
-  pixmap_setzen(true);
-  new_article_inserted(db_id);
-  activate();
-  tr.commit();
-  }catch (SQLerror &e)   {  /*std::cerr << e << '\n';*/}
-#endif  
 }
 
 void ArtikelBox::where_what(std::string& where, std::string& what, bool jumbo)
