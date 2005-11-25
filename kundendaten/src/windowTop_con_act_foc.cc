@@ -40,18 +40,13 @@ void windowTop::changedFktA(Kunde::UpdateBitsAdresse e)
      else if (e==Kunde::FPostfachplz) kundendaten->set_postfachplz(entryPostfachPLZ->get_text());
      else if (e==Kunde::FOrt        ) kundendaten->set_ort(entryOrt->get_text());
      else if (e==Kunde::FLkz        ) kundendaten->set_land(landesbox->get_value()) ;
-     else if (e==Kunde::FLieferadresse  ) kundendaten->isLieferadresse(checkbuttonLieferAdr->get_active());
-     else if (e==Kunde::FRechnungadresse) kundendaten->isRechnungsadresse(checkbuttonRchngAdr->get_active());
-     else if (e==Kunde::FAuftragadresse) kundendaten->isAuftragsadresse(checkbuttonAuftrAdr->get_active());
      else if (e==Kunde::FRng_an_postfach) kundendaten->Rng_an_postfach(checkbutton_rng_an_postfach->get_active());
      else if (e==Kunde::FBranr		) kundendaten->set_Anrede(scc_anrede->get_value());
      else if (e==Kunde::FName2		) kundendaten->set_name2(entryName2->get_text());     
 
      else std::cerr<< "Falsche Funktion konektiert\n";
 
-  if(e==Kunde::FLieferadresse || e==Kunde::FRechnungadresse || 
-     e==Kunde::FRng_an_postfach || e==Kunde::FLkz ||
-	e==Kunde::FBranr)
+  if(e==Kunde::FRng_an_postfach || e==Kunde::FLkz || e==Kunde::FBranr)
     saveAll();
 }
 
@@ -268,9 +263,6 @@ void windowTop::connectFkt()
   entryOrt->signal_activate().connect(SigC::bind(SigC::slot(*this,&windowTop::activateFktA),Kunde::FOrt),true);
   entryOrt->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktA),Kunde::FOrt));
 
-  checkbuttonLieferAdr->signal_toggled().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FLieferadresse));
-  checkbuttonRchngAdr->signal_toggled().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FRechnungadresse));
-  checkbuttonAuftrAdr->signal_toggled().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FAuftragadresse));
   checkbutton_rng_an_postfach->signal_toggled().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FRng_an_postfach));
 
   landesbox->signal_activate().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktA),Kunde::FLkz));

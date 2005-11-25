@@ -186,8 +186,6 @@ void windowTop::clear_entrys()
    
    checkbutton_zeilenrabatt->set_active(false);
    checkbuttonBankeinzug->set_active(false);
-   checkbuttonRchngAdr->set_active(false);
-   checkbuttonLieferAdr->set_active(false);
    checkbutton_lieferung_frei_haus->set_active(true);
    
    kundendaten=H_Kunde(Kunde::none_id);

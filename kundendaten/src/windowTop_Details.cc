@@ -48,9 +48,6 @@ void windowTop::show_details()
    geburtstag->setLabel(_("Geburtstag"));
 
    checkbutton_zeilenrabatt->set_active(kundendaten->zeilenrabatt());
-   checkbuttonLieferAdr->set_active(kundendaten->isInGrp(KundengruppeID::Lieferadresse));
-   checkbuttonRchngAdr->set_active(kundendaten->isInGrp(KundengruppeID::Rechnungsadresse));
-   checkbuttonAuftrAdr->set_active(kundendaten->isInGrp(KundengruppeID::Auftragsadresse));
    checkbutton_rng_an_postfach->set_active(kundendaten->Rng_an_postfach());
    ab_an_rngadresse->set_active(kundendaten->AB_an_rngadresse());   
    checkbutton_entsorgung->set_active(kundendaten->entsorgung());
