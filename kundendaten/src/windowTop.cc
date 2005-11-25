@@ -38,7 +38,7 @@ void windowTop::on_notebook1_switch_page(GtkNotebookPage* page,guint pagenr)
    }
 }
 
-windowTop::windowTop()
+windowTop::windowTop(unsigned id)
 : kundendaten(Kunde::none_id),person(Kunde::none_id),
    transaction("",false), 
    UpdateAdresse(Kunde::UpdateBitsAdresse(0)),
@@ -90,6 +90,10 @@ windowTop::windowTop()
   clistPersonenListe->append_column(_("Position"),kontakt_cols.position);
   clistPersonenListe->get_selection()->signal_changed().connect(SigC::slot(*this, 
        &windowTop::on_clistPersonenListe_selection_changed));
+  if (id!=unsigned(Kunde::none_id))
+  { kundenauswahl->set_value(id);
+    kunden_activate();
+  }
 }
 
 void windowTop::saveAll()

@@ -170,15 +170,6 @@ class windowTop : public windowTop_glade
         void update_person();
         void clear_PersonenEntrys();
 
-/* faellt alles weg, da Personen über die Hauptmaske bearbeitet werden
-        //Neue Personen
-        void show_neue_personen_daten(cH_Person &P);
-        void on_entryPersonenDatenName_activate();
-        void on_entryPersonenDatenVorname_activate();
-        void geburtstag_activate();
-        void on_comboentryPersonenDatenAnrede_activate();
-*/
-
 	void load_notizen();
 
         void on_lfran_activate();
@@ -188,11 +179,7 @@ class windowTop : public windowTop_glade
         void on_unselectrow_gewaehltegruppen();
 public:
 
-        windowTop();
-//        void load_kunde(const Kunde::ID kdnr);
-//          void load_telefon_list();
-//        void save_telefon_list();
-//	void delete_telefon(const cH_Telefon tel);
+        windowTop(unsigned kid);
 
         void kunde_loeschen();
 	void showGruppen();
@@ -200,7 +187,7 @@ public:
         // Details
         void neue_bank_uebernehmen(unsigned long int bank_index);      
 
-        void neue_kundennmmer(unsigned int kid);
+        void neue_kundennmmer(unsigned kid);
 
 private:
 	Data_Gruppe *allgrp;

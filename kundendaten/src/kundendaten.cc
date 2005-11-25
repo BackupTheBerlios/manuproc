@@ -39,8 +39,9 @@ int main(int argc, char **argv)
       default : break;
    }
 
-
-//   gle_init(&argc,&argv);
+   Kunde::ID kid=Kunde::none_id;
+   if (optind<argc) kid=atoi(argv[optind]);
+   
    Gtk::Main m(argc, argv);
    Petig::PrintUncaughtExceptions();
 
@@ -48,7 +49,7 @@ int main(int argc, char **argv)
 
       Petig::dbconnect(conn);  
 
-      class windowTop *w=new class windowTop();
+      class windowTop *w=new class windowTop(kid);
 
       Message=new MyMessage();
       m.run(*w);
