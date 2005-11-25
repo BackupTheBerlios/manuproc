@@ -1,4 +1,4 @@
-// $Id: PreisListe.h,v 1.16 2005/05/18 12:40:50 jacek Exp $
+// $Id: PreisListe.h,v 1.17 2005/11/25 12:46:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -81,9 +81,10 @@ class cH_PreisListe : public Handle<const PreisListe>
   friend class std::map<int,cH_PreisListe>;
   static PreisListe default_object;
   static bool cH_PreisListe::default_object_ref;
-public:
-  cH_PreisListe() : Handle<const PreisListe>(&default_object) {}
   cH_PreisListe(const PreisListe *p) : Handle<const PreisListe>(p) {}
+  cH_PreisListe() : Handle<const PreisListe>(&default_object) {}    
+  
+public:
   cH_PreisListe(PreisListe::ID id);
 };
 

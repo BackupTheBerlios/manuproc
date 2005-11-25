@@ -1,4 +1,4 @@
-// $Id: AufEintrag_ro.cc,v 1.13 2005/10/11 15:16:14 christof Exp $
+// $Id: AufEintrag_ro.cc,v 1.14 2005/11/25 12:46:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -41,14 +41,14 @@ AufEintrag::AufEintrag(const AufEintragBase &aeb, mengen_t _bestellt,
  letztePlanInstanz(ppsInstanzID::None),
  maxPlanInstanz(),
  preis(_preis),
- rabatt(_rabatt),
+ rabatt(_rabatt),provsatz(-1),
  kdnr(_kdnr),
  youraufnr(_youraufnr),
  disponr(),
  auftragstatus(_aufstatus), 
  dispoentrynr(),
  prozess(Prozess::default_id),
- preisliste(_preisliste),provsatz(-1),
+ preisliste(_preisliste),
  tmp_geliefert()
 {
 }
@@ -63,9 +63,10 @@ AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr,
  artikel(_artikel),
  entrystatus(_entrystatus),
  lieferdatum(_lieferdatum),
- lasteditdate_uid(),
+ lasteditdate_uid(),provsatz(-1),
  auftragstatus(_entrystatus),
- prozess(Prozess::default_id),provsatz(-1),
+ prozess(Prozess::default_id),
+ preisliste(PreisListe::none_id),
  tmp_geliefert()
 {}
 	
@@ -103,8 +104,9 @@ bool AufEintrag::allesOK() const
 }
 
 AufEintrag::AufEintrag(const AufEintragBase &aebb) throw (SQLerror,NoAEB_Error)
-  : AufEintragBase(aebb), artikel(),
-    prozess(Prozess::default_id),provsatz(-1),
+  : AufEintragBase(aebb), artikel(),provsatz(-1),
+    prozess(Prozess::default_id),
+	 preisliste(PreisListe::none_id),
 	tmp_geliefert()
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,aebb);

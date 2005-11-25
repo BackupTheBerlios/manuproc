@@ -66,12 +66,15 @@ void PreisListeFull::load_preisliste(bool with_artbez,
     for(;bezit!=bezend;++bezit,++idx)
     {
 #ifndef USE_KOMPONENTE
-       bezkomps+=" atoi(b."+(*bezit).spaltenname+") as "+(*bezit).spaltenname+",";
-       bezorder+=" "+(*bezit).spaltenname+",";
+       bezkomps+=" b."+(*bezit).spaltenname+" as "+(*bezit).spaltenname+",";
+       bezorder+=" atoi("+(*bezit).spaltenname+"),";
 #else /* USE_KOMPONENTE */
        bezkomps+="artikelkomponente(id,"+itos(at.Id())+","+itos(signifikanz)
 		+","+itos(idx)+"),";
+//Ich denke nicht daß Du Dir darüber gedanken gemacht hast. JJ
+// zu mal es bis her nicht übersetzt hat. Es gab kein(;)
        bezorder+=itos(idx)+",";
+
 #endif /* USE_KOMPONENTE */
        bez_columns.push_back((*bezit).bezkomptext);
       }
@@ -111,7 +114,7 @@ void PreisListeFull::load_preisliste(bool with_artbez,
           bezkomps+=" b."+(*bezit).spaltenname+",";      
 #else /* USE_KOMPONENTE */
           bezkomps+="artikelkomponente(id,"+itos(at.Id())+","+itos(bez_sign)
-		+","+itos(idx)+"),"
+		+","+itos(idx)+"),";
 #endif /* USE_KOMPONENTE */
           mit_bez=true;
           bez_columns.push_back((*bezit).bezkomptext);}

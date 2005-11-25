@@ -53,13 +53,20 @@ struct index_t
    { return liste<b.liste || (liste==b.liste && art<b.art); }
 };
 
+struct ExtPreis {Preis p; PreisListe::ID pl_parent;
+		 ExtPreis(Preis _p, PreisListe::ID ppl)
+			: p(_p), pl_parent(ppl) {}
+		 ExtPreis() : pl_parent(PreisListe::none_id) {}
+};
 
-class Preis_lseq : public unary_function<std::pair<int,Preis>,bool>
+
+
+class Preis_lseq : public unary_function<std::pair<int,ExtPreis>,bool>
 {
  int bestellmenge;
 public:
  explicit Preis_lseq (const int m) : bestellmenge(m) {}
- bool operator() (const std::pair<int,Preis> &p) const 
+ bool operator() (const std::pair<int,ExtPreis> &p) const 
 	{ return p.first <= bestellmenge; }
 };
 
@@ -70,21 +77,21 @@ struct PreisMindMenge_NotFound : public std::exception
  PreisMindMenge_NotFound(int m) : menge(m) {}
 };
 
+
 struct payload_t
 {  
- typedef std::map<int,Preis> Pmap;
+ typedef std::map<int,ExtPreis> Pmap;
 
    Pmap preis;
    bool errechnet;
    bool gefunden;
    payload_t(bool gef, bool e=true)
    	: errechnet(e), gefunden(gef) {}
-   std::pair<int,Preis> get_preis(int bestellmenge=1) 
+   std::pair<int,ExtPreis> get_preis(int bestellmenge=1) 
 				throw(PreisMindMenge_NotFound)
 	{ Pmap::reverse_iterator p=find_if(preis.rbegin(),preis.rend(),
 			Preis_lseq(bestellmenge));
 	  if(p!=preis.rend()) return (*p);
-//	  else return std::pair<int,Preis>(1,Preis());
 	  else throw PreisMindMenge_NotFound(bestellmenge);
 	}
    payload_t() : errechnet(false),gefunden(false) {}
@@ -118,16 +125,17 @@ Artikelpreis::Artikelpreis(const cH_PreisListe liste,const ArtikelBase &a,
 				int bestellmenge)
 	: errechnet(false), gefunden(false),
 	  gefunden_in(ManuProcEntity<>::none_id),mindestmenge(1),
-	  pl_parent(liste->ParentID())
+	  pl_parent(PreisListe::none_id)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__, 
 	NV("Liste",liste->Id()), NV("Artikel",a), NV("Menge",bestellmenge));
    payload_t *cached=cache.lookup(index_t(liste->Id(),a.Id()));
    if (cached) { try {
-		 std::pair<int,Preis> p=cached->get_preis(bestellmenge);
-		 setPreis(a.Id(),p.second,liste->Id(),
+		 std::pair<int,ExtPreis> p=cached->get_preis(bestellmenge);
+		 setPreis(a.Id(),p.second.p,liste->Id(),
 				cached->errechnet);
 		 mindestmenge=p.first;
 	 	 gefunden=cached->gefunden;
+		 pl_parent=p.second.pl_parent;
 		 }
 		 catch(PreisMindMenge_NotFound &p)
 		   {gefunden=false;
@@ -142,11 +150,11 @@ Artikelpreis::Artikelpreis(const cH_PreisListe liste,const ArtikelBase &a,
     PreisListe::ID plid=liste->RealId();
     
     std::string query("select 0 as priority,");
-    query+=sel_preis+", mindestmenge, preismenge"
+    query+=sel_preis+", mindestmenge, preismenge, kundennr"
 	      	" from artikelpreise where (artikelid,kundennr)=(?,?)";
     if(liste->isDepending())
       {query+=" UNION "
-              "(select 1 as priority,preis,mindestmenge,preismenge"
+              "(select 1 as priority,preis,mindestmenge,preismenge,kundennr"
               " from artikelpreise where (artikelid,kundennr)=("+
               itos(a.Id())+","+itos(liste->Id())+"))"
               " order by mindestmenge,priority";
@@ -164,18 +172,21 @@ Artikelpreis::Artikelpreis(const cH_PreisListe liste,const ArtikelBase &a,
       {  while ((q>>is).good())
          { geldbetrag_t PREIS;
       	   preismenge_t PREISMENGE;
-           int MINDESTMENGE, PRIOR;
+           int MINDESTMENGE, PRIOR, PLSNR;
            is >> PRIOR >> PREIS >> FetchIStream::MapNull(MINDESTMENGE,1) 
-           	>> FetchIStream::MapNull(PREISMENGE,1);
+           	>> FetchIStream::MapNull(PREISMENGE,1) >> PLSNR;
            is.ThrowIfNotEmpty(__FUNCTION__);
+	  PreisListe::ID ppl=liste->isDepending() ? 
+		(PRIOR==0 ? PLSNR : PreisListe::none_id) : PreisListe::none_id;
 	  pyl.preis[MINDESTMENGE]=
-		Preis(PREIS,Waehrung::ID(WAEHRUNG),PREISMENGE);
+		ExtPreis(Preis(PREIS,Waehrung::ID(WAEHRUNG),PREISMENGE),ppl);
 	 }
 
 	  try {
-	  std::pair<int,Preis> p=pyl.get_preis(bestellmenge);
-	  setPreis(a.Id(),p.second,liste->Id(),false);
+	  std::pair<int,ExtPreis> p=pyl.get_preis(bestellmenge);
+	  setPreis(a.Id(),p.second.p,liste->Id(),false);
 	  mindestmenge=p.first;
+          pl_parent=p.second.pl_parent;
 	  }
 	  catch(PreisMindMenge_NotFound &p)
 	    {

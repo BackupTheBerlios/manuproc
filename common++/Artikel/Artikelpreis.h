@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.28 2005/10/24 11:39:39 christof Exp $
+// $Id: Artikelpreis.h,v 1.29 2005/11/25 12:46:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG
  *		 written by Christof Petig
@@ -33,21 +33,21 @@ class Artikelpreis : public Preis
 {	bool errechnet:1;
         bool gefunden:1;
         PreisListe::ID gefunden_in;
-        PreisListe::ID pl_parent;
         ArtikelBase::ID artikel;
         int mindestmenge;
+        PreisListe::ID pl_parent;        
         
 	Preis &getPreis()
 	{  return *(Preis*)this; }
 	void setPreis(const ArtikelBase::ID art, const Preis &p, 
 		PreisListe::ID wo=ManuProcEntity<>::none_id, bool e=false)
 	{  artikel=art; getPreis()=p; errechnet=e; gefunden=true; gefunden_in=wo; 
-	   pl_parent=ManuProcEntity<>::none_id; 
+//	   pl_parent=ManuProcEntity<>::none_id; 
 	}
 	Artikelpreis()
 	: errechnet(false), gefunden(false), gefunden_in(ManuProcEntity<>::none_id),
-	  pl_parent(ManuProcEntity<>::none_id),
-	  mindestmenge(1) 
+	  mindestmenge(1),
+	  pl_parent(ManuProcEntity<>::none_id)
 	{}
 
 	friend Query::Row &operator>>(Query::Row &is,std::pair<int, float> &kg);  
