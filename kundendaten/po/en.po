@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: kundendaten 0.0\n"
 "Report-Msgid-Bugs-To: manuproc-developer-de@berlios.de\n"
-"POT-Creation-Date: 2005-11-11 23:27+0100\n"
+"POT-Creation-Date: 2005-11-15 18:22+0100\n"
 "PO-Revision-Date: 2005-11-12 22:21+0100\n"
 "Last-Translator: Christof Petig <christof@petig-baender.de>\n"
 "Language-Team: english <en@li.org>\n"
@@ -27,7 +27,8 @@ msgstr "new"
 msgid "leeren"
 msgstr "clear"
 
-#: src/windowTop_glade.cc:91 src/window_neue_Kundennummer_glade.cc:76
+#: src/windowTop_glade.cc:91 src/windowTop.cc:234
+#: src/window_neue_Kundennummer_glade.cc:76
 msgid "Gruppe"
 msgstr "group"
 
@@ -406,7 +407,7 @@ msgid ""
 "löschen"
 msgstr ""
 
-#: src/windowTop_glade.cc:463
+#: src/windowTop_glade.cc:463 src/windowTop.cc:90
 msgid "Position"
 msgstr ""
 
@@ -476,6 +477,39 @@ msgstr ""
 
 #: src/windowTop_glade.cc:2260
 msgid "Kundendaten"
+msgstr ""
+
+#: src/windowTop.cc:88
+msgid "Vorname"
+msgstr ""
+
+#: src/windowTop.cc:89
+msgid "Name"
+msgstr ""
+
+#: src/windowTop.cc:226
+msgid "Suchreihenfolge"
+msgstr ""
+
+#: src/windowTop.cc:227
+msgid "Bezeichnung"
+msgstr ""
+
+#: src/windowTop.cc:228
+msgid "Nr"
+msgstr ""
+
+#: src/windowTop.cc:232
+msgid "Nr."
+msgstr ""
+
+#: src/windowTop.cc:233
+#, fuzzy
+msgid "Obergruppe"
+msgstr "group"
+
+#: src/windowTop.cc:235
+msgid "Kommentar"
 msgstr ""
 
 #: src/dialogInfo_glade.cc:64 src/dialogError_glade.cc:64
