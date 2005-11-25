@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.hh,v 1.29 2005/11/25 12:45:58 christof Exp $
+// $Id: ArtikelBox.hh,v 1.30 2005/11/25 15:19:04 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.29 2005/11/25 12:45:58 christof Exp $
+// $Id: ArtikelBox.hh,v 1.30 2005/11/25 15:19:04 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -224,7 +224,7 @@ protected:
  bool determineFocus(guint &sigidx_out, guint &entryidx_out) const;
 
 	SigC::Signal0<void> activate;
-	SigC::Signal1<void,ArtikelBase::ID> new_article_inserted;
+//	SigC::Signal1<void,ArtikelBase::ID> new_article_inserted;
 	SigC::Signal1<void,gpointer> MenueAusgewaehlt;
 
 public:
@@ -264,6 +264,8 @@ public:
 	void show_einheiten_instanz(bool b);
 */	
 	void AddUserMenu(const std::string &text, gpointer data);
+	// sinnvollere Variante ...
+//	sigc::signal0<void> AddUserMenu(const Glib::ustring &text);
 	void ClearUserMenus();
 
 	void EinWarenkorb(PreisListe::ID pid)
@@ -290,7 +292,7 @@ public:
 
 	// ----- Signale -----
 	SigC::Signal0<void> &signal_activate() { return activate; }
-	SigC::Signal1<void,ArtikelBase::ID> &signal_new_article_inserted() { return new_article_inserted; }
+//	SigC::Signal1<void,ArtikelBase::ID> &signal_new_article_inserted() { return new_article_inserted; }
 	SigC::Signal1<void,gpointer> &signal_MenueAusgewaehlt() { return MenueAusgewaehlt; }
 	
 	// nette Dinge für jeden (?)
