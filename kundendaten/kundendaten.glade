@@ -6040,7 +6040,7 @@ löschen</property>
 	  <child>
 	    <widget class="GtkLabel" id="label38">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">Gruppierung</property>
+	      <property name="label" translatable="yes">Gruppenzugehörigkeit</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
 	      <property name="justify">GTK_JUSTIFY_CENTER</property>
