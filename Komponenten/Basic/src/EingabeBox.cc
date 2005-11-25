@@ -1,4 +1,4 @@
-// $Id: EingabeBox.cc,v 1.15 2004/05/06 13:56:16 jacek Exp $
+// $Id: EingabeBox.cc,v 1.16 2005/11/25 16:16:04 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
  *  1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -58,8 +58,10 @@ void EingabeBox::grow(int cols)
       //e->set_usize(30,-1); // make width adjustable, strange
       l->show();
       e->show();
-      attach(*l,newpos,newpos+1,0,1,Gtk::EXPAND|Gtk::SHRINK|Gtk::FILL,Gtk::AttachOptions(0));
-      attach(*e,newpos,newpos+1,1,2,Gtk::EXPAND|Gtk::SHRINK|Gtk::FILL,Gtk::AttachOptions(0));
+      unsigned row=2*(newpos/boxes_per_row);
+      unsigned col=newpos%boxes_per_row;
+      attach(*l,col,col+1,row,row+1,Gtk::EXPAND|Gtk::SHRINK|Gtk::FILL,Gtk::AttachOptions(0));
+      attach(*e,col,col+1,row+1,row+2,Gtk::EXPAND|Gtk::SHRINK|Gtk::FILL,Gtk::AttachOptions(0));
       labels.push_back(l);
       entries.push_back(e);
       // register our grab_focus
@@ -78,8 +80,8 @@ void EingabeBox::grow(int cols)
    check();
 } 
 
-EingabeBox::EingabeBox(int cols)
-	: Gtk::Table(cols), visible_size(0)
+EingabeBox::EingabeBox(unsigned cols,unsigned per_row)
+	: Gtk::Table(cols), visible_size(), boxes_per_row(per_row)
 {  grow(cols);
 //   show();
    gtk_signal_connect_after(GTK_OBJECT(gobj()), "grab_focus",
