@@ -1,4 +1,4 @@
-// $Id: Artikeleingabe.hh,v 1.17 2005/10/30 01:01:47 christof Exp $
+// $Id: Artikeleingabe.hh,v 1.18 2005/11/25 15:24:46 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -122,6 +122,9 @@ class Artikeleingabe : public Artikeleingabe_glade
 //****** neu *******
 	Artikelgruppe aktuelle_gruppe;
 	
+	ArtikelBase artikel_anlegen_neu_vfunc(cH_ExtBezSchema const&s,
+	    std::map<int,std::vector<cH_EntryValue> > const& felder);
+	
         void on_standard_einheit_activate();
         void on_optionmenu_standardinstanz_activate();
         void on_was_tun_activate();
@@ -135,7 +138,13 @@ class Artikeleingabe : public Artikeleingabe_glade
         void on_mindbest_check_toggled();
         void on_mindbestand_activate();
 
-   public: 
+        // call the internal new article code
+        static ArtikelBase new_adaptor(gpointer _this,cH_ExtBezSchema const& s,
+            std::map<int,std::vector<cH_EntryValue> > const& felder);
+        // neuen Artikel anlegen
+        static ArtikelBase Anlegen(gpointer _this,cH_ExtBezSchema const& s,
+            std::map<int,std::vector<cH_EntryValue> > const& felder);
+public: 
        Artikeleingabe(int argc, char **argv);
 };
 

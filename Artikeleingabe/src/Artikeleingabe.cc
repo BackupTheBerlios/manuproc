@@ -1,4 +1,4 @@
-// $Id: Artikeleingabe.cc,v 1.39 2005/10/30 01:01:47 christof Exp $
+// $Id: Artikeleingabe.cc,v 1.40 2005/11/25 15:24:46 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -52,6 +52,9 @@ static ManuProC::Tracer::Environment trace_channel_e("DEBUG",trace_channel);
 Artikeleingabe::Artikeleingabe(int argc, char **argv)
   : leer(cH_ArtikelBezeichnung::Default()), fire_toggles(false) 
 {D("leer->Id() " << leer->Id());
+ artikelbox->AnlegenCall(&Artikeleingabe::new_adaptor,this);
+ artbox_verschmelzen->AnlegenCall(&Artikeleingabe::new_adaptor,this);
+ artikelbox_neu->AnlegenCall(&Artikeleingabe::Anlegen,this);
  artikelbox->show_label(true);
  progressbar->hide();
  toolbar_loeschen->hide();
@@ -89,8 +92,6 @@ Artikeleingabe::Artikeleingabe(int argc, char **argv)
        FOR_EACH_CONST_TAG_OF(i,*part,"content")
          entries.push_back(i->Value());
      }
-//     std::cerr << warengruppe << ':' << schema << ' ' << entries.size() << '\n';
-     top_notebook->set_current_page(0);
      neuenArtikelAnlegen(warengruppe,schema,entries_map);
    }
    catch (std::exception &e)
@@ -825,6 +826,7 @@ void Artikeleingabe::save_edited_artikel2()
   q.Check100();
 }
 
+#ifdef PETIG_EXTENSIONS
 void Artikeleingabe::on_button_verschmelzen_clicked()
 {
   ArtikelBase neu_art = artikelbox->get_value();
@@ -839,7 +841,7 @@ void Artikeleingabe::on_button_verschmelzen_clicked()
   tabellen1.push_back("artbez_0_1");
   tabellen1.push_back("artbez_10_1");
   tabellen1.push_back("artbez_3_1");
-  tabellen1.push_back("artbez_3_10000");
+  tabellen1.push_back("artbez_3_1000");
   tabellen1.push_back("artbez_3_362");
   tabellen1.push_back("artbez_3_629");
   tabellen1.push_back("artbez_3_704");
@@ -899,3 +901,4 @@ void Artikeleingabe::on_button_verschmelzen_clicked()
    }
  tr.commit();
 }
+#endif

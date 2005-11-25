@@ -1,4 +1,4 @@
-// $Id: table_preis.cc,v 1.14 2005/11/04 08:13:38 christof Exp $
+// $Id: table_preis.cc,v 1.15 2005/11/25 15:24:46 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -113,7 +113,7 @@ bool PrRowData::changeValue(guint _seqnr,gpointer _g, const Glib::ustring &newva
           Preis new_preis=Preis(pr.Wert(),pr.getWaehrung(),new_base);
           if (new_preis!=pr)
           { Artikelpreis(make_value(cH_PreisListe(preisliste)),artikelbox->get_value(),
-                    mindestmenge)
+                    artikelbox->get_value(),mindestmenge)
               .changePreis(new_preis,mindestmenge);
             pr=new_preis;
           }
@@ -149,39 +149,7 @@ table_preis::table_preis(GlademmData *gmm_data)
 //      .connect(sigc::mem_fun(*this,&table_preis::edit));
 }
 
-#if 0
-bool table_preis::edit(cH_RowDataBase row,unsigned col,std::string const& val)
-{ try
-  { // ManuProC::parse<int>(val)
-    Handle<const PrRowData> prd=row.cast_dynamic<const PrRowData>();
-    switch (Spalten(col))
-    { case SP_STAFFEL: // alten Preis löschen
-        // neuen Preis anlegen
-        break;
-      case SP_PER:
-        { std::string::size_type bez_size=PrRowData::einheit.Bezeichnung().size();
-          std::string val2=val;
-          if (val2.size()>=bez_size 
-            && val2.substr(val2.size()-bez_size-1,bez_size)==PrRowData::einheit.Bezeichnung())
-            val2.erase(val2.size()-bez_size-1,bez_size);
-          int new_base=0;
-          if (!val2.empty()) new_base=ManuProC::parse<int>(val2);
-          Preis new_preis=Preis(prd->pr.Wert(),prd->pr.getWaehrung(),new_base);
-          if (new_preis!=prd->pr)
           { Artikelpreis(make_value(cH_PreisListe(prd->preisliste)),artikelbox->get_value(),
-                    prd->mindestmenge)
-              .changePreis(new_preis,prd->mindestmenge);
-            const_cast<Preis&>(prd->pr)=new_preis;
-          }
-        }
-        return true;
-    }
-    // return true;
-  } catch (...) {}
-  return false;
-}
-#endif
-
 void table_preis::preis_uebernehmen()
 {try {   
    preis->update();
