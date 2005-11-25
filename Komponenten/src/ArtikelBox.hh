@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.hh,v 1.27 2005/11/21 18:23:46 christof Exp $
+// $Id: ArtikelBox.hh,v 1.28 2005/11/25 12:45:47 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.27 2005/11/21 18:23:46 christof Exp $
+// $Id: ArtikelBox.hh,v 1.28 2005/11/25 12:45:47 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -293,5 +293,9 @@ public:
 	
 	// nette Dinge für jeden (?)
 	static std::string Tabellenname(cH_ExtBezSchema s);
+	
+	void AnlegenCall(artikel_anlegen_funcptr_t f)
+	{ artikel_anlegen_funcptr=f;
+	}
 };
 #endif
