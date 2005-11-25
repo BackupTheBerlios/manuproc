@@ -1,3 +1,4 @@
+#include <Misc/i18n.h>
 #include "windowTop.hh"
 #include <Aux/itos.h>
 #include "window_neue_bank_anlegen.hh"
@@ -44,7 +45,7 @@ void windowTop::show_details()
 
    Waehrung->set_value(kundendaten->getWaehrung());
    geburtstag->set_value(kundendaten->getGebDatum());
-   geburtstag->setLabel("Geburtstag");
+   geburtstag->setLabel(_("Geburtstag"));
 
    checkbutton_zeilenrabatt->set_active(kundendaten->zeilenrabatt());
    checkbuttonLieferAdr->set_active(kundendaten->isInGrp(KundengruppeID::Lieferadresse));
@@ -101,8 +102,8 @@ void windowTop::on_entry_blz_activate()
  int bank_index = fill_bank_bei(blz);
  if (bank_index==0 && blz!=0) 
   {
-    label_speichern->set_text("WARNUNG: Bankleitzahl unbekannt");
-    std::string st = "Bankleitzahl unbekannt, soll eine neue Bank angelegt werden?";
+    label_speichern->set_text(_("WARNUNG: Bankleitzahl unbekannt"));
+    std::string st = _("Bankleitzahl unbekannt, soll eine neue Bank angelegt werden?");
     manage(new window_neue_bank_anlegen(this,st,blz));
   }
  else  

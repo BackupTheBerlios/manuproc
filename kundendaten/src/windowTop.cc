@@ -1,5 +1,6 @@
 // $Id$
 
+#include <Misc/i18n.h>
 #include "windowTop.hh"
 #include "MyMessage.h"
 #include <gtkmm/main.h>
@@ -84,9 +85,9 @@ windowTop::windowTop()
 
   KontaktStore=Gtk::ListStore::create(kontakt_cols);
   clistPersonenListe->set_model(KontaktStore);
-  clistPersonenListe->append_column("Vorname",kontakt_cols.name);
-  clistPersonenListe->append_column("Name",kontakt_cols.name2);
-  clistPersonenListe->append_column("Position",kontakt_cols.position);
+  clistPersonenListe->append_column(_("Vorname"),kontakt_cols.name);
+  clistPersonenListe->append_column(_("Name"),kontakt_cols.name2);
+  clistPersonenListe->append_column(_("Position"),kontakt_cols.position);
   clistPersonenListe->get_selection()->signal_changed().connect(SigC::slot(*this, 
        &windowTop::on_clistPersonenListe_selection_changed));
 }
@@ -222,16 +223,16 @@ void windowTop::clear_entrys()
 void windowTop::setTitles()
 {
  std::vector<std::string> preis;
- preis.push_back("Suchreihenfolge");
- preis.push_back("Bezeichnung");
- preis.push_back("Nr");
+ preis.push_back(_("Suchreihenfolge"));
+ preis.push_back(_("Bezeichnung"));
+ preis.push_back(_("Nr"));
  SonderPreislisteTree->setTitles(preis);
  
  std::vector<std::string> grp_titel(alle_gruppen->Cols());
- grp_titel[Data_Gruppe::GRP_ID]="Nr.";
- grp_titel[Data_Gruppe::GRP_OBID]="Obergruppe";
- grp_titel[Data_Gruppe::GRP_BEZ]="Gruppe";
- grp_titel[Data_Gruppe::GRP_KOMM]="Kommentar"; 
+ grp_titel[Data_Gruppe::GRP_ID]=_("Nr.");
+ grp_titel[Data_Gruppe::GRP_OBID]=_("Obergruppe");
+ grp_titel[Data_Gruppe::GRP_BEZ]=_("Gruppe");
+ grp_titel[Data_Gruppe::GRP_KOMM]=_("Kommentar"); 
  alle_gruppen->setTitles(grp_titel); 
  gewaehlte_gruppen->setTitles(grp_titel);  
 }

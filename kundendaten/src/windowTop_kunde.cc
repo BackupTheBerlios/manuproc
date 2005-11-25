@@ -1,3 +1,4 @@
+#include <Misc/i18n.h>
 #include "windowTop.hh"
 #include "window_neue_Kundennummer.hh"
 #include <Gtk_OStream.h>
@@ -78,8 +79,8 @@ std::cout << "activated";
 
 void windowTop::on_button_kunde_loeschen_clicked()
 {
-  std::string st = "Soll der Kunde '"+kundendaten->firma()+"' mit \n"
-   +"der Kundennummer '"+itos(kundendaten->getNummer())+"' wirklich gelöscht werden?";
+  std::string st = _("Soll der Kunde '")+kundendaten->firma()+_("' mit \n"
+   "der Kundennummer '")+itos(kundendaten->getNummer())+_("' wirklich gelöscht werden?");
   manage(new window_Dialog_Bestaetigen(this,st));
 }
 

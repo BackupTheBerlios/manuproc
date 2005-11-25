@@ -47,7 +47,6 @@ int main(int argc, char **argv)
    try {
 
       Petig::dbconnect(conn);  
-      Query ("set names 'utf-8'");
 
       class windowTop *w=new class windowTop();
 
@@ -60,12 +59,9 @@ int main(int argc, char **argv)
    {  std::cerr << e << '\n';
       return 1;
    }
-   
    catch (Petig::Datumsfehler &df)
    {  std::cerr << df << '\n';
       return 1;
    }   
-
    return 0;
-
 }
