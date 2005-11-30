@@ -67,7 +67,7 @@ void PreisListeFull::load_preisliste(bool with_artbez,
     {
 #ifndef USE_KOMPONENTE
        bezkomps+=" b."+(*bezit).spaltenname+" as "+(*bezit).spaltenname+",";
-       bezorder+=" atoi("+(*bezit).spaltenname+"),";
+       bezorder+=" "+(*bezit).spaltenname+",";
 #else /* USE_KOMPONENTE */
        bezkomps+="artikelkomponente(id,"+itos(at.Id())+","+itos(signifikanz)
 		+","+itos(idx)+"),";
