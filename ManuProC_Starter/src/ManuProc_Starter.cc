@@ -20,6 +20,10 @@ ManuProc_Starter::ManuProc_Starter(void) throw(SQLerror)
      dbcapability->isWhite(DBCapability::ColAct(wc,DBCapability::EXECUTE)));
  fibu_alt_start->set_sensitive(
      dbcapability->isWhite(DBCapability::ColAct(wc,DBCapability::EXECUTE)));     
+
+ DBCapability::WhiteColumn taxbird("taxbird","");
+ taxbird_start->set_sensitive(
+	dbcapability->isWhite(DBCapability::ColAct(taxbird,DBCapability::EXECUTE)));
      
  DBCapability::WhiteColumn wc1("vertrieb","");
  vertrieb_start->set_sensitive(
