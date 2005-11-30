@@ -1,4 +1,4 @@
-/* $Id: ArtikelBaum.h,v 1.22 2003/11/14 15:08:43 christof Exp $ */
+/* $Id: ArtikelBaum.h,v 1.23 2005/11/30 22:30:14 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -73,10 +73,14 @@ private:
 	typedef CacheStatic<ID,zusammensetzung_t> cache_t;
 	static cache_t cache;
 
+ bool bez_sorted; // nach artikelbezeichnung(altartikelid)
 public:
  ArtikelBaum() : tiefe(NoDepth) {}
- ArtikelBaum(const ArtikelBase &stamp) : tiefe(NoDepth)
+ ArtikelBaum(const ArtikelBase &stamp) : tiefe(NoDepth), bez_sorted(false)
          {  setID(stamp.Id()); }
+ ArtikelBaum(const ArtikelBase &stamp, bool sted) 
+ 		: tiefe(NoDepth), bez_sorted(sted)
+         {  setID(stamp.Id()); }         
 
 private:
 // hier passiert alles, ungeschickter Name

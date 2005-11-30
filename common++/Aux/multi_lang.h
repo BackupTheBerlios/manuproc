@@ -125,6 +125,7 @@ public:
 		TXT_MAHNUNG=113,
 		TXT_BETRAG=114,
 		TXT_MFG=115,	// Mit freundlichen Gr.
+		TXT_GROESSE=116,
 	     } LangTXT;
 	     
  // id's >=  CUSTOMER_IDS werden nicht im Konstruktor, sondern on demand geladen

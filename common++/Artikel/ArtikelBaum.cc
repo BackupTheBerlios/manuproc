@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.cc,v 1.16 2005/10/14 12:12:26 christof Exp $
+// $Id: ArtikelBaum.cc,v 1.17 2005/11/30 22:30:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -45,9 +45,14 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
  if (cached) zusammensetzung=*cached;
  else
  {  zusammensetzung.clear();
-    static PreparedQuery pq("select az.altartikelid, az.prozessid, az.menge "
+    std::string pqs="select az.altartikelid, az.prozessid, az.menge "
  	"from artikelzusammensetzung az "
-	"where id=? order by az.altartikelid");
+	"where id=? order by";
+    if(bez_sorted) pqs+=" artikelbezeichnung(altartikelid) ";
+    else pqs+=" az.altartikelid";
+
+    static PreparedQuery pq(pqs);
+
     (Query(pq) << Id()).FetchArray(zusammensetzung);
 #if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
     try {  //ArtikelStamm AS(*this);
