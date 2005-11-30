@@ -1,7 +1,7 @@
-SUBDIRS= DynamicEnums Misc BaseObjects ostream Artikel Auftrag Bank \
+SUBDIRS= . DynamicEnums Misc BaseObjects ostream Artikel Auftrag Bank \
 		ExtBezSchema Ketten \
 		Kunde Lieferschein Material Lager Faeden Instanzen \
-		Vertrieb . Programme tests po
+		Vertrieb Programme tests po
 
 	
 lib_LIBRARIES=libcommon++.a
