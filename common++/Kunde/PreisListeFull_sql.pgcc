@@ -73,6 +73,7 @@ void PreisListeFull::load_preisliste(bool with_artbez,
 		+","+itos(idx)+"),";
 //Ich denke nicht daß Du Dir darüber gedanken gemacht hast. JJ
 // zu mal es bis her nicht übersetzt hat. Es gab kein(;)
+// und order by passt nicht zu der UNION
        bezorder+=itos(idx)+",";
 
 #endif /* USE_KOMPONENTE */
