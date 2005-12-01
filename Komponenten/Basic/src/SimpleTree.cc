@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.81 2005/11/21 18:23:46 christof Exp $
+// $Id: SimpleTree.cc,v 1.82 2005/12/01 18:36:40 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -56,8 +56,6 @@ void SimpleTree_Basic::attach()
    if (sts->expandieren_bool && sts->ShowDeep().Value())
    {  aufklappen(this,Gtk::TreeModel::Path(),get_model()->children(),sts->ShowDeep().Value());
    }
-// (gtk_tree_view_set_headers_clickable): assertion `tree_view->priv->model != NULL'
-   set_headers_clickable();
 }
 
 //void SimpleTree_Basic::on_redisplay()
@@ -140,7 +138,7 @@ void SimpleTree_Basic::on_spalten_geaendert()
 #endif      
    }
 // (gtk_tree_view_set_headers_clickable): assertion `tree_view->priv->model != NULL'
-//   set_headers_clickable(); 
+   set_headers_clickable(); 
 }
 
 void SimpleTree_Basic::on_title_clicked(unsigned nr)
