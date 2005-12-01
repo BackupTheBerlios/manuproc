@@ -1,4 +1,4 @@
-// $Id: window1.hh,v 1.2 2002/07/05 12:36:56 christof Exp $
+// $Id: window1.hh,v 1.3 2005/12/01 18:36:28 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -37,6 +37,7 @@ class window1 : public window1_glade
         friend class window1_glade;
         void on_Beenden_activate();
 	void onRowSelect(int row, int col, GdkEvent *b);
+	void on_neuordnen_activate();
 
 public:
 	window1();

@@ -7,7 +7,7 @@ noinst_PROGRAMS = main
 BUILT_SOURCES=$(LINKS)
 
 LINKS=MyNode.cc MyNode.h MyRowData.hh MyTreeBase.cc \
-	MyTreeBase.hh MyValue.h dwhouse.glade main.cc window1.cc \
+	MyTreeBase.hh MyValue.h main.cc window1.cc \
 	window1.hh window1_glade.cc window1_glade.hh
 
 $(LINKS):

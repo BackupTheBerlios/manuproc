@@ -1,4 +1,4 @@
-// $Id: MyTreeBase.cc,v 1.7 2005/12/01 18:36:17 christof Exp $
+// $Id: MyTreeBase.cc,v 1.8 2005/12/01 18:36:27 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,12 +18,18 @@
  */
 
 
-#include"MyTreeBase.hh"
-#include"MyRowData.hh"
-#include"MyNode.h"
+#include "MyTreeBase.hh"
+#include "MyRowData.hh"
+#include "MyNode.h"
 
-void MyTreeBase::fillDataVec()
+Handle<TreeRow> MyTreeBase::NewNode(const Handle<const TreeRow>&suminit)
 {
+ return new  MyNode(suminit);
+}
+
+MyTreeBase::MyTreeBase(guint cols)
+ :SimpleTree(cols)
+{ std::vector<cH_RowDataBase> datavec;
  datavec.push_back(cH_MyRowData(1,3,3,10,11)); 
  datavec.push_back(cH_MyRowData(2,2,3,10,11)); 
  datavec.push_back(cH_MyRowData(2,2,4,10,11)); 
@@ -31,26 +37,13 @@ void MyTreeBase::fillDataVec()
  datavec.push_back(cH_MyRowData(3,2,3,10,11)); 
  datavec.push_back(cH_MyRowData(3,2,4,11,11)); 
  datavec.push_back(cH_MyRowData(4,2,4,10,11)); 
-
+ (getModel())=datavec;
+ std::vector<std::string> titles(5);
+ titles[0]="Attribut 1"; 
+ titles[1]="Attribut 2"; 
+ titles[2]="Attribut 3"; 
+ titles[3]="Summe 1"; 
+ titles[4]="Summe 2"; 
+ setTitles(titles);
+ set_NewNode(&MyTreeBase::NewNode);
 }
-
-
-const std::string MyTreeBase::getColTitle(guint col) const
-{   
- switch(col)
-  {
-        case 0 : return "Attribut 1"; break;
-        case 1 : return "Attribut 2"; break;
-        case 2 : return "Attribut 3"; break;
-        case 3 : return "Summe 1"; break;
-        case 4 : return "Summe 2"; break;
-        default : return "-";
-  } 
-}
-
- 
-TreeRow *MyTreeBase::NewNode(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data,bool expand)
-{
- return new  MyNode(deep, v, child_s_deep,child_s_data,expand);
-}
-

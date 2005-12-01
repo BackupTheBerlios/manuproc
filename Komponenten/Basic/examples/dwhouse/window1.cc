@@ -1,4 +1,4 @@
-// $Id: window1.cc,v 1.4 2005/12/01 18:36:17 christof Exp $
+// $Id: window1.cc,v 1.5 2005/12/01 18:36:28 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,13 +17,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// generated 2001/3/2 16:01:13 CET by jacek@mimi.
-// using glademm V0.5_11f_cvs
-//
-// newer (non customized) versions of this file go to window1.cc_new
-
-// This file is for your program, I won't touch it again!
-
 #include "config.h"
 #include "window1.hh"
 #include <gtkmm/main.h>
@@ -37,10 +30,10 @@ void window1::on_Beenden_activate()
 
 window1::window1()
 {
- treebase->signal_select_row().connect(SigC::slot(*this,&window1::onRowSelect));
+// treebase->signal_select_row().connect(SigC::slot(*this,&window1::onRowSelect));
 }
 
-
+#if 0
 void window1::onRowSelect(int row, int col, GdkEvent *b)
 {
  TCListRow_API *tclapi=(TCListRow_API*)(treebase->get_row_data(row));
@@ -49,4 +42,7 @@ void window1::onRowSelect(int row, int col, GdkEvent *b)
  std::cerr << typeid(*selectedrow).name() << '\n';
  std::cerr << selectedrow->Leaf() << '\n';
 }
+#endif
 
+void window1::on_neuordnen_activate()
+{}

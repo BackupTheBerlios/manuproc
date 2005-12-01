@@ -1,4 +1,4 @@
-// $Id: MyTreeBase.hh,v 1.7 2005/12/01 18:36:17 christof Exp $
+// $Id: MyTreeBase.hh,v 1.8 2005/12/01 18:36:27 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,22 +17,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include"treebase.h"
-#include"MyRowData.hh"
+#include <SimpleTree.hh>
+#include "MyRowData.hh"
 
-class MyTreeBase : public TreeBase
+class MyTreeBase : public SimpleTree
 {
 // int custom_data; // Kundennr z.B.
+ static Handle<TreeRow> NewNode(const Handle<const TreeRow>&);
 
 public:
- virtual void fillDataVec();
+ MyTreeBase(guint cols);
 
- MyTreeBase(guint cols, guint attr=0):TreeBase(cols,attr)
-	{ // make sure this is not called if you derive this from class !
-	  init(); 
-	}
-
- TreeRow *NewNode(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data,bool expand);
-
- const std::string getColTitle(guint seq) const;
 };

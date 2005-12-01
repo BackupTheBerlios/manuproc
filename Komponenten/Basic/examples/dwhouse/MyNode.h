@@ -1,4 +1,4 @@
-/* $Id: MyNode.h,v 1.6 2005/12/01 18:36:17 christof Exp $ */
+/* $Id: MyNode.h,v 1.7 2005/12/01 18:36:27 christof Exp $ */
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,7 +18,7 @@
  */
 
 
-#include"tclistnode.h"
+#include <TreeRow.h>
 #include"MyRowData.hh"
 
 class MyNode : public TreeRow
@@ -28,11 +28,12 @@ class MyNode : public TreeRow
 
 public:
 
- MyNode(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand)
- 	: TreeRow(deep,v,child_s_deep,child_s_data,expand), sum1(0), sum2(0) 
+ MyNode(const Handle<const TreeRow> &suminit)
+ 	: sum1(), sum2() 
  {}
  virtual void cumulate(const cH_RowDataBase &rd);
- virtual const cH_EntryValue Value(guint col, gpointer) const;
+ virtual void deduct(const cH_RowDataBase &rd);
+ virtual cH_EntryValue Value(guint col, gpointer) const;
 
  int Sum1() const { return sum1; }
  int Sum2() const { return sum2; }

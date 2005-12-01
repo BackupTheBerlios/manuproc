@@ -1,4 +1,4 @@
-// $Id: MyRowData.hh,v 1.4 2005/12/01 18:36:17 christof Exp $
+// $Id: MyRowData.hh,v 1.5 2005/12/01 18:36:27 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -34,7 +34,7 @@ public:
  MyRowData(int a1,int a2, int a3, int d1 ,int d2)
 	: attr1(a1),attr2(a2),attr3(a3),data1(d1),data2(d2) {}
 	
- virtual const cH_EntryValue Value(guint _seqnr,gpointer x) const
+ virtual cH_EntryValue Value(guint _seqnr,gpointer x) const
 	{switch(_seqnr)
 		{case 0 : return cH_MyValue(attr1); break;
 		 case 1 : return cH_MyValue(attr2); break;
