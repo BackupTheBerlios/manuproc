@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.33 2005/11/25 12:45:58 christof Exp $
+// $Id: ArtikelBox.cc,v 1.34 2005/12/01 18:36:18 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -553,44 +553,6 @@ void ArtikelBox::show_label(bool b)
   // vielleich einfach Menu neu aufbauen, dann kann label dort lokal bleiben
   label->set_active(labelbool);
 }
-
-/*
-void ArtikelBox::set_EinheitenInstanz(Gtk::CheckMenuItem *einheiten_instanz)
-{
-  einheiten_instanzen_bool=einheiten_instanz->get_active();
-  show_einheiten_instanz(einheiten_instanzen_bool);
-}
-
-void ArtikelBox::show_einheiten_instanz(bool b)
-{
-  einheiten_instanzen_bool=b;
-  if(einheiten_instanzen_bool) EIBox->show();
-  else                         EIBox->hide();
-  // vielleich einfach Menu neu aufbauen, dann kann label dort lokal bleiben
-  einheiten_instanz->set_active(einheiten_instanzen_bool);
-}
-*/
-#ifdef PETIG_EXTENSIONS
-double ArtikelBox::get_menge_from_artikelbox()
-{
-  std::string aufmachung;
-  for (unsigned j=0;j<combos.size();++j)
-   for (unsigned i=0; i<combos[j].size(); ++i)
-    if (labels[j][i]->get_text()==schema->JumboTitel())
-       aufmachung=combos[j][i]->get_text();
-  std::string smenge;
-  for (std::string::const_iterator i=aufmachung.begin();std_neq(i,aufmachung.end());++i)
-   {
-     char c=*i;
-// KOMMA ist erlaubt MAT
-     if (c=='0'||c=='1'||c=='2'||c=='3'||c=='4'||c=='5'||c=='6'||c=='7'||c=='8'||c=='9'||c=='.'||c==',')
-       { if(c==',') c='.'; smenge += c; }
-     else break;     
-   }
-  double menge=atof(smenge.c_str());
-  return menge;
-}
-#endif
 
 void ArtikelBox::Einschraenken(const std::string &e, bool an)
 {  einschraenkung=e;

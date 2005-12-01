@@ -1,4 +1,4 @@
-// $Id: MyRowData.hh,v 1.3 2002/07/05 12:36:56 christof Exp $
+// $Id: MyRowData.hh,v 1.4 2005/12/01 18:36:17 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,7 +21,7 @@
 #ifndef KOMPONENTENEXAMP_MYROWDATA
 #define KOMPONENTENEXAMP_MYROWDATA
 
-#include"rowdata.h"
+#include <RowDataBase.h>
 #include"MyValue.h"
 
 class MyRowData : public RowDataBase

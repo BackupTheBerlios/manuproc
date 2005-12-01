@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.16 2005/11/15 13:18:38 christof Exp $
+# $Id: configure.in,v 1.17 2005/12/01 18:36:18 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(Komponenten, 0.4.0, [manuproc-developer-de@berlios.de])
@@ -51,4 +51,4 @@ AC_SUBST(KOMPONENTEN2_LIBS)
 AC_OUTPUT(Makefile src/Makefile examples/Makefile  po/Makefile.in\
 	examples/artikelbox/Makefile examples/eingabe/Makefile 
 	examples/tree_simplest/Makefile examples/MVC/Makefile
-	examples/newtree/Makefile)
+	examples/newtree/Makefile examples/dwhouse/Makefile)

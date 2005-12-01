@@ -1,4 +1,4 @@
-// $Id: window1.cc,v 1.3 2002/07/05 12:36:56 christof Exp $
+// $Id: window1.cc,v 1.4 2005/12/01 18:36:17 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,7 +26,7 @@
 
 #include "config.h"
 #include "window1.hh"
-#include <gtk--/main.h>
+#include <gtkmm/main.h>
 
 #include<typeinfo>
 
@@ -37,7 +37,7 @@ void window1::on_Beenden_activate()
 
 window1::window1()
 {
- treebase->select_row.connect(SigC::slot(this,&window1::onRowSelect));
+ treebase->signal_select_row().connect(SigC::slot(*this,&window1::onRowSelect));
 }
 
 

@@ -1,4 +1,4 @@
-// $Id: MyTreeBase.cc,v 1.6 2002/07/05 12:36:56 christof Exp $
+// $Id: MyTreeBase.cc,v 1.7 2005/12/01 18:36:17 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -49,7 +49,7 @@ const std::string MyTreeBase::getColTitle(guint col) const
 }
 
  
-TCListNode *MyTreeBase::NewNode(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data,bool expand)
+TreeRow *MyTreeBase::NewNode(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data,bool expand)
 {
  return new  MyNode(deep, v, child_s_deep,child_s_data,expand);
 }
