@@ -1,4 +1,4 @@
-// $Id: Optionmenu_Kundengruppe.cc,v 1.4 2005/12/06 07:18:45 christof Exp $
+// $Id: Optionmenu_Kundengruppe.cc,v 1.5 2005/12/06 07:18:52 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -48,7 +48,7 @@ void Optionmenu_Kundengruppe::fuelle_menu()
 }
 
 void Optionmenu_Kundengruppe::register_value(Kundengruppe::ID id, std::string const& name)
-{ Gtk::OStream os(this);
+{ Gtk::OStream os(this,std::ios::app);
   os << dbgettext(name);
   os.flush(gpointer(id));
 }
