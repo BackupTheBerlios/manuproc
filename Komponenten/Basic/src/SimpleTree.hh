@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.60 2005/12/06 07:18:17 christof Exp $
+// $Id: SimpleTree.hh,v 1.61 2005/12/06 07:18:59 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -275,6 +275,10 @@ public:
  void scroll_to(const cH_RowDataBase &data,gfloat where=-1);
  
  cH_RowDataBase getMenuContext(bool prefer_selection=true) const;
+
+ // selected nodes select the matching leaves 
+ void nodes_select_leaves();
+ void select_leaves(Gtk::TreeModel::Path const& p);
 };
 
 #endif

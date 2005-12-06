@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.84 2005/12/06 07:18:29 christof Exp $
+// $Id: SimpleTree.cc,v 1.85 2005/12/06 07:18:59 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -543,4 +543,25 @@ cH_RowDataBase SimpleTree::getMenuContext(bool prefer_selection) const
 { if (prefer_selection && get_selection()->count_selected_rows())
     return getFirstSelection();
   return menuContext;
+}
+
+void SimpleTree::select_leaves(Gtk::TreeModel::Path const& p)
+{ Gtk::TreeModel::iterator it=get_model()->get_iter(p);
+  Gtk::TreeModel::Children::size_type csz=it->children().size();
+  if (csz)
+  { Gtk::TreeModel::Path p2=p;
+    p2.down();
+    while (csz)
+    { get_selection()->select(p2);
+      select_leaves(p2);
+      p2.next();
+    }
+  }
+}
+
+void SimpleTree::nodes_select_leaves()
+{ Gtk::TreeSelection::ListHandle_Path ld=get_selection()->get_selected_rows();
+  for (Gtk::TreeSelection::ListHandle_Path::const_iterator i=ld.begin();i!=ld.end();++i)
+  { select_leaves(*i);
+  }
 }
