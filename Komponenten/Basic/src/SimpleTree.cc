@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.86 2005/12/06 08:44:11 christof Exp $
+// $Id: SimpleTree.cc,v 1.87 2005/12/06 08:44:47 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -550,7 +550,8 @@ void SimpleTree::select_leaves(Gtk::TreeModel::Path const& p)
   if (!bool(it)) return;
   Gtk::TreeModel::Children::size_type csz=it->children().size();
   if (csz)
-  { Gtk::TreeModel::Path p2=p;
+  { expand_row(p,false); // ich muss aufklappen, weil das selektieren sonst nicht geht
+    Gtk::TreeModel::Path p2=p;
     p2.down();
     while (csz)
     { get_selection()->select(p2);
