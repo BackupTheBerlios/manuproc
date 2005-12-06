@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.82 2005/12/01 18:36:40 christof Exp $
+// $Id: SimpleTree.cc,v 1.83 2005/12/06 07:18:17 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -257,6 +257,13 @@ cH_RowDataBase SimpleTree::getSelectedRowDataBase() const
    else throw noRowSelected(); // oder multipleRowsSelected()
 }
 
+cH_RowDataBase SimpleTree::getFirstSelection() const throw()
+{  if (!get_selection()->count_selected_rows()) return cH_RowDataBase();
+   Gtk::TreeModel::Path path=*(get_selection()->get_selected_rows().begin());
+   Gtk::TreeModel::iterator i=getStore()->get_iter(path);
+   return (*i)[maintree_s->getStore()->m_columns.leafdata];
+}
+
 
 cH_RowDataBase SimpleTree::getCursorRowDataBase() const
 // actually it does not throw multipleRowsSelected
@@ -391,14 +398,14 @@ void SimpleTree_Basic::fillMenu()
 }
 
 bool SimpleTree_Basic::MouseButton(GdkEventButton *event)
-{  
+{  Gtk::TreeModel::Path path;
+   Gtk::TreeViewColumn *col(0);
+   int cell_x(0),cell_y(0);
+   bool res=get_path_at_pos(int(event->x),int(event->y),path,col,cell_x,cell_y);
+
    if (event->type == GDK_BUTTON_PRESS && event->button==1 && button_press_vfunc
        && event->window ==get_bin_window()->gobj())
-   {  Gtk::TreeModel::Path path;
-      Gtk::TreeViewColumn *col(0);
-      int cell_x(0),cell_y(0);
-      bool res=get_path_at_pos(int(event->x),int(event->y),path,col,cell_x,cell_y);
-      if (!res || !col) return false;
+   {  if (!res || !col) return false;
       Gtk::TreeModel::iterator it=getTreeModel()->get_iter(path);
       if (!it) return false;
       if ((*it)[getStore()->m_columns.childrens_deep]) return false; // node
@@ -411,7 +418,14 @@ bool SimpleTree_Basic::MouseButton(GdkEventButton *event)
       return (*button_press_vfunc)(this,(*it)[getStore()->m_columns.leafdata],idx);
    }
    if (event->type == GDK_BUTTON_PRESS && event->button==3  && menu)
-   {  menu->popup(event->button,event->time);
+   {  if (res)
+      { Gtk::TreeModel::iterator it=getTreeModel()->get_iter(path);
+        if (!!it) 
+          menuContext=(*it)[getStore()->m_columns.leafdata];
+        else menuContext=cH_RowDataBase();
+      }
+      else menuContext=cH_RowDataBase();
+      menu->popup(event->button,event->time);
       return true;
    }
    return false;
@@ -523,4 +537,10 @@ sigc::signal0<void> &SimpleTree_Basic::addMenuItem(Glib::ustring const& text)
   { add_mitem(menu,text,user_menuitems.back().first.make_slot());
   }
   return user_menuitems.back().first;
+}
+
+cH_RowDataBase SimpleTree::getMenuContext(bool prefer_selection) const
+{ if (prefer_selection && get_selection()->count_selected_rows())
+    return getFirstSelection();
+  return menuContext;
 }

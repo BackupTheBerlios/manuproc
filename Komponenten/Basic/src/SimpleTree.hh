@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.59 2005/11/21 18:23:46 christof Exp $
+// $Id: SimpleTree.hh,v 1.60 2005/12/06 07:18:17 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -98,10 +98,11 @@ private:
 	SigC::Signal1<void,Handle<const TreeRow> > _node_selected;
 	SigC::Signal0<void> _reorder;
 	SigC::Signal3<void,const cH_RowDataBase &,int,bool&> clicked_sig;
-	
-//	std::vector<gfloat> alignment;
-//	std::vector<bool> resizeable;	
 
+protected:	
+	cH_RowDataBase menuContext;
+
+private:
         void init();	
 	void on_column_changed(guint nr);
 	void on_selection_changed();
@@ -230,6 +231,8 @@ public:
 
  cH_RowDataBase getSelectedRowDataBase() const
  	throw(noRowSelected,multipleRowsSelected,notLeafSelected);
+ // the easy function if you don't care too much what's selected, please check for null
+ cH_RowDataBase getFirstSelection() const throw();
  cH_RowDataBase getCursorRowDataBase() const
  	throw(noRowSelected,multipleRowsSelected,notLeafSelected);
  std::vector<cH_RowDataBase> getSelectedRowDataBase_vec(bool include_nodes=false) const throw();
@@ -270,43 +273,8 @@ public:
  void ScrollToSelection();
  // 0 is top, 1 is bottom, -1 is dont_care
  void scroll_to(const cH_RowDataBase &data,gfloat where=-1);
+ 
+ cH_RowDataBase getMenuContext(bool prefer_selection=true) const;
 };
 
-#if 0
-#include <gtkmm/menu.h>
-#include <gtkmm/checkmenuitem.h>
-
-class SimpleTree : public Gtk::TreeView
-{Gtk::CheckMenuItem *titles_menu;
- bool titles_bool:1; 
- 
- void Titles(Gtk::CheckMenuItem *titles);
- void Auffuellen(Gtk::CheckMenuItem *auffuellen);
- void Expandieren(Gtk::CheckMenuItem *expandieren);
- void summen_knoepfe();
- void on_neuordnen_clicked();
- void on_zuruecksetzen_clicked();
- void on_abbrechen_clicked();
- void on_row_select(int row, int col, GdkEvent* b);
- gint MouseButton(GdkEventButton *event);
- void welche_Spalten(guint i,const Gtk::CheckMenuItem *sp);
- void show_or_hide_Spalten();
- void on_click_column(int col);
- bool col_schon_ausgewaehlt(int col);
- void insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
-		 	const cH_RowDataBase &d, sequence_t q,guint deep);
- bool redisplay_recurse(TCListRow_API *a, const RowDataBase *r, guint col);
- void reihenfolge_anzeigen();
- void initDepth(TreeRow *tr, guint depth) const;
- void on_Color(const Gtk::CheckMenuItem *sp);
- 
-protected: 
- // StandardReihenfolge setzen
- virtual void setSequence();
-
-public:
- void show_titles(bool show);
-};
-  
-#endif
 #endif
