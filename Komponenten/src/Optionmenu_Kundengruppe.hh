@@ -1,4 +1,4 @@
-// $Id: Optionmenu_Kundengruppe.hh,v 1.3 2005/12/06 07:17:54 christof Exp $
+// $Id: Optionmenu_Kundengruppe.hh,v 1.4 2005/12/06 07:18:45 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -38,5 +38,6 @@ class Optionmenu_Kundengruppe :  public Gtk::OptionMenu
 
    void set_value(const Kundengruppe::ID &_id);
    Kundengruppe::ID get_value() const;
+   void register_value(Kundengruppe::ID id, std::string const& name);
 };
 #endif
