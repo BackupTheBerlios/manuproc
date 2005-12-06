@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.25 2005/09/08 11:45:14 jacek Exp $
+// $Id: Rechnung.cc,v 1.26 2005/12/06 10:42:47 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -111,7 +111,8 @@ const throw(SQLerror)
 
  if(with_update_on_db)
   {
-   Query("update rechnung set betrag = ?, steuersatz=?"
+   Query("update rechnung set betrag = "
+	" (case when rngart='G' then -1 else 1 end)*abs(?), steuersatz=?"
 	" where rngid = ?") << betrag << stsatz << Id();
    SQLerror::test(__FILELINE__);
   }
