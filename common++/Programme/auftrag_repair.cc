@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.19 2005/11/10 12:10:29 christof Exp $
+// $Id: auftrag_repair.cc,v 1.20 2005/12/13 08:14:32 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -26,7 +26,7 @@
 #include <Auftrag/selFullAufEntry.h>
 #include <Misc/Trace.h>
 
-enum action_bits { b_physical, b_exclude, b_tree, b_raise, b_links, b_minmenge };
+enum action_bits { b_physical, b_exclude, b_tree, b_raise, b_links, b_minmenge, b_lager_dup };
 
 // auf bitmask<action_bits> umstellen;
 enum action_flags { f_none=0 };
@@ -50,6 +50,7 @@ static void usage(const std::string &s)
            "\tC: Es wird sichergestellt, daß nur entweder 0er- oder 2er-Aufträge\n"
            "\t   (pro Instanz,Artikel,Lieferdatum) existieren.\n"
            "\tX: Reparaturen von Zuordnungen+lokalen Einschränkungen\n"
+           "\t1: Löschen von doppelten Lagereinträgen (wegen Artikelumbenennung)\n"
            "\tR: Erhöhen von Produziert-Selbst-Instanzen auf noch benötigte Menge\n"
            "\tL: Löschen von ungültigen Zuordnungen (ohne Quelle oder Ziel)\n"
            "\tD: Löschen von ungültigen Einträgen (Vorsicht)\n"
@@ -121,6 +122,24 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,
 {  AuftragBase::tolerate_inconsistency=true;
    ppsInstanzReparatur RI(I->Id());
    bool alles_ok=true;
+    if (actions&b_lager_dup && I->LagerInstanz())
+    { Transaction tr;
+      Query q("lagerdup","select artikelid,max(zeilennr),count(zeilennr) "
+        "from auftragentry where (instanz,auftragid)=(?,?) "
+        "group by artikelid order by 3 desc");
+      q << I->Id() << AuftragBase::dispo_id;
+      Query::Row i;
+      while ((q >> i).good())
+      { int dummy,znr,count;
+        i >> dummy >> znr >> count;
+        if (count < 2) break;
+        Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
+          << I->Id() << AuftragBase::dispo_id << znr;
+        alles_ok=false;
+      }
+      tr.commit();
+      if (!alles_ok) return alles_ok;
+    }
     if (actions&b_minmenge && I->LagerInstanz())
     {  std::string qstr("select id from artikelstamm "
           // gar keine Lagermenge vorhanden
@@ -273,6 +292,7 @@ int main(int argc,char *argv[])
           if (strchr(optarg,'M')||strchr(optarg,'*')) actions|=b_minmenge;
           if (strchr(optarg,'D')) ppsInstanzReparatur::really_delete=true;
           if (strchr(optarg,'N')) ppsInstanzReparatur::not_strict=true;
+          if (strcht(optarg,'1')) actions|=b_lager_dup;
           break;
        case 'd' : database=optarg;break;
        case 'h' : dbhost=optarg;break;
