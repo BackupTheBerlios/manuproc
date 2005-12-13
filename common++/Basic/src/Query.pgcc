@@ -1,4 +1,4 @@
-// $Id: Query.pgcc,v 1.19 2005/11/22 13:04:34 christof Exp $
+// $Id: Query.pgcc,v 1.20 2005/12/13 08:15:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -231,8 +231,8 @@ sqlca.sqlcode=0;
       if (Query::debugging.on) std::cerr << "<NULL>,";
     }
     else
-    { values[idx]=i->data();
-      length[idx]=i->size();
+    { values[idx]=i->c_str();
+      length[idx]=0; // only used for binary, i->size();
       types[idx]=params.type_of(i);
       binary[idx]=false;
       if (Query::debugging.on) std::cerr << *i << ",";
