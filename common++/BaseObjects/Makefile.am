@@ -22,3 +22,5 @@ BUILT_SOURCES=$(LINKS)
 
 $(LINKS): 
 	-ln -sf ../Basic/src/$@ .
+
+links: $LINKS

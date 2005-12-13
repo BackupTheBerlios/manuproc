@@ -21,8 +21,8 @@ libcommon___a_LIBADD= \
 
 BUILT_SOURCES=Misc BaseObjects.link
 
-BaseObjects.link:
-	cd BaseObjects ; make Model.h ; cd .. ; touch BaseObjects.link
+BaseObjects.link: BaseObjects/Makefile
+	cd BaseObjects ; make links ; cd .. ; touch BaseObjects.link
 
 Misc:
 	ln -sf Aux Misc
