@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.21 2005/12/13 08:14:48 christof Exp $
+// $Id: auftrag_repair.cc,v 1.22 2005/12/13 08:14:56 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -125,19 +125,23 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,
    bool alles_ok=true;
     if (actions&b_lager_dup && I->LagerInstanz())
     { Transaction tr;
-      Query q("lagerdup","select artikelid,max(zeilennr),count(zeilennr) "
-        "from auftragentry where (instanz,auftragid)=(?,?) "
-        "group by artikelid order by 3 desc");
-      q << I->Id() << AuftragBase::dispo_id;
-      Query::Row i;
-      while ((q >> i).good())
-      { int dummy,znr,count;
-        i >> dummy >> znr >> count;
-        if (count < 2) break;
-        Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
-          << I->Id() << AuftragBase::dispo_id << znr;
-        alles_ok=false;
+      try
+      { Query q("lagerdup","select artikelid,max(zeilennr),count(zeilennr) "
+          "from auftragentry where (instanz,auftragid)=(?,?) "
+          "group by artikelid order by 3 desc");
+        q << I->Id() << AuftragBase::dispo_id;
+        Query::Row is;
+        while ((q >> is).good())
+        { int dummy,znr,count;
+          is >> dummy >> znr >> count;
+          if (count<2) { break; }
+          std::cout << "duplicate stock entry " << AufEintragBase(I,AuftragBase::dispo_id,znr) << " deleted\n";
+          Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
+            << I->Id() << AuftragBase::dispo_id << znr;
+          alles_ok=false;
+        }
       }
+      catch (SQLerror &e) { assert(e.Code()==100); }
       tr.commit();
       if (!alles_ok) return alles_ok;
     }
