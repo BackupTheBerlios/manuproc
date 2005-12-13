@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.33 2005/11/17 17:35:27 christof Exp $ */
+/* $Id: Datum.h,v 1.34 2005/12/13 08:14:23 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -180,6 +180,8 @@ public:
 	int Tag() const { return tag; }
 	int Monat() const { return monat; }
 	int Jahr() const { return jahr; }
+	int MonatTag() const { return monat*100+tag; } // to compare dates
+	                                        // in different years
 	int Quartal() const { if(quart) return quart;
 				quart=((monat-1)/3)+1;
 			      return quart;
