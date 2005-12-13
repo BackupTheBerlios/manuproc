@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.20 2005/12/13 08:14:32 christof Exp $
+// $Id: auftrag_repair.cc,v 1.21 2005/12/13 08:14:48 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -25,6 +25,7 @@
 #include <Auftrag/sqlAuftragSelector.h>
 #include <Auftrag/selFullAufEntry.h>
 #include <Misc/Trace.h>
+#include <Misc/Transaction.h>
 
 enum action_bits { b_physical, b_exclude, b_tree, b_raise, b_links, b_minmenge, b_lager_dup };
 
@@ -292,7 +293,7 @@ int main(int argc,char *argv[])
           if (strchr(optarg,'M')||strchr(optarg,'*')) actions|=b_minmenge;
           if (strchr(optarg,'D')) ppsInstanzReparatur::really_delete=true;
           if (strchr(optarg,'N')) ppsInstanzReparatur::not_strict=true;
-          if (strcht(optarg,'1')) actions|=b_lager_dup;
+          if (strchr(optarg,'1')) actions|=b_lager_dup;
           break;
        case 'd' : database=optarg;break;
        case 'h' : dbhost=optarg;break;
