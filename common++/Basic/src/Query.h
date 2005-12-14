@@ -1,4 +1,4 @@
-// $Id: Query.h,v 1.15 2005/12/14 11:47:44 christof Exp $
+// $Id: Query.h,v 1.16 2005/12/14 11:58:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Christof Petig
@@ -190,7 +190,9 @@ struct Query_types
 	{ Oid type;
 	  null_s(Oid t) : type(t) {}
 	};
-	template <class T> static struct null_s null();
+	template <class T> static struct null_s null()
+	{ return null_s(NullIf_s<T>::postgres_type);
+	}
 	typedef Query_Row::check_eol check_eol;
 };
 
@@ -472,11 +474,6 @@ T Query::FetchOneMap(const T &nv)
 namespace std
 { /// See Query::swap().
   inline void swap(Query& __x, Query& __y) { __x.swap(__y); }
-}
-
-template <class T> 
- struct Query_types::null_s Query_types::null()
-{ return null_s(NullIf_s<T>::postgres_type);
 }
 
 #endif
