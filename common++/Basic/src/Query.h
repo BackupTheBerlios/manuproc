@@ -1,4 +1,4 @@
-// $Id: Query.h,v 1.12 2005/11/08 14:36:31 christof Exp $
+// $Id: Query.h,v 1.13 2005/12/14 07:34:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Christof Petig
@@ -184,7 +184,11 @@ struct Query_types
 		
 		template <class U> NullIf_s(const T &a,const U &b) : data(a), null(a==b) {}
 	};
-	struct null { null(){} };
+	struct null_s 
+	{ Oid type;
+	  null_s(Oid t) : type(t) {}
+	};
+	template <class T> static struct null_s null();
 	typedef Query_Row::check_eol check_eol;
 };
 
@@ -193,6 +197,7 @@ class ArgumentList
         std::vector<Oid> types;
 	std::vector<std::string> params;
 	std::vector<bool> binary;
+	std::vector<bool> null;
 public:
 	typedef std::vector<std::string>::const_iterator const_iterator;
 	ArgumentList() : params_needed(unsigned(-1)) {}
@@ -204,8 +209,10 @@ public:
 	const_iterator begin() const { return params.begin(); }
 	const_iterator end() const { return params.end(); }
 	bool empty() const { return params.empty(); }
-	Oid type_of(const_iterator const& which) const;
 	size_t size() const { return params.size(); }
+	Oid type_of(const_iterator const& which) const;
+	bool is_null(const_iterator const& which) const;
+	bool is_binary(const_iterator const& which) const;
 
 	//-------------------- parameters ------------------
 	// must be already quoted for plain SQL inclusion
@@ -226,12 +233,12 @@ public:
 	ArgumentList &operator<<(const ArgumentList &list);
 	ArgumentList &operator<<(const char *s)
 	{  return operator<<(std::string(s)); }
-	ArgumentList &operator<<(Query_types::null n);
+	ArgumentList &operator<<(Query_types::null_s n);
 	
 	template <class T>
 	 ArgumentList &operator<<(const Query_types::NullIf_s<T> &n)
-	{  if (n.null) return operator<<(Query_types::null());
-	   return (*this)<<(n.data);
+	{  if (n.null) return operator<<(Query_types::null<T>());
+	   return (*this) << n.data;
 	}
 	static const char *next_insert(const char *text);
 };

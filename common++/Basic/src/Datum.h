@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.34 2005/12/13 08:14:23 christof Exp $ */
+/* $Id: Datum.h,v 1.35 2005/12/14 07:34:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,10 +20,10 @@
 #ifndef DATUM_H
 #define DATUM_H
 #include <time.h>
-//#include <iostream>
 #include <exception>
-#include <Misc/Kalenderwoche.h>
 #include <string>
+#include <iosfwd>
+#include <Misc/Kalenderwoche.h>
 #include <Misc/compiler_ports.h>
 
 namespace ManuProC
@@ -32,7 +32,6 @@ class Datumsfehler;
 class Datum;
 };
 
-#include <iosfwd>
 //namespace std { class ostream; }
 
 std::ostream &operator<<(std::ostream&,const ManuProC::Datumsfehler&);

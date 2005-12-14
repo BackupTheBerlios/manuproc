@@ -1,4 +1,4 @@
-// $Id: Query.pgcc,v 1.20 2005/12/13 08:15:03 christof Exp $
+// $Id: Query.pgcc,v 1.21 2005/12/14 07:34:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -223,16 +223,23 @@ sqlca.sqlcode=0;
   }
   unsigned idx=0;
   for (ArgumentList::const_iterator i=params.begin();i!=params.end();++i,++idx)
-  { if (params.type_of(i)==VOIDOID)
+  { if (params.is_null(i))
     { values[idx]=0;
       length[idx]=0;
-      types[idx]=INT4OID; // or INT4OID ?, gibt sonst "-400 konnte Datentyp von Parameter $2 nicht ermitteln"
-      binary[idx]=false;
+      types[idx]=params.type_of(i);
+      binary[idx]=params.is_binary(i);
       if (Query::debugging.on) std::cerr << "<NULL>,";
+    }
+    else if (params.is_binary(i))
+    { values[idx]=i->data();
+      length[idx]=i->size();
+      types[idx]=params.type_of(i);
+      binary[idx]=true;
+      if (Query::debugging.on) std::cerr << "<bin>,";
     }
     else
     { values[idx]=i->c_str();
-      length[idx]=0; // only used for binary, i->size();
+      length[idx]=0;
       types[idx]=params.type_of(i);
       binary[idx]=false;
       if (Query::debugging.on) std::cerr << *i << ",";

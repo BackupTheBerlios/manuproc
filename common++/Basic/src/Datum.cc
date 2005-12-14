@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.35 2005/10/05 08:33:36 christof Exp $
+// $Id: Datum.cc,v 1.36 2005/12/14 07:34:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.35 2005/10/05 08:33:36 christof Exp $ */
+/* $Id: Datum.cc,v 1.36 2005/12/14 07:34:57 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -408,9 +408,12 @@ FetchIStream &operator>>(FetchIStream &is, ManuProC::Datum &v)
 }
 
 ArgumentList &operator<<(ArgumentList &q, const ManuProC::Datum &v)
-{  if (!v) q << Query::null();
+{  if (!v) q << Query::null_s(DATEOID);
    else q.add_argument(itos(v.Jahr())+"-"+itos(v.Monat())+"-"+itos(v.Tag()),DATEOID);
    return q;
 }
+
+template<> Query_types::null_s Query_types::null<ManuProC::Datum>()
+{ return null_s(DATEOID); }
 
 #endif

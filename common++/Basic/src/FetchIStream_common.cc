@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.30 2005/10/25 12:14:00 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.31 2005/12/14 07:34:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -184,6 +184,14 @@ Oid ArgumentList::type_of(const_iterator const& which) const
 { return types[which-begin()];
 }
 
+bool ArgumentList::is_binary(const_iterator const& which) const
+{ return binary[which-begin()];
+}
+
+bool ArgumentList::is_null(const_iterator const& which) const
+{ return null[which-begin()];
+}
+
 bool needs_quotes(Oid type)
 { switch (type)
   { case CHAROID:
@@ -197,8 +205,7 @@ bool needs_quotes(Oid type)
     case NUMERICOID:
     case FLOAT4OID:
     case FLOAT8OID:
-    case BOOLOID:
-    case VOIDOID: return false;
+    case BOOLOID: return false;
     
     default: std::cerr << "Oid " << type << " is unknown\n"; 
       return true;
@@ -264,12 +271,24 @@ Query &Query::add_argument(const std::string &s, Oid type)
    return *this;
 }
 
+ArgumentList &ArgumentList::operator<<(Query_types::null_s n)
+{ if (complete())
+      Query_Row::mythrow(SQLerror("",ECPG_TOO_MANY_ARGUMENTS,"too many arguments"));
+  params.push_back(std::string());
+  types.push_back(n.type);
+  null.push_back(true);
+  binary.push_back(false);
+  --params_needed;
+  return *this;
+}
+
 ArgumentList &ArgumentList::add_argument(const std::string &x, Oid type)
 {  if (complete())
       Query_Row::mythrow(SQLerror("",ECPG_TOO_MANY_ARGUMENTS,"too many arguments"));
    params.push_back(x);
    types.push_back(type);
-   --params_needed;
+   null.push_back(false);
+   binary.push_back(false);
    return *this;
 }
 
@@ -304,26 +323,40 @@ ArgumentList &ArgumentList::operator<<(const std::string &str)
   return add_argument(p,TEXTOID);
 #endif
 }
+template<> Query_types::null_s Query_types::null<std::string>()
+{ return null_s(TEXTOID); }
 
 ArgumentList &ArgumentList::operator<<(long i)
 { return add_argument(itos(i),INT4OID);
 }
+template<> Query_types::null_s Query_types::null<long>()
+{ return null_s(INT4OID); }
+template<> Query_types::null_s Query_types::null<int>()
+{ return null_s(INT4OID); }
 
 ArgumentList &ArgumentList::operator<<(unsigned long i)
 {  return add_argument(ulltos(i),INT4OID);
 }
+template<> Query_types::null_s Query_types::null<unsigned long>()
+{ return null_s(INT4OID); }
 
 ArgumentList &ArgumentList::operator<<(unsigned long long i)
 {  return add_argument(ulltos(i),INT8OID);
 }
+template<> Query_types::null_s Query_types::null<unsigned long long>()
+{ return null_s(INT8OID); }
 
 ArgumentList &ArgumentList::operator<<(double i)
 {  return add_argument(dtos(i),FLOAT4OID);
 }
+template<> Query_types::null_s Query_types::null<double>()
+{ return null_s(FLOAT4OID); }
 
 ArgumentList &ArgumentList::operator<<(bool i)
 {  return add_argument(btos(i),BOOLOID);
 }
+template<> Query_types::null_s Query_types::null<bool>()
+{ return null_s(BOOLOID); }
 
 ArgumentList &ArgumentList::operator<<(char i)
 {  char x[8];
@@ -344,6 +377,8 @@ ArgumentList &ArgumentList::operator<<(char i)
 #endif   
    return add_argument(x,CHAROID);
 }
+template<> Query_types::null_s Query_types::null<char>()
+{ return null_s(CHAROID); }
 
 ArgumentList &ArgumentList::operator<<(const ArgumentList &list)
 {  for (const_iterator i=list.begin();i!=list.end();++i) 
@@ -506,6 +541,3 @@ Query_Row::Fake::~Fake()
 }
 #endif
 
-ArgumentList &ArgumentList::operator<<(Query_types::null n)
-{ return add_argument("null",VOIDOID);
-}

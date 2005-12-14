@@ -1,4 +1,4 @@
-// $Id: Interval.cc,v 1.16 2005/10/12 08:59:38 christof Exp $
+// $Id: Interval.cc,v 1.17 2005/12/14 07:34:57 christof Exp $
 
 #include <ManuProCConfig.h>
 #include <Misc/Interval.h>
@@ -156,4 +156,6 @@ ArgumentList &operator<<(ArgumentList &q, const ManuProC::Interval &v)
    return q;
 }
 
+template<> Query_types::null_s Query_types::null<ManuProC::Interval>()
+{ return null_s(INTERVALOID); }
 #endif

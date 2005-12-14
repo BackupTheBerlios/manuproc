@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.cc,v 1.22 2005/10/05 08:33:36 christof Exp $
+// $Id: Zeitpunkt_new.cc,v 1.23 2005/12/14 07:34:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -231,8 +231,12 @@ FetchIStream &operator>>(FetchIStream &is, Zeitpunkt_new &v)
 }
 
 ArgumentList &operator<<(ArgumentList &q, const Zeitpunkt_new &v)
-{  if (!v.valid()) return q << Query::null();
+{  if (!v.valid()) return q << Query::null_s(TIMESTAMPTZOID);
    q.add_argument(v.write(),TIMESTAMPTZOID);
    return q;
 }
+
+template<> Query_types::null_s Query_types::null<Zeitpunkt_new>()
+{ return null_s(TIMESTAMPTZOID); }
+
 #endif

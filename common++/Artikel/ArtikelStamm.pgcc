@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.40 2005/10/14 12:12:21 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.41 2005/12/14 07:34:56 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,6 +30,10 @@ Query::Row &operator>>(Query::Row &is, ArtikelTypID::enum_t &e)
 {  e = ArtikelTypID::enum_t(is.Fetch<int>());
    return is;
 }
+template<> Query_types::null_s Query_types::null<ppsInstanz::ID>()
+{ return null<int>(); }
+template<> Query_types::null_s Query_types::null<Einheit::ID>()
+{ return null<int>(); }
 
 Query::Row &operator>>(Query::Row &is, Einheit &e)
 {  e = Einheit(Einheit::ID(is.Fetch<int>()));
