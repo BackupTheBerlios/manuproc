@@ -22,4 +22,5 @@ CREATE TABLE "banken" (
 
 
 COPY "banken" FROM stdin;
+37	0	testbank
 \.

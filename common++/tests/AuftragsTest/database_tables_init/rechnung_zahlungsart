@@ -3,6 +3,7 @@
 --
 
 SET search_path = public, pg_catalog;
+SET client_encoding = 'LATIN9';
 
 --
 -- TOC entry 2 (OID 6295512)

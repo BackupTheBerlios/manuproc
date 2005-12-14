@@ -3,6 +3,7 @@
 --
 DROP INDEX "prozesse_prozessid_key";
 DROP TABLE "prozesse";
+SET client_encoding = 'LATIN9';
 --
 -- TOC Entry ID 2 (OID 11499088)
 --
