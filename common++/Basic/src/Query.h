@@ -1,4 +1,4 @@
-// $Id: Query.h,v 1.14 2005/12/14 07:35:21 christof Exp $
+// $Id: Query.h,v 1.15 2005/12/14 11:47:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Christof Petig
@@ -473,4 +473,10 @@ namespace std
 { /// See Query::swap().
   inline void swap(Query& __x, Query& __y) { __x.swap(__y); }
 }
+
+template <class T> 
+ struct Query_types::null_s Query_types::null()
+{ return null_s(NullIf_s<T>::postgres_type);
+}
+
 #endif
