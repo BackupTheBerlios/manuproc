@@ -5,6 +5,7 @@ export PGDATABASE=testdb
 P="database_tables_init"
 
 dropdb $PGDATABASE
+#createdb -Elatin9 $PGDATABASE
 createdb $PGDATABASE
 
 (for i in \
