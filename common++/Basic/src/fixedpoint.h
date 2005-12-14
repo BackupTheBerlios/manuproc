@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.33 2005/12/14 07:34:57 christof Exp $
+// $Id: fixedpoint.h,v 1.34 2005/12/14 07:35:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *   written by Christof Petig
@@ -277,11 +277,11 @@ static inline Query::Row &operator>>(Query::Row &is, fixedpoint<0> &v)
    return is;
 }
 
-#include <Misc/Query.h>
-
+#if 0 // not possible?
 template <int decimals,class Ftype,class Itype>
 Query_types::null_s Query_types::null<fixedpoint<decimals,Ftype,Itype> >()
 { return null<int>(); }
+#endif
 
 template <int decimals,class Ftype,class Itype>
 Query::Row &operator>>(Query::Row &is, fixedpoint<decimals,Ftype,Itype> &v)
