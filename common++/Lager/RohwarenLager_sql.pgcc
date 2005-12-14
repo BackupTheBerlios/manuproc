@@ -21,13 +21,14 @@
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Misc/Datum.h>
 #include <Misc/string0.h>
-exec sql include sqlca;
 #include <Misc/SQLerror.h>
 #include <Misc/Transaction.h>
 #include <Misc/itos.h>
+#include <Misc/Query.h>
 #include <unistd.h>
 #include <Misc/relops.h>
 #include <Misc/TraceNV.h>
+#include <Misc/Ausgabe_neu.h> // for uses UTF8
 
 std::string RohwarenLager::st_rohlager::Menge_als_Text() const
 {  std::string s;
@@ -48,20 +49,14 @@ bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force
   	NV("artikel",rohlager.artikel.Id()),
   	NV("position",rohlager.position.SPosition()));
   Transaction tr;
-  exec sql begin declare section;
-   int KARTONS;
-   int RESTE;
-   int RESTE_KG;
-   char POSITION[5];
-   char DATUM[11];
-   bool DUMMY;
-  exec sql end declare section;
-  strncpy0(POSITION,rohlager.position.SPosition().c_str(),sizeof(POSITION));
-  rohlager.datum.write_postgres(DATUM,sizeof DATUM);
+   bool DUMMY=false;
 
-  exec sql select true into :DUMMY from rl_inhalt where position_= :POSITION;
-  SQLerror::test(__FILELINE__,100);
-  if (sqlca.sqlcode==100) // nichts drin
+  try 
+  { Query("select true from rl_inhalt where position_=?") 
+    << rohlager.position.SPosition()
+    >> DUMMY;
+  } catch (SQLerror &e) {}
+  if (!DUMMY) // nichts drin
    {
      os+="An Position " +rohlager.position.SPosition()+" steht nichts mehr.";
      return false;
@@ -104,14 +99,17 @@ bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force
   std::string misc;
   if(ist_leer || force)
     {
-      exec sql delete from rl_inhalt where position_= :POSITION;
-      SQLerror::test(__FILELINE__);                  
-      if(force) misc="lösc";
+      (Query("delete from rl_inhalt where position_=?")
+        << rohlager.position.SPosition()).Check100();
+      if(force) misc=(Ausgabe_neu::TeX_uses_UTF8 ? "lÃ¶sc" : "lösc");
       else misc="leer";
       rohlager=was_ist_drin;
     }  
   else 
     {
+       int KARTONS;
+       int RESTE;
+       int RESTE_KG;
       rohlager.kg_pro_karton=was_ist_drin.kg_pro_karton;
       KARTONS=was_ist_drin.kartons-rohlager.kartons;
       if (KARTONS<0) 
@@ -123,9 +121,10 @@ bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force
       if (RESTE_KG<0) 
       { RESTE_KG=0; rohlager.reste_kg=was_ist_drin.reste_kg; }
 
-      exec sql update rl_inhalt set kartons= :KARTONS, reste= :RESTE,
-          rest_kg=:RESTE_KG, letzte_entnahme= :DATUM 
-          where position_= :POSITION;
+      Query("update rl_inhalt set kartons=?, reste=?,"
+          "rest_kg=?, letzte_entnahme=? where position_=?")
+          << KARTONS << RESTE << RESTE_KG << rohlager.datum
+          << rohlager.position.SPosition();
        SQLerror::test(__FILELINE__);                  
     }
 
@@ -151,29 +150,27 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
   Transaction tr;
   rohlager.setPosition(position);
 
-  exec sql begin declare section;
    int KARTONS=rohlager.kartons;
    int KG_PER_KARTON=rohlager.kg_pro_karton;
    int RESTE=rohlager.reste;
    int RESTE_KG=rohlager.reste_kg;
    int MATERIAL=rohlager.artikel.Id();
-   char POSITION[5];
-   char DATUM[11];
-   bool DUMMY;
-  exec sql end declare section;
-  strncpy0(POSITION,rohlager.position.SPosition().c_str(),sizeof(POSITION));
-  rohlager.datum.write_postgres(DATUM,sizeof DATUM);
+   bool DUMMY=false;
 
-  exec sql select true into :DUMMY from rl_inhalt where position_= :POSITION;
-  SQLerror::test(__FILELINE__,100);
-  if (sqlca.sqlcode==100) // nichts drin also rein damit
+  try 
+  { Query("select true from rl_inhalt where position_=?") 
+      << rohlager.position.SPosition()
+      >> DUMMY;
+  } catch (SQLerror &e) {}
+  if (!DUMMY) // nichts drin also rein damit
    {
-      exec sql insert into rl_inhalt
-        (position_, kartons, MATERIAL, KG_PER_KARTON,
-              reste, rest_kg, eingelagert)
-        values (:POSITION, :KARTONS, :MATERIAL, :KG_PER_KARTON,
-              nullif(:RESTE,0), nullif(:RESTE_KG,0), :DATUM);
-      SQLerror::test(__FILELINE__);
+      Query("insert into rl_inhalt (position_, kartons, MATERIAL, "
+            "KG_PER_KARTON, reste, rest_kg, eingelagert) "
+        "values (?,?,?,?,?,?,?)")
+        << rohlager.position.SPosition()
+        << KARTONS << MATERIAL << KG_PER_KARTON
+        << Query::NullIf(RESTE) << Query::NullIf(RESTE_KG)
+        << rohlager.datum;
       RL_Einlagern_real(rohlager,geliefert);
       tr.commit();
       return true;
@@ -187,11 +184,12 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
         if (!os.empty()) os+='\n';
         tr.close();
         tr.open(); // neue Transaktion beginnen
-        exec sql update rl_inhalt set 
-           kartons=:KARTONS, material=:MATERIAL, 
-           kg_per_karton=:KG_PER_KARTON, reste=nullif(:RESTE,0), 
-           rest_kg=nullif(:RESTE_KG,0), eingelagert=:DATUM where position_=:POSITION;
-        SQLerror::test(__FILELINE__);
+        (Query("update rl_inhalt set "
+                 "kartons=?, material=?, kg_per_karton=?, reste=?, "
+                 "rest_kg=?, eingelagert=? where position_=?")
+                  << KARTONS << MATERIAL << KG_PER_KARTON
+                  << Query::NullIf(RESTE) << Query::NullIf(RESTE_KG)
+                  << rohlager.datum << rohlager.position.SPosition()).Check100();
         RL_Einlagern_real(rohlager,geliefert);
         tr.commit();
         return true;
@@ -210,12 +208,12 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
               KG_PER_KARTON=rohlager.kg_pro_karton;
               RESTE=rohlager.reste + was_ist_drin.reste;
               RESTE_KG=rohlager.reste_kg + was_ist_drin.reste_kg;    
-              exec sql update rl_inhalt set 
-                 kartons=:KARTONS, material=:MATERIAL,
-                  kg_per_karton=:KG_PER_KARTON, 
-                       reste=nullif(:RESTE,0), rest_kg=nullif(:RESTE_KG,0),
-                        eingelagert=:DATUM where position_=:POSITION;
-              SQLerror::test(__FILELINE__);
+              (Query("update rl_inhalt set "
+                 "kartons=?, material=?, kg_per_karton=?, reste=?, "
+                 "rest_kg=?, eingelagert=? where position_=?")
+                  << KARTONS << MATERIAL << KG_PER_KARTON
+                  << Query::NullIf(RESTE) << Query::NullIf(RESTE_KG)
+                  << rohlager.datum << rohlager.position.SPosition()).Check100();
               RL_Einlagern_real(rohlager,geliefert);
               tr.commit();
               return true;
@@ -245,84 +243,59 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
 
 void RohwarenLager::RL_Log(const st_rohlager& rohlager,RL_LogTyp typ,const std::string& misc)
 {
-  exec sql begin declare section;
-   int KARTONS=rohlager.kartons;
-   int KG_PER_KARTON=rohlager.kg_pro_karton;
-   int RESTE=rohlager.reste;
-   int RESTE_KG=rohlager.reste_kg;
-   int MATERIAL=rohlager.artikel.Id();
-   char MISC[5];
-   char POSITION[5];
-   char DATUM[11];
-   char TYP=typ;
-  exec sql end declare section;
-  strncpy0(POSITION,rohlager.position.SPosition().c_str(),sizeof(POSITION));
-  strncpy0(MISC,misc.c_str(),sizeof(MISC));
-
-  rohlager.datum.write_postgres(DATUM,sizeof DATUM);
-  exec sql insert into rl_log 
-       (zeit,position_, kartons, MATERIAL, KG_PER_KARTON, typ, valuta, reste, rest_kg,misc)
-       values (now(),:POSITION,:KARTONS,:MATERIAL,:KG_PER_KARTON,:TYP,:DATUM,
-            :RESTE,:RESTE_KG,nullif(:MISC,''));
-  SQLerror::test(__FILELINE__);
+  Query("insert into rl_log "
+       "(zeit,position_, kartons, MATERIAL, KG_PER_KARTON, typ, valuta, reste, rest_kg,misc) "
+       "values (now(),?,?,?,?,?,?,?,?,?)")
+       << rohlager.position.SPosition() << rohlager.kartons
+       << rohlager.artikel.Id() << rohlager.kg_pro_karton
+       << char(typ) << rohlager.datum << rohlager.reste
+       << rohlager.reste_kg << Query::NullIf(misc);
 }
 
 
 RohwarenLager::st_rohlager RohwarenLager::RL_Inhalt(const LagerPlatz position) const
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
-  exec sql begin declare section;
    int KARTONS, KG_PER_KARTON, RESTE, RESTE_KG, MATERIAL;
-   char POSITION[5];
-   char DATUM[11];
-  exec sql end declare section;
-  strncpy(POSITION,position.SPosition().c_str(),5);
-  exec sql select coalesce(kartons,0), coalesce(reste,0),
-      int4(coalesce(kg_per_karton,0)), int4(coalesce(rest_kg,0)),
-      material, eingelagert into :KARTONS, :RESTE, 
-            :KG_PER_KARTON, :RESTE_KG, :MATERIAL, :DATUM
-      from rl_inhalt where position_= :POSITION;
-  SQLerror::test(__FILELINE__,100);
-  ManuProC::Datum date; 
-  if(sqlca.sqlcode)
+   ManuProC::Datum DATUM;
+  
+  try
+  { Query q("select kartons,reste,kg_per_karton,rest_kg,material, eingelagert "
+      "from rl_inhalt where position_=?");
+    q << position.SPosition();
+    q >> Query::Row::MapNull(KARTONS) >> Query::Row::MapNull(RESTE) 
+      >> Query::Row::MapNull(KG_PER_KARTON) >> Query::Row::MapNull(RESTE_KG)
+      >> MATERIAL >> DATUM;
+    return st_rohlager(position,KARTONS,KG_PER_KARTON,RESTE,RESTE_KG,
+                  ArtikelBase(MATERIAL),DATUM);
+  }
+  catch (SQLerror &e)
    {
-     return st_rohlager(position,0,0,0,0, ArtikelBase(0),date);
-   }
-  else 
-   {
-     date.from_postgres(DATUM);
-     return st_rohlager(position,KARTONS,KG_PER_KARTON,RESTE,RESTE_KG,
-                  ArtikelBase(MATERIAL),date);
+     return st_rohlager(position,0,0,0,0, ArtikelBase(),ManuProC::Datum());
    }
 }  
 
 std::vector<class LagerInhalt> RohwarenLager::LagerInhalt_(const ArtikelBase& artikel) const
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
-  exec sql begin declare section;
    int KG, RESTE_KG, MATERIAL,KARTONS,RESTKARTONS;
    char QUERY[1024];
-  exec sql end declare section;
 
-  std::string squery ="select material,coalesce(kartons,0),coalesce(reste,0), "
-      " coalesce(int4(sum(kartons*kg_per_karton)),0),"
-      " coalesce(int4(sum(coalesce(rest_kg,0))),0) "
-      " from rl_inhalt ";
-  if(artikel.valid()) squery += " where material ="+itos(artikel.Id());
-  squery +=" group by material,kartons,reste ";
+  std::string squery ="select material,kartons,reste, "
+      "sum(kartons*kg_per_karton), sum(coalesce(rest_kg,0)) "
+      "from rl_inhalt ";
+  if(artikel.valid()) squery += "where material=? ";
+  squery +="group by material,kartons,reste";
 
-  strncpy(QUERY,squery.c_str(),sizeof(QUERY));
-  exec sql prepare r_summe_ from :QUERY;
-  exec sql declare r_summe cursor for r_summe_;
   Transaction tr;
-  exec sql open r_summe;
-  SQLerror::test(__FILELINE__);
+  Query q("r_summe",squery);
+  if (artikel.valid()) q << artikel.Id();
+  Query::Row is;
   std::vector<class LagerInhalt> V;
-  while(true)
+  while((q>>is).good())
    {
-     exec sql fetch r_summe into :MATERIAL,:KARTONS,:RESTKARTONS,:KG,:RESTE_KG;
-     SQLerror::test(__FILELINE__,100);
-     if(sqlca.sqlcode) break;
+     is >> MATERIAL >> Query::Row::MapNull(KARTONS) >> Query::Row::MapNull(RESTKARTONS)
+        >> Query::Row::MapNull(KG) >> Query::Row::MapNull(RESTE_KG);
      V.push_back(::LagerInhalt(ArtikelBase(MATERIAL),KARTONS,RESTKARTONS,KG,RESTE_KG));
    }
  return V;
