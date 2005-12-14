@@ -1,4 +1,4 @@
-// $Id: Query.h,v 1.17 2005/12/14 17:51:47 christof Exp $
+// $Id: Query.h,v 1.18 2005/12/14 17:51:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Christof Petig
@@ -190,13 +190,10 @@ struct Query_types
 	{ Oid type;
 	  null_s(Oid t) : type(t) {}
 	};
-	template <class T> static struct null_s null()
-#if defined(__GNUC__) && __GNUC__==2
-	{ return null_s(NullIf_s<T>::postgres_type);
+	typedef struct null_s null_s_t;
+	template <class T> static null_s_t null()
+	{ return null_s_t(NullIf_s<T>::postgres_type);
 	}
-#else
-        ;
-#endif
 	typedef Query_Row::check_eol check_eol;
 };
 
@@ -480,10 +477,4 @@ namespace std
   inline void swap(Query& __x, Query& __y) { __x.swap(__y); }
 }
 
-#if !defined __GNUC__ || __GNUC__>2
-template <class T> 
- struct Query_types::null_s Query_types::null()
-{ return null_s(NullIf_s<T>::postgres_type);
-}
-#endif
 #endif
