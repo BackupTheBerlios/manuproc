@@ -1,4 +1,4 @@
-// $Id: fixedpoint_null.cc,v 1.1 2005/12/14 07:35:07 christof Exp $
+// $Id: fixedpoint_null.cc,v 1.2 2005/12/14 07:35:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,6 +19,7 @@
 
 #include <Misc/fixedpoint.h>
 #include <Misc/Query.h>
+#include <Misc/pg_type.h>
 
-template <> Query_types::null_s Query_types::null<fixedpoint<3,double,long> >()
-{ return null<int>(); }
+template<>
+const Oid Query::NullIf_s<fixedpoint<3,double,long> >::postgres_type=INT4OID;

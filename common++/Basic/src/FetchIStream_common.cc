@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.31 2005/12/14 07:34:57 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.32 2005/12/14 07:35:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -323,40 +323,34 @@ ArgumentList &ArgumentList::operator<<(const std::string &str)
   return add_argument(p,TEXTOID);
 #endif
 }
-template<> Query_types::null_s Query_types::null<std::string>()
-{ return null_s(TEXTOID); }
+template<>
+const Oid Query::NullIf_s<std::string>::postgres_type=TEXTOID;
 
 ArgumentList &ArgumentList::operator<<(long i)
 { return add_argument(itos(i),INT4OID);
 }
-template<> Query_types::null_s Query_types::null<long>()
-{ return null_s(INT4OID); }
-template<> Query_types::null_s Query_types::null<int>()
-{ return null_s(INT4OID); }
+template<> const Oid Query::NullIf_s<long>::postgres_type=INT4OID;
+template<> const Oid Query::NullIf_s<int>::postgres_type=INT4OID;
 
 ArgumentList &ArgumentList::operator<<(unsigned long i)
 {  return add_argument(ulltos(i),INT4OID);
 }
-template<> Query_types::null_s Query_types::null<unsigned long>()
-{ return null_s(INT4OID); }
+template<> const Oid Query::NullIf_s<unsigned long>::postgres_type=INT4OID;
 
 ArgumentList &ArgumentList::operator<<(unsigned long long i)
 {  return add_argument(ulltos(i),INT8OID);
 }
-template<> Query_types::null_s Query_types::null<unsigned long long>()
-{ return null_s(INT8OID); }
+template<> const Oid Query::NullIf_s<unsigned long long>::postgres_type=INT8OID;
 
 ArgumentList &ArgumentList::operator<<(double i)
 {  return add_argument(dtos(i),FLOAT4OID);
 }
-template<> Query_types::null_s Query_types::null<double>()
-{ return null_s(FLOAT4OID); }
+template<> const Oid Query::NullIf_s<double>::postgres_type=FLOAT4OID;
 
 ArgumentList &ArgumentList::operator<<(bool i)
 {  return add_argument(btos(i),BOOLOID);
 }
-template<> Query_types::null_s Query_types::null<bool>()
-{ return null_s(BOOLOID); }
+template<> const Oid Query::NullIf_s<bool>::postgres_type=BOOLOID;
 
 ArgumentList &ArgumentList::operator<<(char i)
 {  char x[8];
@@ -377,8 +371,7 @@ ArgumentList &ArgumentList::operator<<(char i)
 #endif   
    return add_argument(x,CHAROID);
 }
-template<> Query_types::null_s Query_types::null<char>()
-{ return null_s(CHAROID); }
+template<> const Oid Query::NullIf_s<char>::postgres_type=CHAROID;
 
 ArgumentList &ArgumentList::operator<<(const ArgumentList &list)
 {  for (const_iterator i=list.begin();i!=list.end();++i) 

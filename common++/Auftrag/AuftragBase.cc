@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.57 2005/11/16 09:12:14 christof Exp $
+// $Id: AuftragBase.cc,v 1.58 2005/12/14 07:35:21 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -246,6 +246,9 @@ AuftragBase::mengen_t AuftragBase::Gesamtmenge(int stueck,const mengen_t &menge)
 std::string AuftragBase::ID2string(ID id)
 { return Formatiere((unsigned long)id,0,6,"","",'0');
 }
+
+template<>
+const Oid Query::NullIf_s<AufStatVal>::postgres_type=Query::NullIf_s<int>::postgres_type;
 
 #if defined(ENABLE_NLS)
 namespace { struct gettext_init { gettext_init(); }; }

@@ -1,4 +1,4 @@
-// $Id: Query.h,v 1.13 2005/12/14 07:34:57 christof Exp $
+// $Id: Query.h,v 1.14 2005/12/14 07:35:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Christof Petig
@@ -47,6 +47,7 @@ extern "C" {
 #if !defined(OLD_ECPG) && defined(HAVE_PQPREPARE)
 #define USE_PARAMETERS
 #endif
+
 
 // please access this class under the new alias "Query::Row"
 class Query_Row
@@ -181,6 +182,7 @@ struct Query_types
 	 struct NullIf_s
 	{	T data;
 		bool null;
+		static const Oid postgres_type;
 		
 		template <class U> NullIf_s(const T &a,const U &b) : data(a), null(a==b) {}
 	};
@@ -237,7 +239,7 @@ public:
 	
 	template <class T>
 	 ArgumentList &operator<<(const Query_types::NullIf_s<T> &n)
-	{  if (n.null) return operator<<(Query_types::null<T>());
+	{  if (n.null) return operator<<(Query_types::null_s(n.postgres_type));
 	   return (*this) << n.data;
 	}
 	static const char *next_insert(const char *text);

@@ -1,4 +1,4 @@
-// $Id: Interval.cc,v 1.17 2005/12/14 07:34:57 christof Exp $
+// $Id: Interval.cc,v 1.18 2005/12/14 07:35:21 christof Exp $
 
 #include <ManuProCConfig.h>
 #include <Misc/Interval.h>
@@ -151,11 +151,11 @@ Query::Row &operator>>(Query::Row &is, ManuProC::Interval &v)
    return is;
 }
 
+template<>
+const Oid Query::NullIf_s<ManuProC::Interval>::postgres_type=INTERVALOID;
+
 ArgumentList &operator<<(ArgumentList &q, const ManuProC::Interval &v)
-{  q.add_argument(v.str(),INTERVALOID);
+{  q.add_argument(v.str(),Query::NullIf_s<ManuProC::Interval>::postgres_type);
    return q;
 }
-
-template<> Query_types::null_s Query_types::null<ManuProC::Interval>()
-{ return null_s(INTERVALOID); }
 #endif

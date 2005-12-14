@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.36 2005/12/14 07:34:57 christof Exp $
+// $Id: Datum.cc,v 1.37 2005/12/14 07:35:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.36 2005/12/14 07:34:57 christof Exp $ */
+/* $Id: Datum.cc,v 1.37 2005/12/14 07:35:21 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -398,6 +398,9 @@ ManuProC::Datumsfehler::Datumsfehler(int _falsch) throw()
 #ifdef DEFAULT_DB // actually we should test for database support
 #include <Misc/pg_type.h>
 
+template<>
+const Oid Query::NullIf_s<ManuProC::Datum>::postgres_type=DATEOID;
+
 FetchIStream &operator>>(FetchIStream &is, ManuProC::Datum &v)
 {  std::string s;
    int ind;
@@ -408,12 +411,10 @@ FetchIStream &operator>>(FetchIStream &is, ManuProC::Datum &v)
 }
 
 ArgumentList &operator<<(ArgumentList &q, const ManuProC::Datum &v)
-{  if (!v) q << Query::null_s(DATEOID);
-   else q.add_argument(itos(v.Jahr())+"-"+itos(v.Monat())+"-"+itos(v.Tag()),DATEOID);
+{  if (!v) q << Query::null_s(Query::NullIf_s<ManuProC::Datum>::postgres_type);
+   else q.add_argument(itos(v.Jahr())+"-"+itos(v.Monat())+"-"+itos(v.Tag()),
+         Query::NullIf_s<ManuProC::Datum>::postgres_type);
    return q;
 }
-
-template<> Query_types::null_s Query_types::null<ManuProC::Datum>()
-{ return null_s(DATEOID); }
 
 #endif
