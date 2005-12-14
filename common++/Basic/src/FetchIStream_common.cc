@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.32 2005/12/14 07:35:21 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.33 2005/12/14 07:35:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -289,6 +289,7 @@ ArgumentList &ArgumentList::add_argument(const std::string &x, Oid type)
    types.push_back(type);
    null.push_back(false);
    binary.push_back(false);
+  --params_needed;
    return *this;
 }
 
