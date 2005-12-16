@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.71 2005/12/16 07:52:52 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.72 2005/12/16 07:53:11 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -35,6 +35,7 @@
 #include <map>
 #include <BaseObjects/Model_ref_bvector.h>
 
+#define SIMPLE_TREE_WARN /* __deprecated */
 #ifndef SIMPLE_TREE_NO_COMPAT
 #define ST_DEPRECATED
 #endif
@@ -82,8 +83,8 @@ public:
 	const SimpleTreeModel &getModel() const { return *model; }
 	void setModel(SimpleTreeModel &model);
 
-	__deprecated void setDataVec(const SimpleTreeModel::datavec_t &d) {  model->setDataVec(d); }
-	__deprecated const SimpleTreeModel::datavec_t &getDataVec() const { return model->getDataVec(); }
+	SIMPLE_TREE_WARN void setDataVec(const SimpleTreeModel::datavec_t &d) {  model->setDataVec(d); }
+	SIMPLE_TREE_WARN const SimpleTreeModel::datavec_t &getDataVec() const { return model->getDataVec(); }
 	void clear() { model->clear(); }
 };
 
@@ -121,15 +122,15 @@ public:
 	{ return Properties().create_node(suminit); }
 #ifdef ST_DEPRECATED
 	typedef Handle<TreeRow> (*NewNode_fp)(const Handle<const TreeRow> &suminit);
-	__deprecated void setTitles(const std::vector<std::string> &T);
-	__deprecated void setTitleAt(unsigned idx,const std::string &s);
-	__deprecated void set_editable(unsigned idx,bool v=true);
-	__deprecated void set_column_type(unsigned idx, SimpleTreeModel_Properties::column_type_t t);
-	__deprecated void set_value_data(gpointer _p);
-	__deprecated void set_remember(const std::string &program, const std::string &instance);
-	__deprecated void set_NewNode(NewNode_fp n);
-	__deprecated void setAlignment(const std::vector<gfloat> &A);
-	__deprecated void setResizeable(const std::vector<bool> &R);
+	SIMPLE_TREE_WARN void setTitles(const std::vector<std::string> &T);
+	SIMPLE_TREE_WARN void setTitleAt(unsigned idx,const std::string &s);
+	SIMPLE_TREE_WARN void set_editable(unsigned idx,bool v=true);
+	SIMPLE_TREE_WARN void set_column_type(unsigned idx, SimpleTreeModel_Properties::column_type_t t);
+	SIMPLE_TREE_WARN void set_value_data(gpointer _p);
+	SIMPLE_TREE_WARN void set_remember(const std::string &program, const std::string &instance);
+	SIMPLE_TREE_WARN void set_NewNode(NewNode_fp n);
+	SIMPLE_TREE_WARN void setAlignment(const std::vector<gfloat> &A);
+	SIMPLE_TREE_WARN void setResizeable(const std::vector<bool> &R);
 #endif
 };
 
@@ -314,7 +315,7 @@ public:
 	static Glib::RefPtr<SimpleTreeStore> create(int max_colidx);
 	static Glib::RefPtr<SimpleTreeStore> create(SimpleTreeModel_Properties &props);
 #ifdef ST_DEPRECATED
-	__deprecated void set_remember(const std::string &program, const std::string &instance);
+	SIMPLE_TREE_WARN void set_remember(const std::string &program, const std::string &instance);
 #endif
 	void setProperties(SimpleTreeModel_Properties &p,bool we_own=false);
 	
