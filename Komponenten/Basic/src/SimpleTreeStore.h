@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.70 2005/11/10 18:10:13 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.71 2005/12/16 07:52:52 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -51,10 +51,9 @@ struct SimpleTreeModel_Properties : sigc::trackable
   { return 0.0; }
   virtual bool editable(guint _seqnr) const
   { return false; }
+  // einen neuen Ast erzeugen, deep ist die Spalte, v der Wert dieser Spalte
   virtual Handle<TreeRow> create_node(const Handle<const TreeRow> &suminit) const
   { return Handle<TreeRow>(); }
-//  virtual bool ColumnsAreEquivalent() const
-//  { return true; }
   virtual column_type_t get_column_type(unsigned idx) const
   { return ct_string; }
   virtual std::string ProgramName() const { return std::string(); }
@@ -120,7 +119,6 @@ public:
 	std::string InstanceName() const { return Properties().InstanceName(); }
 	Handle<TreeRow> create_node(const Handle<const TreeRow> &suminit) const
 	{ return Properties().create_node(suminit); }
-//	bool ColumnsAreEquivalent() const { return Properties().ColumnsAreEquivalent(); }
 #ifdef ST_DEPRECATED
 	typedef Handle<TreeRow> (*NewNode_fp)(const Handle<const TreeRow> &suminit);
 	__deprecated void setTitles(const std::vector<std::string> &T);
@@ -132,7 +130,6 @@ public:
 	__deprecated void set_NewNode(NewNode_fp n);
 	__deprecated void setAlignment(const std::vector<gfloat> &A);
 	__deprecated void setResizeable(const std::vector<bool> &R);
-//	__deprecated void RedisplayOnReorder();
 #endif
 };
 
@@ -177,7 +174,6 @@ class SimpleTreeStore : virtual public Glib::Object, public Gtk::TreeModel,
 		public SimpleTreeModel_Properties_Proxy
 {public:
 
-	// einen neuen Ast erzeugen, deep ist die Spalte, v der Wert dieser Spalte
 #ifdef ST_DEPRECATED
 	typedef SimpleTreeModel_Properties_Proxy::NewNode_fp NewNode_fp;
 #endif
@@ -187,11 +183,11 @@ class SimpleTreeStore : virtual public Glib::Object, public Gtk::TreeModel,
 	typedef Node::const_iterator const_iterator;
 	typedef Node::iterator iterator;
 	typedef std::deque<guint> sequence_t;
-	// first value is ":order", second is ":visible"
 
 	static const UniqueValue::value_t trace_channel;
 	static const unsigned invisible_column=unsigned(-1);
 protected:
+	// first value is ":order", second is ":visible"
         static std::pair<std::string,std::string> default_load(const std::string&program, const std::string&instance);
         static void default_save(const std::string&program, const std::string&instance, const std::pair<std::string,std::string>&value);
         
@@ -206,6 +202,7 @@ private:
 	guint showdeep;  // nicht hier ben�igt
 	std::vector<bool> vec_hide_cols; // index is index
 
+	// since we need the address of this variables, we can't use a bitfield
 	bool auffuellen_bool; 
 	bool expandieren_bool;
 	bool block_save;
@@ -231,7 +228,6 @@ private:
 	void on_visibly_changed(bvector_iterator it);
 	void value_change_impl(cH_RowDataBase row,unsigned idx,std::string const& newval, bool &has_changed);
 	
-//	SigC::Signal0<void> needs_redisplay;
 	void redisplay();
 	void init();
 	void insertLine(Node &parent,const cH_RowDataBase &d, 
@@ -303,8 +299,6 @@ public:
 	   Gtk::TreeModelColumn<guint> deep;
 	   // childrens_deep=0 -> Leaf
 	   Gtk::TreeModelColumn<guint> childrens_deep;
-	   // the node's value (at deep)
-	   // Gtk::TreeModelColumn<cH_EntryValue> value;
 	   // if we're a node this is not 'our' data
 	   Gtk::TreeModelColumn<cH_RowDataBase> leafdata;
 	   
@@ -362,16 +356,11 @@ public:
 	void set_tree_column_visibility(unsigned index,bool visible);
 	
 	// better use the new API (which maintains a consistent tree (e.g.sums))
-	// getModel()->about_to_change(row); XYZ; getModel()->has_changed(row);
 	void redisplay_old(cH_RowDataBase row, unsigned index);
 	void redisplay_old(Gtk::TreeModel::iterator row, unsigned index);
 	
-	// all lines have changed - redisplay is needed!
-//	SigC::Signal0<void> &signal_redisplay() {  return needs_redisplay; }
-	
 	// these are accessors for SimpleTreeStates
 	Model_ref<guint> ShowDeep() { return Model_ref<guint>(showdeep,signal_save); }
-//	__deprecated__ Model_ref<bool> ShowColor() { return Model_ref<bool>(color_bool,signal_save); }
 	Model_ref<bool> OptionColor() { return Model_ref<bool>(color_bool,signal_save); }
 	Model_ref<bool> OptionAuffullen() { return Model_ref<bool>(auffuellen_bool,signal_save); }
 	Model_ref<bool> OptionExpandieren() { return Model_ref<bool>(expandieren_bool,signal_save); }
