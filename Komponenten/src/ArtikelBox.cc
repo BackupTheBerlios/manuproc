@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.34 2005/12/01 18:36:18 christof Exp $
+// $Id: ArtikelBox.cc,v 1.35 2005/12/16 07:52:44 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -258,7 +258,8 @@ void ArtikelBox::init()
 }
 
 void ArtikelBox::setzeAnzeige(const ArtikelBoxAnzeige &anz)
-{  // Altes Widget löschen (Gtk::Container::)
+{  if (anz.schema!=schema) setExtBezSchema(anz.schema);
+   // Altes Widget löschen (Gtk::Container::)
    remove();
    combos.clear();
    labels.clear();
