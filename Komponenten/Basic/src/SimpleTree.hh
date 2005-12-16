@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.61 2005/12/06 07:18:59 christof Exp $
+// $Id: SimpleTree.hh,v 1.62 2005/12/16 07:53:19 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -39,11 +39,11 @@ public:
 	{}
 
 #ifdef ST_DEPRECATED
-	__deprecated void set_remember(const std::string &program, const std::string &instance);
-	__deprecated void setTitles(const std::vector<std::string> &T);
-	__deprecated void setTitleAt(unsigned idx, const std::string &s);
-	__deprecated void set_NewNode(SimpleTreeStore::NewNode_fp n);
-	__deprecated void set_value_data(gpointer _p);
+	SIMPLE_TREE_WARN void set_remember(const std::string &program, const std::string &instance);
+	SIMPLE_TREE_WARN void setTitles(const std::vector<std::string> &T);
+	SIMPLE_TREE_WARN void setTitleAt(unsigned idx, const std::string &s);
+	SIMPLE_TREE_WARN void set_NewNode(SimpleTreeStore::NewNode_fp n);
+	SIMPLE_TREE_WARN void set_value_data(gpointer _p);
 #endif
 	guint Cols() const  { return sts->Cols();}
 
@@ -74,7 +74,7 @@ public:
 	
 	void set_column_visibility(unsigned index,bool on) { sts->set_tree_column_visibility(index,on); }
 	
-	__deprecated void redisplay(cH_RowDataBase row, unsigned index) {  sts->redisplay_old(row,index); }
+	SIMPLE_TREE_WARN void redisplay(cH_RowDataBase row, unsigned index) {  sts->redisplay_old(row,index); }
 	// the fast variant
 	void redisplay(Gtk::TreeModel::iterator iter, unsigned index) {  sts->redisplay_old(iter,index); }
 	const SimpleTreeModel_Properties &Properties() const { return sts->Properties(); }
@@ -143,10 +143,10 @@ public:
 
 	void Expand_recursively();
 	void Collapse();
-	__deprecated void setTitles(const std::vector<std::string> &T);
-	__deprecated void setAlignment(const std::vector<gfloat> &A);
-	__deprecated void setResizeable(const std::vector<bool> &R);	
-	__deprecated void setResizeable(const bool b);		
+	SIMPLE_TREE_WARN void setTitles(const std::vector<std::string> &T);
+	SIMPLE_TREE_WARN void setAlignment(const std::vector<gfloat> &A);
+	SIMPLE_TREE_WARN void setResizeable(const std::vector<bool> &R);	
+	SIMPLE_TREE_WARN void setResizeable(const bool b);		
 	
 	void debug();
 	
