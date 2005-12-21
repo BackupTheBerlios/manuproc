@@ -1,4 +1,4 @@
-// $Id: testKW.cc,v 1.12 2005/12/21 07:18:27 christof Exp $
+// $Id: testKW.cc,v 1.13 2005/12/21 07:18:47 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -106,7 +106,8 @@ int main()
    std::cout << "today = "<<d << " = " << d.KW() << '\n';
 
    d=ManuProC::Datum(20,12,1800);
-   std::cout << d << " = " << d.KW() << '\n';
+   try { std::cout << d << " = " << d.KW() << '\n';
+   } catch (ManuProC::Datumsfehler &e) {}
    
    return 0;
 }
