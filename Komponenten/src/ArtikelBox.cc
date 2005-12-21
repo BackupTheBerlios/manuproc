@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.35 2005/12/16 07:52:44 christof Exp $
+// $Id: ArtikelBox.cc,v 1.36 2005/12/21 07:23:17 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -685,12 +685,15 @@ void ArtikelBox::set_always_fill(bool fill)
         (*i)->set_always_fill(fill); }  
 
 void ArtikelBox::set_focus(int sig, int field)
-   {
-    assert(combos.size()>sig);
-    assert(combos[sig].size()>field);
+{  if (sig<0) sig+=combos.size();
+   assert(sig>=0);
+   assert(combos.size()>sig);
+   if (field<0) field+=combos[sig].size();
+   assert(field>=0);
+   assert(combos[sig].size()>field);
 //    combos[sig][field]->reset();
-    combos[sig][field]->grab_focus();
-   }
+   combos[sig][field]->grab_focus();
+}
   
 
 void ArtikelBox::set_automatisch_anlegen(bool b)

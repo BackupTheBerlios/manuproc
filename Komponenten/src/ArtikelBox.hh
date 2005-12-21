@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.hh,v 1.30 2005/11/25 15:19:04 christof Exp $
+// $Id: ArtikelBox.hh,v 1.31 2005/12/21 07:23:18 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.30 2005/11/25 15:19:04 christof Exp $
+// $Id: ArtikelBox.hh,v 1.31 2005/12/21 07:23:18 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -287,6 +287,7 @@ public:
 			" kw.kundennr="+itos(kid)+")";		
 	  }
 
+	// -1 means the last, -2 the last but one ... 0 means first, 1 second ...
 	void set_focus(int sig, int field);
 	void set_reset_on_focus(bool b) { reset_on_focus=b; }
 
