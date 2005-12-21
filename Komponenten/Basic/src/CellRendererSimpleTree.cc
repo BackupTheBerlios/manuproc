@@ -1,4 +1,4 @@
-// $Id: CellRendererSimpleTree.cc,v 1.6 2005/11/03 21:17:54 christof Exp $
+// $Id: CellRendererSimpleTree.cc,v 1.7 2005/12/21 07:23:34 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,8 +20,7 @@
 #include <CellRendererSimpleTree.h>
 #include <gdkmm/pixbufloader.h>
 #include <gtkmm/treeview.h>
-
-#include <iostream>
+#include <Misc/create_parse.h>
 
 static const unsigned char plus_png_data[] = 
 {	137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,
@@ -66,7 +65,8 @@ static void create_plus_minus()
 
 CellRendererSimpleTree::CellRendererSimpleTree(guint col)
 	: Glib::ObjectBase(typeid(CellRendererSimpleTree)),
-	  column(col), childrens_deep(*this,"childrens_deep",0)
+	  column(col), childrens_deep(*this,"childrens_deep",0),
+	  children_count(*this,"children_count",0)
 {  property_mode() = Gtk::CELL_RENDERER_MODE_ACTIVATABLE;
 }
 
@@ -121,6 +121,8 @@ void CellRendererSimpleTree::render_vfunc(const Glib::RefPtr<Gdk::Drawable>& win
       adjust(cell_area,property_xpad());
       clamp(expose_area,cell_area);
       clamp(background_area,cell_area);
+      if (property_children_count()!=0)
+        property_text()="["+ManuProC::create<int>(property_children_count())+"]";
       Parent::render_vfunc(window,widget,background_area,cell_area,expose_area,flags);
    }
    else Parent::render_vfunc(window,widget,_background_area,_cell_area,_expose_area,flags);
@@ -141,6 +143,10 @@ bool CellRendererSimpleTree::activate_vfunc(GdkEvent* event, Gtk::Widget& widget
 
 Glib::PropertyProxy<guint> CellRendererSimpleTree::property_childrens_deep()
 {  return childrens_deep.get_proxy();
+}
+
+Glib::PropertyProxy<guint> CellRendererSimpleTree::property_children_count()
+{  return children_count.get_proxy();
 }
 
 #if 0

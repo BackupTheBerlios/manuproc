@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.72 2005/12/16 07:53:11 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.73 2005/12/21 07:23:35 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -208,6 +208,7 @@ private:
 	bool expandieren_bool;
 	bool block_save;
 	bool color_bool; // or in Widget?, kann in SimpleTree, muss dann aber mitgespeichert werden
+	bool display_count; // display the number of direct children
 
 	std::vector<Gdk::Color> colors;
 	static const unsigned num_colors=8;
@@ -224,12 +225,14 @@ private:
 	SigC::Signal0<void> please_attach;
 	SigC::Signal0<void> spalten_geaendert;
 	SigC::Signal1<void,gpointer> signal_save;
+	SigC::Signal1<void,gpointer> signal_redisplay_save;
 	SigC::Signal1<void,bvector_iterator> signal_visibly_changed;
 	void save_remembered1(gpointer) { save_remembered(); }
 	void on_visibly_changed(bvector_iterator it);
 	void value_change_impl(cH_RowDataBase row,unsigned idx,std::string const& newval, bool &has_changed);
 	
 	void redisplay();
+	void save_and_redisplay(gpointer);
 	void init();
 	void insertLine(Node &parent,const cH_RowDataBase &d, 
 			sequence_t::const_iterator q,guint deep,
@@ -287,7 +290,7 @@ private:
    
 	enum e_spalten
 	{  s_row, s_deep, s_childrens_deep, s_leafdata, s_background,
-	   s_text_start
+	   s_children_count, s_text_start
         };
 
 	SimpleTreeStore(int max_col); // use create instead of this ctor
@@ -300,6 +303,7 @@ public:
 	   Gtk::TreeModelColumn<guint> deep;
 	   // childrens_deep=0 -> Leaf
 	   Gtk::TreeModelColumn<guint> childrens_deep;
+	   Gtk::TreeModelColumn<guint> children_count;
 	   // if we're a node this is not 'our' data
 	   Gtk::TreeModelColumn<cH_RowDataBase> leafdata;
 	   
@@ -362,9 +366,10 @@ public:
 	
 	// these are accessors for SimpleTreeStates
 	Model_ref<guint> ShowDeep() { return Model_ref<guint>(showdeep,signal_save); }
-	Model_ref<bool> OptionColor() { return Model_ref<bool>(color_bool,signal_save); }
+	Model_ref<bool> OptionColor() { return Model_ref<bool>(color_bool,signal_redisplay_save); }
 	Model_ref<bool> OptionAuffullen() { return Model_ref<bool>(auffuellen_bool,signal_save); }
 	Model_ref<bool> OptionExpandieren() { return Model_ref<bool>(expandieren_bool,signal_save); }
+	Model_ref<bool> OptionCount() { return Model_ref<bool>(display_count,signal_redisplay_save); }
 	Model_ref<bvector_item> ShowColumn(unsigned idx) 
 	{ return Model_ref<bvector_item>(vec_hide_cols.begin()+idx,signal_visibly_changed); }
 	

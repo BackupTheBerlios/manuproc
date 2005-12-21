@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.112 2005/11/11 08:11:58 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.113 2005/12/21 07:23:35 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -215,6 +215,7 @@ void SimpleTreeStore::save_remembered() const
    if (auffuellen_bool) flags+='a';
    if (!expandieren_bool) flags+='E';
    if (!color_bool) flags+='C';
+   if (display_count) flags+='o';
    value.second=itos(sichtbar)+','+itos(showdeep)+','+flags;
 
    guint last=invisible_column;
@@ -238,6 +239,7 @@ void SimpleTreeStore::load_remembered()
    expandieren_bool=value.second.find('E')==std::string::npos;
    color_bool=value.second.find('C')==std::string::npos;
    auffuellen_bool=value.second.find('a')!=std::string::npos;
+   display_count=value.second.find('o')!=std::string::npos;
    
    block_save=true;
    // ShowColumn will signal views (and update the menu)
@@ -328,6 +330,7 @@ void SimpleTreeStore::init()
    getModel().signal_line_to_remove().connect(SigC::slot(*this,&SimpleTreeStore::on_line_removed));
    getModel().signal_value_changed().connect(SigC::slot(*this,&SimpleTreeStore::value_change_impl));
    signal_save.connect(SigC::slot(*this,&SimpleTreeStore::save_remembered1));
+   signal_redisplay_save.connect(SigC::slot(*this,&SimpleTreeStore::save_and_redisplay));
    signal_visibly_changed.connect(SigC::slot(*this,&SimpleTreeStore::on_visibly_changed));
   Gdk::Color c;
   c.set_rgb(col1,col1,col1); colors.push_back(c); // white
@@ -349,7 +352,7 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
           SimpleTreeModel_Properties_Proxy(max_col),
           columns(max_col), max_column(max_col),
 	  showdeep(), auffuellen_bool(), expandieren_bool(true), block_save(),
-	  color_bool(true), 
+	  color_bool(true), display_count(),
 	  sortierspalte(invisible_column), invert_sortierspalte(), 
 	  stamp(reinterpret_cast<long>(this)),
 	  m_columns(max_col)
@@ -363,7 +366,7 @@ SimpleTreeStore::SimpleTreeStore(SimpleTreeModel_Properties &props)
           SimpleTreeModel_Properties_Proxy(&props),
           columns(props.Columns()), max_column(props.Columns()),
 	  showdeep(), auffuellen_bool(), expandieren_bool(true), block_save(),
-	  color_bool(true), 
+	  color_bool(true), display_count(),
 	  sortierspalte(invisible_column), invert_sortierspalte(), 
 	  stamp(reinterpret_cast<long>(this)),
 	  m_columns(props.Columns())
@@ -384,6 +387,7 @@ SimpleTreeStore::ModelColumns::ModelColumns(int _cols)
 //   MC_ADD(value);
    MC_ADD(leafdata);
    MC_ADD(background);
+   MC_ADD(children_count);
    for (int i=0; i<_cols; ++i)
    {  cols.push_back(Gtk::TreeModelColumn<Glib::ustring>());
       add(cols.back());
@@ -780,6 +784,7 @@ GType SimpleTreeStore::get_column_type_vfunc(int index) const
    {  case s_row: return m_columns.row.type();
       case s_deep: return m_columns.deep.type();
       case s_childrens_deep: return m_columns.childrens_deep.type();
+      case s_children_count: return m_columns.children_count.type();
       case s_leafdata: return m_columns.leafdata.type();
       case s_background: return m_columns.background.type();
       default: return G_TYPE_STRING;
@@ -791,7 +796,7 @@ unsigned SimpleTreeStore::IterStamp() const
 }
 
 bool SimpleTreeStore::iter_valid(vfunc_constiter_t iter) const
-{  return iter .get_stamp()==IterStamp();
+{  return iter.get_stamp()==IterStamp();
 }
 
 SimpleTreeStore::iterator &SimpleTreeStore::iterconv(vfunc_iter_t iter)
@@ -851,6 +856,8 @@ void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter,
       case s_deep: VALUE_INIT_U(deep);
          return;
       case s_childrens_deep: VALUE_INIT_U(childrens_deep);
+         return;
+      case s_children_count: VALUE_INIT3(uint,childrens_deep,nd.children.size());
          return;
       case s_leafdata: VALUE_INIT(leafdata);
          return;
@@ -1131,3 +1138,8 @@ void SimpleTreeStore::value_change_impl(cH_RowDataBase row,unsigned idx,std::str
 }
 
 const unsigned SimpleTreeStore::invisible_column;
+
+void SimpleTreeStore::save_and_redisplay(gpointer g)
+{ signal_save(g);
+  column_changed(invisible_column);
+}

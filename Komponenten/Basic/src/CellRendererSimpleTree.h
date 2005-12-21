@@ -1,4 +1,4 @@
-// $Id: CellRendererSimpleTree.h,v 1.5 2005/11/03 21:17:54 christof Exp $
+// $Id: CellRendererSimpleTree.h,v 1.6 2005/12/21 07:23:34 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,7 +27,8 @@ class CellRendererSimpleTree : public Gtk::CellRendererText
 	typedef Gtk::CellRendererText Parent;
 	
 	const guint column; // which column this is in
-	Glib::Property<guint> childrens_deep; // the changing property
+	Glib::Property<guint> childrens_deep; // the changing properties
+	Glib::Property<guint> children_count;
 	
 	virtual void get_size_vfunc(Gtk::Widget& widget, const Gdk::Rectangle* cell_area, 
 			int* x_offset, int* y_offset, int* width, int* height) const;
@@ -41,6 +42,7 @@ class CellRendererSimpleTree : public Gtk::CellRendererText
 public:
 	CellRendererSimpleTree(guint col);
 	Glib::PropertyProxy<guint> property_childrens_deep();
+	Glib::PropertyProxy<guint> property_children_count();
 };
   
 #endif

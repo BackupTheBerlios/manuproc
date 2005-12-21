@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.87 2005/12/06 08:44:47 christof Exp $
+// $Id: SimpleTree.cc,v 1.88 2005/12/21 07:23:34 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -119,6 +119,8 @@ void SimpleTree_Basic::on_spalten_geaendert()
       if (getStore()->OptionColor().Value())
          pColumn->add_attribute(crst->property_background_gdk(),sts->m_columns.background);
       pColumn->add_attribute(crst->property_childrens_deep(),sts->m_columns.childrens_deep);
+      if (getStore()->OptionCount().Value())
+         pColumn->add_attribute(crst->property_children_count(),sts->m_columns.children_count);
 
       unsigned idx(IndexFromColumn(i));
       pColumn->set_alignment(Properties().Alignment(idx));
@@ -385,6 +387,7 @@ void SimpleTree_Basic::fillMenu()
 	  	"(statt der aktuellen)"),getStore()->OptionAuffullen());
   add_mitem(optionen_menu,_("Ausgewählte Spalten aufklappen"),getStore()->OptionExpandieren());
   add_mitem(optionen_menu,_("Tiefe farblich markieren"),getStore()->OptionColor());
+  add_mitem(optionen_menu,_("Zeilen zählen"),getStore()->OptionCount());
 
   optionen->set_submenu(*optionen_menu);
   add_mitem(menu,_("Alles aufklappen"),SigC::slot(*this,&SimpleTree_Basic::Expand_recursively));
