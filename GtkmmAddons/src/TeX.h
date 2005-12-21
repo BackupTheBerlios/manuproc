@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: TeX.h,v 1.9 2005/11/01 23:09:28 christof Exp $
+// $Id: TeX.h,v 1.10 2005/12/21 07:27:29 christof Exp $
 
 #include <iostream>
 #include <string>
@@ -43,7 +43,7 @@ namespace TeX
 		// in inches
 		float topmargin,leftmargin,bottommargin,rightmargin;
 		std::string leftfoot,rightfoot; // fancyheadings
-		std::string leftheader,rightheader; // fancyheadings
+		std::string leftheader,centerheader,rightheader; // fancyheadings
 		Simple_cb preamble_cb; // called before begin{document}
 		gpointer user_data;
 		std::string packages;
