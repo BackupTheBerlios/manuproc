@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: TeX.h,v 1.10 2005/12/21 07:27:29 christof Exp $
+// $Id: TeX.h,v 1.11 2005/12/21 07:27:49 christof Exp $
 
 #include <iostream>
 #include <string>
@@ -49,6 +49,7 @@ namespace TeX
 		std::string packages;
 		std::string pagestyle;
 		std::string preamble;
+		int headersize;
 		
 		HeaderFlags()
 		: latin1(!TeX_uses_UTF8), utf8(TeX_uses_UTF8), 
@@ -57,7 +58,7 @@ namespace TeX
 		  helvetica(true), landscape(), twocolumn(),
 		  ptsize(10), topmargin(1*in_cm), leftmargin(1), 
 		  bottommargin(1*in_cm), rightmargin(1.5*in_cm),
-		  preamble_cb(), user_data()
+		  preamble_cb(), user_data(), headersize()
 		{}
 	};
 	struct StringFlags

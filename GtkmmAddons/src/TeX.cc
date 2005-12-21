@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: TeX.cc,v 1.14 2005/12/21 07:27:29 christof Exp $
+// $Id: TeX.cc,v 1.15 2005/12/21 07:27:49 christof Exp $
 
 #include <config.h>
 #include <TeX.h>
@@ -36,7 +36,7 @@ std::ostream &TeX::Header(std::ostream &os, HeaderFlags fl)
    }
 
    // now output it
-   os << "% created using $Id: TeX.cc,v 1.14 2005/12/21 07:27:29 christof Exp $\n";
+   os << "% created using $Id: TeX.cc,v 1.15 2005/12/21 07:27:49 christof Exp $\n";
    os << "\\documentclass["<< fl.ptsize << "pt";
    if (fl.a4) os << ",a4paper";
    if (fl.twocolumn) os << ",twocolumn";
@@ -68,9 +68,11 @@ std::ostream &TeX::Header(std::ostream &os, HeaderFlags fl)
    
    if (fl.landscape) os << "\\setpapersize[landscape]{A4}\n";
 
+   if (!fl.headersize && fl.header) fl.headersize=fl.ptsize;
+   
    os << "\\setmarginsrb{"<<fl.leftmargin<<"in}{"<<fl.topmargin<<"in}{"
    	<<fl.rightmargin<<"in}{"<<fl.bottommargin<<"in}{"
-   	<<(fl.header?fl.ptsize:0)<<"pt}{"<<(fl.header?fl.ptsize:0)<<"pt}{"
+   	<<(fl.headersize)<<"pt}{"<<(fl.header?fl.ptsize:0)<<"pt}{"
    	<<(fl.footer?fl.ptsize:0)<<"pt}{"<<(fl.footer?fl.ptsize:0)<<"pt}\n";
    
    if (fl.pagestyle.size())
