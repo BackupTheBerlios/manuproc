@@ -1,4 +1,4 @@
-// $Id: datewin.h,v 1.16 2005/12/21 07:23:58 christof Exp $
+// $Id: datewin.h,v 1.17 2005/12/21 07:24:28 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,8 +22,10 @@
 #  define _DATEWIN_HH
 #include <Misc/Datum.h>
 
+class datewin_popup;
+
 class datewin : public datewin_glade
-{  	friend class datewin_glade;
+{  	friend class datewin_popup;
 	static gint try_grab_focus(GtkWidget *w,gpointer gp) throw();
         enum FELD {TAG=1,MONAT};
         enum PAGE { p_Datum, p_Woche, p_leer };
