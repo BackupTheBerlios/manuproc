@@ -28,7 +28,7 @@ void datewin_popup::on_day_selected()
   calendar1->get_date(y,m,day);
   parent->set_value(ManuProC::Datum(day,m+1,y,parent->expandyear));
   parent->activate();
-  delete this;
+//  delete this;
 }
 
 datewin_popup::datewin_popup(datewin *p)
@@ -68,7 +68,7 @@ datewin_popup::datewin_popup(datewin *p)
 
 datewin_popup::~datewin_popup()
 { if (parent->popup==this) 
-  { parent->togglebutton_menu->set_active(false);
-    parent->popup=0;
+  { parent->popup=0;
+    parent->togglebutton_menu->set_active(false);
   }
 }

@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.24 2005/12/21 07:24:36 christof Exp $
+// $Id: datewin.cc,v 1.25 2005/12/21 07:25:34 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -128,6 +128,9 @@ void datewin::kw_activate()
 
 // display datewin_popup
 void datewin::on_togglebutton_menu_toggled()
-{ if (popup || !togglebutton_menu->get_active()) { delete popup; popup=0; }
+{ if (popup || !togglebutton_menu->get_active()) 
+  { if (popup) delete popup; 
+    popup=0; 
+  }
   else popup=new datewin_popup(this);
 }
