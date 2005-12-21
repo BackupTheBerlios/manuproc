@@ -23,7 +23,8 @@ void datewin_popup::empty_clicked()
 }
 
 void datewin_popup::on_day_selected()
-{ guint y=0,m=0,day=0;
+{ if (block) return;
+  guint y=0,m=0,day=0;
   calendar1->get_date(y,m,day);
   parent->set_value(ManuProC::Datum(day,m+1,y,parent->expandyear));
   parent->activate();
