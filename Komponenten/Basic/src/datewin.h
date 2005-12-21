@@ -1,4 +1,4 @@
-// $Id: datewin.h,v 1.17 2005/12/21 07:24:28 christof Exp $
+// $Id: datewin.h,v 1.18 2005/12/21 07:24:36 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,6 +33,7 @@ class datewin : public datewin_glade
         bool expandyear;
         std::string instance;
         bool kw_bevorzugen;
+        datewin_popup *popup;
 
 //        static PAGE defaultpage;
 
@@ -43,11 +44,10 @@ class datewin : public datewin_glade
         void on_togglebutton_menu_toggled();
 
    public:
-	datewin(); // const std::string &instance="");
+	datewin();
 	ManuProC::Datum get_value() const throw(); 
 	void set_value(const ManuProC::Datum &d) throw();
 	void setLabel(const std::string &s);
-//	void setInstance(const std::string &s);
 	void setExpandYear(bool exp) { expandyear=exp; }
 	void preferWeek(bool b=true) { kw_bevorzugen=b; }
 	

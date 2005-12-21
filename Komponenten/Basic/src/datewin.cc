@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.23 2005/12/21 07:24:28 christof Exp $
+// $Id: datewin.cc,v 1.24 2005/12/21 07:24:36 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,7 +27,7 @@
 #include "datewin_popup.hh"
 
 datewin::datewin() : // const std::string &inst) : block(false), 
-	expandyear(true),kw_bevorzugen() // instance(inst)
+	expandyear(true),kw_bevorzugen(), popup()
 {  set_value(ManuProC::Datum::today());
    jahr->signal_activate().connect(activate.slot());
    gtk_signal_connect_after(GTK_OBJECT(gobj()), "grab_focus",
@@ -128,6 +128,6 @@ void datewin::kw_activate()
 
 // display datewin_popup
 void datewin::on_togglebutton_menu_toggled()
-{ std::cerr << "x";
-  new datewin_popup(this);
+{ if (popup || !togglebutton_menu->get_active()) { delete popup; popup=0; }
+  else popup=new datewin_popup(this);
 }
