@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.88 2005/12/21 07:23:34 christof Exp $
+// $Id: SimpleTree.cc,v 1.89 2005/12/21 07:23:47 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -178,8 +178,8 @@ void SimpleTree_Basic::on_abbrechen_clicked()
 }
 
 void SimpleTree_Basic::on_zuruecksetzen_clicked()
-{  // bool alte_reihenfolge;
-   clicked_seq.clear();
+{  clicked_seq.clear();
+   getStore()->fillSequence(clicked_seq,true);
    on_neuordnen_clicked();
 }
 
