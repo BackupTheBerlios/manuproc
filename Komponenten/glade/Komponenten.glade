@@ -1364,7 +1364,7 @@
 </widget>
 
 <widget class="GtkWindow" id="datewin_popup">
-  <property name="visible">True</property>
+  <property name="visible">False</property>
   <property name="title" translatable="yes">Datumseigenschaften</property>
   <property name="type">GTK_WINDOW_POPUP</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
@@ -1380,91 +1380,100 @@
   <property name="urgency_hint">False</property>
 
   <child>
-    <widget class="GtkVBox" id="vbox2">
+    <widget class="GtkFrame" id="frame1">
       <property name="visible">True</property>
-      <property name="homogeneous">False</property>
-      <property name="spacing">0</property>
+      <property name="label_xalign">0</property>
+      <property name="label_yalign">0.5</property>
+      <property name="shadow_type">GTK_SHADOW_ETCHED_OUT</property>
 
       <child>
-	<widget class="GtkToolbar" id="toolbar1">
+	<widget class="GtkVBox" id="vbox2">
 	  <property name="visible">True</property>
-	  <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
-	  <property name="toolbar_style">GTK_TOOLBAR_TEXT</property>
-	  <property name="tooltips">True</property>
-	  <property name="show_arrow">False</property>
+	  <property name="homogeneous">False</property>
+	  <property name="spacing">0</property>
 
 	  <child>
-	    <widget class="GtkToolButton" id="toolbutton1">
+	    <widget class="GtkToolbar" id="toolbar1">
 	      <property name="visible">True</property>
-	      <property name="can_default">True</property>
-	      <property name="has_default">True</property>
-	      <property name="label" translatable="yes">Datum</property>
-	      <property name="use_underline">True</property>
-	      <property name="visible_horizontal">True</property>
-	      <property name="visible_vertical">True</property>
-	      <property name="is_important">False</property>
-	      <signal name="clicked" handler="datum_clicked" last_modification_time="Mon, 19 Dec 2005 17:01:27 GMT"/>
+	      <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+	      <property name="toolbar_style">GTK_TOOLBAR_TEXT</property>
+	      <property name="tooltips">True</property>
+	      <property name="show_arrow">False</property>
+
+	      <child>
+		<widget class="GtkToolButton" id="toolbutton1">
+		  <property name="visible">True</property>
+		  <property name="can_default">True</property>
+		  <property name="has_default">True</property>
+		  <property name="label" translatable="yes">Datum</property>
+		  <property name="use_underline">True</property>
+		  <property name="visible_horizontal">True</property>
+		  <property name="visible_vertical">True</property>
+		  <property name="is_important">False</property>
+		  <signal name="clicked" handler="datum_clicked" last_modification_time="Mon, 19 Dec 2005 17:01:27 GMT"/>
+		</widget>
+		<packing>
+		  <property name="expand">True</property>
+		  <property name="homogeneous">True</property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkToolButton" id="toolbutton2">
+		  <property name="visible">True</property>
+		  <property name="can_default">True</property>
+		  <property name="label" translatable="yes">Woche</property>
+		  <property name="use_underline">True</property>
+		  <property name="visible_horizontal">True</property>
+		  <property name="visible_vertical">True</property>
+		  <property name="is_important">False</property>
+		  <signal name="clicked" handler="woche_clicked" last_modification_time="Mon, 19 Dec 2005 17:01:37 GMT"/>
+		</widget>
+		<packing>
+		  <property name="expand">True</property>
+		  <property name="homogeneous">True</property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkToolButton" id="toolbutton3">
+		  <property name="visible">True</property>
+		  <property name="can_default">True</property>
+		  <property name="label" translatable="yes">leer</property>
+		  <property name="use_underline">True</property>
+		  <property name="visible_horizontal">True</property>
+		  <property name="visible_vertical">True</property>
+		  <property name="is_important">False</property>
+		  <signal name="clicked" handler="empty_clicked" last_modification_time="Mon, 19 Dec 2005 17:01:55 GMT"/>
+		</widget>
+		<packing>
+		  <property name="expand">True</property>
+		  <property name="homogeneous">True</property>
+		</packing>
+	      </child>
 	    </widget>
 	    <packing>
-	      <property name="expand">True</property>
-	      <property name="homogeneous">True</property>
+	      <property name="padding">0</property>
+	      <property name="expand">False</property>
+	      <property name="fill">False</property>
 	    </packing>
 	  </child>
 
 	  <child>
-	    <widget class="GtkToolButton" id="toolbutton2">
+	    <widget class="GtkCalendar" id="calendar1">
+	      <property agent="glademm" name="cxx_visibility">protected</property>
 	      <property name="visible">True</property>
-	      <property name="can_default">True</property>
-	      <property name="label" translatable="yes">Woche</property>
-	      <property name="use_underline">True</property>
-	      <property name="visible_horizontal">True</property>
-	      <property name="visible_vertical">True</property>
-	      <property name="is_important">False</property>
-	      <signal name="clicked" handler="woche_clicked" last_modification_time="Mon, 19 Dec 2005 17:01:37 GMT"/>
+	      <property name="can_focus">True</property>
+	      <property name="display_options">GTK_CALENDAR_SHOW_HEADING|GTK_CALENDAR_SHOW_DAY_NAMES|GTK_CALENDAR_SHOW_WEEK_NUMBERS|GTK_CALENDAR_WEEK_START_MONDAY</property>
+	      <signal name="day_selected" handler="on_day_selected"/>
 	    </widget>
 	    <packing>
+	      <property name="padding">0</property>
 	      <property name="expand">True</property>
-	      <property name="homogeneous">True</property>
-	    </packing>
-	  </child>
-
-	  <child>
-	    <widget class="GtkToolButton" id="toolbutton3">
-	      <property name="visible">True</property>
-	      <property name="can_default">True</property>
-	      <property name="label" translatable="yes">leer</property>
-	      <property name="use_underline">True</property>
-	      <property name="visible_horizontal">True</property>
-	      <property name="visible_vertical">True</property>
-	      <property name="is_important">False</property>
-	      <signal name="clicked" handler="empty_clicked" last_modification_time="Mon, 19 Dec 2005 17:01:55 GMT"/>
-	    </widget>
-	    <packing>
-	      <property name="expand">True</property>
-	      <property name="homogeneous">True</property>
+	      <property name="fill">True</property>
 	    </packing>
 	  </child>
 	</widget>
-	<packing>
-	  <property name="padding">0</property>
-	  <property name="expand">False</property>
-	  <property name="fill">False</property>
-	</packing>
-      </child>
-
-      <child>
-	<widget class="GtkCalendar" id="calendar1">
-	  <property agent="glademm" name="cxx_visibility">protected</property>
-	  <property name="visible">True</property>
-	  <property name="can_focus">True</property>
-	  <property name="display_options">GTK_CALENDAR_SHOW_HEADING|GTK_CALENDAR_SHOW_DAY_NAMES|GTK_CALENDAR_SHOW_WEEK_NUMBERS|GTK_CALENDAR_WEEK_START_MONDAY</property>
-	  <signal name="day_selected" handler="on_day_selected"/>
-	</widget>
-	<packing>
-	  <property name="padding">0</property>
-	  <property name="expand">True</property>
-	  <property name="fill">True</property>
-	</packing>
       </child>
     </widget>
   </child>

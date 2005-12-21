@@ -7,6 +7,7 @@ class datewin;
 
 class datewin_popup : public datewin_popup_glade
 { datewin* parent;
+  bool block;
 
         void datum_clicked();
         void woche_clicked();
