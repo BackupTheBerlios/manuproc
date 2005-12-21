@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.21 2005/11/25 12:49:02 christof Exp $
+// $Id: datewin.cc,v 1.22 2005/12/21 07:23:58 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,14 +25,12 @@
 #include <cassert>
 #include <gtk/gtksignal.h>
 
-datewin::datewin(const std::string &inst) : block(false), 
-	expandyear(true),instance(inst)
+datewin::datewin() : // const std::string &inst) : block(false), 
+	expandyear(true),kw_bevorzugen() // instance(inst)
 {  set_value(ManuProC::Datum::today());
    jahr->signal_activate().connect(activate.slot());
    gtk_signal_connect_after(GTK_OBJECT(gobj()), "grab_focus",
     		GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
-   set_scrollable(false); // for now ...
-   
    tag->signal_changed().connect(changed.slot());
    monat->signal_changed().connect(changed.slot());
    jahr->signal_changed().connect(changed.slot());
@@ -43,7 +41,7 @@ datewin::datewin(const std::string &inst) : block(false),
 ManuProC::Datum datewin::get_value() const throw()
 {  ManuProC::Datum d;
 
-   switch(get_current_page())
+   switch(notebook->get_current_page())
    {  case p_Datum:
          tag->update();
          monat->update();
@@ -57,15 +55,8 @@ ManuProC::Datum datewin::get_value() const throw()
          d=ManuProC::Datum(Kalenderwoche(kw_spinbutton->get_value_as_int(),
          	jahr_spinbutton->get_value_as_int()));
          break;
-      case p_Kalender:
-         {  guint y=0,m=0,day=0;
-            calendar1->get_date(y,m,day);
-            d=ManuProC::Datum(day,m+1,y,expandyear);
-         }
-         break;
       case p_leer: d=ManuProC::Datum(); break;
    }
-//   const_cast<datewin*>(this)->set_value(d);
    return d;
 }
 
@@ -77,20 +68,12 @@ void datewin::set_value (const ManuProC::Datum &d) throw()
       jahr->set_value (d.Jahr());
       kw_spinbutton->set_value(d.KW().Woche());
       jahr_spinbutton->set_value(d.KW().Jahr());
-      calendar1->select_month(d.Monat()-1,d.Jahr());
-      block=true;
-      calendar1->select_day(d.Tag());
-      block=false;
-      int pg=load_settings();
-      // Tag ist in Kalenderwochendarstellung nicht exakt darstellbar
-      // (Informationsverlust) => Datum nehmen
+      int pg=kw_bevorzugen?p_Woche:p_Datum;
       if (pg==p_Woche && d.Tag()!=ManuProC::Datum(d.KW()).Tag()) pg=p_Datum;
-      set_current_page(pg);
+      notebook->set_current_page(pg);
    }
    else 
-   {  block=true;
-      set_current_page(p_leer);
-      block=false;
+   {  notebook->set_current_page(p_leer);
    }
    changed();
 }
@@ -98,7 +81,7 @@ void datewin::set_value (const ManuProC::Datum &d) throw()
 gint datewin::try_grab_focus(GtkWidget *w,gpointer gp) throw()
 {  datewin *_this=dynamic_cast<datewin*>((Glib::Object*)gp);
    assert(_this);
-   switch(_this->get_current_page())
+   switch(_this->notebook->get_current_page())
    {  case p_Datum:
    	  _this->jahr->select_region(0,_this->jahr->get_text_length());
    	  _this->monat->select_region(0,_this->monat->get_text_length());
@@ -110,9 +93,6 @@ gint datewin::try_grab_focus(GtkWidget *w,gpointer gp) throw()
    	  _this->kw_spinbutton->select_region(0,_this->kw_spinbutton->get_text_length());
           _this->kw_spinbutton->grab_focus();
    	  break;
-      case p_Kalender:
-          _this->calendar1->grab_focus();
-          break;
       case p_leer:
 	  break;
    }
@@ -133,60 +113,19 @@ void datewin::on_monat_activate()
 
 
 void datewin::setLabel(const std::string &s)
-{  set_show_tabs(!s.empty());
-   set_scrollable(!s.empty());
-   if (!s.empty()) datum_label->set_text(s);
-//   std::cout << "datewin::setLabel("<<s<<");\n";
+{  datum_label->set_text(s);
 }
 
 void datewin::datum_activate()
-{  save_settings();
-   set_value(get_value());
+{  set_value(get_value());
    activate();
 }
 void datewin::kw_activate()
-{  save_settings();
-   set_value(get_value());
+{  set_value(get_value());
    activate();
 }
-void datewin::on_day_selected()
-{  if (block) return;
-   save_settings();
-   set_value(get_value());
-   activate();
+
+// display datewin_popup
+void datewin::on_togglebutton_menu_toggled()
+{
 }
-void datewin::datum_setzen()
-{  if (!tag->get_value_as_int())
-   {  set_value(ManuProC::Datum::today());
-   }
-   else set_current_page(load_settings());
-}
-
-// cache
-datewin::PAGE datewin::defaultpage=datewin::p_leer;
-
-void datewin::save_settings() const
-{  int u=getuid();
-   Global_Settings(u,instance,"datewin:page").set_Wert(itos(get_current_page()));
-   defaultpage=PAGE(get_current_page());
-}
-
-int datewin::load_settings() const
-{  if (defaultpage==p_leer)
-      defaultpage=PAGE(atoi(Global_Settings(getuid(),instance,"datewin:page").get_Wert().c_str()));
-   return int(defaultpage);
-}
-
-//void datewin::on_datewin_switch_page(Gtk::Notebook_Helpers::Page *p0, guint p1)
-void datewin::on_datewin_switch_page(_GtkNotebookPage *p0, guint p1)
-{  changed();
-   if (p1==p_Kalender)
-      calendar1->show();
-   else calendar1->hide();
-   if(p1==p_leer && !block)  // um das Datum auch zurücksetzen zu können
-     activate();
-}
-
-void datewin::setInstance(const std::string &ins)
-{instance=ins;}
-

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.60 2005/11/25 13:56:06 christof Exp $
+# $Id: Makefile.am,v 1.61 2005/12/21 07:23:58 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  -DCOMPILE_KOMPONENTEN \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -29,7 +29,9 @@ LINKS= EingabeBox.cc EingabeBox.hh datewin.cc datewin.h \
 	SearchCombo.hh MyMessage.h int_ImageButton.hh int_ImageButton.cc \
 	IntStringBox.hh IntStringBox.cc IntStringBox_glade.cc \
 	IntStringBox_sql.pgcc IntStringBox_gui.hh IntStringBox_glade.hh \
-	IntStringBox_gui.cc IntStringPopup_glade.cc IntStringPopup_glade.hh
+	IntStringBox_gui.cc IntStringPopup_glade.cc IntStringPopup_glade.hh \
+	datewin_popup_glade.hh datewin_popup_glade.cc datewin_popup.hh \
+	datewin_popup.cc
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
@@ -74,18 +76,7 @@ libKomponenten_a_SOURCES= \
         Optionmenu_AuftragLabel.cc Optionmenu_Lager.cc \
         VerfuegbarPixmap.cc \
         WTelefon_glade.cc WTelefon.cc ZahlungsArtBox.cc \
-	PersonenBox.cc
-
-lateron= \
-		KundenBox_glade.cc \
-      Artikel_Bestellen.cc \
-      PPixmap.cc \
-      WTelefon.cc \
-      WTelefon_glade.cc \
-      PersonenBox.cc \
-      LandesBox.cc \
-      ZahlungsArtBox.cc \
-      KundenBox2.cc
+	PersonenBox.cc datewin_popup_glade.cc datewin_popup.cc 
 
 BUILT_SOURCES_L= $(LINKS) \
 	IntStringBox_sql.cc ArtikelBox_sql.cc AB_Breitensuche_sql.cc \
