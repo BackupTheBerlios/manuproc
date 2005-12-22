@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.33 2005/12/14 07:35:34 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.34 2005/12/22 09:27:11 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -326,6 +326,8 @@ ArgumentList &ArgumentList::operator<<(const std::string &str)
 }
 template<>
 const Oid Query::NullIf_s<std::string>::postgres_type=TEXTOID;
+template<>
+const Oid Query::NullIf_s<char const*>::postgres_type=TEXTOID;
 
 ArgumentList &ArgumentList::operator<<(long i)
 { return add_argument(itos(i),INT4OID);
@@ -347,6 +349,7 @@ ArgumentList &ArgumentList::operator<<(double i)
 {  return add_argument(dtos(i),FLOAT4OID);
 }
 template<> const Oid Query::NullIf_s<double>::postgres_type=FLOAT4OID;
+template<> const Oid Query::NullIf_s<float>::postgres_type=FLOAT4OID;
 
 ArgumentList &ArgumentList::operator<<(bool i)
 {  return add_argument(btos(i),BOOLOID);
