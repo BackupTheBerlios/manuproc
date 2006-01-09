@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.34 2005/12/22 09:27:11 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.35 2006/01/09 14:45:36 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -274,7 +274,12 @@ Query &Query::add_argument(const std::string &s, Oid type)
 ArgumentList &ArgumentList::operator<<(Query_types::null_s n)
 { if (complete())
       Query_Row::mythrow(SQLerror("",ECPG_TOO_MANY_ARGUMENTS,"too many arguments"));
+#ifdef USE_PARAMETERS
   params.push_back(std::string());
+#else
+ params.push_back("NULL");
+#endif
+
   types.push_back(n.type);
   null.push_back(true);
   binary.push_back(false);
