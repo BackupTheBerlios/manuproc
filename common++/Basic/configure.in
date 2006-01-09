@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.37 2005/11/08 15:57:43 christof Exp $
+# $Id: configure.in,v 1.38 2006/01/09 14:47:55 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(ManuProC_Base,0.6.4, [manuproc-developer-de@berlios.de])
@@ -84,12 +84,15 @@ int main() {  ECPGdo(20, "test", "select true",ECPGt_EOIT, ECPGt_EORT); }
 	],[AC_DEFINE(OLD_ECPG, 1, [Define to 1 if you use ecpg 2.9.])
 		AC_MSG_RESULT([old (-2.9.0)])],
 	[AC_MSG_RESULT([new (3.0.0+)])])
-    AC_MSG_CHECKING(for PQprepare)
-    AC_COMPILE_IFELSE([
-    #include <libpq-fe.h>
-    int main() {  PQprepare((PGconn*)NULL,"name","select true",0,NULL); }
-          ],[AC_DEFINE(HAVE_PQPREPARE, 1, [Define to 1 if PQprepare is available in libpq.])
-                  AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)])
+    if test ! -e NoQueryParams
+    then
+      AC_MSG_CHECKING(for PQprepare)
+      AC_COMPILE_IFELSE([
+      #include <libpq-fe.h>
+      int main() {  PQprepare((PGconn*)NULL,"name","select true",0,NULL); }
+            ],[AC_DEFINE(HAVE_PQPREPARE, 1, [Define to 1 if PQprepare is available in libpq.])
+                    AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)])
+    fi
     
     AC_MSG_CHECKING(for postgresql server includes)
     for serverdir in /usr/include/postgresql /usr/include/postgresql/?.? 

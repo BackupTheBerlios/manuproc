@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.35 2006/01/09 14:45:36 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.36 2006/01/09 14:47:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -277,7 +277,7 @@ ArgumentList &ArgumentList::operator<<(Query_types::null_s n)
 #ifdef USE_PARAMETERS
   params.push_back(std::string());
 #else
- params.push_back("NULL");
+  params.push_back("NULL");
 #endif
 
   types.push_back(n.type);
