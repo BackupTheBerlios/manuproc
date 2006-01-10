@@ -1,8 +1,9 @@
-// $Id: window_kundengruppen.cc,v 1.2 2006/01/10 10:32:51 christof Exp $
+// $Id: window_kundengruppen.cc,v 1.3 2006/01/10 10:32:59 christof Exp $
 
 #include "config.h"
 #include "window_kundengruppen.hh"
 #include <Kunde/Kundengruppe.h>
+#include <expander_hook.h>
 
 void window_kundengruppen::on_gruppenwahl_activate()
 {  
@@ -54,7 +55,9 @@ struct kg_STprops : SimpleTreeModel_Properties
 };
 
 window_kundengruppen::window_kundengruppen(int id)
-{ gruppe->set_value(Kundengruppe::ID(id));
+{ gtk_expander_hook_size_to_parent(expander_nicht->gobj());
+  expander_nicht->set_expanded(false);
+  gruppe->set_value(Kundengruppe::ID(id));
   kundein->setProperties(*new kg_STprops<true>(),true);
   anderekunden->setProperties(*new kg_STprops<false>(),true);
   laden();
