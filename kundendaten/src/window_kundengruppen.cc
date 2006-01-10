@@ -1,4 +1,4 @@
-// $Id: window_kundengruppen.cc,v 1.7 2006/01/10 10:33:13 christof Exp $
+// $Id: window_kundengruppen.cc,v 1.8 2006/01/10 10:33:16 christof Exp $
 
 #include "config.h"
 #include "window_kundengruppen.hh"
@@ -9,7 +9,7 @@
 #include <Misc/Transaction.h>
 
 void window_kundengruppen::on_gruppenwahl_activate()
-{  
+{ laden();
 }
 
 void window_kundengruppen::neu()
