@@ -1,4 +1,4 @@
-// $Id: window_kundengruppen.cc,v 1.13 2006/01/10 10:33:30 christof Exp $
+// $Id: window_kundengruppen.cc,v 1.14 2006/01/10 10:33:32 christof Exp $
 
 #include "config.h"
 #include "window_kundengruppen.hh"
@@ -102,23 +102,23 @@ void window_kundengruppen::loeschen()
 void window_kundengruppen::entfernen()
 { kundein->nodes_select_leaves();
   std::vector<cH_RowDataBase> v=kundein->getSelectedRowDataBase_vec(false);
-  for (std::vector<cH_RowDataBase::const_iterator i=v.begin();i!=v.end();++i)
+  for (std::vector<cH_RowDataBase>::const_iterator i=v.begin();i!=v.end();++i)
   { kundein->getModel().erase(*i);
     anderekunden->getModel().push_back(*i);
-    i.cast_dynamic<const KGdata>()->k->pullFromGrp(gruppe->get_value());
+    i->cast_dynamic<const KGdata>()->k.cast_const<Kunde>()->pullFromGrp(gruppe->get_value());
   }
-  kundein->get_selection()->clear();
+  kundein->get_selection()->unselect_all();
 }
 
 void window_kundengruppen::add()
 { anderekunden->nodes_select_leaves();
   std::vector<cH_RowDataBase> v=anderekunden->getSelectedRowDataBase_vec(false);
-  for (std::vector<cH_RowDataBase::const_iterator i=v.begin();i!=v.end();++i)
+  for (std::vector<cH_RowDataBase>::const_iterator i=v.begin();i!=v.end();++i)
   { anderekunden->getModel().erase(*i);
     kundein->getModel().push_back(*i);
-    i.cast_dynamic<const KGdata>()->k->putInGrp(gruppe->get_value());
+    i->cast_dynamic<const KGdata>()->k.cast_const<Kunde>()->putInGrp(gruppe->get_value());
   }
-  anderekunden->get_selection()->clear();
+  anderekunden->get_selection()->unselect_all();
 }
 
 void window_kundengruppen::laden()
