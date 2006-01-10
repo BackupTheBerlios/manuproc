@@ -1,8 +1,10 @@
-// $Id: window_kundengruppen.cc,v 1.4 2006/01/10 10:33:04 christof Exp $
+// $Id: window_kundengruppen.cc,v 1.5 2006/01/10 10:33:08 christof Exp $
 
 #include "config.h"
 #include "window_kundengruppen.hh"
 #include <Kunde/Kundengruppe.h>
+#include <Kunde/Kunde.h>
+#include <Misc/EntryValueIntString.h>
 #include <expander_hook.h>
 
 void window_kundengruppen::on_gruppenwahl_activate()
@@ -50,7 +52,7 @@ struct KGdata : RowDataBase
 
 void window_kundengruppen::laden()
 { // .... 
-  Query q("select kundennr,exists(select true from ku_gruppen_map "
+  Query q("gruppen","select kundennr,exists(select true from ku_gruppen_map "
         "where kundennr=kundennr and grpnr=?) from kunden");
   q << gruppe->get_value();
   kundein->getModel().clear();
@@ -59,8 +61,8 @@ void window_kundengruppen::laden()
   while ((q>>is).good())
   { int kdnr; bool drin;
     is >> kdnr >> drin;
-    if (drin) kundein->getModel().push_back(KGdata(kdnr));
-    else anderekunden->getModel().push_back(KGdata(kdnr));
+    if (drin) kundein->getModel().push_back(new KGdata(kdnr));
+    else anderekunden->getModel().push_back(new KGdata(kdnr));
   }
 }
 
