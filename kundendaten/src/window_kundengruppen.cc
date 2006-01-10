@@ -1,4 +1,4 @@
-// $Id: window_kundengruppen.cc,v 1.16 2006/01/10 12:08:27 christof Exp $
+// $Id: window_kundengruppen.cc,v 1.17 2006/01/10 12:08:31 christof Exp $
 
 #include "config.h"
 #include "window_kundengruppen.hh"
@@ -17,7 +17,7 @@
 
 enum kg_STcols
 { SP_NR, SP_NAME, SP_VORNAME, SP_ORT, SP_LAND, SP_SORTNAME, SP_PLZ, 
-  SP_KINDER, SP_8, SP_9,
+  SP_KINDER, SP_GRUPPEN, SP_9,
   SP_ANZ
 };
 
@@ -26,8 +26,8 @@ void window_kundengruppen::on_schliessen_clicked()
 }
 
 struct KGdata : RowDataBase
-{ cH_Kunde k;
-  KGdata(cH_Kunde const& d) : k(d) {}
+{ cH_Kunde k; cH_Kundengruppe gruppe;
+  KGdata(cH_Kunde const& d, cH_Kundengruppe const& gr) : k(d), gruppe(gr) {}
   cH_EntryValue Value(guint _seqnr, gpointer gp) const
   { switch (_seqnr)
     { case SP_NR: return cH_EntryValueIntString(k->Id());
@@ -37,6 +37,8 @@ struct KGdata : RowDataBase
       case SP_LAND: return cH_EntryValueIntString(k->land()->Name());
       case SP_SORTNAME: return cH_EntryValueIntString(k->sortname());
       case SP_ORT: return cH_EntryValueIntString(k->ort());
+      case SP_GRUPPEN: if (!gruppe) return cH_EntryValue();
+        return cH_EntryValueIntString(gruppe->GrpName());
       default: return cH_EntryValue();
     }
   }
@@ -125,21 +127,40 @@ void window_kundengruppen::add()
   anderekunden->get_selection()->unselect_all();
 }
 
+static void dazu(SimpleTreeModel &m, Kunde::ID kd, std::vector<Kundengruppe::ID> const& gruppen)
+{ if (gruppen.empty()) m.push_back(new KGdata(kd,cH_Kundengruppe()));
+  for (std::vector<Kundengruppe::ID>::const_iterator i=gruppen.begin();i!=gruppen.end();++i)
+    m.push_back(new KGdata(kd,cH_Kundengruppe(*i)));
+}
+
 void window_kundengruppen::laden()
 { // .... 
   Transaction t;
-  Query q("gruppen","select kundennr,exists(select true from ku_gruppen_map "
-        "where kunden.kundennr=ku_gruppen_map.kundennr and grpnr=?) from kunden");
-  q << gruppe->get_value();
+  Query q("gruppen","select kundennr,grpnr from kunden "
+    "left join ku_gruppen_map using (kundennr) order by kundennr");
+  Kundengruppe::ID meinegruppe=gruppe->get_value();
   kundein->getModel().clear();
   anderekunden->getModel().clear();
   Query::Row is;
+  Kunde::ID kunde=Kunde::none_id;
+  std::vector<Kundengruppe::ID> gruppen;
+  bool drin=false;
   while ((q>>is).good())
-  { int kdnr; bool drin;
-    is >> kdnr >> drin;
-    if (drin) kundein->getModel().push_back(new KGdata(kdnr));
-    else anderekunden->getModel().push_back(new KGdata(kdnr));
+  { int kdnr; int grnr;
+    is >> kdnr >> Query::Row::MapNull(grnr,Kundengruppe::none_id);
+    if (kunde!=Kunde::ID(kdnr))
+    { if (kunde!=Kunde::none_id)
+        dazu(drin?kundein->getModel():anderekunden->getModel(),kunde,gruppen);
+      kunde=kdnr;
+      gruppen.clear();
+      drin=false;
+    }
+    if (grnr==Kundengruppe::none_id) ;
+    else if (Kundengruppe::ID(grnr)==meinegruppe) drin=true;
+    else gruppen.push_back(Kundengruppe::ID(grnr));
   }
+  if (kunde!=Kunde::none_id)
+        dazu(drin?kundein->getModel():anderekunden->getModel(),kunde,gruppen);  
   toolbutton_delete->set_sensitive(gruppe->get_value()!=KundengruppeID::None 
       && cH_Kundengruppe(gruppe->get_value())->Obergruppe()=="Benutzergruppe");
 }
@@ -168,9 +189,10 @@ struct kg_STprops : SimpleTreeModel_Properties
       case  SP_VORNAME: return _("Vorname");
       case  SP_ORT: return _("Ort");
       case  SP_LAND: return _("Land");
-      case  SP_SORTNAME: return _("Abkz.");
+      case  SP_SORTNAME: return _("Sortiername");
       case  SP_PLZ: return _("PLZ");
       case SP_KINDER: return _("Anzahl");
+      case SP_GRUPPEN: return _("Gruppe");
       default: return "";
     }
   }
