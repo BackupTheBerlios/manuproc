@@ -1,4 +1,4 @@
-// $Id: window_kundengruppen.cc,v 1.9 2006/01/10 10:33:18 christof Exp $
+// $Id: window_kundengruppen.cc,v 1.10 2006/01/10 10:33:23 christof Exp $
 
 #include "config.h"
 #include "window_kundengruppen.hh"
@@ -9,6 +9,11 @@
 #include <Misc/Transaction.h>
 #include <Misc/i18n.h>
 #include "windowTop.hh"
+#include <pwd.h>
+#include <unistd.h>
+#include <gtkmm/dialog.h>
+#include <gtkmm/stock.h>
+//#include <gtkmm/box.h>
 
 enum kg_STcols
 { SP_NR, SP_NAME, SP_VORNAME, SP_ORT, SP_LAND, SP_SORTNAME, SP_PLZ, 
@@ -37,8 +42,38 @@ void window_kundengruppen::on_gruppenwahl_activate()
 { laden();
 }
 
+static std::string Benutzername()
+{ struct passwd *p=getpwuid(getuid());
+  if (!p) return "?";
+  // oder gecos?
+  return p->pw_name;
+}
+
 void window_kundengruppen::neu()
-{  
+{ Gtk::Dialog d(_("Neue Kundengruppe anlegen"),*this,true);
+  d.add_button(Gtk::Stock::CANCEL,Gtk::RESPONSE_CANCEL);
+  d.add_button(Gtk::Stock::OK,Gtk::RESPONSE_OK);
+  d.get_vbox()->add(*Gtk::manage(new Gtk::Label(_("Wie soll die neue Kundengruppe heißen"))));
+  Gtk::Entry e;
+  d.get_vbox()->add(e);
+  d.show_all();
+  d.set_default_response(Gtk::RESPONSE_OK);
+  if (d.run()==Gtk::RESPONSE_OK)
+  { Transaction tr;
+    int id;
+    Query("lock table ku_gruppe in exclusive mode");
+    Query("select coalesce(max(grpnr+1),1) from ku_gruppe") >> id;
+    Query("insert into ku_gruppe (grpnr,name,obergruppe,kommentar) "
+      "values (?,?,?,?)") << id
+      << e.get_text() << "Benutzergruppe" 
+      << ("erzeugt am "+ManuProC::Datum::today().write_euro()+" durch "
+          +Benutzername());
+    tr.commit();
+    // View anlegen?
+    gruppe->register_value(Kundengruppe::ID(id),e.get_text());
+    gruppe->set_value(Kundengruppe::ID(id));
+    laden();
+  }
 }
 
 void window_kundengruppen::bearbeiten()
@@ -50,7 +85,10 @@ void window_kundengruppen::bearbeiten()
 }
 
 void window_kundengruppen::loeschen()
-{  
+{ Query("delete from ku_gruppen_map where grpnr=?") << gruppe->get_value();
+  Query("delete from ku_gruppe where grpnr=?") << gruppe->get_value();
+  gruppe->set_value(KundengruppeID::None);
+  laden();
 }
 
 void window_kundengruppen::entfernen()
@@ -76,6 +114,8 @@ void window_kundengruppen::laden()
     if (drin) kundein->getModel().push_back(new KGdata(kdnr));
     else anderekunden->getModel().push_back(new KGdata(kdnr));
   }
+  toolbutton_delete->set_sensitive(gruppe->get_value()!=KundengruppeID::None 
+      && cH_Kundengruppe(gruppe->get_value())->Obergruppe()=="Benutzergruppe");
 }
 
 template <bool B>

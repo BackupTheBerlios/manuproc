@@ -7049,7 +7049,8 @@ löschen</property>
 	      </child>
 
 	      <child>
-		<widget class="GtkToolButton" id="toolbutton3">
+		<widget class="GtkToolButton" id="toolbutton_delete">
+		  <property agent="glademm" name="cxx_visibility">protected</property>
 		  <property name="visible">True</property>
 		  <property name="tooltip" translatable="yes">Gruppe löschen</property>
 		  <property name="label" translatable="yes"></property>
