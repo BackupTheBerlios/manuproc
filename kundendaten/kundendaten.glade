@@ -7170,6 +7170,7 @@ löschen</property>
 		  <child>
 		    <widget class="GtkToolButton" id="toolbutton5">
 		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">ausgewählte Kunden zur Gruppe hinzufügen</property>
 		      <property name="label" translatable="yes">Hinzufügen</property>
 		      <property name="use_underline">True</property>
 		      <property name="stock_id">gtk-go-up</property>

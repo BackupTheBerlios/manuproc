@@ -1,4 +1,4 @@
-// $Id: window_kundengruppen.cc,v 1.3 2006/01/10 10:32:59 christof Exp $
+// $Id: window_kundengruppen.cc,v 1.4 2006/01/10 10:33:04 christof Exp $
 
 #include "config.h"
 #include "window_kundengruppen.hh"
@@ -25,15 +25,44 @@ void window_kundengruppen::add()
 {  
 }
 
-void window_kundengruppen::laden()
-{ // .... 
-}
-
 enum kg_STcols
 { SP_NR, SP_NAME, SP_VORNAME, SP_ORT, SP_LAND, SP_SORTNAME, SP_PLZ, 
   SP_7, SP_8, SP_9,
   SP_ANZ
 };
+
+struct KGdata : RowDataBase
+{ cH_Kunde k;
+  KGdata(cH_Kunde const& d) : k(d) {}
+  cH_EntryValue Value(guint _seqnr, gpointer gp) const
+  { switch (_seqnr)
+    { case SP_NR: return cH_EntryValueIntString(k->Id());
+      case SP_NAME: return cH_EntryValueIntString(k->firma());
+      case SP_VORNAME: return cH_EntryValueIntString(k->name2());
+      case SP_PLZ: return cH_EntryValueIntString(k->plz().empty()?k->postfachplz():k->plz());
+      case SP_LAND: return cH_EntryValueIntString(k->land()->Name());
+      case SP_SORTNAME: return cH_EntryValueIntString(k->sortname());
+      case SP_ORT: return cH_EntryValueIntString(k->ort());
+      default: return cH_EntryValue();
+    }
+  }
+};
+
+void window_kundengruppen::laden()
+{ // .... 
+  Query q("select kundennr,exists(select true from ku_gruppen_map "
+        "where kundennr=kundennr and grpnr=?) from kunden");
+  q << gruppe->get_value();
+  kundein->getModel().clear();
+  anderekunden->getModel().clear();
+  Query::Row is;
+  while ((q>>is).good())
+  { int kdnr; bool drin;
+    is >> kdnr >> drin;
+    if (drin) kundein->getModel().push_back(KGdata(kdnr));
+    else anderekunden->getModel().push_back(KGdata(kdnr));
+  }
+}
 
 template <bool B>
 struct kg_STprops : SimpleTreeModel_Properties
