@@ -1,0 +1,2 @@
+   file "sql/mk_mailing"
+execute "true"

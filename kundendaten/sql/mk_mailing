@@ -1,0 +1,20 @@
+#! /bin/sh
+
+
+psql mabelladb -e -c " \
+select distinct k.kundennr,  \
+k.firma as name, \
+k.name2 as name2, \
+coalesce(k.postanwnach,'') as postanw, \
+case when k.postfach is not null then \
+k.postfach else coalesce(k.strasse,'')||' '|| \
+coalesce(k.hsnr::text,'') end as adresse_postfach, \
+case when k.postfach is not null then k.postfplz else k.plz end as plz, \
+k.ort,l.name,m.anrede \
+from kunden k left join \
+mailing m on (m.kundennr=k.kundennr) join \
+ ku_land l on (k.landid=l.id) join \
+ku_gruppen_map g on (g.kundennr=k.kundennr and g.grpnr=101) \
+order by k.firma";
+
+

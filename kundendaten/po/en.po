@@ -1,19 +1,20 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Free Software Foundation, Inc.
+# translation of en.po to
+# Copyright (C) 2005 Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# , 2005.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: kundendaten 0.0\n"
+"Project-Id-Version: en\n"
 "Report-Msgid-Bugs-To: manuproc-developer-de@berlios.de\n"
-"POT-Creation-Date: 2005-11-15 18:22+0100\n"
-"PO-Revision-Date: 2005-11-12 22:21+0100\n"
-"Last-Translator: Christof Petig <christof@petig-baender.de>\n"
-"Language-Team: english <en@li.org>\n"
+"POT-Creation-Date: 2005-11-16 14:54+0100\n"
+"PO-Revision-Date: 2005-11-30 19:21+0100\n"
+"Last-Translator: \n"
+"Language-Team:  <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.10.2\n"
 
 #: src/windowTop_glade.cc:76 src/windowTop_glade.cc:545
 msgid "Schließen"
@@ -54,7 +55,7 @@ msgstr ""
 
 #: src/windowTop_glade.cc:111
 msgid "Kundenkontakt"
-msgstr ""
+msgstr "customer contact"
 
 #: src/windowTop_glade.cc:115
 msgid "Firma / Vorname"
@@ -563,3 +564,4 @@ msgstr ""
 #: src/window_Dialog_Bestaetigen_glade.cc:76
 msgid "Bestätigen"
 msgstr ""
+
