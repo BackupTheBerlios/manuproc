@@ -1,4 +1,4 @@
-// $Id: window_kundengruppen.cc,v 1.11 2006/01/10 10:33:25 christof Exp $
+// $Id: window_kundengruppen.cc,v 1.12 2006/01/10 10:33:28 christof Exp $
 
 #include "config.h"
 #include "window_kundengruppen.hh"
@@ -60,18 +60,25 @@ void window_kundengruppen::neu()
   d.show_all();
   d.set_default_response(Gtk::RESPONSE_OK);
   if (d.run()==Gtk::RESPONSE_OK)
-  { Transaction tr;
-    int id;
-    Query("lock table ku_gruppe in exclusive mode");
-    Query("select coalesce(max(grpnr+1),1) from ku_gruppe") >> id;
-    Query("insert into ku_gruppe (grpnr,name,obergruppe,kommentar) "
-      "values (?,?,?,?)") << id
-      << e.get_text() << "Benutzergruppe" 
-      << ("erzeugt am "+ManuProC::Datum::today().write_euro()+" durch "
-          +Benutzername());
-    tr.commit();
-    // View anlegen?
-    gruppe->register_value(Kundengruppe::ID(id),e.get_text());
+  { int id=KundengruppeID::None;
+    try
+    { // why isn't there a class method for this
+      Query("select grpnr from ku_gruppe where name=?")
+         << e.get_text() >> id;
+    }
+    catch (SQLerror &er)
+    { Transaction tr;
+      Query("lock table ku_gruppe in exclusive mode");
+      Query("select coalesce(max(grpnr+1),1) from ku_gruppe") >> id;
+      Query("insert into ku_gruppe (grpnr,name,obergruppe,kommentar) "
+        "values (?,?,?,?)") << id
+        << e.get_text() << "Benutzergruppe" 
+        << ("erzeugt am "+ManuProC::Datum::today().write_euro()+" durch "
+            +Benutzername());
+      tr.commit();
+      // View anlegen?
+      gruppe->register_value(Kundengruppe::ID(id),e.get_text());
+    }
     gruppe->set_value(Kundengruppe::ID(id));
     laden();
   }
