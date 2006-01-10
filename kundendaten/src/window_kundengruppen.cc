@@ -1,4 +1,4 @@
-// $Id: window_kundengruppen.cc,v 1.6 2006/01/10 10:33:11 christof Exp $
+// $Id: window_kundengruppen.cc,v 1.7 2006/01/10 10:33:13 christof Exp $
 
 #include "config.h"
 #include "window_kundengruppen.hh"
@@ -92,6 +92,8 @@ window_kundengruppen::window_kundengruppen(int id)
   expander_nicht->set_expanded(false);
   gruppe->set_value(Kundengruppe::ID(id));
   kundein->setProperties(*new kg_STprops<true>(),true);
+  kundein->get_selection()->set_mode(Gtk::SELECTION_MULTIPLE);
   anderekunden->setProperties(*new kg_STprops<false>(),true);
+  anderekunden->get_selection()->set_mode(Gtk::SELECTION_MULTIPLE);
   laden();
 }
