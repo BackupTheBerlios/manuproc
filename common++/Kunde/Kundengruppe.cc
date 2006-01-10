@@ -1,4 +1,4 @@
-// $Id: Kundengruppe.cc,v 1.10 2005/06/17 15:28:34 christof Exp $
+// $Id: Kundengruppe.cc,v 1.11 2006/01/10 12:08:09 christof Exp $
 #include "Kundengruppe.h"
 #include <BaseObjects/ManuProcEntity_FetchIStream.h>
 
@@ -77,3 +77,8 @@ FetchIStream &operator>>(FetchIStream &is,cH_Kundengruppe &kg)
    kg=ch_kg;
    return is;
  } 
+
+#if !defined(__GNUC__) || __GNUC__ > 2
+template <>
+ const Kundengruppe::ID ManuProcEntity<Kundengruppe::ID>::none_id;
+#endif
