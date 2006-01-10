@@ -1,4 +1,4 @@
-// $Id: window_kundengruppen.cc,v 1.14 2006/01/10 10:33:32 christof Exp $
+// $Id: window_kundengruppen.cc,v 1.15 2006/01/10 10:33:35 christof Exp $
 
 #include "config.h"
 #include "window_kundengruppen.hh"
@@ -17,7 +17,7 @@
 
 enum kg_STcols
 { SP_NR, SP_NAME, SP_VORNAME, SP_ORT, SP_LAND, SP_SORTNAME, SP_PLZ, 
-  SP_7, SP_8, SP_9,
+  SP_KINDER, SP_8, SP_9,
   SP_ANZ
 };
 
@@ -140,6 +140,20 @@ void window_kundengruppen::laden()
       && cH_Kundengruppe(gruppe->get_value())->Obergruppe()=="Benutzergruppe");
 }
 
+class kg_SumNode : public TreeRow
+{ int kinder;
+public:
+  virtual void cumulate(const cH_RowDataBase &rd) { ++kinder; }
+  virtual void deduct(const cH_RowDataBase &rd) { --kinder; }
+  virtual cH_EntryValue Value(guint col,gpointer gp) const
+  { if (col!=SP_KINDER) return cH_EntryValue();
+    return cH_EntryValueIntString(kinder);
+  }
+  kg_SumNode(const Handle<const TreeRow> &suminit) : kinder()
+  { if (suminit) kinder=suminit.cast_dynamic<const kg_SumNode>()->kinder;
+  }
+};
+
 template <bool B>
 struct kg_STprops : SimpleTreeModel_Properties
 { unsigned Columns() const { return SP_ANZ; }
@@ -152,11 +166,15 @@ struct kg_STprops : SimpleTreeModel_Properties
       case  SP_LAND: return _("Land");
       case  SP_SORTNAME: return _("Abkz.");
       case  SP_PLZ: return _("PLZ");
+      case SP_KINDER: return _("Anzahl");
       default: return "";
     }
   }
   std::string ProgramName() const { return "kundendaten"; }
   std::string InstanceName() const { return B?"gruppen1":"gruppen0"; }
+  Handle<TreeRow> create_node(const Handle<const TreeRow> &suminit) const
+  { return new kg_SumNode(suminit);
+  }
 };
 
 window_kundengruppen::window_kundengruppen(windowTop *m, int id) : main(m)
