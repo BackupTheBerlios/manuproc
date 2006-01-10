@@ -562,3 +562,8 @@ void windowTop::on_entryPersonenPosition_activate()
 {  
 }
 
+#include "window_kundengruppen.hh"
+
+void windowTop_glade::gruppen_bearbeiten()
+{ new window_kundengruppen(gruppenwahl->get_value());
+}

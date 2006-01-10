@@ -26,7 +26,9 @@ kundendaten_SOURCES = \
    windowTop_Details.cc \
    windowTop_Kontaktperson.cc \
    windowTop_kunde.cc \
-   windowTop_Gruppen.cc
+   windowTop_Gruppen.cc \
+   window_kundengruppen.cc \
+   window_kundengruppen_glade.cc 
 #   windowTop_Person.cc 
 
 
@@ -40,7 +42,9 @@ noinst_HEADERS = \
    window_neue_Kundennummer.hh \
    window_neue_Kundennummer_glade.hh \
 	dialogError_glade.hh \
-	dialogError.hh
+	dialogError.hh \
+	window_kundengruppen.hh \
+	window_kundengruppen_glade.hh
 
 
 AM_CXXFLAGS = @KOMPONENTEN2_INCLUDES@ 

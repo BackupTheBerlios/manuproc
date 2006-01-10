@@ -177,6 +177,8 @@ class windowTop : public windowTop_glade
         void on_unselectrow_allegruppen();
         void on_selectrow_gewaehltegruppen(cH_RowDataBase leaf);
         void on_unselectrow_gewaehltegruppen();
+        
+        void gruppen_bearbeiten();
 public:
 
         windowTop(unsigned kid);
