@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.113 2005/12/21 07:23:35 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.114 2006/01/10 09:29:11 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,7 +25,7 @@
 //#include <GType_cH_EntryValue.h>
 #include <gtkmm/treepath.h>
 #include <Misc/EntryValueSort.h>
-//#include <Misc/EntryValueInvert.h>
+#include <Misc/EntryValueInvert.h>
 #include <sigc++/compatibility.h>
 
 #ifdef __MINGW32__
@@ -321,6 +321,7 @@ void SimpleTreeStore::init()
    }
   }
   vec_hide_cols.resize(Cols());
+  invert_order.resize(Cols());
   for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
     (*i) = true;
    defaultSequence();
@@ -353,7 +354,7 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
           columns(max_col), max_column(max_col),
 	  showdeep(), auffuellen_bool(), expandieren_bool(true), block_save(),
 	  color_bool(true), display_count(),
-	  sortierspalte(invisible_column), invert_sortierspalte(), 
+	  sortierspalte(invisible_column), // invert_sortierspalte(), 
 	  stamp(reinterpret_cast<long>(this)),
 	  m_columns(max_col)
 { init();
@@ -367,7 +368,7 @@ SimpleTreeStore::SimpleTreeStore(SimpleTreeModel_Properties &props)
           columns(props.Columns()), max_column(props.Columns()),
 	  showdeep(), auffuellen_bool(), expandieren_bool(true), block_save(),
 	  color_bool(true), display_count(),
-	  sortierspalte(invisible_column), invert_sortierspalte(), 
+	  sortierspalte(invisible_column), // invert_sortierspalte(), 
 	  stamp(reinterpret_cast<long>(this)),
 	  m_columns(props.Columns())
 { init();
@@ -406,7 +407,7 @@ void SimpleTreeStore::on_column_changed(guint idx)
 #endif
 
 const std::string SimpleTreeStore::getColTitle(guint idx) const
-{  return SimpleTreeModel_Properties_Proxy::getColTitle(currseq[idx]);
+{  return SimpleTreeModel_Properties_Proxy::getColTitle(currseq[idx])+SpaltenMarkierung(idx);
 }
 
 void SimpleTreeStore::defaultSequence()
@@ -437,7 +438,7 @@ void SimpleTreeStore::resort(Node &parent, unsigned stop_at)
       cH_EntryValue y,z;
       if (i->second.row) y=i->second.row->Value(sortierspalte,ValueData());
       else y=i->second.leafdata->Value(sortierspalte,ValueData());
-      if (invert_sortierspalte) z=cH_EntryValueReverseSort(y,x);
+      if (invert_order.at(sortierspalte)) z=cH_EntryValueReverseSort(y,x);
       else z=cH_EntryValueSort(y,x);
       Node &nd=parent.children.insert(parent.children.upper_bound(z),std::make_pair(z,Node()))->second;
       std::swap(i->second,nd);
@@ -493,6 +494,7 @@ void SimpleTreeStore::insertLine(Node &parent,
  sequence_t::const_iterator seqlast=--currseq.end();
  guint seqnr=*seqit;
  cH_EntryValue ev=v->Value(seqnr,ValueData());
+ if (invert_order[seqnr]) ev=cH_EntryValueInvert(ev);
  
 // node/leaf mit Wert<=ev suchen
 // optimization: we expect to need upper_bound if this is the last attribute
@@ -1098,11 +1100,11 @@ unsigned SimpleTreeStore::Node2nth_child(const Node &nd) const
 }
 
 void SimpleTreeStore::setSortierspalte(unsigned s,bool i)
-{  if (sortierspalte!=s || i!=invert_sortierspalte)
+{  if (sortierspalte!=s || i!=invert_order.at(sortierspalte))
    {  please_detach();
       ++stamp;
       sortierspalte=s;
-      invert_sortierspalte=i;
+      invert_order.at(sortierspalte)=i;
       redisplay();
    }
 }
@@ -1142,4 +1144,10 @@ const unsigned SimpleTreeStore::invisible_column;
 void SimpleTreeStore::save_and_redisplay(gpointer g)
 { signal_save(g);
   column_changed(invisible_column);
+}
+
+std::string SimpleTreeStore::SpaltenMarkierung(unsigned idx) const
+{ if (idx==sortierspalte) return invert_order.at(idx) ? "⇑" : "⇓"; // double arrow
+  if (invert_order.at(idx)) return "↑"; // up arrow
+  return std::string();
 }

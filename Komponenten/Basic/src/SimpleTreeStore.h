@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.73 2005/12/21 07:23:35 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.74 2006/01/10 09:29:12 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -214,7 +214,8 @@ private:
 	static const unsigned num_colors=8;
 	// vielleicht noch in Properties?
 	unsigned sortierspalte;
-	bool invert_sortierspalte;
+	std::vector<bool> invert_order; // invert order for this column (Pfeil nach oben)
+//	bool invert_sortierspalte;
 
 	unsigned stamp;
 
@@ -287,6 +288,7 @@ private:
    void resort(SimpleTreeStoreNode&, unsigned);
    void test();
    void test_sub(unsigned indent,const GtkTreeIter *i,const GtkTreeIter *parent);
+   std::string SpaltenMarkierung(unsigned) const;
    
 	enum e_spalten
 	{  s_row, s_deep, s_childrens_deep, s_leafdata, s_background,
@@ -375,7 +377,7 @@ public:
 	
 	unsigned visible_size() { return currseq.size(); }
 	void setSortierspalte(unsigned idx=invisible_column, bool invert=false);
-	bool getInvert() const { return invert_sortierspalte; }	
+	bool getInvert() const { return sortierspalte==invisible_column?false:invert_order.at(sortierspalte); }
 };
 
 #endif
