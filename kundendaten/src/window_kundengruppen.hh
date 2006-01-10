@@ -1,4 +1,4 @@
-// $Id: window_kundengruppen.hh,v 1.3 2006/01/10 10:33:18 christof Exp $
+// $Id: window_kundengruppen.hh,v 1.4 2006/01/10 12:08:27 christof Exp $
 
 #ifndef _WINDOW_KUNDENGRUPPEN_HH
 #  include "window_kundengruppen_glade.hh"
@@ -8,6 +8,7 @@ class windowTop;
 
 class window_kundengruppen : public window_kundengruppen_glade
 {	void on_gruppenwahl_activate();
+        void on_schliessen_clicked();
         void neu();
         void loeschen();
         void entfernen();

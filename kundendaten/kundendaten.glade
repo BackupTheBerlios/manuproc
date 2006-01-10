@@ -6981,9 +6981,40 @@ löschen</property>
 	  <property name="spacing">0</property>
 
 	  <child>
+	    <widget class="GtkToolbar" id="toolbar8">
+	      <property name="visible">True</property>
+	      <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+	      <property name="toolbar_style">GTK_TOOLBAR_BOTH</property>
+	      <property name="tooltips">True</property>
+	      <property name="show_arrow">False</property>
+
+	      <child>
+		<widget class="GtkToolButton" id="toolbutton6">
+		  <property name="visible">True</property>
+		  <property name="stock_id">gtk-close</property>
+		  <property name="visible_horizontal">True</property>
+		  <property name="visible_vertical">True</property>
+		  <property name="is_important">False</property>
+		  <signal name="clicked" handler="on_schliessen_clicked" last_modification_time="Tue, 10 Jan 2006 10:56:59 GMT"/>
+		  <accelerator key="W" modifiers="GDK_CONTROL_MASK" signal="clicked"/>
+		</widget>
+		<packing>
+		  <property name="expand">False</property>
+		  <property name="homogeneous">True</property>
+		</packing>
+	      </child>
+	    </widget>
+	    <packing>
+	      <property name="padding">0</property>
+	      <property name="expand">False</property>
+	      <property name="fill">False</property>
+	    </packing>
+	  </child>
+
+	  <child>
 	    <widget class="GtkLabel" id="label96">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">Gruppe</property>
+	      <property name="label" translatable="yes"> Gruppe</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -7026,7 +7057,7 @@ löschen</property>
 	    <widget class="GtkToolbar" id="toolbar6">
 	      <property name="visible">True</property>
 	      <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
-	      <property name="toolbar_style">GTK_TOOLBAR_ICONS</property>
+	      <property name="toolbar_style">GTK_TOOLBAR_BOTH</property>
 	      <property name="tooltips">True</property>
 	      <property name="show_arrow">False</property>
 
@@ -7034,7 +7065,7 @@ löschen</property>
 		<widget class="GtkToolButton" id="toolbutton2">
 		  <property name="visible">True</property>
 		  <property name="tooltip" translatable="yes">Neue Gruppe erstellen</property>
-		  <property name="label" translatable="yes"></property>
+		  <property name="label" translatable="yes">Neu</property>
 		  <property name="use_underline">True</property>
 		  <property name="stock_id">gtk-new</property>
 		  <property name="visible_horizontal">True</property>
@@ -7053,7 +7084,7 @@ löschen</property>
 		  <property agent="glademm" name="cxx_visibility">protected</property>
 		  <property name="visible">True</property>
 		  <property name="tooltip" translatable="yes">Gruppe löschen</property>
-		  <property name="label" translatable="yes"></property>
+		  <property name="label" translatable="yes">Löschen</property>
 		  <property name="use_underline">True</property>
 		  <property name="stock_id">gtk-delete</property>
 		  <property name="visible_horizontal">True</property>
@@ -7071,7 +7102,7 @@ löschen</property>
 		<widget class="GtkToolButton" id="toolbutton4">
 		  <property name="visible">True</property>
 		  <property name="tooltip" translatable="yes">ausgewählte Adressen aus Gruppe herausnehmen</property>
-		  <property name="label" translatable="yes"></property>
+		  <property name="label" translatable="yes">Entfernen</property>
 		  <property name="use_underline">True</property>
 		  <property name="stock_id">gtk-remove</property>
 		  <property name="visible_horizontal">True</property>

@@ -1,4 +1,4 @@
-// $Id: window_kundengruppen.cc,v 1.15 2006/01/10 10:33:35 christof Exp $
+// $Id: window_kundengruppen.cc,v 1.16 2006/01/10 12:08:27 christof Exp $
 
 #include "config.h"
 #include "window_kundengruppen.hh"
@@ -20,6 +20,10 @@ enum kg_STcols
   SP_KINDER, SP_8, SP_9,
   SP_ANZ
 };
+
+void window_kundengruppen::on_schliessen_clicked()
+{ delete this;
+}
 
 struct KGdata : RowDataBase
 { cH_Kunde k;
