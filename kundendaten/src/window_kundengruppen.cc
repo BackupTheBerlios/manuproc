@@ -1,6 +1,7 @@
-// $Id: window_kundengruppen.cc,v 1.17 2006/01/10 12:08:31 christof Exp $
+// $Id: window_kundengruppen.cc,v 1.18 2006/01/10 12:08:35 christof Exp $
 
 #include "config.h"
+#include <set>
 #include "window_kundengruppen.hh"
 #include <Kunde/Kundengruppe.h>
 #include <Kunde/Kunde.h>
@@ -107,22 +108,44 @@ void window_kundengruppen::loeschen()
 
 void window_kundengruppen::entfernen()
 { kundein->nodes_select_leaves();
-  std::vector<cH_RowDataBase> v=kundein->getSelectedRowDataBase_vec(false);
+  std::set<Kunde::ID> weg;
+  { std::vector<cH_RowDataBase> v=kundein->getSelectedRowDataBase_vec(false);
+    for (std::vector<cH_RowDataBase>::const_iterator i=v.begin();i!=v.end();++i)
+      weg.insert(i->cast_dynamic<const KGdata>()->k->Id());
+  }
+  for (std::set<Kunde::ID>::const_iterator i=weg.begin();i!=weg.end();++i)
+  { cH_Kunde(*i).cast_const<Kunde>()->pullFromGrp(gruppe->get_value());
+  }
+  std::vector<cH_RowDataBase> v;
+  for (SimpleTreeModel::const_iterator i=kundein->getModel().begin();i!=kundein->getModel().end();++i)
+  { if (weg.find(i->cast_dynamic<const KGdata>()->k->Id())!=weg.end())
+      v.push_back(*i);
+  }
   for (std::vector<cH_RowDataBase>::const_iterator i=v.begin();i!=v.end();++i)
   { kundein->getModel().erase(*i);
     anderekunden->getModel().push_back(*i);
-    i->cast_dynamic<const KGdata>()->k.cast_const<Kunde>()->pullFromGrp(gruppe->get_value());
   }
   kundein->get_selection()->unselect_all();
 }
 
 void window_kundengruppen::add()
 { anderekunden->nodes_select_leaves();
-  std::vector<cH_RowDataBase> v=anderekunden->getSelectedRowDataBase_vec(false);
+  std::set<Kunde::ID> dazu;
+  { std::vector<cH_RowDataBase> v=anderekunden->getSelectedRowDataBase_vec(false);
+    for (std::vector<cH_RowDataBase>::const_iterator i=v.begin();i!=v.end();++i)
+      dazu.insert(i->cast_dynamic<const KGdata>()->k->Id());
+  }
+  for (std::set<Kunde::ID>::const_iterator i=dazu.begin();i!=dazu.end();++i)
+  { cH_Kunde(*i).cast_const<Kunde>()->putInGrp(gruppe->get_value());
+  }
+  std::vector<cH_RowDataBase> v;
+  for (SimpleTreeModel::const_iterator i=anderekunden->getModel().begin();i!=anderekunden->getModel().end();++i)
+  { if (dazu.find(i->cast_dynamic<const KGdata>()->k->Id())!=dazu.end())
+      v.push_back(*i);
+  }
   for (std::vector<cH_RowDataBase>::const_iterator i=v.begin();i!=v.end();++i)
   { anderekunden->getModel().erase(*i);
     kundein->getModel().push_back(*i);
-    i->cast_dynamic<const KGdata>()->k.cast_const<Kunde>()->putInGrp(gruppe->get_value());
   }
   anderekunden->get_selection()->unselect_all();
 }
