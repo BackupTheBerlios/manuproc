@@ -5,7 +5,7 @@
 
 <widget class="GtkWindow" id="windowTop">
   <property name="visible">True</property>
-  <property name="title" translatable="yes">Kundendaten</property>
+  <property name="title" translatable="yes">Adressverwaltung</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -456,7 +456,7 @@
 		  <child>
 		    <widget class="GtkLabel" id="label2">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Kundenkontakt</property>
+		      <property name="label" translatable="yes">Kommunikation</property>
 		      <property name="use_underline">False</property>
 		      <property name="use_markup">False</property>
 		      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1334,7 +1334,7 @@
 	  <child>
 	    <widget class="GtkLabel" id="label19">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">Kunde</property>
+	      <property name="label" translatable="yes">Adresse</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
 	      <property name="justify">GTK_JUSTIFY_CENTER</property>
@@ -1814,7 +1814,7 @@
 			      <child>
 				<widget class="GtkLabel" id="label23">
 				  <property name="visible">True</property>
-				  <property name="label" translatable="yes">Kundenumsatz</property>
+				  <property name="label" translatable="yes">Gesamtumsatz</property>
 				  <property name="use_underline">False</property>
 				  <property name="use_markup">False</property>
 				  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -6951,7 +6951,7 @@ löschen</property>
 
 <widget class="GtkWindow" id="window_kundengruppen">
   <property name="visible">True</property>
-  <property name="title" translatable="yes">Kundengruppen</property>
+  <property name="title" translatable="yes">Adressgruppen</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -7070,7 +7070,7 @@ löschen</property>
 	      <child>
 		<widget class="GtkToolButton" id="toolbutton4">
 		  <property name="visible">True</property>
-		  <property name="tooltip" translatable="yes">ausgewählte Kunden aus Gruppe herausnehmen</property>
+		  <property name="tooltip" translatable="yes">ausgewählte Adressen aus Gruppe herausnehmen</property>
 		  <property name="label" translatable="yes"></property>
 		  <property name="use_underline">True</property>
 		  <property name="stock_id">gtk-remove</property>
@@ -7184,7 +7184,7 @@ löschen</property>
 		  <child>
 		    <widget class="GtkToolButton" id="toolbutton5">
 		      <property name="visible">True</property>
-		      <property name="tooltip" translatable="yes">ausgewählte Kunden zur Gruppe hinzufügen</property>
+		      <property name="tooltip" translatable="yes">ausgewählte Adressen zur Gruppe hinzufügen</property>
 		      <property name="label" translatable="yes">Hinzufügen</property>
 		      <property name="use_underline">True</property>
 		      <property name="stock_id">gtk-go-up</property>
@@ -7271,7 +7271,7 @@ löschen</property>
 	  <child>
 	    <widget class="GtkLabel" id="label97">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">Kunden außerhalb der Gruppe</property>
+	      <property name="label" translatable="yes">Adressen außerhalb der Gruppe</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
