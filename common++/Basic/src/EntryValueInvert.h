@@ -1,6 +1,7 @@
-/* $Id: EntryValueInvert.h,v 1.4 2004/02/10 10:51:54 christof Exp $ */
+/* $Id: EntryValueInvert.h,v 1.5 2006/01/10 09:28:51 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
+ *  Copyright (C) 2006 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,21 +22,20 @@
 #define ENTRYVALUE_INVERT_H
 
 #include <Misc/EntryValueBase.h>
+// Invert the sort order of a given Value
 
-template <typename T>
- class EntryValueInvert : public EntryValueBase
-{Handle<const T> obj;
+class EntryValueInvert : public EntryValueBase
+{ cH_EntryValue obj;
 
 public:
- EntryValueInvert(const Handle<const T> &t) : obj(t) {}
+ EntryValueInvert(cH_EntryValue const& t) : obj(t) {}
    
  virtual bool operator==(const EntryValueBase &v) const
- {  return obj->operator==(v); 
+ { return obj->operator==(v);
  }
  virtual bool operator<(const EntryValueBase &v) const
- {  return v.operator(*obj);
-// if(obj->operator==(v)) return false;
-// return !obj->operator<(v); 
+ { if (obj->operator==(v)) return false;
+   return !obj->operator<(v); 
  }
  virtual int getIntVal() const 
  { return obj->getIntVal(); 
@@ -47,12 +47,8 @@ public:
 
 struct cH_EntryValueInvert : public cH_EntryValue
 {
- template <typename T>
-  cH_EntryValueInvert(const Handle<const T> &t) 
- : cH_EntryValue(new EntryValueInvert<T>(t)) {}
- template <typename T>
-  cH_EntryValueInvert(const T * const t) 
- : cH_EntryValue(new EntryValueInvert<T>(t)) {}
+  cH_EntryValueInvert(cH_EntryValue const& t) 
+  : cH_EntryValue(new EntryValueInvert(t)) {}
 };
 
 #endif 
