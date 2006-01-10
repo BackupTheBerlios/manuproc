@@ -91,9 +91,7 @@ windowTop::windowTop(unsigned id)
   clistPersonenListe->get_selection()->signal_changed().connect(SigC::slot(*this, 
        &windowTop::on_clistPersonenListe_selection_changed));
   if (id!=unsigned(Kunde::none_id))
-  { kundenauswahl->set_value(id);
-    kunden_activate();
-  }
+    laden(id);
 }
 
 void windowTop::saveAll()
@@ -565,5 +563,8 @@ void windowTop::on_entryPersonenPosition_activate()
 #include "window_kundengruppen.hh"
 
 void windowTop::gruppen_bearbeiten()
-{ new window_kundengruppen(gruppenwahl->get_value());
+{ new window_kundengruppen(this,gruppenwahl->get_value());
 }
+
+void windowTop::laden(cH_Kunde const& k)
+{ kundenauswahl->set_value(k->Id()); kunden_activate(); }

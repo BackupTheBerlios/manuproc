@@ -1,4 +1,4 @@
-// $Id: window_kundengruppen.cc,v 1.8 2006/01/10 10:33:16 christof Exp $
+// $Id: window_kundengruppen.cc,v 1.9 2006/01/10 10:33:18 christof Exp $
 
 #include "config.h"
 #include "window_kundengruppen.hh"
@@ -7,26 +7,8 @@
 #include <Misc/EntryValueIntString.h>
 #include <expander_hook.h>
 #include <Misc/Transaction.h>
-
-void window_kundengruppen::on_gruppenwahl_activate()
-{ laden();
-}
-
-void window_kundengruppen::neu()
-{  
-}
-
-void window_kundengruppen::loeschen()
-{  
-}
-
-void window_kundengruppen::entfernen()
-{  
-}
-
-void window_kundengruppen::add()
-{  
-}
+#include <Misc/i18n.h>
+#include "windowTop.hh"
 
 enum kg_STcols
 { SP_NR, SP_NAME, SP_VORNAME, SP_ORT, SP_LAND, SP_SORTNAME, SP_PLZ, 
@@ -51,6 +33,34 @@ struct KGdata : RowDataBase
   }
 };
 
+void window_kundengruppen::on_gruppenwahl_activate()
+{ laden();
+}
+
+void window_kundengruppen::neu()
+{  
+}
+
+void window_kundengruppen::bearbeiten()
+{ cH_RowDataBase sel=kundein->getMenuContext();
+  if (!!sel)
+  { main->laden(sel.cast_dynamic<const KGdata>()->k);
+    main->get_window()->raise();
+  }
+}
+
+void window_kundengruppen::loeschen()
+{  
+}
+
+void window_kundengruppen::entfernen()
+{  
+}
+
+void window_kundengruppen::add()
+{  
+}
+
 void window_kundengruppen::laden()
 { // .... 
   Transaction t;
@@ -73,13 +83,13 @@ struct kg_STprops : SimpleTreeModel_Properties
 { unsigned Columns() const { return SP_ANZ; }
   Glib::ustring Title(guint _seqnr) const
   { switch(_seqnr)
-    { case SP_NR: return "Nr.";
-      case SP_NAME: return "Name";
-      case  SP_VORNAME: return "Vorname";
-      case  SP_ORT: return "Ort";
-      case  SP_LAND: return "Land";
-      case  SP_SORTNAME: return "Abkz.";
-      case  SP_PLZ: return "PLZ";
+    { case SP_NR: return _("Nr.");
+      case SP_NAME: return _("Name");
+      case  SP_VORNAME: return _("Vorname");
+      case  SP_ORT: return _("Ort");
+      case  SP_LAND: return _("Land");
+      case  SP_SORTNAME: return _("Abkz.");
+      case  SP_PLZ: return _("PLZ");
       default: return "";
     }
   }
@@ -87,7 +97,7 @@ struct kg_STprops : SimpleTreeModel_Properties
   std::string InstanceName() const { return B?"gruppen1":"gruppen0"; }
 };
 
-window_kundengruppen::window_kundengruppen(int id)
+window_kundengruppen::window_kundengruppen(windowTop *m, int id) : main(m)
 { gtk_expander_hook_size_to_parent(expander_nicht->gobj());
   expander_nicht->set_expanded(false);
   gruppe->set_value(Kundengruppe::ID(id));
@@ -95,5 +105,7 @@ window_kundengruppen::window_kundengruppen(int id)
   kundein->get_selection()->set_mode(Gtk::SELECTION_MULTIPLE);
   anderekunden->setProperties(*new kg_STprops<false>(),true);
   anderekunden->get_selection()->set_mode(Gtk::SELECTION_MULTIPLE);
+  kundein->addMenuItem(_("Kunde bearbeiten"))
+      .connect(sigc::mem_fun(*this,&window_kundengruppen::bearbeiten));
   laden();
 }

@@ -190,6 +190,7 @@ public:
         void neue_bank_uebernehmen(unsigned long int bank_index);      
 
         void neue_kundennmmer(unsigned kid);
+        void laden(cH_Kunde const& k);
 
 private:
 	Data_Gruppe *allgrp;
