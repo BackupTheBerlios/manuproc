@@ -1,4 +1,4 @@
-// $Id: window_kundengruppen.cc,v 1.10 2006/01/10 10:33:23 christof Exp $
+// $Id: window_kundengruppen.cc,v 1.11 2006/01/10 10:33:25 christof Exp $
 
 #include "config.h"
 #include "window_kundengruppen.hh"
@@ -56,6 +56,7 @@ void window_kundengruppen::neu()
   d.get_vbox()->add(*Gtk::manage(new Gtk::Label(_("Wie soll die neue Kundengruppe heißen"))));
   Gtk::Entry e;
   d.get_vbox()->add(e);
+  e.set_activates_default();
   d.show_all();
   d.set_default_response(Gtk::RESPONSE_OK);
   if (d.run()==Gtk::RESPONSE_OK)
