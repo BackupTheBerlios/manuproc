@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.62 2005/07/13 08:06:33 jacek Exp $
+// $Id: Kunde.cc,v 1.63 2006/01/19 22:53:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -375,9 +375,7 @@ fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art,
 
  ArtikelTyp at(as.Warengruppe());
 
- std::string tabelle="artbez_"+
-        itos(at)+"_"+
-        itos(ExtBezSchema::default_id);
+ std::string tabelle=cH_ExtBezSchema(ExtBezSchema::default_id,at)->TableName();
 
  fixedpoint<2> to_set=0;
 #if defined(MABELLA_EXTENSIONS) && defined(MANUPROC_DYNAMICENUMS_CREATED)

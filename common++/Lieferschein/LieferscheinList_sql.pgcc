@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList_sql.pgcc,v 1.26 2004/03/29 15:03:06 jacek Exp $ */
+/* $Id: LieferscheinList_sql.pgcc,v 1.27 2006/01/19 22:53:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -48,10 +48,7 @@ void LieferscheinList::build_list()
 
  std::string squery = SQuery(ohne_gts);
 
- std::string nametable="artbez_"+
-        itos(ExtBezSchema::default_Typ)+"_"+
-        itos(ExtBezSchema::default_id);
-
+ std::string nametable=cH_ExtBezSchema(ExtBezSchema::default_id,ExtBezSchema::default_Typ)->TableName();
 
  if(ohne_gts) squery+=" and "; // "where" gibt es schon in SQuery
  else squery+=" where ";

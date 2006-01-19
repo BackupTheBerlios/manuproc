@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.36 2005/11/22 13:04:29 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.37 2006/01/19 22:53:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -87,8 +87,7 @@ void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw
          ++i;
          if (i!=schema->end()) query+="," ;
       }
-     query+=" FROM artbez_"+itos(schema->Typ())+"_"+itos(schema->Id())
-         +" WHERE id=?";
+     query+=" FROM "+schema->TableName()+" WHERE id=?";
      PreparedQuery &pq=pqmap[schema];
      if (pq.Command().empty()) pq=PreparedQuery(query);
      Query q(pq);
@@ -166,8 +165,7 @@ ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const std::vector<cH_Ent
 {
  ArgumentList args;
  std::string query;
- query = "SELECT id FROM artbez_"+itos(schema->Typ())+"_"+itos(schema->Id())
-      + " WHERE ";
+ query = "SELECT id FROM "+schema->TableName()+ " WHERE ";
  int f=0;
  for (ExtBezSchema::const_sigiterator i=schema->sigbegin(signifikanz);
          i!=schema->sigend(signifikanz);)
@@ -227,7 +225,7 @@ const cH_EntryValue *ArtikelBezeichnung::const_sigiterator::operator->() const
 #endif
 
 std::string ArtikelBezeichnung::Tabellenname(const cH_ExtBezSchema &s)
-{  return "artbez_"+itos(s->Typ().Id())+"_"+itos(s->Id());
+{  return s->TableName();
 }
 
 const ArtikelBezeichnung &ArtikelBezeichnung::operator=(const ArtikelBezeichnung &b)

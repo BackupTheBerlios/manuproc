@@ -253,7 +253,7 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
     cH_ExtBezSchema ebz=ab->getExtBezSchema();
     std::string query;
     std::string artbez_tabelle;
-    artbez_tabelle=" artbez_"+itos(ebz->Typ().Id())+"_"+itos(ebz->Id());
+    artbez_tabelle=ebz->TableName();
 
     query="select id from "+artbez_tabelle+" where ";
     for(std::vector<std::string>::const_iterator s=ins_all_komp.begin();
@@ -355,7 +355,7 @@ void Artikelpreis::changePreis(const Preis &p, int newmindmenge) throw(SQLerror)
  const ArtikelBase abase(artikel);
  cH_ArtikelBezeichnung ab(abase);
  cH_ExtBezSchema ebz=ab->getExtBezSchema();
- std::string artbez_tabelle=" artbez_"+itos(ebz->Typ().Id())+"_"+itos(ebz->Id());
+ std::string artbez_tabelle=ebz->TableName();
 
  std::string query("insert into preis_change_journal "
 	"(artikelid,prlsnr,zeitpunkt,preis_alt,preis_neu,uid,mindestmenge) "
@@ -434,7 +434,7 @@ void Artikelpreis::remove(const cH_PreisListe liste,const ArtikelBase &a,
  if(!del_all_komp.empty())
    {cH_ArtikelBezeichnung ab(a);
     cH_ExtBezSchema ebz=ab->getExtBezSchema();
-    artbez_tabelle=" artbez_"+itos(ebz->Typ().Id())+"_"+itos(ebz->Id());
+    artbez_tabelle=ebz->TableName();
     query="select id,mindestmenge,p.kundennr,preis from "+artbez_tabelle+" a join artikelpreise p "
 	" on (id=artikelid ";
 

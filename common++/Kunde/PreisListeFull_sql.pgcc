@@ -80,7 +80,7 @@ void PreisListeFull::load_preisliste(bool with_artbez,
        bez_columns.push_back((*bezit).bezkomptext);
       }
 #ifndef USE_KOMPONENTE
-    beztable = " artbez_"+itos(at)+"_"+itos(ebz->Id());
+    beztable = cH_ExtBezSchema(ebz->Id(),at)->TableName();
 #endif /* not USE_KOMPONENTE */
 
 #ifdef GLOB_SET_EAN_SIGN_BASENAME    

@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.42 2005/12/14 07:35:21 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.43 2006/01/19 22:53:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -126,8 +126,7 @@ void ArtikelStamm::setEinheit(const ArtikelBase &artikel,const Einheit e)
 void ArtikelStamm::setAktive(const ArtikelBase &artikel, bool ak
 		, bool all_color) throw(SQLerror)
 { 
- std::string table(" artbez_");
- table+=itos(ArtikelTyp::default_ID)+"_"+itos(ExtBezSchema::default_id);
+ std::string table=cH_ExtBezSchema(ExtBezSchema::default_id,ArtikelTyp::default_ID)->TableName();
 
  if(all_color)
    {
