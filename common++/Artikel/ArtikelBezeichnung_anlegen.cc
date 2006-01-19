@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung_anlegen.cc,v 1.2 2006/01/19 22:53:36 christof Exp $
+// $Id: ArtikelBezeichnung_anlegen.cc,v 1.3 2006/01/19 22:53:38 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -74,10 +74,10 @@ void ArtikelBezeichnung::Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase
    args << art;
    assert(columns.size()==values.size());
    for (unsigned i=0;i<columns.size();++i)
-   { cols+=","+columns[i];
+   { cols+=","+columns[i]->spaltenname;
      vals+=",?";
-     if (columns[i].spaltentyp==INT4OID) args << values[i]->IntVal();
-     else args << values[i]->StrVal();
+     if (columns[i]->spaltentyp==INT4OID) args << values[i]->getIntVal();
+     else args << values[i]->getStrVal();
    }
 #if defined(MABELLA_EXTENSIONS)  && defined(MANUPROC_DYNAMICENUMS_CREATED)
   if(schema->Id()==ExtBezSchema::default_id && 
