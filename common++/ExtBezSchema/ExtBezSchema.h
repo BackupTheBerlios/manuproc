@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.24 2005/11/22 13:04:34 christof Exp $
+// $Id: ExtBezSchema.h,v 1.25 2006/01/19 22:53:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -41,6 +41,7 @@ public:
 		std::string bezkomptext; // �erschrift
 		std::string separator;
 		std::string spaltenname;
+		unsigned spaltentyp;
 		int signifikanz;
 		bool preissignifikant;
 		int folgenr_in_sig;
@@ -52,14 +53,14 @@ public:
 			int sign,int snr,std::string texf, 
 			MultiL_Dict::LangTXT _textid, bool psign=false)
 		: bezkomptype(_bztyp), bezkomptext(_bztxt), separator(_bzsep)
-			, spaltenname(sname), signifikanz(sign), 
+			, spaltenname(sname), spaltentyp(), signifikanz(sign), 
 			preissignifikant(psign),
 			folgenr_in_sig(snr),TeXtabformat(texf),
 			textid(_textid)
 		{}
 		BezKomp() 
-		: bezkomptype(0), signifikanz(0), preissignifikant(false),
-			folgenr_in_sig(0), 
+		: bezkomptype(), spaltentyp(), signifikanz(), 
+		  preissignifikant(), folgenr_in_sig(),
 			textid(MultiL_Dict::LangTXT(0))
 		{}
 	};
@@ -177,6 +178,9 @@ private:
  static bool exist_schema_for_typ(ID eid,const class ArtikelTyp &t);
 public:
  const class ArtikelTyp &Typ() const { return typ; }
+ // danach enthält spaltentyp die OID des Typs
+ void SpaltenTypenErmitteln();
+ std::string TableName() const;
  
  size_t size(int signifikanz) const
  {  return sigsize(signifikanz); }

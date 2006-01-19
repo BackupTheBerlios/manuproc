@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema_sql.pgcc,v 1.26 2005/11/22 13:04:34 christof Exp $
+// $Id: ExtBezSchema_sql.pgcc,v 1.27 2006/01/19 22:53:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -129,4 +129,22 @@ std::vector<ExtBezSchema::ID> ExtBezSchema::getSchemaIDs(ArtikelTyp t)
   (Query("select distinct extartbezid from extbezschema where artikeltyp=?")
     << t.Id()).FetchArray(result);
   return result;
+}
+
+std::string ExtBezSchema::TableName() const
+{ return "artbez_"+itos(Typ().Id())+"_"+itos(Id());
+}
+
+void ExtBezSchema::SpaltenTypenErmitteln()
+{ if (begin()==end()) return;
+  if (begin()->spaltentyp) return; // schon bekannt
+  unsigned taboid;
+  Query("select oid from pg_class where relname=?")
+	<< TableName()
+	>> taboid;
+  for (std::vector<BezKomp>::iterator i=bezkomps.begin(); i!=bezkomps.end(); ++i)
+  { Query("select atttypid from pg_attribute where (attrelid,attname)=(?,?)")
+       << taboid << i->spaltenname
+       >> i->spaltentyp;
+  }
 }
