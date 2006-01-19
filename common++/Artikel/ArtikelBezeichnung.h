@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.25 2005/11/22 13:04:29 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.26 2006/01/19 22:53:36 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -161,8 +161,8 @@ public:
   	const std::string &columns, const std::string &values);
   // sinnvollere API
   static void Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase &art,
-  	std::vector<std::string> const& columns,
-  	std::vector<std::string> const& values);
+  	std::vector<ExtBezSchema::const_iterator> const& columns,
+  	std::vector<cH_EntryValue> const& values);
   // existiert dieser Artikel schon für einen anderen Kunden?
 //  static ArtikelBase Vorhanden(ArtikelTyp::ID atid, // später?
 //  	std::vector<std::string> const& columns,

@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung_anlegen.cc,v 1.1 2005/11/22 13:04:29 christof Exp $
+// $Id: ArtikelBezeichnung_anlegen.cc,v 1.2 2006/01/19 22:53:36 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,12 +25,13 @@
 //#include <Misc/dbconnect.h>
 #include <unistd.h>
 #include <sys/types.h>
-
+#include <Misc/pg_type.h>
 
 #ifdef MABELLA_EXTENSIONS
 #include <Misc/EAN.h>
 #endif
 
+#if 1 // kann nicht vernünftig funktionieren
 void ArtikelBezeichnung::Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase &art,
   	const std::string &columns, const std::string &values)
 {  std::string col="(id,"+columns+",";
@@ -61,18 +62,22 @@ void ArtikelBezeichnung::Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase
    Query("insert into "+Tabellenname(schema) +" "+ col+" values "+val);
    SQLerror::test(__FILELINE__,100);
 }
+#endif
 
 void ArtikelBezeichnung::Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase &art,
-  	std::vector<std::string> const& columns,
-  	std::vector<std::string> const& values)
-{  ArgumentList args;
+        std::vector<ExtBezSchema::const_iterator> const& columns,
+//  	std::vector<std::string> const& columns,
+  	std::vector<cH_EntryValue> const& values)
+{  schema.cast_const<ExtBezSchema>()->SpaltenTypenErmitteln();
+   ArgumentList args;
    std::string cols="id",vals="?";
    args << art;
    assert(columns.size()==values.size());
    for (unsigned i=0;i<columns.size();++i)
    { cols+=","+columns[i];
      vals+=",?";
-     args << values[i];
+     if (columns[i].spaltentyp==INT4OID) args << values[i]->IntVal();
+     else args << values[i]->StrVal();
    }
 #if defined(MABELLA_EXTENSIONS)  && defined(MANUPROC_DYNAMICENUMS_CREATED)
   if(schema->Id()==ExtBezSchema::default_id && 
