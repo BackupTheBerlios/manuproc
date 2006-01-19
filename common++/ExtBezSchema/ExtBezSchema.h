@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.25 2006/01/19 22:53:33 christof Exp $
+// $Id: ExtBezSchema.h,v 1.26 2006/01/19 22:53:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -101,6 +101,9 @@ public:
 		}
 		const BezKomp *operator->() const
 		{  return &*actual;
+		}
+		operator const_iterator() const
+		{ return actual; 
 		}
 	};
 	
