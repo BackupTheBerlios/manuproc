@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.27 2006/01/23 11:25:20 christof Exp $
+// $Id: Preis.cc,v 1.28 2006/01/23 11:25:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -80,7 +80,7 @@ Preis::geldbetrag_t Preis::Gesamtpreis(const cP_Waehrung w,int anzahl,preismenge
    if (!menge) menge=1;
    Preis result=*this;
 
-std::cout << anzahl << ' ' << menge << ' ' << (*this) << '\n';
+//std::cout << anzahl << ' ' << menge << ' ' << (*this) << '\n';
 
 #ifdef MABELLA_EXTENSIONS
    bool rescale(result.Wert().Scale()>2 && !(result.Wert().Scaled()%10));
@@ -107,7 +107,7 @@ std::cout << anzahl << ' ' << menge << ' ' << (*this) << '\n';
     if (menge>preismenge_t::max()/anzahl) // Überlauf bei der Multiplikation
     { double zwischen=Wert_fr(result.waehrung,result.PreisMenge()).as_float();
       zwischen=zwischen*anzahl*menge.as_float()/result.PreisMenge().as_float();
-std::cout << zwischen << '\n';    
+//std::cout << zwischen << '\n';    
       return geldbetrag_t(zwischen); // runden
     }
     return result.In(result.waehrung,menge*anzahl).Wert();
