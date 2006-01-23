@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.34 2005/12/14 07:35:07 christof Exp $
+// $Id: fixedpoint.h,v 1.35 2006/01/23 11:25:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *   written by Christof Petig
@@ -224,7 +224,11 @@ public:
 	Itype floor() const
 	{  return scaled/zehnhochplusI<decimals>();
 	}
-	
+	static self_t max()
+	{ if (Itype(-1)>0) return self_t(ScaledValue(Itype(-1)));
+	  if (sizeof(Itype)==8) return self_t(ScaledValue(Itype(0x7fffffffffffffffLL)));
+	  return self_t(ScaledValue(Itype(0x7fffffff)));
+        }
 	// to tell the compiler which way to prefer
 	self_t operator+(const Ftype b) const
 	{  return *this+self_t(b); }

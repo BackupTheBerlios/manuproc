@@ -1,4 +1,4 @@
-// $Id: preis.cc,v 1.9 2003/01/08 09:46:58 christof Exp $
+// $Id: preis.cc,v 1.10 2006/01/23 11:25:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,13 +25,14 @@
 int main()
 {  ManuProC::PrintUncaughtExceptions();
    ManuProC::dbconnect();
+#if 0
    Preis p(1.00,WaehrungID::DM,100);
    std::cout << "1DM/100 "<<p<<'\n';
    Preis b(2.0,WaehrungID::DM,100);
    std::cout << "2DM/100 " << b << '\n';
    std::cout << "Summe "<<p+b<< ", " << b+p<< '\n';
    std::cout << "-------------------\n";
-   std::cout << "2DM = "<< b.Wert(WaehrungID::EUR) << "Euro\n";
+   std::cout << "2DM = "<< b.Wert(WaehrungID::EUR,1) << "Euro\n";
    std::cout << "-------------------\n";
    Preis c(3.0,WaehrungID::EUR,100);
    std::cout << "3Euro/100 "<<c<<'\n';
@@ -46,7 +47,7 @@ int main()
    std::cout << e << " + " << f << " = " << e+f << ", " << f+e << '\n';
    std::cout << "-------------------\n";
    Preis g(5.0,WaehrungID::DM,4);
-   std::cout << g << " -> 20Stk. = " << g.Gesamtpreis(20,1.0) << '\n';
+   std::cout << g << " -> 20Stk. = " << g.Gesamtpreis(cP_Waehrung(WaehrungID::DM),20,1.0) << '\n';
    std::cout << "-------------------\n";
    Preis g2(7.10,WaehrungID::DM,2);
    std::cout << g2 << " -> 80Stk. = " << g2.Gesamtpreis(WaehrungID::DM,80,0.0,0.0) << '\n';
@@ -54,4 +55,8 @@ int main()
    std::cout << "!" << g2 << " = " << !g2 << '\n';
    Preis g3;
    std::cout << "!" << g3 << " = " << !g3 << '\n';
+#endif   
+   std::cout << "-------------------\n";
+   Preis g4(2.96,WaehrungID::EUR,100);
+   std::cout << g4.Gesamtpreis(cP_Waehrung(WaehrungID::EUR),100,22528.98) << '\n';
 }

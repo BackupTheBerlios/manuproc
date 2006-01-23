@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.25 2005/10/27 13:10:57 christof Exp $
+// $Id: Preis.cc,v 1.26 2006/01/23 11:25:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -80,6 +80,7 @@ Preis::geldbetrag_t Preis::Gesamtpreis(const cP_Waehrung w,int anzahl,preismenge
    if (!menge) menge=1;
    Preis result=*this;
 
+std::cout << anzahl << ' ' << menge << ' ' << (*this) << '\n';
 
 #ifdef MABELLA_EXTENSIONS
    bool rescale(result.Wert().Scale()>2 && !(result.Wert().Scaled()%10));

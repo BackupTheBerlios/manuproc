@@ -30,12 +30,12 @@
 # define TEMPLATEltgt 
 #endif
 
-#define FP_STR(F,I) TEMPLATEltgt \
+#define FP_STR(F,I,U) TEMPLATEltgt \
 std::string fixedpoint_dyn<F,I>::String(bool _short, unsigned int Ziellaenge, \
 		const char *TausenderTrennzeichen,const char *Komma,\
 		char fuehrendesZeichen) const\
 {  const char *sign="";\
-   unsigned I val=Scaled();\
+   U I val=Scaled();\
    if (Scaled()<0) \
    {  sign="-"; \
       val=-Scaled(); \
@@ -46,8 +46,11 @@ std::string fixedpoint_dyn<F,I>::String(bool _short, unsigned int Ziellaenge, \
    return sign+Formatiere(val,scale,Ziellaenge,TausenderTrennzeichen,Komma,' ');\
 }
 
-FP_STR(double,long)
-FP_STR(double,long long)
+// about 800 bytes each
+FP_STR(double,long,unsigned)
+FP_STR(double,unsigned long,)
+FP_STR(double,long long,unsigned)
+FP_STR(double,unsigned long long,)
 
 template <>
 double fixedpoint_dyn<double,long>::as_float() const
