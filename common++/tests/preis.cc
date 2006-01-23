@@ -1,4 +1,4 @@
-// $Id: preis.cc,v 1.11 2006/01/23 11:25:20 christof Exp $
+// $Id: preis.cc,v 1.12 2006/01/23 11:25:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,7 +25,7 @@
 int main()
 {  ManuProC::PrintUncaughtExceptions();
    ManuProC::dbconnect();
-#if 0
+#if 1
    Preis p(1.00,WaehrungID::DM,100);
    std::cout << "1DM/100 "<<p<<'\n';
    Preis b(2.0,WaehrungID::DM,100);
@@ -59,4 +59,6 @@ int main()
    std::cout << "-------------------\n";
    Preis g4(2.96,WaehrungID::EUR,100);
    std::cout << g4.Gesamtpreis(cP_Waehrung(WaehrungID::EUR),1000,2276.092) << '\n';
+   Preis g5(1.00,cP_Waehrung(Waehrung::default_id),100);
+   std::cout << g5.Gesamtpreis(cP_Waehrung(WaehrungID::EUR),1,0.0) << '\n';
 }
