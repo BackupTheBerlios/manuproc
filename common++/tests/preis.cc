@@ -1,4 +1,4 @@
-// $Id: preis.cc,v 1.10 2006/01/23 11:25:18 christof Exp $
+// $Id: preis.cc,v 1.11 2006/01/23 11:25:20 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -58,5 +58,5 @@ int main()
 #endif   
    std::cout << "-------------------\n";
    Preis g4(2.96,WaehrungID::EUR,100);
-   std::cout << g4.Gesamtpreis(cP_Waehrung(WaehrungID::EUR),100,22528.98) << '\n';
+   std::cout << g4.Gesamtpreis(cP_Waehrung(WaehrungID::EUR),1000,2276.092) << '\n';
 }

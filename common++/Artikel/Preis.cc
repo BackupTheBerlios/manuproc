@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.26 2006/01/23 11:25:17 christof Exp $
+// $Id: Preis.cc,v 1.27 2006/01/23 11:25:20 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -104,8 +104,14 @@ std::cout << anzahl << ' ' << menge << ' ' << (*this) << '\n';
     if (!!rabatt) result.pfennig_cent=result.pfennig_cent*(1.0-0.01*rabatt.as_float());
     // mit Menge multiplizieren
 
-    return result.In(result.waehrung,menge*anzahl).Wert();
+    if (menge>preismenge_t::max()/anzahl) // Überlauf bei der Multiplikation
+    { double zwischen=Wert_fr(result.waehrung,result.PreisMenge()).as_float();
+      zwischen=zwischen*anzahl*menge.as_float()/result.PreisMenge().as_float();
+std::cout << zwischen << '\n';    
+      return geldbetrag_t(zwischen); // runden
     }
+    return result.In(result.waehrung,menge*anzahl).Wert();
+   }
 
 }
 
