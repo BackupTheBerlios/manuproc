@@ -64,7 +64,7 @@ msgstr "number"
 #: src/windowTop_glade.cc:142
 #, fuzzy
 msgid "<b>Straße</b>"
-msgstr "Street"
+msgstr "<b>Street</b>"
 
 #: src/windowTop_glade.cc:146
 msgid "Postfach"
