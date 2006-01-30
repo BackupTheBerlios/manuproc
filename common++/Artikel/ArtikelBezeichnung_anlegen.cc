@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung_anlegen.cc,v 1.3 2006/01/19 22:53:38 christof Exp $
+// $Id: ArtikelBezeichnung_anlegen.cc,v 1.4 2006/01/30 07:49:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -107,7 +107,8 @@ void ArtikelBezeichnung::Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase
 ArtikelBase ArtikelBezeichnung::Vorhanden(const cH_ExtBezSchema &schema, 
       int signifikanz, std::vector<cH_EntryValue> const& values)
 { try
-  { return ArtikelBase(ArtikelBezeichnung(signifikanz,values,schema).Id());
+  { if (schema->sigsize(signifikanz)!=values.size()) return ArtikelBase();
+    return ArtikelBase(ArtikelBezeichnung(signifikanz,values,schema).Id());
   }
   catch (...) 
   { return ArtikelBase(); }
