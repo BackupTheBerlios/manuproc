@@ -1,8 +1,17 @@
+<<<<<<< /tmp/mt.LCWXFH
 2005-11-16  gettextize  <bug-gnu-gettext@gnu.org>
 
 	* Makefile.am (EXTRA_DIST): Add config.rpath, mkinstalldirs, m4/ChangeLog.
 	* configure.in (AC_OUTPUT): Add po/Makefile.in.
 
+||||||| /tmp/mt.1ZT441
+=======
+2005-11-30  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (EXTRA_DIST): Add config.rpath, mkinstalldirs, m4/ChangeLog.
+	* configure.in (AC_OUTPUT): Add po/Makefile.in.
+
+>>>>>>> /tmp/mt.TO3FEV
 2005-11-11  gettextize  <bug-gnu-gettext@gnu.org>
 
 	* Makefile.am (ACLOCAL_AMFLAGS): New variable.
@@ -303,6 +312,7 @@
 
 2005/11/24 15:29:46 CET
 	update files from .glade file
+<<<<<<< /tmp/mt.LCWXFH
 
 2005/12/2 14:03:38 CET
 	update files from .glade file
@@ -335,4 +345,13 @@
 	update files from .glade file
 
 2006/1/13 18:26:46 CET
+	update files from .glade file
+||||||| /tmp/mt.1ZT441
+=======
+
+2006/1/24 16:19:48 CET
+	update files from .glade file
+>>>>>>> /tmp/mt.TO3FEV
+
+2006/1/24 16:22:24 CET
 	update files from .glade file
