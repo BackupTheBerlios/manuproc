@@ -1,4 +1,4 @@
-/* $Id: Auftrag.h,v 1.31 2005/08/24 14:46:08 christof Exp $ */
+/* $Id: Auftrag.h,v 1.32 2006/02/01 14:38:04 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -86,9 +86,11 @@ public:
         // please prefer the second, static variant 
         // (creating an Auftrag just to ask for a different one is nonsense)
 	ID getIdFromYourAufId(const char *youraufid) throw(SQLerror);
+	// fuzzy = begins with string
 	static ID getIdFromYourAufId(ppsInstanz::ID instanz, 
 			const std::string &youraufid, 
-			Kunde::ID kundennr=Kunde::none_id) throw(SQLerror);
+			Kunde::ID kundennr=Kunde::none_id,
+			bool fuzzy=false) throw(SQLerror);
         
         void deleteAuftrag() throw(SQLerror);
 	void deleteEintrag(int zeilennr) throw(SQLerror);

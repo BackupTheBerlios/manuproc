@@ -1,4 +1,4 @@
-// $Id: Auftrag.cc,v 1.21 2005/10/12 08:59:38 christof Exp $
+// $Id: Auftrag.cc,v 1.22 2006/02/01 14:38:04 christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -240,7 +240,7 @@ void Auftrag::setYourAufNr(const std::string &yanr) throw(SQLerror)
 
 Auftrag::ID Auftrag::getIdFromYourAufId(ppsInstanz::ID instanz, 
 			const std::string &youraufid, 
-			Kunde::ID kundennr) throw(SQLerror)
+			Kunde::ID kundennr, bool fuzzy) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,instanz,youraufid,kundennr);
  if (kundennr==Kunde::none_id)
@@ -249,16 +249,11 @@ Auftrag::ID Auftrag::getIdFromYourAufId(ppsInstanz::ID instanz,
 	.FetchOne<int>();
   Query q("select auftragid from auftrag where (instanz,kundennr,youraufnr)=(?,?,?)");
   q << instanz << kundennr << youraufid;
-#ifdef PETIG_EXTENSIONS // fuzzy search
-  if (q.LinesAffected())
-    return q.FetchOne<int>();
+  if (!fuzzy || q.LinesAffected()) return q.FetchOne<int>();
   
   return (Query("select auftragid from auftrag where (instanz,kundennr)=(?,?) "
   		"and youraufnr like ?")
     << instanz << kundennr << (youraufid+"%")).FetchOne<int>();
-#else
-  return q.FetchOne<int>();
-#endif
 }
 
 Auftrag::ID Auftrag::getIdFromYourAufId(const char *youraufid) throw(SQLerror)
