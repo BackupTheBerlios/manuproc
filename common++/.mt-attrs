@@ -1,2 +1,26 @@
+   file "Basic/autogen.sh"
+execute "true"
+
    file "autogen.sh"
+execute "true"
+
+   file "tests/AuftragsTest/clean_db"
+execute "true"
+
+   file "tests/AuftragsTest/database_tables_init/clean_db2"
+execute "true"
+
+   file "tests/AuftragsTest/database_tables_init_Mabella/clean_db2"
+execute "true"
+
+   file "tests/AuftragsTest/massage_log"
+execute "true"
+
+   file "tests/AuftragsTest/resortdiff"
+execute "true"
+
+   file "tests/AuftragsTest/resortmgdiff"
+execute "true"
+
+   file "tests/AuftragsTest/where_are_the_tables"
 execute "true"
