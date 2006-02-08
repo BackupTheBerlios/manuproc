@@ -1,4 +1,4 @@
-// $Id: tagstream.cc,v 1.6 2004/06/03 07:14:33 christof Exp $
+// $Id: tagstream.cc,v 1.7 2006/02/08 17:08:11 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -52,6 +52,19 @@ int main()
    }
    std::cout << "===== reading BOM =====\n";
    {  const char * const Testcase1="﻿<?xml version=\"1.0\"?><test a=\"﻿\"/>";
+      TagStream ts(Testcase1);
+      ts.debug(10);
+      ts.write(std::cout,true);
+      std::cout << '\n';
+   }
+   std::cout << "===== parsing ampersands =====\n";
+   {  const char * const Testcase1="﻿<?xml version=\"1.0\"?><test><Text Größe=\"8\">&amp; &amp; abc&#x0A;d</Text></test>";
+      TagStream ts(Testcase1);
+      ts.debug(10);
+      ts.write(std::cout,true);
+      std::cout << '\n';
+   }
+   {  const char * const Testcase1="﻿<?xml version=\"1.0\"?><test><Text>&amp; &amp; &#x0A;d</Text></test>";
       TagStream ts(Testcase1);
       ts.debug(10);
       ts.write(std::cout,true);

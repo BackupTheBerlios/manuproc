@@ -1,4 +1,4 @@
-// $Id: TagStream.cc,v 1.10 2004/06/04 10:36:32 christof Exp $
+// $Id: TagStream.cc,v 1.11 2006/02/08 17:08:11 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2004  Christof Petig
  *
@@ -68,6 +68,8 @@ void TagStream::de_xml(std::string &cont)
       {  std::string::iterator endtag(std::find(verbatim,cont.end(),';'));
          if (endtag!=cont.end()) ++endtag;
          std::string tag(verbatim,endtag);
+std::cerr << long(verbatim-cont.begin()) << ' ' << long(endtag-cont.begin()) << ' ' << cont << '\n';
+         i=verbatim-cont.begin();
          if (tag[1]=='#' && tag[2]=='x')
          {  int c=0;  // hex coded
             for (std::string::const_iterator j=tag.begin()+3; 
@@ -93,7 +95,8 @@ void TagStream::de_xml(std::string &cont)
          else if (tag=="&auml;") 
          {  std::string nw="ä"; // assumes host_encoding=="UTF-8"
             if (recode_load_vfunc) (*recode_load_vfunc)(nw);
-            cont.replace(verbatim,endtag,nw); i+=nw.size(); 
+            cont.replace(verbatim,endtag,nw); 
+            i+=nw.size(); 
          }
          	// and so on ... but glade simply passes them
          else
@@ -165,7 +168,7 @@ TagStream::~TagStream()
 
 void TagStream::load_project_file(Tag *top)
 {  setEncoding(host_encoding);
-   if (end_pointer>3 && buffer[0]==0xef && buffer[1]==0xbb && buffer[2]==0xbf)
+   if (end_pointer>3 && buffer[0]==char(0xef) && buffer[1]==char(0xbb) && buffer[2]==char(0xbf))
       set_pointer(buffer+3);
    while (good() && next_tag(top));
 }
