@@ -30,10 +30,10 @@
 #include <Misc/TraceNV.h>
 #include <Misc/Ausgabe_neu.h> // for uses UTF8
 
-std::string RohwarenLager::st_rohlager::Menge_als_Text() const
+std::string RohwarenLager::st_rohlager::Menge_als_Text(Einheit const& e) const
 {  std::string s;
-   if (kartons) s+=itos(kartons)+" Kartons à " + itos(kg_pro_karton)+ "kg ";
-   if (reste||reste_kg) s+=itos(reste) +" Reste="+ itos(reste_kg) + "kg";
+   if (kartons) s+=itos(kartons)+" Kartons Ã  " + itos(kg_pro_karton)+ e.Bezeichnung()+" ";
+   if (reste||reste_kg) s+=itos(reste) +" Reste="+ itos(reste_kg) + e.Bezeichnung();
    if (s.empty()) s="nichts";
    return s;
 }
@@ -71,7 +71,7 @@ bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force
         os+="Auf "+rohlager.position.SPosition()+" steht "
            +cH_ArtikelBezeichnung(was_ist_drin.artikel)->Bezeichnung() 
            +" vom "+was_ist_drin.datum.c_str()
-           +" ("+was_ist_drin.Menge_als_Text()+")\n";
+           +" ("+was_ist_drin.Menge_als_Text(Einheit(was_ist_drin.artikel))+")\n";
         return false;
       }
      if (ist_leer && (was_ist_drin.kartons!=rohlager.kartons ||
@@ -79,13 +79,13 @@ bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force
                       was_ist_drin.reste_kg!=rohlager.reste_kg))
      {
          os+="Info: Auf " + rohlager.position.SPosition()
-            +" standen noch "+was_ist_drin.Menge_als_Text()+'\n';
+            +" standen noch "+was_ist_drin.Menge_als_Text(Einheit(was_ist_drin.artikel))+'\n';
      }
      else if(!ist_leer && (was_ist_drin.kartons<rohlager.kartons ||
                      was_ist_drin.reste<rohlager.reste ||
                       was_ist_drin.reste_kg<rohlager.reste_kg))
      {  os+="Info: Auf "+rohlager.position.SPosition()
-            +" standen nur noch "+was_ist_drin.Menge_als_Text() + '\n';
+            +" standen nur noch "+was_ist_drin.Menge_als_Text(Einheit(was_ist_drin.artikel)) + '\n';
      }
     }
    else // force
@@ -93,7 +93,7 @@ bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force
          os+="Info: Auf "+rohlager.position.SPosition() + " stand "
            +cH_ArtikelBezeichnung(was_ist_drin.artikel)->Bezeichnung() 
            +" vom "+was_ist_drin.datum.c_str()
-           +" ("+was_ist_drin.Menge_als_Text()+")\n";
+           +" ("+was_ist_drin.Menge_als_Text(Einheit(was_ist_drin.artikel))+")\n";
        }
 
   std::string misc;
@@ -200,7 +200,7 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
          {
            if (!was_ist_drin.kg_pro_karton) was_ist_drin.kg_pro_karton=rohlager.kg_pro_karton;
            if (!rohlager.kg_pro_karton) rohlager.kg_pro_karton=was_ist_drin.kg_pro_karton;
-             // gleicher Artikel, gleiche Paketgröße also
+             // gleicher Artikel, gleiche PaketgrÃ¶ÃŸe also
              // neue Menge zu alter Menge hinzuaddieren und rein damit
            if (rohlager.kg_pro_karton==was_ist_drin.kg_pro_karton)
             {
@@ -221,7 +221,7 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
            else 
             {
               os = "  an Position " + rohlager.position.SPosition() + " sollen "
-                + itos(was_ist_drin.kg_pro_karton) + "kg "
+                + itos(was_ist_drin.kg_pro_karton) + Einheit(was_ist_drin.artikel).Bezeichnung() +" "
                 +  cH_ArtikelBezeichnung(was_ist_drin.artikel)->Bezeichnung()
                 +  " im Karton sein.\n";
               return false;
@@ -231,9 +231,9 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
          {
            os ="  an Position " +rohlager.position.SPosition()+" befindet sich "
             + cH_ArtikelBezeichnung(was_ist_drin.artikel)->Bezeichnung() + " vom "
-            + was_ist_drin.datum.c_str() + " ("+itos(was_ist_drin.kartons)+"K.à "
-            + itos(was_ist_drin.kg_pro_karton)+ "kg " +itos(was_ist_drin.reste)+ "R.="
-            + itos(was_ist_drin.reste_kg) + "kg)\n";
+            + was_ist_drin.datum.c_str() + " ("+itos(was_ist_drin.kartons)+"K.Ã  "
+            + itos(was_ist_drin.kg_pro_karton)+ Einheit(was_ist_drin.artikel).Bezeichnung()+" " +itos(was_ist_drin.reste)+ "R.="
+            + itos(was_ist_drin.reste_kg) + Einheit(was_ist_drin.artikel).Bezeichnung()+")\n";
            return false;
          }
       }  

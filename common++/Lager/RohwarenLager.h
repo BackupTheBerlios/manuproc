@@ -1,4 +1,4 @@
-/* $Id: RohwarenLager.h,v 1.10 2003/09/02 12:10:52 christof Exp $ */
+/* $Id: RohwarenLager.h,v 1.11 2006/02/08 17:09:45 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -21,6 +21,7 @@
 #define _ROHWARENLAGER_HH_
 
 #include "Lager.h"
+#include <Artikel/Einheiten.h>
 #include <Auftrag/AuftragBase.h>
 
 class RohwarenLager : public LagerBase
@@ -42,7 +43,7 @@ class RohwarenLager : public LagerBase
                reste_kg(rkg),artikel(a),datum(d) {}
            void setPosition(const LagerPlatz p) {position=p;}
            bool empty() const { return kartons==0 && reste==0; }
-           std::string Menge_als_Text() const;
+           std::string Menge_als_Text(Einheit const& e) const;
            AuftragBase::mengen_t Menge_fuer_Auftrag() const;
       };       
 
