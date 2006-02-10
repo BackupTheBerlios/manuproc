@@ -152,7 +152,7 @@ void auftrag_bearbeiten::onSelArtikel()
  Einheit e(artikelbox->get_value());
  mengeeinheit->set_text((std::string)e);
  WPreis->set_Einheit(e);
- cH_PreisListe artikel_preisliste;
+ cH_PreisListe artikel_preisliste(PreisListe::none_id);
 
  try {
     WPreis->reset();
