@@ -43,7 +43,14 @@ datewin_popup::datewin_popup(datewin *p)
       - parent->get_allocation().get_x()
       + parent->togglebutton_menu->get_allocation().get_width();
   gint avail_height = parent->get_screen()->get_height();
+
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>=8
   Gtk::Requisition mydimens = size_request();
+#else
+  Gtk::Requisition mydimens;
+  size_request(mydimens);
+#endif  
+
   y += height;
   if (mydimens.width>width && x>=(width-mydimens.width))
     x-= width-mydimens.width;
