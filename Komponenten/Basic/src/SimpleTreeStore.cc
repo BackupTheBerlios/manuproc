@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.115 2006/02/16 15:44:58 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.116 2006/02/16 15:45:04 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -1105,7 +1105,7 @@ void SimpleTreeStore::setSortierspalte(unsigned s,bool i)
    {  please_detach();
       ++stamp;
       sortierspalte=s;
-      if (i!=invisible_column) invert_order.at(sortierspalte)=i;
+      if (sortierspalte!=invisible_column) invert_order.at(sortierspalte)=i;
       redisplay();
    }
 }
@@ -1148,7 +1148,8 @@ void SimpleTreeStore::save_and_redisplay(gpointer g)
 }
 
 std::string SimpleTreeStore::SpaltenMarkierung(unsigned idx) const
-{ if (idx==sortierspalte) return invert_order.at(idx) ? "⇑" : "⇓"; // double arrow
+{ assert(idx!=invisible_column);
+  if (idx==sortierspalte) return invert_order.at(idx) ? "⇑" : "⇓"; // double arrow
   if (invert_order.at(idx)) return "↑"; // up arrow
   return std::string();
 }
