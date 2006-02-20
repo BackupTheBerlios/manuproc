@@ -1,4 +1,4 @@
-// $Id: Telefon_sql.pgcc,v 1.8 2003/09/15 14:56:50 jacek Exp $
+// $Id: Telefon_sql.pgcc,v 1.9 2006/02/20 09:55:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -36,7 +36,8 @@ Telefon::Telefon(Telefon::ID _tid) throw(SQLerror)
  int LAND;
  char ART[2];
  char *QU;
- char TEXT[41];
+// char TEXT[41];
+ char *TEXT=0;
  exec sql end declare section;
 
  Transaction tr;
@@ -45,7 +46,7 @@ Telefon::Telefon(Telefon::ID _tid) throw(SQLerror)
          "coalesce(persnr,"+itos(none_id)+"),"
 			"coalesce(telnr,0),coalesce(vorwahl,0),ldkenn,art,"
 			"coalesce(durchwahl,-1),"
-			"coalesce(substr(text,1,40),'') from ku_telefon where ");
+			"coalesce(text,'') from ku_telefon where ");
  qu = qu+" telid="+itos(TELID);
 
  QU = (char*)qu.c_str();
@@ -67,6 +68,7 @@ Telefon::Telefon(Telefon::ID _tid) throw(SQLerror)
  exec sql close TELCUR;
  tr.close();
 
+ ECPGfree_auto_mem();
 }
 
 void Telefon::getTelIDs(std::vector<Telefon::ID> &vec, const TelArt &ta, 
