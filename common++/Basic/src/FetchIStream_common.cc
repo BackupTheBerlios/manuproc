@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.37 2006/02/20 09:55:05 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.38 2006/02/20 09:55:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -184,8 +184,6 @@ Oid ArgumentList::type_of(const_iterator const& which) const
 { return types[which-begin()];
 }
 
-<<<<<<< /tmp/mt.L4P48G
-=======
 bool ArgumentList::is_binary(const_iterator const& which) const
 { return binary[which-begin()];
 }
@@ -194,7 +192,6 @@ bool ArgumentList::is_null(const_iterator const& which) const
 { return null[which-begin()];
 }
 
->>>>>>> /tmp/mt.SP4R0B
 bool needs_quotes(Oid type)
 { switch (type)
   { case CHAROID:
@@ -208,12 +205,7 @@ bool needs_quotes(Oid type)
     case NUMERICOID:
     case FLOAT4OID:
     case FLOAT8OID:
-<<<<<<< /tmp/mt.L4P48G
-    case BOOLOID:
-    case VOIDOID: return false;
-=======
     case BOOLOID: return false;
->>>>>>> /tmp/mt.SP4R0B
     
     default: std::cerr << "Oid " << type << " is unknown\n"; 
       return true;
@@ -279,20 +271,6 @@ Query &Query::add_argument(const std::string &s, Oid type)
    return *this;
 }
 
-<<<<<<< /tmp/mt.3MMX3F
-ArgumentList &ArgumentList::operator<<(Query_types::null_s n)
-{ if (complete())
-      Query_Row::mythrow(SQLerror("",ECPG_TOO_MANY_ARGUMENTS,"too many arguments"));
-  params.push_back(std::string());
-  types.push_back(n.type);
-  null.push_back(true);
-  binary.push_back(false);
-  --params_needed;
-  return *this;
-}
-
-||||||| /tmp/mt.L4P48G
-=======
 ArgumentList &ArgumentList::operator<<(Query_types::null_s n)
 { if (complete())
       Query_Row::mythrow(SQLerror("",ECPG_TOO_MANY_ARGUMENTS,"too many arguments"));
@@ -309,19 +287,14 @@ ArgumentList &ArgumentList::operator<<(Query_types::null_s n)
   return *this;
 }
 
->>>>>>> /tmp/mt.SP4R0B
 ArgumentList &ArgumentList::add_argument(const std::string &x, Oid type)
 {  if (complete())
       Query_Row::mythrow(SQLerror("",ECPG_TOO_MANY_ARGUMENTS,"too many arguments"));
    params.push_back(x);
    types.push_back(type);
-<<<<<<< /tmp/mt.L4P48G
-   --params_needed;
-=======
    null.push_back(false);
    binary.push_back(false);
   --params_needed;
->>>>>>> /tmp/mt.SP4R0B
    return *this;
 }
 
@@ -356,60 +329,37 @@ ArgumentList &ArgumentList::operator<<(const std::string &str)
   return add_argument(p,TEXTOID);
 #endif
 }
-<<<<<<< /tmp/mt.3MMX3F
-template<>
-const Oid Query::NullIf_s<std::string>::postgres_type=TEXTOID;
-||||||| /tmp/mt.L4P48G
-=======
 template<>
 const Oid Query::NullIf_s<std::string>::postgres_type=TEXTOID;
 template<>
 const Oid Query::NullIf_s<char const*>::postgres_type=TEXTOID;
->>>>>>> /tmp/mt.SP4R0B
 
 ArgumentList &ArgumentList::operator<<(long i)
 { return add_argument(itos(i),INT4OID);
 }
-<<<<<<< /tmp/mt.L4P48G
-=======
 template<> const Oid Query::NullIf_s<long>::postgres_type=INT4OID;
 template<> const Oid Query::NullIf_s<int>::postgres_type=INT4OID;
->>>>>>> /tmp/mt.SP4R0B
 
 ArgumentList &ArgumentList::operator<<(unsigned long i)
 {  return add_argument(ulltos(i),INT4OID);
 }
-<<<<<<< /tmp/mt.L4P48G
-=======
 template<> const Oid Query::NullIf_s<unsigned long>::postgres_type=INT4OID;
->>>>>>> /tmp/mt.SP4R0B
 
 ArgumentList &ArgumentList::operator<<(unsigned long long i)
 {  return add_argument(ulltos(i),INT8OID);
 }
-<<<<<<< /tmp/mt.L4P48G
-=======
 template<> const Oid Query::NullIf_s<unsigned long long>::postgres_type=INT8OID;
->>>>>>> /tmp/mt.SP4R0B
 
 ArgumentList &ArgumentList::operator<<(double i)
 {  return add_argument(dtos(i),FLOAT4OID);
 }
-<<<<<<< /tmp/mt.3MMX3F
-template<> const Oid Query::NullIf_s<double>::postgres_type=FLOAT4OID;
-||||||| /tmp/mt.L4P48G
-=======
 template<> const Oid Query::NullIf_s<double>::postgres_type=FLOAT4OID;
 template<> const Oid Query::NullIf_s<float>::postgres_type=FLOAT4OID;
->>>>>>> /tmp/mt.SP4R0B
 
 ArgumentList &ArgumentList::operator<<(bool i)
 {  return add_argument(btos(i),BOOLOID);
 }
-<<<<<<< /tmp/mt.L4P48G
-=======
 template<> const Oid Query::NullIf_s<bool>::postgres_type=BOOLOID;
->>>>>>> /tmp/mt.SP4R0B
 
 ArgumentList &ArgumentList::operator<<(char i)
 {  char x[8];
@@ -430,10 +380,7 @@ ArgumentList &ArgumentList::operator<<(char i)
 #endif   
    return add_argument(x,CHAROID);
 }
-<<<<<<< /tmp/mt.L4P48G
-=======
 template<> const Oid Query::NullIf_s<char>::postgres_type=CHAROID;
->>>>>>> /tmp/mt.SP4R0B
 
 ArgumentList &ArgumentList::operator<<(const ArgumentList &list)
 {  for (const_iterator i=list.begin();i!=list.end();++i) 
@@ -596,9 +543,3 @@ Query_Row::Fake::~Fake()
 }
 #endif
 
-<<<<<<< /tmp/mt.L4P48G
-ArgumentList &ArgumentList::operator<<(Query_types::null n)
-{ return add_argument("null",VOIDOID);
-}
-=======
->>>>>>> /tmp/mt.SP4R0B

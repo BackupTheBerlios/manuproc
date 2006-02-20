@@ -1,4 +1,4 @@
-// $Id: Query.h,v 1.23 2006/02/20 09:55:11 christof Exp $
+// $Id: Query.h,v 1.24 2006/02/20 09:55:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Christof Petig
@@ -44,11 +44,9 @@ extern "C" {
 }
 #endif
 
-
 #if !defined(OLD_ECPG) && defined(HAVE_PQPREPARE)
 #define USE_PARAMETERS
 #endif
-
 
 
 // please access this class under the new alias "Query::Row"
@@ -184,22 +182,10 @@ struct Query_types
 	 struct NullIf_s
 	{	T data;
 		bool null;
-<<<<<<< /tmp/mt.0ZBJMX
-=======
 		static const Oid postgres_type;
->>>>>>> /tmp/mt.QAHN5H
 		
 		template <class U> NullIf_s(const T &a,const U &b) : data(a), null(a==b) {}
 	};
-<<<<<<< /tmp/mt.NZWD7M
-	struct null_s 
-	{ Oid type;
-	  null_s(Oid t) : type(t) {}
-	};
-	template <class T> static struct null_s null();
-||||||| /tmp/mt.0ZBJMX
-	struct null { null(){} };
-=======
 	struct null_s 
 	{ Oid type;
 	  null_s(Oid t) : type(t) {}
@@ -208,7 +194,6 @@ struct Query_types
 	template <class T> static null_s_t null()
 	{ return null_s_t(NullIf_s<T>::postgres_type);
 	}
->>>>>>> /tmp/mt.QAHN5H
 	typedef Query_Row::check_eol check_eol;
 };
 
@@ -217,10 +202,7 @@ class ArgumentList
         std::vector<Oid> types;
 	std::vector<std::string> params;
 	std::vector<bool> binary;
-<<<<<<< /tmp/mt.0ZBJMX
-=======
 	std::vector<bool> null;
->>>>>>> /tmp/mt.QAHN5H
 public:
 	typedef std::vector<std::string>::const_iterator const_iterator;
 	ArgumentList() : params_needed(unsigned(-1)) {}
@@ -232,17 +214,10 @@ public:
 	const_iterator begin() const { return params.begin(); }
 	const_iterator end() const { return params.end(); }
 	bool empty() const { return params.empty(); }
-<<<<<<< /tmp/mt.0ZBJMX
-	Oid type_of(const_iterator const& which) const;
-=======
->>>>>>> /tmp/mt.QAHN5H
 	size_t size() const { return params.size(); }
-<<<<<<< /tmp/mt.0ZBJMX
-=======
 	Oid type_of(const_iterator const& which) const;
 	bool is_null(const_iterator const& which) const;
 	bool is_binary(const_iterator const& which) const;
->>>>>>> /tmp/mt.QAHN5H
 
 	//-------------------- parameters ------------------
 	// must be already quoted for plain SQL inclusion
@@ -263,21 +238,12 @@ public:
 	ArgumentList &operator<<(const ArgumentList &list);
 	ArgumentList &operator<<(const char *s)
 	{  return operator<<(std::string(s)); }
-<<<<<<< /tmp/mt.0ZBJMX
-	ArgumentList &operator<<(Query_types::null n);
-=======
 	ArgumentList &operator<<(Query_types::null_s n);
->>>>>>> /tmp/mt.QAHN5H
 	
 	template <class T>
 	 ArgumentList &operator<<(const Query_types::NullIf_s<T> &n)
-<<<<<<< /tmp/mt.0ZBJMX
-	{  if (n.null) return operator<<(Query_types::null());
-	   return (*this)<<(n.data);
-=======
 	{  if (n.null) return operator<<(Query_types::null_s(n.postgres_type));
 	   return (*this) << n.data;
->>>>>>> /tmp/mt.QAHN5H
 	}
 	static const char *next_insert(const char *text);
 };
