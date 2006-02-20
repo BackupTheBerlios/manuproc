@@ -1,4 +1,4 @@
-// $Id: Query.h,v 1.22 2006/02/20 09:55:08 christof Exp $
+// $Id: Query.h,v 1.23 2006/02/20 09:55:11 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Christof Petig
@@ -43,6 +43,7 @@ extern "C" {
 #include <libpq-fe.h>
 }
 #endif
+
 
 #if !defined(OLD_ECPG) && defined(HAVE_PQPREPARE)
 #define USE_PARAMETERS
