@@ -101,7 +101,7 @@ bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force
     {
       (Query("delete from rl_inhalt where position_=?")
         << rohlager.position.SPosition()).Check100();
-      if(force) misc=(Ausgabe_neu::TeX_uses_UTF8 ? "lösc" : "l�c");
+      if(force) misc=(Ausgabe_neu::TeX_uses_UTF8 ? "lösc" : "l\x7fsc");
       else misc="leer";
       rohlager=was_ist_drin;
     }  
@@ -178,7 +178,7 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
   else  // ups, auf dieser Position liegt schon etwas
    {
      st_rohlager was_ist_drin = RL_Inhalt(rohlager.position);
-     if(force) // berschreiben, ohne Rcksicht auf Material
+     if(force) // überschreiben, ohne Rücksicht auf Material
       { // wird nicht als Verbrauch gerechnet
         RL_Entnahme(was_ist_drin,os,true,true,false);
         if (!os.empty()) os+='\n';
@@ -227,7 +227,7 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
               return false;
             }
          }
-        else // Die Materiaien stimmen nicht berein
+        else // Die Materialien stimmen nicht überein
          {
            os ="  an Position " +rohlager.position.SPosition()+" befindet sich "
             + cH_ArtikelBezeichnung(was_ist_drin.artikel)->Bezeichnung() + " vom "
