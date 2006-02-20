@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.38 2006/02/20 09:55:14 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.39 2006/02/20 09:55:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -248,7 +248,11 @@ void Query::Execute_if_complete()
          {  expanded+=std::string(last,p-last);
             assert(piter!=params.end());
             Oid type=params.type_of(piter);
-            if (needs_quotes(type))
+            if(params.is_null(piter)) 
+	    {expanded+="null";
+	    }
+            else
+            if(needs_quotes(type))
             { expanded+="'"+*piter+"'";
             }
             else expanded+=*piter;
