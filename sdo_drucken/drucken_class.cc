@@ -224,7 +224,8 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 	     os << mld->MLT(MultiL_Dict::TXT_KONTO) << " " << ulltos(kunde_von->getKtnr()) << ", ";
 	     os << "BLZ " << itos(kunde_von->getblz()) << ", ";	  
 	     os << mld->MLT(MultiL_Dict::TXT_BANK) << " " << kunde_von->getbank();
-	     os << "~\\\\S.W.I.F.T.: BOTK DE DX - IBAN " << kunde_von->getIBAN_Code() << "\\\\\n";
+//	     os << "~\\\\S.W.I.F.T.: BOTK DE DX - IBAN " << kunde_von->getIBAN_Code() << "\\\\\n";
+	     os << "~\\\\S.W.I.F.T.: VBRS DE 33 - IBAN " << kunde_von->getIBAN_Code() << "\\\\\n";
 	    }
 	  else
 	    os << "~\\\\~\\\\\n";
@@ -233,7 +234,7 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 	 }
 
   if(kunde_an->land()->Auslaender())
-    { os << "~\\\\\\footnotesize - "<<mld->MLT(MultiL_Dict::TXT_WARE_ZOLL)<<"\\\\\\\\\n";
+    { os << "~\\\\\\footnotesize - "<<string2TeX(mld->MLT(MultiL_Dict::TXT_WARE_ZOLL))<<"\\\\\\\\\n";
 
 //      os << "\\bigskip "<< mld->MLT(MultiL_Dict::TXT_MADEINGER) <<"\n";
 
