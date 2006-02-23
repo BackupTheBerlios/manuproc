@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.37 2006/02/23 16:13:03 christof Exp $
+// $Id: ArtikelBox.cc,v 1.38 2006/02/23 16:27:36 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -661,13 +661,15 @@ bool ArtikelBox::determineFocus(guint &sigidx_out, guint &entryidx_out) const
 }
 
 void ArtikelBox::reset()
-   { for (t_combos2::iterator j=combos.begin();std_neq(j,combos.end());++j)  
+{ for (t_combos2::iterator j=combos.begin();std_neq(j,combos.end());++j)  
       for (t_combos::iterator i=j->begin();std_neq(i,j->end());++i)
         (*i)->reset(); 
 //     eingeschraenkt=false;
 //     einschraenkung="";
 //     joinstring="";
-   }  
+  pixmap_setzen(false); // von GTK1 portiert (richtig?)
+  artikel=ArtikelBase(); // von GTK1 portiert (richtig?)
+}  
 
 void ArtikelBox::set_editable(bool edit)
    { for (t_combos2::iterator j=combos.begin();std_neq(j,combos.end());++j)  

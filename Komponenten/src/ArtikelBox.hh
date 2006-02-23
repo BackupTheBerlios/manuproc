@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.hh,v 1.32 2006/02/23 16:13:03 christof Exp $
+// $Id: ArtikelBox.hh,v 1.33 2006/02/23 16:27:36 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.32 2006/02/23 16:13:03 christof Exp $
+// $Id: ArtikelBox.hh,v 1.33 2006/02/23 16:27:36 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -268,7 +268,7 @@ public:
 //	sigc::signal0<void> AddUserMenu(const Glib::ustring &text);
 	void ClearUserMenus();
 
-	void EinWarenkorb(PreisListe::ID pid);
+	void EinWarenkorb(cH_PreisListe p);
 	void NichtWarenkorb(PreisListe::ID pid);
 	void AlleWarenkorb(Kunde::ID kid);
 
