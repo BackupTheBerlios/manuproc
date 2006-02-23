@@ -1,4 +1,4 @@
-// $Id: IntStringBox.hh,v 1.3 2005/11/22 13:03:33 christof Exp $
+// $Id: IntStringBox.hh,v 1.4 2006/02/23 16:13:00 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -67,7 +67,7 @@ public:
    void reset();
    void setExpandStr2(bool expand);
    void setExpandStr1(bool expand);
-
+   void setSize(int int_width=3,bool int_expand=false,int width1=8,int width2=8);
 
    void Einschraenken(bool an);
    void Einschraenkung(const std::string &e, bool an=true);

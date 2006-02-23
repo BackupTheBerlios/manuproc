@@ -1,6 +1,6 @@
-// $Id: IntStringBox.cc,v 1.3 2006/02/23 16:12:57 christof Exp $
+// $Id: IntStringBox.cc,v 1.4 2006/02/23 16:13:00 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
- *  1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *  1998-2006 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@
 #include <Misc/itos.h>
 #include <gtk/gtksignal.h>
 #include <cassert>
+#include <gtk/gtktable.h> // for changing expand
+#include <gtkmm/table.h>
 
 void IntStringBox::hide_int(bool b)
 {
@@ -133,6 +135,16 @@ void IntStringBox::reset()
 
 }
 
+void IntStringBox::setSize(int int_width,bool int_expand,int width1,int width2)
+{ sc_int->get_entry()->set_width_chars(int_width);
+  sc1_string->get_entry()->set_width_chars(width1);
+  sc2_string->get_entry()->set_width_chars(width2);
+  // a bit hackish ...
+  for (Gtk::Table::TableList::iterator i=table->children().begin();i!=table->children().end();++i)
+  { if (i->get_widget()==sc_int && i->get_xexpand()!=int_expand)
+      i->gobj()->xexpand=int_expand;
+  }
+}
 
 void IntStringBox::Einschraenken(bool an)
 {

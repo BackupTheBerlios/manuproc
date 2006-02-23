@@ -1161,12 +1161,12 @@
       <property agent="glademm" name="cxx_separate_class">True</property>
       <property agent="glademm" name="cxx_separate_file">True</property>
       <property name="visible">True</property>
-      <property name="events">GDK_BUTTON_PRESS_MASK</property>
-      <property name="visible_window">True</property>
+      <property name="visible_window">False</property>
       <property name="above_child">False</property>
 
       <child>
 	<widget class="GtkTable" id="table">
+	  <property agent="glademm" name="cxx_visibility">protected</property>
 	  <property name="visible">True</property>
 	  <property name="n_rows">2</property>
 	  <property name="n_columns">4</property>
