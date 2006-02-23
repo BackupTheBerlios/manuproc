@@ -1,4 +1,4 @@
-// $Id: IntStringBox_gui.cc,v 1.1 2005/11/21 18:21:53 christof Exp $
+// $Id: IntStringBox_gui.cc,v 1.2 2006/02/23 16:12:57 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,6 +32,10 @@ IntStringBox_gui::IntStringBox_gui()
 : IntStringBox_glade(), menu(0)
 {  fuelleMenu();
   this->signal_button_press_event().connect(SigC::slot(*this,&IntStringBox_gui::MouseButton));
+  // request smaller entries
+  sc_int->get_entry()->set_width_chars(3);
+  sc1_string->get_entry()->set_width_chars(8);
+  sc2_string->get_entry()->set_width_chars(8);
 }
 
 void IntStringBox_gui::fuelleMenu()

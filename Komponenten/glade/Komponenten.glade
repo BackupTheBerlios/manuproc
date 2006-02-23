@@ -1179,7 +1179,7 @@
 	    <widget class="GtkLabel" id="label_int">
 	      <property agent="glademm" name="cxx_visibility">protected</property>
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">Int</property>
+	      <property name="label">Int</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
 	      <property name="justify">GTK_JUSTIFY_CENTER</property>
@@ -1208,7 +1208,7 @@
 	    <widget class="GtkLabel" id="label_string1">
 	      <property agent="glademm" name="cxx_visibility">protected</property>
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">Name1</property>
+	      <property name="label">Name1</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
 	      <property name="justify">GTK_JUSTIFY_CENTER</property>
@@ -1237,7 +1237,7 @@
 	    <widget class="GtkLabel" id="label_string2">
 	      <property agent="glademm" name="cxx_visibility">protected</property>
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">Name2</property>
+	      <property name="label">Name2</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
 	      <property name="justify">GTK_JUSTIFY_CENTER</property>
@@ -1258,27 +1258,6 @@
 	      <property name="top_attach">0</property>
 	      <property name="bottom_attach">1</property>
 	      <property name="x_options">fill</property>
-	      <property name="y_options"></property>
-	    </packing>
-	  </child>
-
-	  <child>
-	    <widget class="Custom" id="sc_int">
-	      <property agent="glademm" name="cxx_visibility">protected</property>
-	      <property name="visible">True</property>
-	      <property name="creation_function">SearchCombo</property>
-	      <property name="int1">0</property>
-	      <property name="int2">0</property>
-	      <property name="last_modification_time">Mon, 13 May 2002 17:07:08 GMT</property>
-	      <signal name="activate" handler="int_activate"/>
-	      <signal name="search" handler="int_search"/>
-	    </widget>
-	    <packing>
-	      <property name="left_attach">1</property>
-	      <property name="right_attach">2</property>
-	      <property name="top_attach">1</property>
-	      <property name="bottom_attach">2</property>
-	      <property name="x_options">expand|shrink|fill</property>
 	      <property name="y_options"></property>
 	    </packing>
 	  </child>
@@ -1341,6 +1320,27 @@
 	      <property name="top_attach">1</property>
 	      <property name="bottom_attach">2</property>
 	      <property name="x_options"></property>
+	      <property name="y_options"></property>
+	    </packing>
+	  </child>
+
+	  <child>
+	    <widget class="Custom" id="sc_int">
+	      <property agent="glademm" name="cxx_visibility">protected</property>
+	      <property name="visible">True</property>
+	      <property name="creation_function">SearchCombo</property>
+	      <property name="int1">0</property>
+	      <property name="int2">0</property>
+	      <property name="last_modification_time">Mon, 13 May 2002 17:07:08 GMT</property>
+	      <signal name="activate" handler="int_activate"/>
+	      <signal name="search" handler="int_search"/>
+	    </widget>
+	    <packing>
+	      <property name="left_attach">1</property>
+	      <property name="right_attach">2</property>
+	      <property name="top_attach">1</property>
+	      <property name="bottom_attach">2</property>
+	      <property name="x_options">shrink|fill</property>
 	      <property name="y_options"></property>
 	    </packing>
 	  </child>
