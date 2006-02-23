@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.36 2005/12/21 07:23:17 christof Exp $
+// $Id: ArtikelBox.cc,v 1.37 2006/02/23 16:13:03 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -873,3 +873,30 @@ unsigned ArtikelBox::getSignifikanzPos(int sig)
     if (signifikanz[i]==sig) return i;
   throw std::domain_error("signifikanz nicht sichtbar");
 }
+
+void ArtikelBox::EinWarenkorb(cH_PreisListe p)
+	  {joinstring = " join artikelpreise ap on (id=artikelid) ";
+	   einschraenkung=" ap.kundennr in ("+itos(p->Id());
+	   if(p->isDepending()) einschraenkung+=","+itos(p->ParentID());
+	   einschraenkung+=")";
+	  }
+
+void ArtikelBox::NichtWarenkorb(PreisListe::ID pid)
+	  {joinstring = "";
+	   einschraenkung=" not exists (select artikelid from "
+		" artikelpreise ap where ap.artikelid=artboxtable.id "
+		" and ap.kundennr="+itos(pid)+")";
+	  }
+
+void ArtikelBox::AlleWarenkorb(Kunde::ID kid)
+	  {joinstring = " join artikelpreise ap on (id=ap.artikelid) ";
+	   einschraenkung=" exists (select kw.prlsnr from ku_warenkorb kw"
+			" where kw.prlsnr=ap.kundennr and"
+			" kw.kundennr="+itos(kid)+
+			" UNION "
+			"(select kp.pl_parent from ku_preisliste kp"
+			" where kp.prlsnr in (select kb.prlsnr from "
+			" ku_warenkorb kb where kb.kundennr="+itos(kid)+")"
+			" and kp.pl_parent=ap.kundennr))";
+	  }
+

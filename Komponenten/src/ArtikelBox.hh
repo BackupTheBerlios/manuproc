@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.hh,v 1.31 2005/12/21 07:23:18 christof Exp $
+// $Id: ArtikelBox.hh,v 1.32 2006/02/23 16:13:03 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.31 2005/12/21 07:23:18 christof Exp $
+// $Id: ArtikelBox.hh,v 1.32 2006/02/23 16:13:03 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -268,24 +268,9 @@ public:
 //	sigc::signal0<void> AddUserMenu(const Glib::ustring &text);
 	void ClearUserMenus();
 
-	void EinWarenkorb(PreisListe::ID pid)
-	  {joinstring = " join artikelpreise ap on (id=artikelid) ";
-	   einschraenkung=" ap.kundennr="+itos(pid);
-	  }
-
-	void NichtWarenkorb(PreisListe::ID pid)
-	  {joinstring = "";
-	   einschraenkung=" not exists (select artikelid from "
-		" artikelpreise ap where ap.artikelid=artboxtable.id "
-		" and ap.kundennr="+itos(pid)+")";
-	  }
-
-	void AlleWarenkorb(Kunde::ID kid)
-	  {joinstring = " join artikelpreise ap on (id=artikelid) ";
-	   einschraenkung=" exists (select prlsnr from ku_warenkorb kw"
-			" where kw.prlsnr=ap.kundennr and"
-			" kw.kundennr="+itos(kid)+")";		
-	  }
+	void EinWarenkorb(PreisListe::ID pid);
+	void NichtWarenkorb(PreisListe::ID pid);
+	void AlleWarenkorb(Kunde::ID kid);
 
 	// -1 means the last, -2 the last but one ... 0 means first, 1 second ...
 	void set_focus(int sig, int field);
