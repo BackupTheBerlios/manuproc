@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ManuProC_Widgets 0.0\n"
 "Report-Msgid-Bugs-To: manuproc-developer-de@berlios.de\n"
-"POT-Creation-Date: 2005-11-15 11:20+0100\n"
+"POT-Creation-Date: 2005-11-21 21:55+0100\n"
 "PO-Revision-Date: 2005-11-13 00:35+0100\n"
 "Last-Translator: Christof Petig <christof@petig-baender.de>\n"
 "Language-Team: english <en@li.org>\n"
@@ -63,27 +63,27 @@ msgstr ""
 msgid "Neue Nummer eingeben"
 msgstr "Enter new number"
 
-#: src/SimpleTree.cc:362
+#: src/SimpleTree.cc:363
 msgid "Zurücksetzen"
 msgstr "Reset"
 
-#: src/SimpleTree.cc:363
+#: src/SimpleTree.cc:364
 msgid "Abbrechen"
 msgstr "Cancel"
 
-#: src/SimpleTree.cc:364
+#: src/SimpleTree.cc:365
 msgid "Neuordnen"
 msgstr "Reorder"
 
-#: src/SimpleTree.cc:366
+#: src/SimpleTree.cc:367
 msgid "Sichtbare Spalten"
 msgstr "Visible columns"
 
-#: src/SimpleTree.cc:375
+#: src/SimpleTree.cc:376
 msgid "Optionen"
 msgstr "Options"
 
-#: src/SimpleTree.cc:378
+#: src/SimpleTree.cc:379
 msgid ""
 "Auffüllen mit Standardreihenfolge\n"
 "(statt der aktuellen)"
@@ -91,18 +91,18 @@ msgstr ""
 "Pad with standard order\n"
 "(instead of current order)"
 
-#: src/SimpleTree.cc:380
+#: src/SimpleTree.cc:381
 msgid "Ausgewählte Spalten aufklappen"
 msgstr "Expand selected columns"
 
-#: src/SimpleTree.cc:381
+#: src/SimpleTree.cc:382
 msgid "Tiefe farblich markieren"
 msgstr "Color code depth"
 
-#: src/SimpleTree.cc:384
+#: src/SimpleTree.cc:385
 msgid "Alles aufklappen"
 msgstr "Expand all"
 
-#: src/SimpleTree.cc:385
+#: src/SimpleTree.cc:386
 msgid "Alles zuklappen"
 msgstr "Close all"

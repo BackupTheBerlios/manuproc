@@ -1,8 +1,18 @@
+<<<<<<< /tmp/mt.F5WNE0
 2005-11-17  gettextize  <bug-gnu-gettext@gnu.org>
 
 	* Makefile.am (EXTRA_DIST): Add config.rpath, mkinstalldirs, m4/ChangeLog.
 	* configure.in (AC_OUTPUT): Add po/Makefile.in.
 
+||||||| /tmp/mt.ICEWSD
+=======
+2005-11-21  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (SUBDIRS): Add m4.
+	(EXTRA_DIST): Add config.rpath.
+	* configure.in (AC_OUTPUT): Add po/Makefile.in, m4/Makefile.
+
+>>>>>>> /tmp/mt.IU8TAK
 2005-11-13  gettextize  <bug-gnu-gettext@gnu.org>
 
 	* Makefile.am (ACLOCAL_AMFLAGS): New variable.
