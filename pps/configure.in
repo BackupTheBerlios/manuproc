@@ -1,10 +1,13 @@
 # generated 2001/2/19 21:34:27 CET by jacek@mimi.
 # using glademm V0.5_11f_cvs
 
-AC_PREREQ(2.50)
-AC_INIT(auftrag, 0.0, [manuproc-developer-de@berlios.de])
-AM_INIT_AUTOMAKE
-AC_CONFIG_HEADERS(config.h)
+AC_INIT(src/pps.cc)
+AM_INIT_AUTOMAKE(auftrag, 0.0)
+AM_CONFIG_HEADER(config.h)
+
+dnl Pick up the Gnome macros.
+AM_ACLOCAL_INCLUDE(macros)
+AM_MAINTAINER_MODE
 
 AC_ISC_POSIX
 AC_PROG_CC
@@ -15,16 +18,30 @@ AC_PROG_CXX
 AC_PROG_CXXCPP
 AM_PROG_LIBTOOL
 
+# GNOME--:
+# (These macros are in the 'macros' directory)
+# GNOME_INIT sets the GNOME_CONFIG variable, among other things:
+GNOME_INIT
+GNOME_COMMON_INIT
+GNOME_COMPILE_WARNINGS
 AC_LANG_CPLUSPLUS
 
-PETIG_CHECK_KOMPONENTEN2
+# GNOME-CONFIG script knows about gnomemm:
+# ('gnome-config' is installed by GNOME)
+GNOMEMM_CFLAGS="`$GNOME_CONFIG --cflags gnomemm` `$GNOME_CONFIG --cflags gnomeui`" 
+GNOMEMM_LIBS="`$GNOME_CONFIG --libs gnomemm` `$GNOME_CONFIG --libs gnomeui`"
+AC_SUBST(GNOMEMM_CFLAGS)
+AC_SUBST(GNOMEMM_LIBS)
+
+PETIG_CHECK_KOMPONENTEN
 
 # we don't want to link auftrag_drucken with gtkmm !
-COMMONGTK2_ONLY=`for i in $COMMONGTK2_LIBS ; do \
+COMMONGTK_ONLY=`for i in $COMMONGTK_LIBS ; do \
 	if expr match "$i" ".*commongtk.*" >/dev/null; then echo -n "$i " ; fi ; \
 	if expr match "$i" ".*GtkmmAddons.*" >/dev/null; then echo -n "$i " ; fi ; \
 	done`
-AC_SUBST(COMMONGTK2_ONLY)
+AC_SUBST(COMMONGTK_ONLY)
 
-AC_OUTPUT(Makefile src/Makefile drucken/Makefile )
+AC_OUTPUT(Makefile src/Makefile  macros/Makefile \
+   drucken/Makefile )
 # sdo_drucken/Makefile  soll das wirklich hier rein?
