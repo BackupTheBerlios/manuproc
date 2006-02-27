@@ -1,4 +1,4 @@
-// $Id: Query.h,v 1.24 2006/02/20 09:55:14 christof Exp $
+// $Id: Query.h,v 1.25 2006/02/27 13:33:45 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Christof Petig
@@ -285,7 +285,7 @@ class Query : public Query_types
 	void Execute_if_complete();
 	void raise(std::string const& state, int code, std::string const& message, std::string const& detail=std::string());
 	void raise(char const* state, int code, char const* message, char const* detail=0);
-	static std::string Query::standardize_parameters(std::string const& in);
+	static std::string standardize_parameters(std::string const& in);
 	bool already_run() const { return result; }
 
 public:
