@@ -1,4 +1,4 @@
-// $Id: Gtk_OStream.h,v 1.7 2006/03/01 08:55:03 christof Exp $
+// $Id: Gtk_OStream.h,v 1.8 2006/03/01 08:55:11 christof Exp $
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 1998-2002  Adolf Petig GmbH. & Co. KG
     Developed by Christof Petig <christof.petig@wtal.de>
@@ -62,7 +62,7 @@ public:
         ~OStreamBase(void);
         void flush();
         // the arguments are for convenience only, set_user_data works the same
-        void flush(gpointer user_data=0,GtkDestroyNotify d=0)
+        void flush(gpointer user_data,GtkDestroyNotify d=0)
         { set_user_data(user_data,d);
           flush();
         }
