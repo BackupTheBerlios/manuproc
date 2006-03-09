@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ManuProC_Widgets 0.0\n"
 "Report-Msgid-Bugs-To: manuproc-developer-de@berlios.de\n"
-"POT-Creation-Date: 2005-11-21 21:55+0100\n"
-"PO-Revision-Date: 2005-11-13 00:35+0100\n"
-"Last-Translator: Christof Petig <christof@petig-baender.de>\n"
+"POT-Creation-Date: 2006-03-08 09:06+0100\n"
+"PO-Revision-Date: 2006-03-08 09:08+0100\n"
+"Last-Translator: Jacek Jakubowski, LinuxSolutions <jacek@telebel.de>\n"
 "Language-Team: english <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -17,7 +17,7 @@ msgstr ""
 
 #: src/KundenBox2.cc:31
 msgid "Id"
-msgstr ""
+msgstr "Id"
 
 #: src/KundenBox2.cc:31
 msgid "Name"
@@ -57,33 +57,33 @@ msgstr "Extension"
 
 #: src/WTelefon_glade.cc:84
 msgid "Text"
-msgstr ""
+msgstr "text"
 
 #: src/WTelefon_glade.cc:89
 msgid "Neue Nummer eingeben"
 msgstr "Enter new number"
 
-#: src/SimpleTree.cc:363
+#: src/SimpleTree.cc:370
 msgid "Zurücksetzen"
 msgstr "Reset"
 
-#: src/SimpleTree.cc:364
+#: src/SimpleTree.cc:371
 msgid "Abbrechen"
 msgstr "Cancel"
 
-#: src/SimpleTree.cc:365
+#: src/SimpleTree.cc:372
 msgid "Neuordnen"
 msgstr "Reorder"
 
-#: src/SimpleTree.cc:367
+#: src/SimpleTree.cc:374
 msgid "Sichtbare Spalten"
 msgstr "Visible columns"
 
-#: src/SimpleTree.cc:376
+#: src/SimpleTree.cc:383
 msgid "Optionen"
 msgstr "Options"
 
-#: src/SimpleTree.cc:379
+#: src/SimpleTree.cc:386
 msgid ""
 "Auffüllen mit Standardreihenfolge\n"
 "(statt der aktuellen)"
@@ -91,18 +91,26 @@ msgstr ""
 "Pad with standard order\n"
 "(instead of current order)"
 
-#: src/SimpleTree.cc:381
+#: src/SimpleTree.cc:388
 msgid "Ausgewählte Spalten aufklappen"
 msgstr "Expand selected columns"
 
-#: src/SimpleTree.cc:382
+#: src/SimpleTree.cc:389
 msgid "Tiefe farblich markieren"
 msgstr "Color code depth"
 
-#: src/SimpleTree.cc:385
+#: src/SimpleTree.cc:390
+msgid "Zeilen zählen"
+msgstr "count rows"
+
+#: src/SimpleTree.cc:393
 msgid "Alles aufklappen"
 msgstr "Expand all"
 
-#: src/SimpleTree.cc:386
+#: src/SimpleTree.cc:394
 msgid "Alles zuklappen"
 msgstr "Close all"
+
+#: src/Optionmenu_Kundengruppe.cc:47 src/Optionmenu_Warengruppe_sql.pgcc:79
+msgid "-- Alle Gruppen --"
+msgstr "-- all groups --"
