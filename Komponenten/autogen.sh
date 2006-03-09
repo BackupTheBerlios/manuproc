@@ -1,6 +1,6 @@
 aclocal
 libtoolize --force --copy
-tar cvzf backup.tgz configure.in Makefile.am
+tar cvzf backup.tgz configure.in Makefile.am ChangeLog po/ChangeLog
 gettextize
 tar xvzf backup.tgz
 if test ! -e po/Makevars

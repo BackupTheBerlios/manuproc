@@ -1,18 +1,8 @@
-<<<<<<< /tmp/mt.F5WNE0
-2005-11-17  gettextize  <bug-gnu-gettext@gnu.org>
+
 
 	* Makefile.am (EXTRA_DIST): Add config.rpath, mkinstalldirs, m4/ChangeLog.
 	* configure.in (AC_OUTPUT): Add po/Makefile.in.
 
-||||||| /tmp/mt.ICEWSD
-=======
-2005-11-21  gettextize  <bug-gnu-gettext@gnu.org>
-
-	* Makefile.am (SUBDIRS): Add m4.
-	(EXTRA_DIST): Add config.rpath.
-	* configure.in (AC_OUTPUT): Add po/Makefile.in, m4/Makefile.
-
->>>>>>> /tmp/mt.IU8TAK
 2005-11-13  gettextize  <bug-gnu-gettext@gnu.org>
 
 	* Makefile.am (ACLOCAL_AMFLAGS): New variable.
@@ -25,7 +15,7 @@ Don Nov 15 16:15:30 CET 2001
 Fri, 26 Oct 2001 23:46:39 +0200
 	Die API hat immerhin 8 Monate gehalten ...
 	
-	es gibt keine getrennten Node/Leafklassen mehr, schließlich
+	es gibt keine getrennten Node/Leafklassen mehr, schlieï¿½ich
 	unterscheiden sich die Datenstrukturen nicht mehr
 	
 	... Konstruktoren umstellen:
@@ -65,8 +55,7 @@ Es gibt einen Tag TREEBASE_0_2 fuer alte Programme
 	und ist nun const. Standard ist "".
 	Vorsicht der Index hat sich geaendert!!!
 	
-	TCListNode ist nun 16 Bytes Nutzdaten klein und damit genau so groß
-	wie TCListRowData.
+	TCListNode ist nun 16 Bytes Nutzdaten klein und damit genau so groï¿½	wie TCListRowData.
 	
 	Value hat nun ein guint Argument.
 	
