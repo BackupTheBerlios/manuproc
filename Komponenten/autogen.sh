@@ -1,7 +1,7 @@
 aclocal
 libtoolize --force --copy
 tar cvzf backup.tgz configure.in Makefile.am ChangeLog po/ChangeLog
-gettextize
+gettextize -f
 tar xvzf backup.tgz
 if test ! -e po/Makevars
 then cp po/Makevars.template po/Makevars
