@@ -1326,7 +1326,6 @@
 
 	  <child>
 	    <widget class="Custom" id="sc_int">
-	      <property name="width_request">60</property>
 	      <property agent="glademm" name="cxx_visibility">protected</property>
 	      <property name="visible">True</property>
 	      <property name="creation_function">SearchCombo</property>
