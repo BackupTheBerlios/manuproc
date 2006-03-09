@@ -1,4 +1,4 @@
-// $Id: PersonenBox.cc,v 1.6 2005/06/24 11:12:33 christof Exp $
+// $Id: PersonenBox.cc,v 1.7 2006/03/09 21:13:36 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,6 +19,7 @@
 
 #include "PersonenBox.hh"
 #include <Aux/itos.h>
+#include <Misc/i18n.h>
 
 PersonenBox::PersonenBox()
 {
@@ -27,7 +28,7 @@ PersonenBox::PersonenBox()
   _string2_="firma";
   _int_="kundennr";
   _none_id_=Kunde::none_id;
-  setLabel("Id","Nachname","Vorname");
+  setLabel(_("Id"),_("Nachname"),_("Vorname"));
   show_string2(true);
 
   Join(" join ku_gruppen_map m using (kundennr)");

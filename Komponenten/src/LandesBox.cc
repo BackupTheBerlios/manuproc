@@ -1,4 +1,4 @@
-// $Id: LandesBox.cc,v 1.2 2002/07/05 12:36:56 christof Exp $
+// $Id: LandesBox.cc,v 1.3 2006/03/09 21:13:36 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -19,6 +19,7 @@
 
 #include "LandesBox.hh"
 #include <Kunde/LandesListe.h>
+#include <Misc/i18n.h>
 
 LandesBox::LandesBox()
 {
@@ -30,7 +31,7 @@ LandesBox::LandesBox()
   _string2_="lkz";
   _int_="id";
   _none_id_=LandesListe::none_id;
-  setLabel("LKZ","Land","LKZ");
+  setLabel(_("LKZ"),_("Land"),_("LKZ"));
 }
 
 void LandesBox::set_value(int i)

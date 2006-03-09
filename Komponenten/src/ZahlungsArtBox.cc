@@ -1,4 +1,4 @@
-// $Id: ZahlungsArtBox.cc,v 1.4 2005/06/24 11:12:34 christof Exp $
+// $Id: ZahlungsArtBox.cc,v 1.5 2006/03/09 21:13:36 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -19,6 +19,7 @@
 
 #include "ZahlungsArtBox.hh"
 #include <Kunde/Zahlungsart.h>
+#include <Misc/i18n.h>
 
 ZahlungsArtBox::ZahlungsArtBox()
 {
@@ -29,7 +30,7 @@ ZahlungsArtBox::ZahlungsArtBox()
   _string1_="kurzbezeichnung";
   _int_="id";
   _none_id_=Zahlungsart::none_id;
-  setLabel("Id","Zahlungsart");
+  setLabel(_("Id"),_("Zahlungsart"));
 }
 
 void ZahlungsArtBox::set_value(int i)
