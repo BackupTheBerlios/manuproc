@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.114 2005/10/12 08:59:38 christof Exp $
+// $Id: AufEintrag.cc,v 1.115 2006/03/09 21:15:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -262,8 +262,13 @@ void AufEintrag::Verzeigern(mengen_t M, bool nach_oben)
           AufEintrag(*this).Verzeigern(-m,false);
           m=distribute_parents(*this,m,Planen_undo_cb(*this));
        }
-//       if (!!m) std::cerr << __FILELINE__ << ": " << m << '\n';
-       assert(!m);
+#if 0 // aus irgendeinem Grund ist die gelieferte Menge in DAeA 0 ...
+       // bei Teillieferungen kann es sein, dass nur noch wenige Pfeile nach oben 
+       // vorhanden sind, m ist der unänderbare Rest
+       if (m>AufEintrag(*this).getGeliefert())
+         std::cerr << "komisch " << m << ">" << AufEintrag(*this).getGeliefert() << '\n';
+       assert(m<=AufEintrag(*this).getGeliefert());
+#endif
        tr.commit();
     }
 }

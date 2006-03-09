@@ -1,0 +1,44 @@
+--
+-- PostgreSQL database dump
+--
+
+SET client_encoding = 'UTF8';
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+SET search_path = public, pg_catalog;
+
+DROP INDEX public.muster_lager_buchung_lfrsid;
+DROP INDEX public.muster_lager_buchung_artid;
+DROP TABLE public.muster_lager_buchung;
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: muster_lager_buchung; Type: TABLE; Schema: public; Owner: jacek; Tablespace: 
+--
+
+CREATE TABLE muster_lager_buchung (
+    artikelid integer,
+    menge integer,
+    datum timestamp with time zone,
+    aktion character(1),
+    pid integer,
+    bestand integer,
+    lfrsid numeric(5,0)
+);
+
+
+--
+-- Name: muster_lager_buchung_artid; Type: INDEX; Schema: public; Owner: jacek; Tablespace: 
+--
+
+CREATE INDEX muster_lager_buchung_artid ON muster_lager_buchung USING btree (artikelid);
+
+
+--
+-- Name: muster_lager_buchung_lfrsid; Type: INDEX; Schema: public; Owner: jacek; Tablespace: 
+--
+
+CREATE INDEX muster_lager_buchung_lfrsid ON muster_lager_buchung USING btree (lfrsid);

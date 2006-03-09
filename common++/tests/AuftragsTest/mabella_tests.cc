@@ -212,4 +212,24 @@ static bool MinMenRepair2()
 
 static TestReihe MinMenRepair2_(&MinMenRepair2,"Mindestmenge Reparatur 2 (bugcheck)","minMenR2");
 
+// Dieser Test testet einen Datumswechsel im Einkauf
+static bool EinkaufDatum()
+{  vergleichen(Check::Menge,"DAeA","Ausgangspunkt","a");
+
+   Auftrag auftrag3=Auftrag(Auftrag::Anlegen(ppsInstanzID::Einkauf),LIEFERANT);
+   AufEintragBase AEB3=auftrag3.push_back(30,DATUM,ARTIKEL_TRIO,OPEN,true);
+   Lieferschein ls(EINKAUF,cH_Kunde(LIEFERANT));
+   AufEintrag AE3(AEB3);
+   LieferscheinEntryBase lsb(ls,ls.push_back(AE3,ARTIKEL_TRIO,20,0,0));
+   LieferscheinEntry le(lsb);
+   le.setLagerid(1); // offenbar nicht ppsInstanzID::Fertigwarenlager);
+   le.changeStatus(OPEN,true);
+   vergleichen(Check::Menge,"DAeA_l","Lieferung","l");   
+   AE3.updateLieferdatum(DATUM+5);
+   vergleichen(Check::Menge,"DAeA_t","Terminänderung","t");   
+   return true;
+}
+
+static TestReihe EinfaufDatum_(&EinkaufDatum,"Datumsänderung im Einkauf (bugcheck)","DAeA");
+
 #endif
