@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.50 2005/11/03 21:09:06 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.51 2006/03/09 21:15:04 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Jacek Jakubowski
@@ -69,7 +69,7 @@
 #define FULL_SELECT_FROM_SORT_WHERE(s) "select " FULL_SELECTIONS \
 	" from " FULL_FROM_SORT(s) " where true "	
 	
-#define SORT_ORDER " order by ab.artikel,ab.breite,ab.farbe,ab.aufmachung,e.lieferdate"
+#define SORT_ORDER " order by ab.artikel,atoi(ab.breite),ab.farbe,ab.aufmachung,e.lieferdate"
 
 #endif
 
