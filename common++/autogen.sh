@@ -51,7 +51,7 @@ else aclocal$AM_POSTFIX -I macros
 fi
 libtoolize --force --copy
 tar cvzf backup.tgz configure.in Makefile.am ChangeLog po/ChangeLog
-gettextize
+gettextize -f
 tar xvzf backup.tgz
 autoheader$AC_POSTFIX
 automake$AM_POSTFIX --add-missing --copy --gnu
