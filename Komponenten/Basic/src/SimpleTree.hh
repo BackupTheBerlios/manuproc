@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.62 2005/12/16 07:53:19 christof Exp $
+// $Id: SimpleTree.hh,v 1.63 2006/04/03 10:02:29 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -45,7 +45,7 @@ public:
 	SIMPLE_TREE_WARN void set_NewNode(SimpleTreeStore::NewNode_fp n);
 	SIMPLE_TREE_WARN void set_value_data(gpointer _p);
 #endif
-	guint Cols() const  { return sts->Cols();}
+	guint Cols() const  { return sts->Properties().Columns();}
 
 	// these are from model
 	void setDataVec(const std::vector<cH_RowDataBase> &d) {  sts->getModel()=d; }
