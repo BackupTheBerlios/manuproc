@@ -1,4 +1,4 @@
-// $Id: OrderBox.cc,v 1.3 2006/04/03 10:02:21 christof Exp $
+// $Id: OrderBox.cc,v 1.4 2006/04/03 10:02:35 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -27,7 +27,7 @@ OrderBox::OrderBox(int _instanz, what_t w)
   : customer(), what(w), query(), tr("",false), instanz(_instanz), extra_string()
 { get_entry()->set_width_chars(10);
 //  signal_activate().connect(SigC::slot(*this, &auftrag_bearbeiten_glade::on_aufnrscombo_activate));
-  signal_search().connect(sigc::mem_fun(*this, &OrderBox::on_search), false);
+//  signal_search().connect(sigc::mem_fun(*this, &OrderBox::on_search), false);
   extra_string=ExtraColumns("auftrag","instanz","auftragid").hasColumn("label");
 }
 
@@ -36,13 +36,15 @@ void OrderBox::on_search(int *_continue, GtkSCContext newsearch) throw()
  switch(newsearch)
    {case GTK_SEARCH_REOPEN:
     case GTK_SEARCH_OPEN :
+#if 0    
       // HACK
-      if (query)
+//      if (query)
       { delete query;
          tr.commit();
          query=0;
       }
-      if (!query) // HACK
+#endif
+//      if (!query) // HACK
       {std::string extracol,join;
       
        if (extra_string)
@@ -79,7 +81,7 @@ void OrderBox::on_search(int *_continue, GtkSCContext newsearch) throw()
        }
  
   case GTK_SEARCH_CLOSE :
-       if (!query)
+//       if (!query)
        { delete query;
          tr.commit();
          query=0;
