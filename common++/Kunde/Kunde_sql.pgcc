@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.75 2005/11/15 17:47:16 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.76 2006/04/03 09:59:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -969,7 +969,9 @@ bool Kunde::isInGrp(const std::string groupname) const throw(SQLerror)
 
  q << groupname << Id();
 
- return q.good();
+ FetchIStream fi=q.Fetch();
+
+ return fi.good();
 }
 
 
