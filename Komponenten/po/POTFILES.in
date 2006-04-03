@@ -3,5 +3,9 @@
 ./src/WTelefon.cc
 ./src/WTelefon_glade.cc
 ./src/SimpleTree.cc
+./src/LandesBox.cc
+./src/PersonenBox.cc
+./src/PreisBox.cc
+./src/ZahlungsArtBox.cc
 src/Optionmenu_Kundengruppe.cc
 src/Optionmenu_Warengruppe_sql.pgcc
