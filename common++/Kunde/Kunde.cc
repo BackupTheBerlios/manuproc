@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.64 2006/04/03 10:19:18 christof Exp $
+// $Id: Kunde.cc,v 1.65 2006/04/03 10:33:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -446,7 +446,7 @@ std::string Kunde::Kontakt(const TelArt& art, Kunde::ID firmaid,
 const Kunde::ID Kunde::eigene_id;
 #endif
 
-Kunde::ID Kunde::Suchen(std::string const& name, std::string const& ort)
+Kunde::ID Kunde::Suchen(std::string const& name, std::string const& ort) throw(SQLerror)
 { assert(ort.empty()); // ist noch nicht programmiert ;-) name2?
   int result;
   try
