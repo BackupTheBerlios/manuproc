@@ -1,4 +1,4 @@
-// $Id: Tag.h,v 1.10 2004/06/03 16:08:56 christof Exp $
+// $Id: Tag.h,v 1.11 2006/04/03 09:59:13 christof Exp $
 /*  ManuProC_Base: Main ManuProC Library
  *  Copyright (C) 1998-2003  Christof Petig
  *
@@ -74,11 +74,11 @@ public:
 	const Tag *parent() const throw()
 	{  return parent_ptr; }
 	
-	const std::string Type() const throw()
+	std::string const& Type() const throw()
 	{  return type; }
 	void Type(const std::string &val) throw()
 	{  type=val; }
-	const std::string Value() const throw()
+	std::string const& Value() const throw()
 	{  return value; }
 	void Value(const std::string &val) throw()
 	{  value=val; }
