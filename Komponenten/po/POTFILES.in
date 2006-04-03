@@ -7,5 +7,6 @@
 ./src/PersonenBox.cc
 ./src/PreisBox.cc
 ./src/ZahlungsArtBox.cc
+./src/IntStringBox_glade.cc
 src/Optionmenu_Kundengruppe.cc
 src/Optionmenu_Warengruppe_sql.pgcc

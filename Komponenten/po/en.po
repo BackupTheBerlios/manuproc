@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ManuProC_Widgets 0.0\n"
 "Report-Msgid-Bugs-To: manuproc-developer-de@berlios.de\n"
-"POT-Creation-Date: 2006-03-08 11:21+0100\n"
-"PO-Revision-Date: 2006-03-08 11:23+0100\n"
-"Last-Translator: Jacek Jakubowski, LinuxSolutions <jacek@telebel.de>\n"
+"POT-Creation-Date: 2006-03-22 22:06+0100\n"
+"PO-Revision-Date: 2006-03-22 22:19+0100\n"
+"Last-Translator: Jacek Jakubowski <jacek@telebel.de>\n"
 "Language-Team: english <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -134,6 +134,22 @@ msgstr "description"
 #: src/ZahlungsArtBox.cc:33
 msgid "Zahlungsart"
 msgstr "mode of payment"
+
+#: src/IntStringBox_glade.cc:55
+msgid "Int"
+msgstr "No"
+
+#: src/IntStringBox_glade.cc:56
+msgid "Name1"
+msgstr "Name1"
+
+#: src/IntStringBox_glade.cc:57
+msgid "Name2"
+msgstr "Name2"
+
+#: src/IntStringBox_glade.cc:61
+msgid "leeren"
+msgstr "empty"
 
 #: src/Optionmenu_Kundengruppe.cc:47 src/Optionmenu_Warengruppe_sql.pgcc:79
 msgid "-- Alle Gruppen --"
