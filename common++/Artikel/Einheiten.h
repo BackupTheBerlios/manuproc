@@ -1,4 +1,4 @@
-/* $Id: Einheiten.h,v 1.23 2006/04/03 09:58:59 christof Exp $ */
+/* $Id: Einheiten.h,v 1.24 2006/04/03 09:59:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.23 2006/04/03 09:58:59 christof Exp $
+// $Id: Einheiten.h,v 1.24 2006/04/03 09:59:02 christof Exp $
 
 #ifndef ARTIKEL_EINHEITEN_H
 #define ARTIKEL_EINHEITEN_H
@@ -38,7 +38,6 @@ public:
 	typedef EinheitID::enum_t ID;
 	static const ID default_id=EinheitID::St_;
 	static const ID Stueck=EinheitID::St_; // Compatibility
-	static const ID Meter=EinheitID::m;
 	static const ID Meter=EinheitID::m;
 	
 private:
