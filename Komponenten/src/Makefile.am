@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.61 2005/12/21 07:23:58 christof Exp $
+# $Id: Makefile.am,v 1.62 2006/04/03 10:02:14 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  -DCOMPILE_KOMPONENTEN \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -31,7 +31,7 @@ LINKS= EingabeBox.cc EingabeBox.hh datewin.cc datewin.h \
 	IntStringBox_sql.pgcc IntStringBox_gui.hh IntStringBox_glade.hh \
 	IntStringBox_gui.cc IntStringPopup_glade.cc IntStringPopup_glade.hh \
 	datewin_popup_glade.hh datewin_popup_glade.cc datewin_popup.hh \
-	datewin_popup.cc
+	datewin_popup.cc OrderBox.cc
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
