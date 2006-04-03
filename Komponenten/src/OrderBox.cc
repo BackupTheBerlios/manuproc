@@ -1,4 +1,4 @@
-// $Id: OrderBox.cc,v 1.2 2006/04/03 10:02:18 christof Exp $
+// $Id: OrderBox.cc,v 1.3 2006/04/03 10:02:21 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -36,6 +36,13 @@ void OrderBox::on_search(int *_continue, GtkSCContext newsearch) throw()
  switch(newsearch)
    {case GTK_SEARCH_REOPEN:
     case GTK_SEARCH_OPEN :
+      // HACK
+      if (query)
+      { delete query;
+         tr.commit();
+         query=0;
+      }
+      if (!query) // HACK
       {std::string extracol,join;
       
        if (extra_string)
@@ -72,8 +79,11 @@ void OrderBox::on_search(int *_continue, GtkSCContext newsearch) throw()
        }
  
   case GTK_SEARCH_CLOSE :
-       delete query;
-       tr.commit();
+       if (!query)
+       { delete query;
+         tr.commit();
+         query=0;
+       }
        break;
   }
 }
