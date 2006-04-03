@@ -1,4 +1,4 @@
-// $Id: JumboRolle.cc,v 1.5 2004/03/11 15:53:40 christof Exp $
+// $Id: JumboRolle.cc,v 1.6 2006/04/03 09:59:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -99,10 +99,18 @@ void JumboRolle::ausArchivHolen()
             "status,lauf,gang,barcoist,barcofert_datum,wiederinslager,"
             "artikelid "
             "from rohjumbo_archiv where code=?");
-   q << code;
+   q << code/10;
    if (q.Result()==100)
-         throw SQLerror("JumboRolle::ausArchivHolen",100,"Rolle nicht im Archiv");
-   Query("delete from rohjumbo_archiv where code=?") << code;
-   SQLerror::test("JumboRolle::buchen archiv-löschen");
+   { // throw SQLerror("JumboRolle::ausArchivHolen",100,"Rolle "+itos(code)+" nicht im Archiv");
+     std::cerr << "dummy Rolle fÃ¼r " << (code/10) << " erzeugt, da nicht im Archiv\n";
+     // wie blanko Rolle
+     Query("insert into rohjumbo (code, maschine, plan_datum, status, lauf, gang) "
+       "values (?,0,'1970-1-1',0,0,0)") << code/10;
+     SQLerror::test("JumboRolle::buchen: dummy Rolle erzeugen");
+   }
+   else
+   { Query("delete from rohjumbo_archiv where code=?") << code/10;
+     SQLerror::test("JumboRolle::buchen archiv-löschen");
+   }
    im_archiv=false;
 }
