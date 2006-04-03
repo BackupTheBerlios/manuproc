@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.115 2006/03/09 21:15:07 christof Exp $
+// $Id: AufEintrag.cc,v 1.116 2006/04/03 09:59:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -436,18 +436,32 @@ int AufEintrag::split(mengen_t newmenge, const Petig::Datum &newld,bool dispopla
  Query("lock auftragentry in exclusive mode");
  SQLerror::test("split: lock table auftragentry");
 
- int ZEILENNR;
+ int ZEILENNR=none_znr;
  {delayed_reclaim dlr;
- mengen_t mt=MengeAendern(-newmenge,true,AufEintragBase());
- assert(mt==-newmenge);
 
- if(Instanz()==ppsInstanzID::Kundenauftraege)
-   {Auftrag A(*this);
+  AufEintragZu::list_t L;
+  if (Instanz()!=ppsInstanzID::Kundenauftraege)
+    L=AufEintragZu::get_Referenz_list(*this,false,AufEintragZu::list_ohneArtikel);
+  mengen_t menge=newmenge;
+  // Zuordnungen der Elten zum neuen Termin übernehmen 
+  // (schlechte Idee, da der Termin nicht eingehalten wird?)
+  for(AufEintragZu::list_t::iterator i=L.begin();i!=L.end();++i)
+  {
+    mengen_t M=min(i->Menge,menge);
+    // am alten Termin abbestellen
+    assert(MengeAendern(-M,true,i->AEB)==-M);
+    // Menge am neuen Termin nachbestellen
+    ZEILENNR=BestellmengeAendern(M,newld,artikel,entrystatus,i->AEB);
+    menge-=M;
+    if (!menge) break;
+  }
+  if (!!menge) // noch Menge über?
+  {
+    Auftrag A(*this);
+    assert(MengeAendern(-newmenge,true,AufEintragBase())==-newmenge);
     AufEintragBase newaeb=A.push_back(newmenge,newld,artikel,entrystatus,true,preis,rabatt);
     ZEILENNR=newaeb.ZNr();
-   }
- else
-   ZEILENNR=split_zuordnungen_to(newmenge,newld,artikel,entrystatus,dispoplanung);
+  }
  }
 
  if(STATUS==OPEN)

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.53 2004/09/02 07:45:54 christof Exp $
+// $Id: AufEintragBase.cc,v 1.54 2006/04/03 09:59:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -80,6 +80,7 @@ void AufEintragBase::calculateProzessInstanz()
   setMaxPlanInstanz(anz);
 }   
 
+#if 0
 // sieht ein wenig komisch aus, der alte AE wird in split erniedrigt
 
 int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
@@ -90,11 +91,15 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
    NV("Artikel",artikel),
    NV("Menge",menge),NV("Status",status),NV("DispoPlanung",dispoplanung));
 
-  assert(Id()==AuftragBase::ungeplante_id);
+//  assert(Id()==AuftragBase::ungeplante_id);
   // ElternListe holen
   AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*this,false,AufEintragZu::list_ohneArtikel);
   int znr=none_znr;
-  assert(!L.empty());
+  if (L.empty()) // keine Eltern?
+  { Auftrag A(*this);
+    AufEintragBase newaeb=A.push_back(menge,datum,artikel,status,true,preis,rabatt);
+    znr=newaeb.ZNr();
+  }
   for(AufEintragZu::list_t::iterator i=L.begin();i!=L.end();++i)
    {
     mengen_t M=min(i->Menge,menge);
@@ -106,6 +111,7 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
    }
  return znr;
 }
+#endif
 
 void AufEintragBase::setVerarbeitung(const cH_Prozess p) const throw(SQLerror)
 {

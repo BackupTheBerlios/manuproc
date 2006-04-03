@@ -232,4 +232,17 @@ static bool EinkaufDatum()
 
 static TestReihe EinfaufDatum_(&EinkaufDatum,"Datumsänderung im Einkauf (bugcheck)","DAeA");
 
+static bool EinkaufSplit()
+{  vergleichen(Check::Menge,"DAeA","Ausgangspunkt","a");
+
+   Auftrag auftrag3=Auftrag(Auftrag::Anlegen(ppsInstanzID::Einkauf),LIEFERANT);
+   AufEintragBase AEB3=auftrag3.push_back(30,DATUM,ARTIKEL_TRIO,OPEN,true);
+   AufEintrag AE3(AEB3);
+   AE3.split(15,DATUM+5);
+   vergleichen(Check::Menge,"SplE_t","Split","t");   
+   return true;
+}
+
+static TestReihe EinfaufSplit_(&EinkaufSplit,"Splitten im Einkauf (bugcheck)","SplE");
+
 #endif

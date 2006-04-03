@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.49 2004/09/01 12:25:48 christof Exp $
+// $Id: AufEintragBase.h,v 1.50 2006/04/03 09:59:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -73,27 +73,15 @@ public:
  bool valid() const { return AuftragBase::valid() && zeilennr>0; }
  bool operator!() const { return !valid(); }
 
-/*
- void vormerken_oder_bestellen(const AuftragBase::mengen_t &vormerkmenge,
-            AuftragBase::mengen_t bestellmenge,
-            const ArtikelBase &artikel,const Petig::Datum &lieferdatum,
-            std::vector<AufEintrag> dispo_auftrag,
-            AuftragBase::st_BestellmengeAendern st_bool=st_BestellmengeAendern()) const throw(SQLerror);
-*/
 private:
 // friend class LagerBase;
  friend class AuftragBase;
-/*
- void AufEintragBase::artikel_vormerken_oder_schnappen(bool schnappen,AuftragBase::mengen_t menge,
-      const ArtikelBase &artikel,ManuProC::Auftrag::Action reason,
-      std::vector<AufEintrag> dispo_auftrag) const ;
-*/
 
 public:
 
- int split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum, 
-                         ArtikelBase artikel,AufStatVal status,
-                         bool dispoplanung);
+// int split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum, 
+//                         ArtikelBase artikel,AufStatVal status,
+//                         bool dispoplanung);
 
  bool operator<(const AufEintragBase& b) const 
        {return Instanz()<b.Instanz() 
