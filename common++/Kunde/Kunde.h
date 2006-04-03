@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.77 2005/12/06 10:42:54 christof Exp $
+// $Id: Kunde.h,v 1.78 2006/04/03 10:19:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -455,6 +455,7 @@ public:
  std::string fixeNotiz(const NotizZiel nz) throw(SQLerror);
  void setFixeNotiz(const NotizZiel nz, const std::string n) throw(SQLerror); 
 
+ 	static ID Suchen(std::string const &name, std::string const& ort=std::string()) throw(SQLerror);
 };
 
 class cH_Kunde : public Handle<const Kunde>

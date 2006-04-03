@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.63 2006/01/19 22:53:29 christof Exp $
+// $Id: Kunde.cc,v 1.64 2006/04/03 10:19:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -446,4 +446,14 @@ std::string Kunde::Kontakt(const TelArt& art, Kunde::ID firmaid,
 const Kunde::ID Kunde::eigene_id;
 #endif
 
-
+Kunde::ID Kunde::Suchen(std::string const& name, std::string const& ort)
+{ assert(ort.empty()); // ist noch nicht programmiert ;-) name2?
+  int result;
+  try
+  { Query("select kundennr from kunden where sortname=?") << name >> result;
+    return result;
+  } catch (SQLerror &e) {}
+  
+  Query("select kundennr from kunden where firma=?") << name >> result;
+  return result;
+}

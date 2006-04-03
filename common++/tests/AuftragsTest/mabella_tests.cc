@@ -96,7 +96,7 @@ static bool Rollereiplanung()
 #warning Es gibt keine ppsInstanzID::Rollerei in der Testdatenbank !!!
 //       AuftragBase dest(ppsInstanzID::Rollerei,AuftragBase::ungeplante_id);
 //       source.Planen(20,dest,source.getLieferdatum());
-       vergleichen(Check::Menge,"roll_Plan","Hälfte selbst weben","b");
+       vergleichen(Check::Menge,"roll_Plan","Hï¿½fte selbst weben","b");
        
        return true;
 }
