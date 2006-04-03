@@ -1,4 +1,4 @@
-// $Id: OrderBox.cc,v 1.1 2006/04/03 10:02:14 christof Exp $
+// $Id: OrderBox.cc,v 1.2 2006/04/03 10:02:18 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -24,8 +24,8 @@
 #include <Misc/ExtraColumns.h>
 
 OrderBox::OrderBox(int _instanz, what_t w)
-  : customer(), what(w), tr("",false), instanz(_instanz), extra_string()
-{ get_entry()->set_width_chars(4);
+  : customer(), what(w), query(), tr("",false), instanz(_instanz), extra_string()
+{ get_entry()->set_width_chars(10);
 //  signal_activate().connect(SigC::slot(*this, &auftrag_bearbeiten_glade::on_aufnrscombo_activate));
   signal_search().connect(sigc::mem_fun(*this, &OrderBox::on_search), false);
   extra_string=ExtraColumns("auftrag","instanz","auftragid").hasColumn("label");
@@ -34,7 +34,7 @@ OrderBox::OrderBox(int _instanz, what_t w)
 void OrderBox::on_search(int *_continue, GtkSCContext newsearch) throw()
 {
  switch(newsearch)
-   {
+   {case GTK_SEARCH_REOPEN:
     case GTK_SEARCH_OPEN :
       {std::string extracol,join;
       
@@ -51,10 +51,11 @@ void OrderBox::on_search(int *_continue, GtkSCContext newsearch) throw()
                "where ltrim(to_char(auftragid,'000000')) like ? "
                "and (?<1 or kundennr=?) and instanz=? "
                "and auftragid>=? order by datum desc");
-       (*query) << (get_text()+"%") << customer << customer
+       (*query) << ((newsearch==GTK_SEARCH_OPEN?get_text():Glib::ustring())+"%") 
+          << customer << customer
           << instanz << AuftragBase::handplan_id;
-      } 							
-           
+      }
+      // fall through
   case GTK_SEARCH_FETCH :
        {Query::Row rw;
         if (((*query)>>rw).good())
@@ -71,11 +72,9 @@ void OrderBox::on_search(int *_continue, GtkSCContext newsearch) throw()
        }
  
   case GTK_SEARCH_CLOSE :
-       {delete query;
-	tr.commit();
-	break;
-       }
-
+       delete query;
+       tr.commit();
+       break;
   }
 }
 

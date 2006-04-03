@@ -1,7 +1,7 @@
-// $Id: OrderBox.hh,v 1.1 2006/04/03 10:02:14 christof Exp $
+// $Id: OrderBox.hh,v 1.2 2006/04/03 10:02:18 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
- *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
- *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
+ *  Copyright (C) 2006 Adolf Petig GmbH & Co. KG
+ *  written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
