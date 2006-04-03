@@ -1,4 +1,4 @@
-// $Id: OrderBox.hh,v 1.2 2006/04/03 10:02:18 christof Exp $
+// $Id: OrderBox.hh,v 1.3 2006/04/03 10:02:38 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2006 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -23,6 +23,9 @@
 
 #include <SearchComboContent.hh>
 #include <Misc/Transaction.h>
+
+#include <gtkmm/tooltips.h>
+
 class Query;
 
 struct OrderBox : SearchComboContent<int>
@@ -36,10 +39,13 @@ private:
   Transaction tr;
   int instanz;
   bool extra_string;
+  int search_th;
   
   void on_search(int *_continue, GtkSCContext newsearch) throw();
 public:
   OrderBox(int _instanz=1, what_t w=Order);
+  void SearchThreshold(int st) { search_th=st; }
+  int SearchThreshold() { return search_th; }
 };
 
 #endif

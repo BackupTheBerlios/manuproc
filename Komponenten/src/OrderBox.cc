@@ -1,4 +1,4 @@
-// $Id: OrderBox.cc,v 1.4 2006/04/03 10:02:35 christof Exp $
+// $Id: OrderBox.cc,v 1.5 2006/04/03 10:02:38 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -24,7 +24,8 @@
 #include <Misc/ExtraColumns.h>
 
 OrderBox::OrderBox(int _instanz, what_t w)
-  : customer(), what(w), query(), tr("",false), instanz(_instanz), extra_string()
+  : customer(), what(w), query(), tr("",false), 
+instanz(_instanz), extra_string(), search_th(0)
 { get_entry()->set_width_chars(10);
 //  signal_activate().connect(SigC::slot(*this, &auftrag_bearbeiten_glade::on_aufnrscombo_activate));
 //  signal_search().connect(sigc::mem_fun(*this, &OrderBox::on_search), false);
@@ -46,6 +47,10 @@ void OrderBox::on_search(int *_continue, GtkSCContext newsearch) throw()
 #endif
 //      if (!query) // HACK
       {std::string extracol,join;
+
+       if(get_text().size()<search_th) 
+	{*_continue=false;
+	 return;}
       
        if (extra_string)
        { extracol=",kurz";
