@@ -1,4 +1,4 @@
-// $Id: TagStream.cc,v 1.13 2006/04/13 12:48:04 christof Exp $
+// $Id: TagStream.cc,v 1.14 2006/04/13 12:48:11 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2004  Christof Petig
  *
@@ -431,7 +431,7 @@ static void toXML(std::string &s)
    for (unsigned i=0;i<s.size();)
    {  if (isalnum(s[i]) 
 		|| (unsigned char)s[i]>=160
-		|| strchr("# @^+-*/.,?!$'|~[]{}()_:;=",s[i])) 
+		|| (s[i] && strchr("# @^+-*/.,?!$'|~[]{}()_:;=",s[i]))) 
          ++i;
       else if (s[i]=='&') { s.replace(i,1,"&amp;"); i+=5; }
       else if (s[i]=='<') { s.replace(i,1,"&lt;"); i+=4; }

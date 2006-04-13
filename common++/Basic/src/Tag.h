@@ -1,4 +1,4 @@
-// $Id: Tag.h,v 1.11 2006/04/03 09:59:13 christof Exp $
+// $Id: Tag.h,v 1.12 2006/04/13 12:48:11 christof Exp $
 /*  ManuProC_Base: Main ManuProC Library
  *  Copyright (C) 1998-2003  Christof Petig
  *
@@ -119,9 +119,9 @@ public:
 	 T getValue(const std::string &key) const;
 	template <class T>
 	 T getValue_def(const std::string &key, const T &def) const throw()
-    	{  try { return getValue<T>(key); } 
+	{  try { return getValue<T>(key); } 
     	   catch (std::out_of_range &e) { return def; }
-    	}
+        }
 	
 	bool operator==(const std::string &tp) const
 	{  return type==tp; }
@@ -209,12 +209,14 @@ template <> double Tag::parse_value<double>(const std::string &value) throw(std:
 template <> float Tag::parse_value<float>(const std::string &value) throw(std::out_of_range);
 template <> std::string Tag::parse_value<std::string>(const std::string &value) throw(std::out_of_range);
 
+#ifndef TAG_OMIT_DEPRECATED
 inline void Tag::setIntAttr(const std::string &name, int val)
 {  setAttr(name,create_value<int>(val)); }
 inline void Tag::setFloatAttr(const std::string &name, double val)
 {  setAttr(name,create_value<double>(val)); }
 inline void Tag::setBoolAttr(const std::string &name, bool val)
 {  setAttr(name,create_value<bool>(val)); }
+#endif
 
 // g++ 2.95 does not like these inlined
 template <class T>
