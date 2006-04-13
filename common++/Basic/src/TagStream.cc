@@ -1,4 +1,4 @@
-// $Id: TagStream.cc,v 1.12 2006/02/08 17:08:14 christof Exp $
+// $Id: TagStream.cc,v 1.13 2006/04/13 12:48:04 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2004  Christof Petig
  *
@@ -461,7 +461,14 @@ void TagStream::write(std::ostream &o, const Tag &t, int indent,bool indent_firs
          o << ' ' << attname << "=\"" << attval << '\"';
       }
       // save content ...
-      if (t.begin()!=t.end() || !t.Value().empty())
+      if (t.Type()=="!--") // Comment
+      {  o << ' ';
+         std::string tval(t.Value());
+         if (recode_save_vfunc) (*recode_save_vfunc)(tval);
+         toXML(tval);
+         o << tval << '>';
+      }
+      else if (t.begin()!=t.end() || !t.Value().empty())
       {  indent++;
          o << '>';
          std::string tval(t.Value());
