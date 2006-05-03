@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.35 2005/12/14 11:47:49 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.36 2006/05/03 07:15:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -136,6 +136,16 @@ int main()
    Query q("mycurs","select relname from pg_class where relname like ? limit 1");
    q << "pg_%";
    std::cout << q.FetchOne<std::string>() << '\n';
+  }
+  
+  {ArgumentList arg;
+   arg << 1 << Query::null<int>();
+   Query q("select ?,?");
+   Query::Row res;
+   q << arg >> res;
+   std::cout << res.Fetch<std::string>() << ',';
+   std::cout << res.FetchMap<std::string>("<NULL>") << '\n';
+   res >> Query::Row::check_eol();
   }
    
    ManuProC::dbdisconnect();
