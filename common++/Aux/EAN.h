@@ -1,4 +1,4 @@
-// $Id: EAN.h,v 1.12 2004/04/08 16:22:25 jacek Exp $
+// $Id: EAN.h,v 1.13 2006/05/03 07:16:49 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -25,5 +25,6 @@ class EAN
 {
       static std::string add_Pruefsumme(std::string ean,int unsigned length=12);
    public:
-      static std::string next_value(const ArtikelTyp at);
+//      static std::string next_value(const ArtikelTyp at);
+      static std::string next_value();
 };

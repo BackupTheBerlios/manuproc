@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung_anlegen.cc,v 1.4 2006/01/30 07:49:54 christof Exp $
+// $Id: ArtikelBezeichnung_anlegen.cc,v 1.5 2006/05/03 07:16:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -42,7 +42,8 @@ void ArtikelBezeichnung::Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase
 	  ManuProC::DynamicEnums::ArtikelTyp_Attributes::mit_ean))
      {
      col +="ean,";
-     val += EAN::next_value(schema->Typ())+",";
+//     val += EAN::next_value(schema->Typ())+",";
+     val += EAN::next_value()+",";
      }  
 #endif
 
@@ -86,7 +87,8 @@ void ArtikelBezeichnung::Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase
      {
      cols +=",ean";
      vals +=",?";
-     args << EAN::next_value(schema->Typ());
+//     args << EAN::next_value(schema->Typ());
+     args << EAN::next_value();
      }  
 #endif
 

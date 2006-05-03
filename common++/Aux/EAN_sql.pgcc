@@ -1,4 +1,4 @@
-// $Id: EAN_sql.pgcc,v 1.18 2006/01/19 22:53:29 christof Exp $
+// $Id: EAN_sql.pgcc,v 1.19 2006/05/03 07:16:49 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -24,20 +24,42 @@
 #include <ExtBezSchema/ExtBezSchemaHandle.h>
 #include <Misc/FetchIStream.h>
 
-std::string EAN::next_value(const ArtikelTyp at)
+//std::string EAN::next_value(const ArtikelTyp at)
+std::string EAN::next_value()
 {
- std::string table=cH_ExtBezSchema(ExtBezSchema::default_id,at)->TableName();
+ std::vector<int> ids;
 
- std::string RESULT;
+ Query q("SELECT id from artbez_warengruppe where mit_ean=true");
 
- std::string query("select max(substr(ean,0,13)) from ");
- query+=table;
+ q.FetchArray(ids);	
 
- Query(query) >> RESULT;
+ unsigned long long max=0;
 
- unsigned long long int ean=strtoll(RESULT.c_str(),NULL,10);
- ean+=1;
- return add_Pruefsumme(ulltos(ean));                
+ for(std::vector<int>::const_iterator i=ids.begin();i!=ids.end();++i)
+   {
+    ArtikelTyp at((ArtikelTyp)*i);
+    std::string table=cH_ExtBezSchema(ExtBezSchema::default_id,at)->TableName();
+
+    std::string RESULT;
+
+    std::string query("select max(substr(ean,1,12)) from ");
+    query+=table;
+
+    Query(query) >> RESULT;
+
+
+    unsigned long long int ean=strtoll(RESULT.c_str(),NULL,10);
+    if(max<ean) max=ean;
+   }
+
+ max++;
+ return add_Pruefsumme(ulltos(max));    
+
 }    
+
+
+
+
+
 
                  
