@@ -234,6 +234,7 @@ bool ppsInstanzReparatur::Lagermenge_setzen(bool analyse_only, const ArtikelBase
   bool alles_ok=true;
 
      bool set_dispo_to_zero=false;
+     if (!art) { std::cerr << "Artikel 0 im Lager?\n"; return alles_ok; }
      AuftragBase::mengen_t menge=gesmenge;
      // Vorgemerkte Menge (1er Aufträge) wieder abziehen
      // Schon eingetragene Menge wieder abziehen
