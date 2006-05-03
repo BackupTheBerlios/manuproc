@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.39 2006/02/20 09:55:17 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.40 2006/05/03 07:14:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -388,7 +388,9 @@ template<> const Oid Query::NullIf_s<char>::postgres_type=CHAROID;
 
 ArgumentList &ArgumentList::operator<<(const ArgumentList &list)
 {  for (const_iterator i=list.begin();i!=list.end();++i) 
-      add_argument(*i,list.type_of(i));
+   { if (list.is_null(i)) *this << null_s(list.type_of(i));
+     else add_argument(*i,list.type_of(i));
+   }
    return *this;
 }
 

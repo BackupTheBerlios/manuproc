@@ -165,3 +165,24 @@ ppsInstanz::ID ppsInstanz::NaechsteInstanz(const ArtikelStamm &art) const
       next=ppsInstanzID::None;
    return next;
 }
+
+namespace {
+  struct name_compare
+  { std::string comp;
+    name_compare(std::string const &s) : comp(s) {}
+    bool operator()(std::pair<ppsInstanz::ID,cH_ppsInstanz> const& a) const 
+    { return a.second->Name()==comp; }
+  };
+}
+
+cH_ppsInstanz cH_ppsInstanz::Search(std::string const& name) throw(SQLerror)
+{ // speed it up by searching in-cache members first
+  static bool already_all_loaded;
+  if (!already_all_loaded)
+  { (void)get_all_instanz();
+    already_all_loaded=true;
+  }
+  cache_t::const_iterator i=std::find_if(cache.begin(),cache.end(),name_compare(name));
+  if (i!=cache.end()) return i->second;
+  throw SQLerror("cH_ppsInstanz::Search", 100,"Instanz not found");
+}

@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.33 2005/10/12 08:59:39 christof Exp $
+// $Id: ppsInstanz.h,v 1.34 2006/05/03 07:14:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -137,6 +137,8 @@ class cH_ppsInstanz : public Handle<const ppsInstanz>
      {  return *(*this)!=b; }
      bool operator==(const cH_ppsInstanz &b) const
      {  return *(*this)==*b; }
+     
+     static cH_ppsInstanz Search(std::string const & name) throw(SQLerror);
 };
 
 std::ostream &operator<<(std::ostream &o,const cH_ppsInstanz &i);

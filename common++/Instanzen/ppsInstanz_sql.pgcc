@@ -65,7 +65,7 @@ void ppsInstanz::get_name() throw(SQLerror)
  name=dbgettext(name);
 }
 
-
+// perhaps cache this
 std::vector<cH_ppsInstanz> cH_ppsInstanz::get_all_instanz() throw(SQLerror)
 {
   std::vector<cH_ppsInstanz> v;
