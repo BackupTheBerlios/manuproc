@@ -149,7 +149,7 @@ static std::vector<AufEintragBase> Verfuegbarkeit2_init()
     }
 
     // Einkauf planen
-    Auftrag PAE=Auftrag(Auftrag::Anlegen(ppsInstanzID::_Garn__Einkauf),Kunde::default_id);
+    Auftrag PAE=Auftrag(Auftrag::Anlegen(ppsInstanzID::Einkauf),Kunde::default_id);
     AufEintragBase AEBPE=PAE.push_back(15,DATUM-60,ARTIKEL_KUPFER,OPEN,true);
     result.push_back(AEBPE);
 
@@ -177,7 +177,7 @@ static void Verfuegbarkeit2_check(const std::string &was, const std::vector<AufE
 {   verf_vergleichen(was,aebs[2]);
     verf_vergleichen(was,aebs[3]);
     ben_vergleichen(was,aebs[0]);
-    ben_vergleichen(was,AufEintragBase(ppsInstanzID::_Garn__Einkauf,0,1));
+    ben_vergleichen(was,AufEintragBase(ppsInstanzID::Einkauf,0,1));
     ben_vergleichen2(was,aebs[0]);
 }
 
@@ -208,7 +208,7 @@ static bool Verfuegbarkeit3()
 {   std::vector<AufEintragBase> aebs=Verfuegbarkeit2_init();
 
     // Einkauf liefert
-    {Lieferschein liefs(make_value(cH_ppsInstanz(ppsInstanzID::_Garn__Einkauf)),cH_Kunde(Kunde::default_id));
+    {Lieferschein liefs(make_value(cH_ppsInstanz(ppsInstanzID::Einkauf)),cH_Kunde(Kunde::default_id));
      LieferscheinEntryBase lsb(liefs,liefs.push_back(ARTIKEL_KUPFER,1,13));
      LieferscheinEntry(lsb).changeStatus(OPEN,false);
     }

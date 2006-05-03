@@ -39,7 +39,7 @@ LagerArtikel=0,MitEAN=1,
 
   namespace Instanzen {
    enum enum_t {
-    None=-1,Kundenauftraege=1,Faerberei=2,Druckerei=3,Weberei=4,Schaererei=5,_Garn__Einkauf=6,Spritzgiesserei=7,Bandlager=8,Rohwarenlager=9,Rollerei=10,
+    None=-1,Kundenauftraege=1,Faerberei=2,Druckerei=3,Weberei=4,Schaererei=5,Einkauf=6,Spritzgiesserei=7,Bandlager=8,Rohwarenlager=9,Rollerei=10,
    };
   }
 

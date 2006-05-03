@@ -1,4 +1,4 @@
-// $Id: Produktionsdauer.cc,v 1.11 2002/11/22 15:31:05 christof Exp $
+// $Id: Produktionsdauer.cc,v 1.12 2006/05/03 07:16:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -19,20 +19,8 @@
 
 #include <Instanzen/Produktionsdauer.h>
 
-
+#if 0
 int Produktionsdauer::Tage(cH_ppsInstanz instanz,const ArtikelBase &artikel)
-{
-#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
-  switch(instanz->Id())
-   {
-     case ppsInstanzID::Faerberei  : // zum Erweitern
-     case ppsInstanzID::Druckerei  : 
-     case ppsInstanzID::Weberei    : 
-     case ppsInstanzID::Schaererei : 
-     case ppsInstanzID::Rollerei   : 
-     case ppsInstanzID::Spritzgiesserei : 
-     case ppsInstanzID::_Garn__Einkauf : 
-     default : instanz->ProduktionsDauer();
-   }
-#endif
+{ return instanz->ProduktionsDauer();
 }
+#endif

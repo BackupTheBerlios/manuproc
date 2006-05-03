@@ -127,9 +127,9 @@ static bool Plantest(AufEintrag &AE)
 {
        ManuProC::Trace(log_trace,__FILELINE__);
        {
-       Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::_Garn__Einkauf),Kunde::default_id);
+       Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Einkauf),Kunde::default_id);
        int kupfer_znr=2;
-       AufEintrag AEP(AufEintragBase(ppsInstanzID::_Garn__Einkauf,AuftragBase::ungeplante_id,kupfer_znr));
+       AufEintrag AEP(AufEintragBase(ppsInstanzID::Einkauf,AuftragBase::ungeplante_id,kupfer_znr));
 
        AEP.Planen(1000,PA,PLANDATUM5);
        vergleichen(Check::Menge,"planen_acetat","Planen des Acetateinkaufs","A");
@@ -155,7 +155,7 @@ static bool Plantest(AufEintrag &AE)
        }
        ManuProC::Trace(log_trace,__FILELINE__);
 
-       Lieferschein liefs(ppsInstanzID::_Garn__Einkauf,cH_Kunde(Kunde::eigene_id));
+       Lieferschein liefs(ppsInstanzID::Einkauf,cH_Kunde(Kunde::eigene_id));
        LieferscheinEntryBase lseb(liefs,liefs.push_back(ARTIKEL_ACETAT,1,66));
        LieferscheinEntry(lseb).changeStatus(OPEN,false);
        vergleichen(Check::Menge,"planen_einkauf_lieferschein","Lieferschein mit Teillieferung für Einkauf anlegen","L");
@@ -168,9 +168,9 @@ static bool Plantest2(AufEintrag &AE)
 {
        ManuProC::Trace(log_trace,__FILELINE__);
        {
-       Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::_Garn__Einkauf),Kunde::default_id);
+       Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Einkauf),Kunde::default_id);
        int kupfer_znr=2;
-       AufEintrag AEP(AufEintragBase(ppsInstanzID::_Garn__Einkauf,AuftragBase::ungeplante_id,kupfer_znr));
+       AufEintrag AEP(AufEintragBase(ppsInstanzID::Einkauf,AuftragBase::ungeplante_id,kupfer_znr));
 
        AEP.Planen(100,PA,PLANDATUM5);
        vergleichen(Check::Menge,"planen2_acetat","Planen des Acetateinkaufs","A");

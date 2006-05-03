@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.22 2005/12/13 08:14:56 christof Exp $
+// $Id: auftrag_repair.cc,v 1.23 2006/05/03 07:16:33 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -102,7 +102,7 @@ void loopArgs::callback(AufEintrag &ae)
        	  AufEintragZu::map_t kinder=AufEintragZu::get_Kinder_nach_Artikel(ae);
        	  alles_ok&=RI.Kinder(ae,kinder,analyse_only);
          } catch (SQLerror &e)
-         {  std::cout << "SQL Fehler " << e << '\n';
+         {  std::cout << "SQL Fehler " << e << " bei " << AufEintragBase(ae) << '\n';
             alles_ok=false;
          } catch (std::exception &e)
          {  std::cout << "Exception " << e.what() << '\n';
@@ -211,7 +211,7 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,
         try
         {alles_ok&=RI.ReparaturLager(analyse_only,aid);
         } catch (SQLerror &e)
-        {  std::cout << "SQL Fehler " << e << '\n';
+        {  std::cout << "SQL Fehler " << e << " bei Lager " << I << '\n';
            alles_ok=false;
         }
       else if (!(actions&b_tree)) // Meldung bei * unterdrücken
