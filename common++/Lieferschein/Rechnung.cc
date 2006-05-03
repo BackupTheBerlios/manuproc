@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.26 2005/12/06 10:42:47 christof Exp $
+// $Id: Rechnung.cc,v 1.27 2006/05/03 07:21:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -121,10 +121,15 @@ const throw(SQLerror)
 
 
 void Rechnung::setBezahlt(bool _bezahlt) throw(SQLerror)
+{
+ RechnungBase::setBezahlt(_bezahlt);
+ bezahlt=_bezahlt;
+}
+
+void RechnungBase::setBezahlt(bool _bezahlt) throw(SQLerror)
 {Query("update rechnung set bezahlt=? where rngid=?")
  	<< _bezahlt << rngid;
  SQLerror::test(__FILELINE__);
- bezahlt=_bezahlt;
 }
 
 void Rechnung::setEntsorgung(bool ent) throw(SQLerror)
