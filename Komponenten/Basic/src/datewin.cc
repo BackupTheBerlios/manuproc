@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.25 2005/12/21 07:25:34 christof Exp $
+// $Id: datewin.cc,v 1.26 2006/05/03 07:28:09 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,6 +25,19 @@
 #include <cassert>
 #include <gtk/gtksignal.h>
 #include "datewin_popup.hh"
+
+
+void datewin::preferWeek(bool b) 
+{ if(kw_bevorzugen==b) return;
+  kw_bevorzugen=b;
+  set_value(get_value().KW());
+}
+
+datewin::~datewin()
+{
+ if (popup) delete popup; 
+ popup=0; 
+}
 
 datewin::datewin() : // const std::string &inst) : block(false), 
 	expandyear(true),kw_bevorzugen(), popup()
@@ -70,7 +83,8 @@ void datewin::set_value (const ManuProC::Datum &d) throw()
       kw_spinbutton->set_value(d.KW().Woche());
       jahr_spinbutton->set_value(d.KW().Jahr());
       int pg=kw_bevorzugen?p_Woche:p_Datum;
-      if (pg==p_Woche && d.Tag()!=ManuProC::Datum(d.KW()).Tag()) pg=p_Datum;
+// Muß weg, da sonst bei jedem set_value auf "Datum" umgesprungen wird
+//      if (pg==p_Woche && d.Tag()!=ManuProC::Datum(d.KW()).Tag()) pg=p_Datum;
       notebook->set_current_page(pg);
    }
    else 
@@ -118,13 +132,27 @@ void datewin::setLabel(const std::string &s)
 }
 
 void datewin::datum_activate()
-{  set_value(get_value());
+{  kw_bevorzugen=false; // Datumsicht behalten  
+   set_value(get_value());
    activate();
 }
 void datewin::kw_activate()
-{  set_value(get_value());
+{  kw_bevorzugen=true;  // Wochensicht behalten 
+   set_value(get_value());
    activate();
 }
+
+void datewin::on_datewin_change_current_page(GtkNotebookPage *p0, guint p1)
+{
+ switch(p1)
+   {  case p_Datum: kw_bevorzugen=false;
+   	  break;
+      case p_Woche: kw_bevorzugen=true;
+   	  break;
+      case p_leer: break;
+   }
+}
+
 
 // display datewin_popup
 void datewin::on_togglebutton_menu_toggled()
@@ -134,3 +162,4 @@ void datewin::on_togglebutton_menu_toggled()
   }
   else popup=new datewin_popup(this);
 }
+

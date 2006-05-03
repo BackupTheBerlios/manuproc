@@ -63,6 +63,7 @@
 	  <property name="tab_pos">GTK_POS_BOTTOM</property>
 	  <property name="scrollable">False</property>
 	  <property name="enable_popup">False</property>
+	  <signal name="switch_page" handler="on_datewin_change_current_page" after="yes" last_modification_time="Tue, 25 Apr 2006 10:13:20 GMT"/>
 
 	  <child>
 	    <widget class="GtkHBox" id="hbox9">
