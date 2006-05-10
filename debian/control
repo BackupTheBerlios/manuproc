@@ -1,0 +1,27 @@
+Source: manuproc
+Section: business
+Priority: extra
+Maintainer: Christof Petig <christof@petig-baender.de>
+Build-Depends: libgtkmm-2.4-dev | libgtkmm-2.0-dev, libgtkmm-dev,
+	libecpg-dev | libecpg3-dev
+
+Package: manuproc-pps
+Architecture: any
+Depends: ${shlibs:Depends}
+Recommends: manuproc-sampledb | manuproc-dbsetup, manuproc-print-order
+Description: order tracking, billing, production planning and more
+
+Package: manuproc-dbsetup
+Architecture: any
+Depends: python-2.3, manuproc-customers, manuproc-articles
+Suggests:
+Description: interactive program to manage a custom manuproc database setup
+
+Package: manuproc-customers
+
+Package: manuproc-print-order
+
+Package: manuproc-tex2prn
+
+Package: manuproc-articles
+

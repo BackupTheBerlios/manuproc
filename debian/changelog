@@ -1,0 +1,5 @@
+manuproc (20050315-0.1) experimental; urgency=low
+
+  * initial debian package information
+
+ -- Christof Petig <christof@petig-baender.de> Tue, 15 Mar 2005 10:48:02 +0100
