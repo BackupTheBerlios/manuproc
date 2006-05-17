@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.89 2005/12/21 07:23:47 christof Exp $
+// $Id: SimpleTree.cc,v 1.90 2006/05/17 07:36:58 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -109,7 +109,7 @@ void SimpleTree_Basic::on_spalten_geaendert()
    get_column(0)->set_sizing(Gtk::TREE_VIEW_COLUMN_FIXED);
    get_column(0)->set_fixed_width(1);
 #endif
-   for (unsigned int i=0;i<Cols();++i)
+   for (unsigned int i=0;i<VisibleColumns();++i)
    {
 #if 1
       CellRendererSimpleTree *crst = Gtk::manage(new CellRendererSimpleTree(i));
@@ -149,7 +149,7 @@ void SimpleTree_Basic::on_title_clicked(unsigned nr)
    if (i==clicked_seq.end())
    {  clicked_seq.push_back(idx);
       // if alles voll -> umsortieren
-      if (clicked_seq.size()==Cols()) on_neuordnen_clicked();
+      if (clicked_seq.size()==VisibleColumns()) on_neuordnen_clicked();
       else 
 	{
 	 std::string tmptit=std::string("(")+itos(clicked_seq.size())+")";
@@ -173,7 +173,7 @@ void SimpleTree_Basic::on_abbrechen_clicked()
 {  
       clicked_seq.clear();
       // Titel wiederherstellen
-      for (unsigned i=0;i<Cols();++i) 
+      for (unsigned i=0;i<VisibleColumns();++i) 
          get_column(i+FIRST_COLUMN)->set_title(getColTitle(i));
 }
 
@@ -413,7 +413,7 @@ bool SimpleTree_Basic::MouseButton(GdkEventButton *event)
       if (!it) return false;
       if ((*it)[getStore()->m_columns.childrens_deep]) return false; // node
       int idx=-1;
-      for (unsigned colno=0;colno<=Cols();++colno)
+      for (unsigned colno=0;colno<=VisibleColumns();++colno)
          if (col==get_column(colno)) 
          {  idx=getStore()->currseq[colno];
             break;
