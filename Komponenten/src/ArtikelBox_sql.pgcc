@@ -35,6 +35,7 @@
 #include <sigc++/bind.h>
 #include <sigc++/compatibility.h>
 #endif
+#include <Artikel/ArtikelBezeichnung.h>
 
 exec sql include sqlca;
 
@@ -351,20 +352,9 @@ void ArtikelBox::fuelleMenu()
 
 
 
-const ArtikelBase &ArtikelBox::QueryForNext() throw(SQLerror)
+ArtikelBase ArtikelBox::QueryForNext() throw(SQLerror)
 {
- /*
- std::string artbez=Tabellenname(schema);
- 
- int signif=1;
-
- const_sigiterator end=schema.sigend(signif);
- for (const_sigiterator i=sigbegin(signif);i!=end;++i)
- 
- std::string q("select id from ");
- q+=artbez
-*/
- return; 
+ return cH_ArtikelBezeichnung(artikel,schema)->Next(); 
 }
 
 
