@@ -684,6 +684,4 @@ msgstr "Confirm"
 #~ msgstr "Customer data"
 ||||||| /tmp/mt.4HIO3N
 =======
-#~ msgid "PLZ"
-#~ msgstr "Aerea Code"
 >>>>>>> /tmp/mt.97X1YQ
