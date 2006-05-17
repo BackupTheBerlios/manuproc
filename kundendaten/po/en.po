@@ -7,9 +7,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: kundendaten 0.0\n"
 "Report-Msgid-Bugs-To: manuproc-developer-de@berlios.de\n"
+<<<<<<< /tmp/mt.0B34AX
+"POT-Creation-Date: 2006-03-07 12:23+0100\n"
+"PO-Revision-Date: 2006-03-02 09:44+0100\n"
+"Last-Translator: Udo Meyer <meyeru@shindo.com>\n"
+||||||| /tmp/mt.4HIO3N
+"POT-Creation-Date: 2006-01-24 17:04+0100\n"
+"PO-Revision-Date: 2006-01-24 17:13+0100\n"
+"Last-Translator: Jacek Jakubowski, LinuxSolutions <jacek@telebel.de>\n"
+=======
 "POT-Creation-Date: 2006-03-07 14:04+0100\n"
 "PO-Revision-Date: 2006-03-07 14:09+0100\n"
 "Last-Translator: Jacek Jakubowski <jacek@telebel.de>\n"
+>>>>>>> /tmp/mt.97X1YQ
 "Language-Team: english <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -17,9 +27,14 @@ msgstr ""
 
 #: src/windowTop_glade.cc:95
 msgid "Filter"
-msgstr "Filter"
+msgstr ""
 
+<<<<<<< /tmp/mt.4HIO3N
+#: src/windowTop_glade.cc:102
+#: src/windowTop_glade.cc:587
+=======
 #: src/windowTop_glade.cc:102 src/windowTop_glade.cc:587
+>>>>>>> /tmp/mt.97X1YQ
 msgid "Gruppen"
 msgstr "group"
 
@@ -41,9 +56,13 @@ msgstr "status"
 
 #: src/windowTop_glade.cc:122
 msgid "Kommunikation"
-msgstr "Contact"
+msgstr ""
 
 #: src/windowTop_glade.cc:126
+<<<<<<< /tmp/mt.4HIO3N
+#, fuzzy
+=======
+>>>>>>> /tmp/mt.97X1YQ
 msgid "<b>Firma / Vorname</b>"
 msgstr "<b>Company / First name</b>"
 
@@ -60,6 +79,10 @@ msgid "Hausnummer"
 msgstr "number"
 
 #: src/windowTop_glade.cc:142
+<<<<<<< /tmp/mt.4HIO3N
+#, fuzzy
+=======
+>>>>>>> /tmp/mt.97X1YQ
 msgid "<b>Straße</b>"
 msgstr "<b>Street</b>"
 
@@ -72,8 +95,17 @@ msgid "PLZ (Postfach)"
 msgstr "Aerea Code (P.O. Box)"
 
 #: src/windowTop_glade.cc:155
+<<<<<<< /tmp/mt.0B34AX
+#, fuzzy
+msgid "<small>Firma / </small>Familienname"
+msgstr "<small>Company / Last name</small>"
+||||||| /tmp/mt.4HIO3N
+msgid "<small>Firma / </small>Familienname"
+msgstr "<small>Company / </small>Last name"
+=======
 msgid "<small>Firma /  Familienname</small>"
 msgstr "<small>Company / Last name</small>"
+>>>>>>> /tmp/mt.97X1YQ
 
 #: src/windowTop_glade.cc:159
 msgid "Anrede"
@@ -161,7 +193,7 @@ msgstr "Creditoraccount"
 
 #: src/windowTop_glade.cc:240
 msgid "Debitorenkonto"
-msgstr "Debitoracount"
+msgstr "Debitoraccount"
 
 #: src/windowTop_glade.cc:245
 msgid "Sachkonto"
@@ -169,7 +201,7 @@ msgstr "Sachkonto"
 
 #: src/windowTop_glade.cc:248
 msgid "Buchung"
-msgstr "Buchung"
+msgstr "Booking"
 
 #: src/windowTop_glade.cc:252
 msgid ""
@@ -247,17 +279,31 @@ msgstr "Waste dISPOSAL"
 msgid "Zahlungsart"
 msgstr "Payment"
 
+<<<<<<< /tmp/mt.4HIO3N
+#: src/windowTop_glade.cc:324
+#: src/windowTop_glade.cc:325
+#: src/windowTop_glade.cc:326
+#: src/windowTop_glade.cc:357
+=======
 #: src/windowTop_glade.cc:324 src/windowTop_glade.cc:325
 #: src/windowTop_glade.cc:326 src/windowTop_glade.cc:357
+>>>>>>> /tmp/mt.97X1YQ
 msgid "Tage"
-msgstr "Tage"
+msgstr "days"
 
 #: src/windowTop_glade.cc:337
 msgid "Skontofrist"
 msgstr "discount date"
 
+<<<<<<< /tmp/mt.4HIO3N
+#: src/windowTop_glade.cc:339
+#: src/windowTop_glade.cc:340
+#: src/windowTop_glade.cc:341
+#: src/windowTop_glade.cc:364
+=======
 #: src/windowTop_glade.cc:339 src/windowTop_glade.cc:340
 #: src/windowTop_glade.cc:341 src/windowTop_glade.cc:364
+>>>>>>> /tmp/mt.97X1YQ
 #: src/windowTop_glade.cc:374
 msgid "%"
 msgstr "%"
@@ -302,7 +348,12 @@ msgstr "Delivery terms"
 msgid "Konto Nr."
 msgstr "Accont No."
 
+<<<<<<< /tmp/mt.4HIO3N
+#: src/windowTop_glade.cc:395
+#: src/window_neue_bank_anlegen_glade.cc:60
+=======
 #: src/windowTop_glade.cc:395 src/window_neue_bank_anlegen_glade.cc:60
+>>>>>>> /tmp/mt.97X1YQ
 msgid "BLZ"
 msgstr "Banc ID-Code"
 
@@ -390,7 +441,12 @@ msgid ""
 "löschen"
 msgstr "Contactperson/s delete"
 
+<<<<<<< /tmp/mt.4HIO3N
+#: src/windowTop_glade.cc:468
+#: src/windowTop.cc:90
+=======
 #: src/windowTop_glade.cc:468 src/windowTop.cc:90
+>>>>>>> /tmp/mt.97X1YQ
 msgid "Position"
 msgstr "Position"
 
@@ -398,9 +454,18 @@ msgstr "Position"
 msgid "Kontaktpersonen"
 msgstr "Contacts"
 
+<<<<<<< /tmp/mt.4HIO3N
+#: src/windowTop_glade.cc:479
+#: src/windowTop_glade.cc:491
+#: src/windowTop_glade.cc:503
+#: src/windowTop_glade.cc:595
+#: src/windowTop_glade.cc:603
+#: src/windowTop_glade.cc:611
+=======
 #: src/windowTop_glade.cc:479 src/windowTop_glade.cc:491
 #: src/windowTop_glade.cc:503 src/windowTop_glade.cc:595
 #: src/windowTop_glade.cc:603 src/windowTop_glade.cc:611
+>>>>>>> /tmp/mt.97X1YQ
 msgid "speichern"
 msgstr "save"
 
@@ -424,27 +489,48 @@ msgstr "Notes"
 msgid "<b>andere Gruppen</b>"
 msgstr "<b>all groups</b>"
 
+<<<<<<< /tmp/mt.4HIO3N
+#: src/windowTop_glade.cc:526
+#: src/windowTop_glade.cc:619
+=======
 #: src/windowTop_glade.cc:526 src/windowTop_glade.cc:619
+>>>>>>> /tmp/mt.97X1YQ
 msgid "zuweisen"
 msgstr "link"
 
+<<<<<<< /tmp/mt.4HIO3N
+#: src/windowTop_glade.cc:531
+#: src/windowTop_glade.cc:627
+=======
 #: src/windowTop_glade.cc:531 src/windowTop_glade.cc:627
+>>>>>>> /tmp/mt.97X1YQ
 msgid "löschen"
 msgstr "delete"
 
 #: src/windowTop_glade.cc:538
+#, fuzzy
 msgid "<b>zugewiesene Gruppen</b>"
-msgstr "<b>linked groups</b>"
+msgstr "linked groups"
 
 #: src/windowTop_glade.cc:542
 msgid "Gruppenzugehörigkeit"
 msgstr "group relation"
 
+<<<<<<< /tmp/mt.4HIO3N
+#: src/windowTop_glade.cc:681
+#: src/windowTop_glade.cc:687
+=======
 #: src/windowTop_glade.cc:681 src/windowTop_glade.cc:687
+>>>>>>> /tmp/mt.97X1YQ
 msgid "Gruppen erstellen, bearbeiten oder löschen"
 msgstr "group create, change or delete"
 
+<<<<<<< /tmp/mt.4HIO3N
+#: src/windowTop_glade.cc:1027
+#: src/windowTop_glade.cc:1039
+=======
 #: src/windowTop_glade.cc:1027 src/windowTop_glade.cc:1039
+>>>>>>> /tmp/mt.97X1YQ
 #: src/windowTop_glade.cc:1054
 msgid "Die Eingabe muß mit 'Enter' abgeschlossen werden."
 msgstr "Entry has to be finished with \"Enter\""
@@ -453,7 +539,12 @@ msgstr "Entry has to be finished with \"Enter\""
 msgid "Die Eingabe der Bankleitzahl muß mit 'Enter' abgeschlossen werden."
 msgstr "Entry of Bank ID-Nr. has to be finished with \"Enter\""
 
+<<<<<<< /tmp/mt.4HIO3N
+#: src/windowTop_glade.cc:1787
+#: src/windowTop_glade.cc:1795
+=======
 #: src/windowTop_glade.cc:1787 src/windowTop_glade.cc:1795
+>>>>>>> /tmp/mt.97X1YQ
 #: src/windowTop_glade.cc:1830
 msgid "5-stellig mit führender 0"
 msgstr "5 digits with leading 0"
@@ -462,9 +553,9 @@ msgstr "5 digits with leading 0"
 msgid "25-stellig mit LKZ"
 msgstr "25 digits with Country code"
 
-#: src/windowTop_glade.cc:2275
+#: src/windowTop_glade.cc:2272
 msgid "Adressverwaltung"
-msgstr "Addressmenagement"
+msgstr ""
 
 #: src/windowTop.cc:88
 msgid "Vorname"
@@ -494,7 +585,12 @@ msgstr "Nr."
 msgid "Obergruppe"
 msgstr "main group"
 
+<<<<<<< /tmp/mt.4HIO3N
+#: src/windowTop.cc:236
+#: src/window_neue_Kundennummer_glade.cc:76
+=======
 #: src/windowTop.cc:236 src/window_neue_Kundennummer_glade.cc:76
+>>>>>>> /tmp/mt.97X1YQ
 msgid "Gruppe"
 msgstr "group"
 
@@ -502,7 +598,12 @@ msgstr "group"
 msgid "Kommentar"
 msgstr "Comment"
 
+<<<<<<< /tmp/mt.4HIO3N
+#: src/dialogInfo_glade.cc:64
+#: src/dialogError_glade.cc:64
+=======
 #: src/dialogInfo_glade.cc:64 src/dialogError_glade.cc:64
+>>>>>>> /tmp/mt.97X1YQ
 msgid "Information"
 msgstr "Information"
 
@@ -554,5 +655,35 @@ msgstr "label14"
 msgid "Bestätigen"
 msgstr "Confirm"
 
+<<<<<<< /tmp/mt.0B34AX
+#~ msgid "Schließen"
+#~ msgstr "close"
+
+#~ msgid "Neu"
+#~ msgstr "new"
+
+#~ msgid "leeren"
+#~ msgstr "clear"
+
+#~ msgid "Suche"
+#~ msgstr "Search"
+
+#~ msgid "Kundenkontakt"
+#~ msgstr "customer contact"
+
+#~ msgid "Land"
+#~ msgstr "Country"
+
+#~ msgid "Kunde"
+#~ msgstr "Customer"
+
+#~ msgid "Kundenumsatz"
+#~ msgstr "Customer's turnover"
+
+#~ msgid "Kundendaten"
+#~ msgstr "Customer data"
+||||||| /tmp/mt.4HIO3N
+=======
 #~ msgid "PLZ"
 #~ msgstr "Aerea Code"
+>>>>>>> /tmp/mt.97X1YQ
