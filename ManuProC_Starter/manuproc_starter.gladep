@@ -6,5 +6,4 @@
   <program_name>manuproc_starter</program_name>
   <language>C++</language>
   <gnome_support>FALSE</gnome_support>
-  <gettext_support>FALSE</gettext_support>
 </glade-project>

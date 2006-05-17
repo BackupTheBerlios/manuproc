@@ -1,0 +1,4 @@
+# List of source files containing translatable strings.
+./src/manuproc_starter.cc
+./src/ManuProc_Starter_glade.cc
+./src/ManuProc_Starter.cc

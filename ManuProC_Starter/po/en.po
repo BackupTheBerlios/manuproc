@@ -1,0 +1,112 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2006 ManuProC Development Group
+# This file is distributed under the same license as the PACKAGE package.
+# Christof Petig <christof@petig-baender.de>, 2006.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ManuProC_Starter 0.0\n"
+"Report-Msgid-Bugs-To: manuproc-developer-de@berlios.de\n"
+"POT-Creation-Date: 2006-05-11 17:53+0200\n"
+"PO-Revision-Date: 2006-05-10 10:28+0200\n"
+"Last-Translator: Christof Petig <christof@petig-baender.de>\n"
+"Language-Team: german <de@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/ManuProc_Starter_glade.cc:74
+msgid "Shindo GmbH"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:75
+msgid "Shindo Ltd."
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:79
+msgid "<b>Datenbank</b>"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:84 src/ManuProc_Starter_glade.cc:187
+msgid "PPS"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:89 src/ManuProc_Starter_glade.cc:195
+msgid "Kunden"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:94 src/ManuProc_Starter_glade.cc:203
+msgid "Lager"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:99 src/ManuProc_Starter_glade.cc:211
+msgid "Artikel"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:104 src/ManuProc_Starter_glade.cc:219
+msgid "Preislisten"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:112 src/ManuProc_Starter_glade.cc:232
+msgid "FiBu"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:117 src/ManuProc_Starter_glade.cc:240
+msgid "FiBu (ALT)"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:122 src/ManuProc_Starter_glade.cc:248
+msgid "ELSTER (USt)"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:130 src/ManuProc_Starter_glade.cc:261
+msgid "Vertrieb"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:135 src/ManuProc_Starter_glade.cc:269
+msgid "OpenOffice"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:140 src/ManuProc_Starter_glade.cc:277
+msgid "(vorab)"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:148 src/ManuProc_Starter_glade.cc:290
+msgid "Beenden"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:154 src/ManuProc_Starter_glade.cc:298
+msgid "Kunden Gtk-2"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:160
+msgid "<b>Programme</b>"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:164 src/ManuProc_Starter_glade.cc:306
+msgid "Lagerwert"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:169 src/ManuProc_Starter_glade.cc:314
+msgid "offene Posten"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:174 src/ManuProc_Starter_glade.cc:322
+msgid "Übersetzen"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:179
+msgid "<b>Skripte / Auswertungen</b>"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:510 src/ManuProc_Starter_glade.cc:516
+msgid "zeigt & druckt die Lagerbewertung zum gewünschten Stichtag"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:521 src/ManuProc_Starter_glade.cc:527
+msgid "zeigt & druckt die Liste der offenen Posten"
+msgstr ""
+
+#: src/ManuProc_Starter_glade.cc:559
+msgid "ManuProC_Starter"
+msgstr ""

@@ -1,9 +1,10 @@
 # generated 2004/5/7 15:30:30 CEST by jacek@jaceksdell.(none)
 # using glademm V2.0.0b
 
-AC_INIT(src/manuproc_starter.cc)
-AM_INIT_AUTOMAKE(manuproc_starter, 0.0)
-AM_CONFIG_HEADER(config.h)
+AC_PREREQ(2.50)
+AC_INIT(manuproc_starter, 0.0, [manuproc-developer-de@berlios.de])
+AM_INIT_AUTOMAKE
+AC_CONFIG_HEADERS(config.h)
 
 AC_ISC_POSIX
 AC_PROG_CC
@@ -14,8 +15,32 @@ AC_PROG_CXX
 AC_PROG_CXXCPP
 AM_PROG_LIBTOOL
 
+dnl *************************************************
+dnl gettext support
+dnl *************************************************
+
+GETTEXT_PACKAGE=kundendaten
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",
+		[the gettext domain])
+
+dnl Add the languages which your application supports here.
+AM_GNU_GETTEXT([external])
+
+if test -z "${DATADIRNAME}"
+then DATADIRNAME=share
+fi
+dnl Set PACKAGE_LOCALE_DIR in config.h.
+if test "x${prefix}" = "xNONE"; then
+  AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${ac_default_prefix}/${DATADIRNAME}/locale",
+		[the location of locale files])
+else
+  AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${prefix}/${DATADIRNAME}/locale",
+		[the location of locale files])
+fi
+
 AC_LANG_CPLUSPLUS
 
 PETIG_CHECK_KOMPONENTEN2
 
-AC_OUTPUT(Makefile src/Makefile )
+AC_OUTPUT(Makefile src/Makefile po/Makefile.in)
