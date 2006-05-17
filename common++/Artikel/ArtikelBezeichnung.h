@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.27 2006/05/17 07:34:46 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.28 2006/05/17 07:34:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -173,7 +173,8 @@ public:
   	std::vector<cH_EntryValue> const& values);
 
   static std::string Tabellenname(const cH_ExtBezSchema &s);
-  ArtikelBase Next() const; // look for the lexically next article in this schema
+  ArtikelBase Next(const std::vector<ExtBezSchema::BezKomp> 
+                      &bez_seq=std::vector<ExtBezSchema::BezKomp>()) const; // look for the lexically next article in this schema
   ArtikelBase Previous() const; // look for the lexically prev. article in this schema
 // deprecated
 private:

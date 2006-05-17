@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung_next.cc,v 1.2 2006/05/17 07:34:50 christof Exp $
+// $Id: ArtikelBezeichnung_next.cc,v 1.3 2006/05/17 07:34:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,18 +21,31 @@
 #include <Artikel/ArtikelStamm.h>
 #include <Misc/Query.h>
 
-ArtikelBase ArtikelBezeichnung::Next() const
+ArtikelBase ArtikelBezeichnung::Next(
+	const std::vector<ExtBezSchema::BezKomp> &bez_seq) const
  // look for the lexically next article in this schema
 { ArtikelBase result;
   const int signifikanz=1; // arbitrary, should get a parameter
   std::vector<ExtBezSchema::const_iterator> entries;
   std::string order;
-  for (ExtBezSchema::const_sigiterator i=schema->sigbegin(signifikanz);
-           i!=schema->sigend(signifikanz);++i)
-  { entries.push_back(i);
-    if (!order.empty()) order+=',';
-    order+=i->spaltenname;
-  }
+  if(bez_seq.empty())
+    {for (ExtBezSchema::const_sigiterator i=schema->sigbegin(signifikanz);
+     				      i!=schema->sigend(signifikanz);++i)
+       { entries.push_back(i);
+         if (!order.empty()) order+=',';
+         order+=" atoi("+i->spaltenname+")";
+       }
+     }
+   else
+    {for (ExtBezSchema::const_iterator i=bez_seq.begin();
+     				      i!=bez_seq.end();++i)
+       { entries.push_back(i);
+         if (!order.empty()) order+=',';
+         order+=" atoi("+i->spaltenname+")";
+       }
+     }
+
+
     
   for (std::vector<ExtBezSchema::const_iterator>::reverse_iterator r=entries.rbegin();
           r!=entries.rend();++r)
@@ -40,6 +53,8 @@ ArtikelBase ArtikelBezeichnung::Next() const
    std::string query;
    query = "SELECT id FROM "+schema->TableName()+ " WHERE ";
    int f=0;
+
+   if(bez_seq.empty())
    for (ExtBezSchema::const_sigiterator i=schema->sigbegin(signifikanz);
            i!=schema->sigend(signifikanz);)
      {
@@ -51,6 +66,18 @@ ArtikelBase ArtikelBezeichnung::Next() const
        query+=" AND ";
        ++i;
      }
+   else
+   for (ExtBezSchema::const_iterator i=bez_seq.begin();i!=bez_seq.end();)
+     {
+       query+=i->spaltenname;
+       if (static_cast<ExtBezSchema::const_iterator>(i)==*r) query+=">?";
+       else query+="=?";
+       args << (*this)[i->bezkomptype]->getStrVal();
+       if (static_cast<ExtBezSchema::const_iterator>(i)==*r) break;
+       query+=" AND ";
+       ++i;
+     }
+
    query+=" ORDER BY "+order+" LIMIT 1";
    try
    { Query(query) << args >> result;
