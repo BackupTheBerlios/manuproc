@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung_next.cc,v 1.3 2006/05/17 07:34:54 christof Exp $
+// $Id: ArtikelBezeichnung_next.cc,v 1.4 2006/05/17 07:34:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,7 +33,7 @@ ArtikelBase ArtikelBezeichnung::Next(
      				      i!=schema->sigend(signifikanz);++i)
        { entries.push_back(i);
          if (!order.empty()) order+=',';
-         order+=" atoi("+i->spaltenname+")";
+         order+=" atoi("+i->spaltenname+"),"+i->spaltenname;
        }
      }
    else
@@ -41,7 +41,7 @@ ArtikelBase ArtikelBezeichnung::Next(
      				      i!=bez_seq.end();++i)
        { entries.push_back(i);
          if (!order.empty()) order+=',';
-         order+=" atoi("+i->spaltenname+")";
+         order+=" atoi("+i->spaltenname+"),"+i->spaltenname;;
        }
      }
 
@@ -59,8 +59,9 @@ ArtikelBase ArtikelBezeichnung::Next(
            i!=schema->sigend(signifikanz);)
      {
        query+=i->spaltenname;
-       if (static_cast<ExtBezSchema::const_iterator>(i)==*r) query+=">?";
-       else query+="=?";
+       if (static_cast<ExtBezSchema::const_iterator>(i)==*r)
+	 {query+=" atoi("+i->spaltenname+")"; query+=">?";} 
+       else {query+=i->spaltenname; query+="=?";}
        args << (*this)[i->bezkomptype]->getStrVal();
        if (static_cast<ExtBezSchema::const_iterator>(i)==*r) break;
        query+=" AND ";
@@ -69,9 +70,9 @@ ArtikelBase ArtikelBezeichnung::Next(
    else
    for (ExtBezSchema::const_iterator i=bez_seq.begin();i!=bez_seq.end();)
      {
-       query+=i->spaltenname;
-       if (static_cast<ExtBezSchema::const_iterator>(i)==*r) query+=">?";
-       else query+="=?";
+       if (static_cast<ExtBezSchema::const_iterator>(i)==*r) 
+	 {query+=" atoi("+i->spaltenname+")"; query+=">?";}
+       else {query+=i->spaltenname; query+="=?";}
        args << (*this)[i->bezkomptype]->getStrVal();
        if (static_cast<ExtBezSchema::const_iterator>(i)==*r) break;
        query+=" AND ";
