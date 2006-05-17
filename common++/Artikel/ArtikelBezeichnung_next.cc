@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung_next.cc,v 1.1 2006/05/17 07:34:46 christof Exp $
+// $Id: ArtikelBezeichnung_next.cc,v 1.2 2006/05/17 07:34:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -37,15 +37,15 @@ ArtikelBase ArtikelBezeichnung::Next() const
   for (std::vector<ExtBezSchema::const_iterator>::reverse_iterator r=entries.rbegin();
           r!=entries.rend();++r)
   {ArgumentList args;
-   std::string query,order;
+   std::string query;
    query = "SELECT id FROM "+schema->TableName()+ " WHERE ";
    int f=0;
    for (ExtBezSchema::const_sigiterator i=schema->sigbegin(signifikanz);
            i!=schema->sigend(signifikanz);)
      {
        query+=i->spaltenname;
-       if (static_cast<ExtBezSchema::const_iterator>(i)==*r) query+">?";
-       else query+"=?";
+       if (static_cast<ExtBezSchema::const_iterator>(i)==*r) query+=">?";
+       else query+="=?";
        args << (*this)[i->bezkomptype]->getStrVal();
        if (static_cast<ExtBezSchema::const_iterator>(i)==*r) break;
        query+=" AND ";
