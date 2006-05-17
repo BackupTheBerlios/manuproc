@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.hh,v 1.33 2006/02/23 16:27:36 christof Exp $
+// $Id: ArtikelBox.hh,v 1.34 2006/05/17 07:36:17 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.33 2006/02/23 16:27:36 christof Exp $
+// $Id: ArtikelBox.hh,v 1.34 2006/05/17 07:36:17 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -251,6 +251,13 @@ public:
 
    const ArtikelBase &get_value() const
         {  return artikel; }
+
+   const ArtikelBase &get_next_value() 
+        {set_value(QueryForNext());
+	 return artikel; 
+	}
+
+   const ArtikelBase &QueryForNext() throw(SQLerror);
         
 	void set_value(const ArtikelBase &art) throw(SQLerror,ArtikelBoxErr);
    void show_label(bool b);

@@ -348,3 +348,23 @@ void ArtikelBox::fuelleMenu()
  if (!einschraenkung.size()) einschr_mi->hide();
 }
 
+
+
+
+const ArtikelBase &ArtikelBox::QueryForNext() throw(SQLerror)
+{
+ /*
+ std::string artbez=Tabellenname(schema);
+ 
+ int signif=1;
+
+ const_sigiterator end=schema.sigend(signif);
+ for (const_sigiterator i=sigbegin(signif);i!=end;++i)
+ 
+ std::string q("select id from ");
+ q+=artbez
+*/
+ return; 
+}
+
+
