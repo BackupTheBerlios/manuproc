@@ -102,7 +102,12 @@ cH_ppsInstanz ppsInstanz::getBestellInstanz(const ArtikelStamm &artikel)
 {
    cH_ppsInstanz I=artikel.BestellenBei();
    if( I->ProduktionsInstanz())
-    {  if(I->EinlagernIn()!=ppsInstanzID::None) return I->EinlagernIn();
+    {  if (!!artikel.LagernIn()) // Lager für Artikel vorgegeben
+       { if (artikel.LagernIn()->Id()==ppsInstanzID::None) 
+           return I; // kein Lager
+         return artikel.LagernIn();
+       }
+       if(I->EinlagernIn()!=ppsInstanzID::None) return I->EinlagernIn();
        return I;
     }
    if( I->LagerInstanz() || I->EinlagernIn()==ppsInstanzID::None ) return I;
