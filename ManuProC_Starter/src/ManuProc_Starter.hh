@@ -33,7 +33,8 @@ class ManuProc_Starter : public ManuProc_Starter_glade
         void on_preview_clicked();
         void on_lagerwert_clicked();
         void on_offeneposten_clicked();        
-        
+        void on_translate_clicked();        
+
 public:
  ManuProc_Starter(void) throw(SQLerror);    
 };

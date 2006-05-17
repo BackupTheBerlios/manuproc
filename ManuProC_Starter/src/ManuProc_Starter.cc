@@ -138,3 +138,9 @@ void ManuProc_Starter::on_taxbird_start_clicked()
 } 
 
 
+void ManuProc_Starter::on_translate_clicked()
+{  
+ std::string cmd("/bin/sh -l -c poedit &");
+ system(cmd.c_str());
+}
+

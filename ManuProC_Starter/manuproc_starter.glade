@@ -414,6 +414,24 @@
 		      <property name="homogeneous">True</property>
 		    </packing>
 		  </child>
+
+		  <child>
+		    <widget class="GtkToolButton" id="translate">
+		      <property agent="glademm" name="cxx_visibility">protected</property>
+		      <property name="visible">True</property>
+		      <property name="label" translatable="yes">Übersetzen</property>
+		      <property name="use_underline">True</property>
+		      <property name="stock_id">gtk-copy</property>
+		      <property name="visible_horizontal">True</property>
+		      <property name="visible_vertical">True</property>
+		      <property name="is_important">False</property>
+		      <signal name="clicked" handler="on_translate_clicked" last_modification_time="Wed, 30 Nov 2005 20:06:47 GMT"/>
+		    </widget>
+		    <packing>
+		      <property name="expand">False</property>
+		      <property name="homogeneous">True</property>
+		    </packing>
+		  </child>
 		</widget>
 	      </child>
 	    </widget>
