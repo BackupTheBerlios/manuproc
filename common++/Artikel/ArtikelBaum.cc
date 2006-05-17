@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.cc,v 1.18 2006/05/17 07:33:31 christof Exp $
+// $Id: ArtikelBaum.cc,v 1.19 2006/05/17 07:33:56 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -118,10 +118,11 @@ void ArtikelBaum::gather_data(const ID &stamp, bool replace_alias) throw(SQLerro
       if (inst->Id()==ppsInstanzID::None)
       { ArtikelBaum ab(i->rohartikel);
         if (!ab.empty())
-        { for (const_iterator j=ab.begin();j!=ab.end();++j)
+        { faktor_t i_menge=i->menge;
+          zusammensetzung.erase(i); // i get's invalid!
+          for (const_iterator j=ab.begin();j!=ab.end();++j)
             zusammensetzung.push_back(RohArtikel(j->rohartikel,
-                    i->menge*j->menge,j->erzeugung->Id()));
-          zusammensetzung.erase(i);
+                    i_menge*j->menge,j->erzeugung->Id()));
           goto reloop;
         }
       }
