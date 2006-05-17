@@ -654,7 +654,6 @@ msgstr "label14"
 #: src/window_Dialog_Bestaetigen_glade.cc:76
 msgid "Bestätigen"
 msgstr "Confirm"
-
 <<<<<<< /tmp/mt.0B34AX
 #~ msgid "Schließen"
 #~ msgstr "close"
