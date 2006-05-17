@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.43 2006/01/19 22:53:29 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.44 2006/05/17 07:34:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -51,18 +51,22 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
    }
    int ieinheit=0;
 
-   static PreparedQuery pq("select warengruppe,coalesce(internwarengruppe,warengruppe),"
-	"bestellen_bei,defaultschema,einheit,mindbestand"
-	" from artikelstamm where id=?");
+   static PreparedQuery pq("select warengruppe,internwarengruppe,"
+	"bestellen_bei,defaultschema,einheit,mindbestand,lagern_in "
+	"from artikelstamm where id=?");
    Query q(pq);
    q << ab.Id();
+   int lagern_in;
    Query::Row is=q.FetchOne();
-   is >> payload.typ >> payload.interntyp
+   is >> payload.typ;
+   is >> Query::Row::MapNull(payload.interntyp,payload.typ)
       >> Query::Row::MapNull(payload.bestellen_bei,ppsInstanzID::None)
       >> Query::Row::MapNull(payload.defaultschema,1)
       >> Query::Row::WithIndicator(payload.einh,ieinheit)
       >> Query::Row::MapNull(payload.mindbest,NO_CHECK)
+      >> Query::Row::MapNull(lagern_in,-2)
       ;
+   if (lagern_in!=-2) payload.lagern_in=ppsInstanz::ID(lagern_in);
       
    if (ieinheit) 
    {  payload.einh=EinheitID::St_;
