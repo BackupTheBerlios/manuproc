@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.34 2006/05/17 07:33:23 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.35 2006/05/17 07:33:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -50,6 +50,7 @@ AufEintragBase AufEintrag::ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,
    	wo,menge,lieferdatum,artikel,NV("ElternAEB",ElternAEB));
    if (!menge) return AufEintragBase(); // hmmm
+#if 0 // jetzt in ArtikelBaum gelandet   
    if (wo==ppsInstanzID::None) // Aliasartikel
    { ArtikelBaum artbaum(artikel);
      // wie in ArtikelInternNachbestellen(M)
@@ -58,7 +59,8 @@ AufEintragBase AufEintrag::ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
                    menge*i->menge,lieferdatum,i->rohartikel,ElternAEB);
      return AufEintragBase();
    }
-   if (wo==ppsInstanzID::Kundenauftraege)
+#endif
+   if (wo==ppsInstanzID::None || wo==ppsInstanzID::Kundenauftraege)
    {  std::cerr << "ArtikelInternNachbestellen: ungültige Instanz für " << menge
    		<< " von " << cH_ArtikelBezeichnung(artikel)->Bezeichnung()
    		<< " Elter " << ElternAEB << '\n';

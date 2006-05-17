@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.cc,v 1.17 2005/11/30 22:30:14 christof Exp $
+// $Id: ArtikelBaum.cc,v 1.18 2006/05/17 07:33:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -39,7 +39,7 @@ FetchIStream &operator>>(FetchIStream &is, ArtikelBaum::RohArtikel &ra)
    return is;
 }
 
-void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
+void ArtikelBaum::gather_data(const ID &stamp, bool replace_alias) throw(SQLerror)
 {ArtikelBase::setID(stamp);
  zusammensetzung_t *cached=cache.lookup(Id());
  if (cached) zusammensetzung=*cached;
@@ -110,6 +110,23 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
 
    cache.Register(Id(),zusammensetzung);
  }
+  if (replace_alias)
+  {reloop:
+    for (iterator i=begin();i!=end();++i)
+    { ArtikelStamm as(i->rohartikel);
+      cH_ppsInstanz inst=ppsInstanz::getBestellInstanz(as);
+      if (inst->Id()==ppsInstanzID::None)
+      { ArtikelBaum ab(i->rohartikel);
+        if (!ab.empty())
+        { for (const_iterator j=ab.begin();j!=ab.end();++j)
+            zusammensetzung.push_back(RohArtikel(j->rohartikel,
+                    i->menge*j->menge,j->erzeugung->Id()));
+          zusammensetzung.erase(i);
+          goto reloop;
+        }
+      }
+    }
+  }
 }
 
 #if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED

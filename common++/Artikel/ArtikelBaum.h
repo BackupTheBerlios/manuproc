@@ -1,6 +1,6 @@
-/* $Id: ArtikelBaum.h,v 1.23 2005/11/30 22:30:14 christof Exp $ */
+/* $Id: ArtikelBaum.h,v 1.24 2006/05/17 07:33:31 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 1998-2006 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -75,16 +75,13 @@ private:
 
  bool bez_sorted; // nach artikelbezeichnung(altartikelid)
 public:
- ArtikelBaum() : tiefe(NoDepth) {}
- ArtikelBaum(const ArtikelBase &stamp) : tiefe(NoDepth), bez_sorted(false)
-         {  setID(stamp.Id()); }
- ArtikelBaum(const ArtikelBase &stamp, bool sted) 
- 		: tiefe(NoDepth), bez_sorted(sted)
-         {  setID(stamp.Id()); }         
+ ArtikelBaum() : tiefe(NoDepth), bez_sorted() {}
+ ArtikelBaum(const ArtikelBase &stamp, bool sorted=false, bool replace_alias=true) 
+ 	: tiefe(NoDepth), bez_sorted(sorted)
+ { gather_data(stamp.Id(),replace_alias); }         
 
 private:
-// hier passiert alles, ungeschickter Name
- void setID(const ID &id) throw(SQLerror);
+ void gather_data(const ID &id,bool replace_alias) throw(SQLerror);
 
 public:
  bool empty() const
@@ -105,14 +102,10 @@ public:
  static void UnCache(const ArtikelBase &stamp);
 
 // Hrmpf, warum sind das keine Members?
-// Weil sie dann mehr Datanbankzugriffe machen würden als nötig, MAT
-// Für einen neuen Artikel:
+// Weil sie dann mehr Datanbankzugriffe machen wÃ¼rden als nÃ¶tig, MAT
+// FÃ¼r einen neuen Artikel:
  static void new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA);
  static void delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artikel);
-private:
-//ALter Code static void delete_from_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBase kind_artikel); 
-//Alter Code static void reduceChildren(int uid,const AufEintrag& AEB,const AufEintrag& oldAEB,AufEintragBase::mengen_t menge);
-//Alter Code static void create_in_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBase kind_artikel,fixedpoint<5> RohMenge); 
 
 public:
  faktor_t Faktor(const ArtikelBase &kind) throw(SQLerror);
