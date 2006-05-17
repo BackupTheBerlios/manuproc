@@ -18,7 +18,7 @@ class ManuProc_Starter : public ManuProc_Starter_glade
 {  
  DBCapability *dbcapability;        
         
-        
+        void on_database_toggled();        
         void on_pps_start_clicked();
         void on_kunden_start_enter();
         void on_lager_start_clicked();
@@ -34,6 +34,8 @@ class ManuProc_Starter : public ManuProc_Starter_glade
         void on_lagerwert_clicked();
         void on_offeneposten_clicked();        
         void on_translate_clicked();        
+
+ void setup_access();
 
 public:
  ManuProc_Starter(void) throw(SQLerror);    

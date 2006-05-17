@@ -66,6 +66,7 @@
 		      <property name="active">True</property>
 		      <property name="inconsistent">False</property>
 		      <property name="draw_indicator">True</property>
+		      <signal name="toggled" handler="on_database_toggled" last_modification_time="Tue, 10 Jan 2006 09:36:28 GMT"/>
 		    </widget>
 		    <packing>
 		      <property name="left_attach">0</property>
@@ -90,6 +91,7 @@
 		      <property name="inconsistent">False</property>
 		      <property name="draw_indicator">True</property>
 		      <property name="group">database_default</property>
+		      <signal name="toggled" handler="on_database_toggled" last_modification_time="Tue, 10 Jan 2006 09:36:01 GMT"/>
 		    </widget>
 		    <packing>
 		      <property name="left_attach">1</property>
