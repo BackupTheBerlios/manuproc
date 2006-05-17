@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.44 2006/05/17 07:34:15 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.45 2006/05/17 07:34:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -183,4 +183,12 @@ ArtikelBase ArtikelStamm::Anlegen(ArtikelTyp::ID warengruppe,
      << Query::NullIf(bestellen_bei,ppsInstanzID::None)
      << Query::NullIf(einheit,EinheitID::None) << getuid();
    return db_id;
+}
+
+void ArtikelStamm::set_LagernIn(ArtikelBase const& art, cH_ppsInstanz const& instanz)
+{ Query q("update artikelstamm set lagern_in=? where id=?");
+  if (!instanz) q << Query::null<int>();
+  else q << instanz->Id();
+  q << art.Id();
+  q.Check100();
 }

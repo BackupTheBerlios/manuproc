@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.h,v 1.24 2006/05/17 07:34:06 christof Exp $
+// $Id: ArtikelStamm.h,v 1.25 2006/05/17 07:34:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -85,6 +85,7 @@ public:
 
         static void setEinheit(const ArtikelBase &artikel,const Einheit e);
         static void set_BestellenBei(const ArtikelBase &artikel,const ppsInstanz::ID instanz);
+        static void set_LagernIn(ArtikelBase const& art, cH_ppsInstanz const& instanz);
 	static void setAktive(const ArtikelBase &artikel, 
 			bool ak, bool all_color=false) throw(SQLerror);
 	bool getAktive() const throw(SQLerror);        
