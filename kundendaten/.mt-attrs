@@ -1,2 +1,5 @@
+   file "autogen.sh"
+execute "true"
+
    file "sql/mk_mailing"
 execute "true"
