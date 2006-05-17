@@ -1,4 +1,4 @@
-// $Id: window_kundengruppen.cc,v 1.18 2006/01/10 12:08:35 christof Exp $
+// $Id: window_kundengruppen.cc,v 1.19 2006/05/17 07:42:30 christof Exp $
 
 #include "config.h"
 #include <set>
@@ -60,7 +60,7 @@ void window_kundengruppen::neu()
 { Gtk::Dialog d(_("Neue Kundengruppe anlegen"),*this,true);
   d.add_button(Gtk::Stock::CANCEL,Gtk::RESPONSE_CANCEL);
   d.add_button(Gtk::Stock::OK,Gtk::RESPONSE_OK);
-  d.get_vbox()->add(*Gtk::manage(new Gtk::Label(_("Wie soll die neue Kundengruppe heißen"))));
+  d.get_vbox()->add(*Gtk::manage(new Gtk::Label(_("Wie soll die neue Kundengruppe heißen ?"))));
   Gtk::Entry e;
   d.get_vbox()->add(e);
   e.set_activates_default();
@@ -100,9 +100,15 @@ void window_kundengruppen::bearbeiten()
 }
 
 void window_kundengruppen::loeschen()
-{ Query("delete from ku_gruppen_map where grpnr=?") << gruppe->get_value();
+{ 
+  
+//  manage(new window_Dialog_Bestaetigen(this,st));
+
+  Query("delete from ku_gruppen_map where grpnr=?") << gruppe->get_value();
   Query("delete from ku_gruppe where grpnr=?") << gruppe->get_value();
   gruppe->set_value(KundengruppeID::None);
+// ich denke so was mu� hier auch rein. Aber was genau? JJ
+//  gruppe->unregister_value(Kundengruppe::ID(gruppe->get_value()));
   laden();
 }
 
