@@ -4165,12 +4165,15 @@ size_t Worksheet::CellTable::RowBlock::Read(const char* data)
 	size_t bytesRead = 0;
 	short code;
 	LittleEndian::Read(data, code, 0, 2);
+	Row row;
+	CellBlock cellBlock;
+	cellBlocks_.reserve(1000);
 	while (code != CODE::DBCELL)
 	{
 		switch (code)
 		{
 			case CODE::ROW:
-				rows_.push_back(Row());
+				rows_.push_back(row);
 				bytesRead += rows_.back().Read(data+bytesRead);
 				break;
 				
@@ -4182,7 +4185,8 @@ size_t Worksheet::CellTable::RowBlock::Read(const char* data)
 			case CODE::NUMBER:
 			case CODE::RK:
 			case CODE::FORMULA:
-				cellBlocks_.push_back(CellBlock());
+				cellBlocks_.push_back(cellBlock);
+				if (cellBlocks_.size()%1000==0) cellBlocks_.reserve(cellBlocks_.size()+1000);
 				bytesRead += cellBlocks_[cellBlocks_.size()-1].Read(data+bytesRead);
 				break;
 
@@ -4235,9 +4239,11 @@ size_t Worksheet::CellTable::Read(const char* data)
 	
 	short code;
 	LittleEndian::Read(data, code, 0, 2);
+	RowBlock rowBlock;
+	rowBlocks_.reserve(1000);
 	while (code == CODE::ROW)
 	{
-		rowBlocks_.push_back(RowBlock());
+		rowBlocks_.push_back(rowBlock);
 		bytesRead += rowBlocks_.back().Read(data+bytesRead);
 		LittleEndian::Read(data, code, bytesRead, 2);
 	}
@@ -5008,6 +5014,7 @@ void BasicExcel::UpdateYExcelWorksheet()
 {
 	size_t maxWorksheets = worksheets_.size();
 	yesheets_.clear();
+	yesheets_.reserve(maxWorksheets);
 	for (size_t i=0; i<maxWorksheets; ++i)
 	{
 		yesheets_.push_back(BasicExcelWorksheet(this,i));
@@ -5019,6 +5026,16 @@ void BasicExcel::UpdateWorksheets()
 {
 	// Constants.
 	const size_t maxWorksheets = yesheets_.size();
+	Worksheet::CellTable::RowBlock rowBlock;
+	Worksheet::CellTable::RowBlock::CellBlock cellBlock;
+	Worksheet::CellTable::RowBlock::Row row;
+	Worksheet::CellTable::RowBlock::CellBlock::MulRK::XFRK xfrk;
+	LargeString largeString;
+
+	map<vector<char>, size_t> stringMap;
+	map<vector<char>, size_t>::iterator stringMapIt;
+	map<vector<wchar_t>, size_t> wstringMap;
+	map<vector<wchar_t>, size_t>::iterator wstringMapIt;
 
 	// Reset worksheets and string table.
 	worksheets_.clear();
@@ -5050,15 +5067,16 @@ void BasicExcel::UpdateWorksheets()
 		vector<Worksheet::CellTable::RowBlock>& rRowBlocks = worksheets_[s].cellTable_.rowBlocks_;
 		vector<Worksheet::CellTable::RowBlock::CellBlock>* pCellBlocks;
 		Worksheet::CellTable::RowBlock::CellBlock* pCell;
-
-		for (size_t r=0; r<maxRows; ++r)
+		rRowBlocks.resize(maxRows/32 + (maxRows%32 ? 1 : 0));
+		for (size_t r=0, curRowBlock=0; r<maxRows; ++r)
 		{
 			if (r%32==0) 
 			{
-				rRowBlocks.push_back(Worksheet::CellTable::RowBlock()); // New row block for every 32 rows.
-				pCellBlocks = &(rRowBlocks.back().cellBlocks_);								
+				// New row block for every 32 rows.
+				pCellBlocks = &(rRowBlocks[curRowBlock++].cellBlocks_);								
 			}
 			bool newRow = true;	// Keep track whether current row contains data.
+			pCellBlocks->reserve(1000);
 			for (size_t c=0; c<maxCols; ++c)
 			{
 				BasicExcelCell* cell = yesheets_[s].Cell(r,c);
@@ -5084,7 +5102,7 @@ void BasicExcel::UpdateWorksheets()
 					{
 						// Prepare Row and DBCell for new row with data.
 						Worksheet::CellTable::RowBlock& rRowBlock = rRowBlocks.back();
-						rRowBlock.rows_.push_back(Worksheet::CellTable::RowBlock::Row());
+						rRowBlock.rows_.push_back(row);
 						rRowBlock.rows_.back().rowIndex_ = r;
 						rRowBlock.rows_.back().lastCellColIndexPlusOne_ = maxCols;
 						rRowBlock.dbcell_.offsets_.push_back(0);
@@ -5092,7 +5110,8 @@ void BasicExcel::UpdateWorksheets()
 					}
 
 					// Create new cellblock to store cell.
-					pCellBlocks->push_back(Worksheet::CellTable::RowBlock::CellBlock());
+					pCellBlocks->push_back(cellBlock);
+					if (pCellBlocks->size()%1000==0) pCellBlocks->reserve(pCellBlocks->size()+1000);
 					pCell = &(pCellBlocks->back());
 
 					// Store cell.
@@ -5117,12 +5136,11 @@ void BasicExcel::UpdateWorksheets()
 								pCell->mulrk_.rowIndex_ = r;
 								pCell->mulrk_.firstColIndex_ = c;
 								pCell->mulrk_.lastColIndex_ = cl - 1;
-
-								for (; c<cl; ++c)
+								pCell->mulrk_.XFRK_.resize(cl-c);
+								for (size_t i=0; c<cl; ++c, ++i)
 								{
 									cell = yesheets_[s].Cell(r,c);
-									pCell->mulrk_.XFRK_.push_back(Worksheet::CellTable::RowBlock::CellBlock::MulRK::XFRK());
-									pCell->mulrk_.XFRK_.back().RKValue_ = GetRKValueFromInteger(cell->GetInteger());
+									pCell->mulrk_.XFRK_[i].RKValue_ = GetRKValueFromInteger(cell->GetInteger());
 								}
 								--c;
 							}
@@ -5160,12 +5178,11 @@ void BasicExcel::UpdateWorksheets()
 								pCell->mulrk_.rowIndex_ = r;
 								pCell->mulrk_.firstColIndex_ = c;
 								pCell->mulrk_.lastColIndex_ = cl - 1;
-
-								for (; c<cl; ++c)
+								pCell->mulrk_.XFRK_.resize(cl-c);
+								for (size_t i=0; c<cl; ++c, ++i)
 								{
 									cell = yesheets_[s].Cell(r,c);
-									pCell->mulrk_.XFRK_.push_back(Worksheet::CellTable::RowBlock::CellBlock::MulRK::XFRK());
-									pCell->mulrk_.XFRK_.back().RKValue_ = GetRKValueFromDouble(cell->GetDouble());
+									pCell->mulrk_.XFRK_[i].RKValue_ = GetRKValueFromDouble(cell->GetDouble());
 								}
 								--c;
 							}
@@ -5208,14 +5225,10 @@ void BasicExcel::UpdateWorksheets()
 							++workbook_.sst_.stringsTotal_;
 							size_t maxUniqueStrings = workbook_.sst_.uniqueStringsTotal_;
 							size_t strIndex = 0;
-							for (; strIndex<maxUniqueStrings; ++strIndex)
-							{
-								if (workbook_.sst_.strings_[strIndex].unicode_ == 0)
-								{
-									// Ansi string
-									if (str == workbook_.sst_.strings_[strIndex].name_) break;
-								}
-							}
+							stringMapIt = stringMap.find(str);
+							if (stringMapIt != stringMap.end()) strIndex = stringMapIt->second;
+							else strIndex = maxUniqueStrings;
+
 							if (strIndex < maxUniqueStrings)
 							{
 								// String is present in Shared string table.
@@ -5224,7 +5237,8 @@ void BasicExcel::UpdateWorksheets()
 							else
 							{
 								// New unique string.
-								workbook_.sst_.strings_.push_back(LargeString());
+								stringMap[str] = maxUniqueStrings;
+								workbook_.sst_.strings_.push_back(largeString);
 								workbook_.sst_.strings_[maxUniqueStrings].name_ = str;
 								workbook_.sst_.strings_[maxUniqueStrings].unicode_ = 0;
 								pCell->labelsst_.SSTRecordIndex_ = maxUniqueStrings;
@@ -5250,15 +5264,10 @@ void BasicExcel::UpdateWorksheets()
 							++workbook_.sst_.stringsTotal_;
 							size_t maxUniqueStrings = workbook_.sst_.strings_.size();
 							size_t strIndex = 0;
+							wstringMapIt = wstringMap.find(str);
+							if (wstringMapIt != wstringMap.end()) strIndex = wstringMapIt->second;
+							else strIndex = maxUniqueStrings;
 
-							for (; strIndex<maxUniqueStrings; ++strIndex)
-							{
-								if (workbook_.sst_.strings_[strIndex].unicode_ != 0)
-								{
-									// Unicode string
-									if (str == workbook_.sst_.strings_[strIndex].wname_) break;
-								}						
-							}
 							if (strIndex < maxUniqueStrings)
 							{
 								// String is present in Shared string table.
@@ -5267,7 +5276,8 @@ void BasicExcel::UpdateWorksheets()
 							else
 							{
 								// New unique string
-								workbook_.sst_.strings_.push_back(LargeString());
+								wstringMap[str] = maxUniqueStrings;
+								workbook_.sst_.strings_.push_back(largeString);
 								workbook_.sst_.strings_[maxUniqueStrings].wname_ = str;
 								workbook_.sst_.strings_[maxUniqueStrings].unicode_ = 1;
 								pCell->labelsst_.SSTRecordIndex_ = maxUniqueStrings;
@@ -5498,18 +5508,17 @@ void BasicExcelWorksheet::UpdateCells()
 	Worksheet::Dimensions& dimension = excel_->worksheets_[sheetIndex_].dimensions_;
 	vector<Worksheet::CellTable::RowBlock>& rRowBlocks = excel_->worksheets_[sheetIndex_].cellTable_.rowBlocks_;
 
+	vector<wchar_t> wstr;
+	vector<char> str;
+
 	maxRows_ = dimension.lastUsedRowIndexPlusOne_;
 	maxCols_ = dimension.lastUsedColIndexPlusOne_;
 
 	// Resize the cells to the size of the worksheet
-	cells_.resize(maxRows_);
-	for (size_t i=0; i<maxRows_; ++i)
-	{
-		cells_[i].resize(maxCols_);
-	}
+	vector<BasicExcelCell> cellCol(maxCols_);
+	cells_.resize(maxRows_, cellCol);
 
 	size_t maxRowBlocks = rRowBlocks.size();
-
 	for (size_t i=0; i<maxRowBlocks; ++i)
 	{
 		vector<Worksheet::CellTable::RowBlock::CellBlock>& rCellBlocks = rRowBlocks[i].cellBlocks_;
@@ -5535,14 +5544,14 @@ void BasicExcelWorksheet::UpdateCells()
 					vector<LargeString>& ss = excel_->workbook_.sst_.strings_;
 					if (ss[rCellBlocks[j].labelsst_.SSTRecordIndex_].unicode_ & 1)
 					{
-						vector<wchar_t> str = ss[rCellBlocks[j].labelsst_.SSTRecordIndex_].wname_;
-						str.resize(str.size()+1);
-						str.back() = L'\0';
-						cells_[row][col].Set(&*(str.begin()));						
+						wstr = ss[rCellBlocks[j].labelsst_.SSTRecordIndex_].wname_;
+						wstr.resize(wstr.size()+1);
+						wstr.back() = L'\0';
+						cells_[row][col].Set(&*(wstr.begin()));						
 					}
 					else
 					{
-						vector<char> str = ss[rCellBlocks[j].labelsst_.SSTRecordIndex_].name_;
+						str = ss[rCellBlocks[j].labelsst_.SSTRecordIndex_].name_;
 						str.resize(str.size()+1);
 						str.back() = '\0';
 						cells_[row][col].Set(&*(str.begin()));

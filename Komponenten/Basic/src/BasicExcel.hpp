@@ -14,6 +14,8 @@
 	// - Fixed bugs with reading and writing to Excel files containing many strings.
 // Version 1.5 (15 May 2006)
 	// - Remove code for ExtSST because it was causing problems with reading and writing to Excel files containing many strings.
+// Version 1.6 (16 May 2006)
+	// - Optimized code for reading and writing.
 
 #ifndef BASICEXCEL_HPP
 #define BASICEXCEL_HPP
