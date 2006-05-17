@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung_next.cc,v 1.5 2006/05/17 07:35:01 christof Exp $
+// $Id: ArtikelBezeichnung_next.cc,v 1.6 2006/05/17 07:35:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -60,10 +60,14 @@ ArtikelBase ArtikelBezeichnung::Next(
      {
        if (static_cast<ExtBezSchema::const_iterator>(i)==*r)
 	 {query+="( (atoi("+i->spaltenname+")>atoi(?)) or"+
-		 "  ("+i->spaltenname+">?) )";
+		 "  (atoi("+i->spaltenname+")=atoi(?)"+" and "+i->spaltenname+">?) )";
+          args << (*this)[i->bezkomptype]->getStrVal()
+               << (*this)[i->bezkomptype]->getStrVal()
+               << (*this)[i->bezkomptype]->getStrVal();
 	 } 
-       else {query+=i->spaltenname; query+="=?";}
-       args << (*this)[i->bezkomptype]->getStrVal();
+       else {query+=i->spaltenname; query+="=?";
+             args << (*this)[i->bezkomptype]->getStrVal();
+	    }
        if (static_cast<ExtBezSchema::const_iterator>(i)==*r) break;
        query+=" AND ";
        ++i;
@@ -73,10 +77,14 @@ ArtikelBase ArtikelBezeichnung::Next(
      {
        if (static_cast<ExtBezSchema::const_iterator>(i)==*r)
 	 {query+="( (atoi("+i->spaltenname+")>atoi(?)) or"+
-		 "  ("+i->spaltenname+">?) )";
+		 "  (atoi("+i->spaltenname+")=atoi(?)"+" and "+i->spaltenname+">?) )";
+          args << (*this)[i->bezkomptype]->getStrVal()
+               << (*this)[i->bezkomptype]->getStrVal()
+               << (*this)[i->bezkomptype]->getStrVal();
 	 }  
-       else {query+=i->spaltenname; query+="=?";}
-       args << (*this)[i->bezkomptype]->getStrVal();
+       else {query+=i->spaltenname; query+="=?";
+             args << (*this)[i->bezkomptype]->getStrVal();
+	    }
        if (static_cast<ExtBezSchema::const_iterator>(i)==*r) break;
        query+=" AND ";
        ++i;
