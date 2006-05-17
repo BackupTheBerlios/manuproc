@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.h,v 1.23 2004/09/01 12:30:31 christof Exp $
+// $Id: ArtikelStamm.h,v 1.24 2006/05/17 07:34:06 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -35,7 +35,7 @@ class ArtikelStamm
 	
 	struct payload_t
 	{  ArtikelTyp::ID typ,interntyp;
-	   cH_ppsInstanz bestellen_bei;
+	   cH_ppsInstanz bestellen_bei,lagern_in;
 	   ExtBezSchema_ID defaultschema;
 	   Einheit einh;
            // Vorsicht !!! Mindestverfügbare (d.h. unversprochene) Menge auf Lager
@@ -44,6 +44,7 @@ class ArtikelStamm
 	   payload_t() 
 	   : typ((ArtikelTyp::ID)0), interntyp((ArtikelTyp::ID)0),
 	                 bestellen_bei(cH_ppsInstanz(ppsInstanzID::None)), 
+	                 lagern_in(), 
 	                 defaultschema(ExtBezSchema_default_ID),
 	                 einh(Einheit::default_id),mindbest(NO_CHECK)
 	                 {}
@@ -71,6 +72,8 @@ friend class Artikeleingabe;
 friend class AufArtKonsistenz;
 	cH_ppsInstanz BestellenBei() const
 	{  return payload.bestellen_bei; }
+	cH_ppsInstanz LagernIn() const
+	{  return payload.lagern_in; }
 
 public:
 //	ArtikelBase::ID Id() const { return art.Id();}
