@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.hh,v 1.37 2006/05/17 07:36:32 christof Exp $
+// $Id: ArtikelBox.hh,v 1.38 2006/05/17 07:36:39 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.37 2006/05/17 07:36:32 christof Exp $
+// $Id: ArtikelBox.hh,v 1.38 2006/05/17 07:36:39 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -252,8 +252,10 @@ public:
    const ArtikelBase &get_value() const
         {  return artikel; }
 
-   const ArtikelBase &get_next_value() 
-        {set_value(QueryForNext());
+   const ArtikelBase &get_next_value(
+	const std::vector<ExtBezSchema::BezKomp> bv=
+		std::vector<ExtBezSchema::BezKomp>()) 
+        {set_value(QueryForNext(bv));
 	 return artikel; 
 	}
 
@@ -263,7 +265,7 @@ public:
 	}
 
 private:
-   ArtikelBase QueryForNext() throw(SQLerror);
+   ArtikelBase QueryForNext(const std::vector<ExtBezSchema::BezKomp> bv) throw(SQLerror);
    ArtikelBase QueryForPrev() throw(SQLerror);
 
 public:        

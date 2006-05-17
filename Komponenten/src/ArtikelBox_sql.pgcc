@@ -352,9 +352,9 @@ void ArtikelBox::fuelleMenu()
 
 
 
-ArtikelBase ArtikelBox::QueryForNext() throw(SQLerror)
+ArtikelBase ArtikelBox::QueryForNext(const std::vector<ExtBezSchema::BezKomp> bv) throw(SQLerror)
 {
- return cH_ArtikelBezeichnung(artikel,schema)->Next(); 
+ return cH_ArtikelBezeichnung(artikel,schema)->Next(bv); 
 }
 
 ArtikelBase ArtikelBox::QueryForPrev() throw(SQLerror)
