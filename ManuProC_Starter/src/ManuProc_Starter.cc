@@ -54,7 +54,10 @@ ManuProc_Starter::ManuProc_Starter(void) throw(SQLerror)
 
 void ManuProc_Starter::on_pps_start_clicked()
 {  
- std::string cmd("/bin/sh -c pps &");
+ std::string cmd("/bin/sh -c 'pps ");
+ if(database_OLD->get_active())
+   cmd+=" -d "+std::string(OLD_DB);
+ cmd+="' &";
  system(cmd.c_str());
 }
 
@@ -108,7 +111,10 @@ void ManuProc_Starter::on_fibu_alt_start_clicked()
 
 void ManuProc_Starter::on_vertrieb_start_clicked()
 {
- std::string cmd("/bin/sh -c vertrieb &");
+ std::string cmd("/bin/sh -c 'vertrieb ");
+ if(database_OLD->get_active())
+   cmd+=" -d "+std::string(OLD_DB);
+ cmd+="' &";
  system(cmd.c_str());
   
 }
