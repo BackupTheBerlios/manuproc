@@ -24,8 +24,8 @@ int main(int argc, char **argv)
    bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
    textdomain (GETTEXT_PACKAGE);
 #endif //ENABLE_NLS
-   Petig::PrintUncaughtExceptions();
-   Petig::Connection conn;
+   ManuProC::PrintUncaughtExceptions();
+   ManuProC::Connection conn;
    int i;
 
    while ((i = getopt(argc, argv, "h:d:")) != EOF)
@@ -43,11 +43,11 @@ int main(int argc, char **argv)
    if (optind<argc) kid=atoi(argv[optind]);
    
    Gtk::Main m(argc, argv);
-   Petig::PrintUncaughtExceptions();
+   ManuProC::PrintUncaughtExceptions();
 
    try {
 
-      Petig::dbconnect(conn);  
+      ManuProC::dbconnect(conn);  
 
       class windowTop *w=new class windowTop(kid);
 
@@ -55,12 +55,12 @@ int main(int argc, char **argv)
       m.run(*w);
       delete w;
       delete Message;
-      Petig::dbdisconnect();
+      ManuProC::dbdisconnect();
    } catch (SQLerror &e)
    {  std::cerr << e << '\n';
       return 1;
    }
-   catch (Petig::Datumsfehler &df)
+   catch (ManuProC::Datumsfehler &df)
    {  std::cerr << df << '\n';
       return 1;
    }   
