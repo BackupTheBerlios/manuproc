@@ -1,4 +1,4 @@
-// $Id: Optionmenu_Instanz.cc,v 1.7 2004/11/08 08:49:57 christof Exp $
+// $Id: Optionmenu_Instanz.cc,v 1.8 2006/05/17 08:15:40 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,6 +21,8 @@
 #include "Optionmenu_Instanz.hh"
 #include <Gtk_OStream.h>
 #include <SelectMatching.h>
+#include <Misc/inbetween.h>
+#include <Misc/i18n.h>
 
 Optionmenu_Instanz::Optionmenu_Instanz(emode mode)
 { set_mode(mode);
@@ -43,7 +45,7 @@ void Optionmenu_Instanz::fuelle_menu(emode mode)
   Gtk::OStream os(this);
   for (std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)
    {
-    if     (mode== nurLager           && !(*i)->LagerInstanz() ) continue;
+    if     (in(mode,nurLager,Lager_und_None) && !(*i)->LagerInstanz() ) continue;
 //    else if(mode==ohneLagerZulieferer && (*i)->EinlagernIn()!=ppsInstanzID::None ) continue;
     else if(mode==nurLieferanten      && (*i)->KundenInstanz() ) continue;
     else if(mode==keineKunden      && !(*i)->Id()==ppsInstanzID::Kundenauftraege ) continue;
@@ -53,9 +55,9 @@ void Optionmenu_Instanz::fuelle_menu(emode mode)
     os << (*i)->Name();
     os.flush((*i)->ref(), &HandleContent::unref);      
    }  
-  if(mode==alles_und_none) 
+  if(in(mode,alles_und_none,Lager_und_None)) 
    {
-    os << "KEINE INSTANZ";
+    os << _("KEINE INSTANZ");
     cH_ppsInstanz NI(ppsInstanzID::None);
     os.flush(NI->ref(), &HandleContent::unref);      
    }

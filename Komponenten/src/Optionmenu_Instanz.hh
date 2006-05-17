@@ -1,4 +1,4 @@
-// $Id: Optionmenu_Instanz.hh,v 1.12 2004/11/16 14:58:30 christof Exp $
+// $Id: Optionmenu_Instanz.hh,v 1.13 2006/05/17 08:15:40 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -31,7 +31,7 @@ class Optionmenu_Instanz :  public Gtk::OptionMenu
 {
  public:
    enum emode {allesAnzeigen,alles_und_none,nurLager,//ohneLagerZulieferer,
-               nurLieferanten,keineKunden};
+               nurLieferanten,keineKunden,Lager_und_None};
 
    void fuelle_menu(emode mode);
    void set_mode(emode mode);

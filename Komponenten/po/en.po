@@ -7,13 +7,55 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ManuProC_Widgets 0.0\n"
 "Report-Msgid-Bugs-To: manuproc-developer-de@berlios.de\n"
-"POT-Creation-Date: 2006-03-22 22:21+0100\n"
+"POT-Creation-Date: 2006-05-12 12:33+0200\n"
 "PO-Revision-Date: 2006-03-22 22:19+0100\n"
 "Last-Translator: Jacek Jakubowski <jacek@telebel.de>\n"
 "Language-Team: english <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: src/datewin_glade.cc:61 src/datewin_glade.cc:65
+msgid "."
+msgstr ""
+
+#: src/datewin_glade.cc:74
+msgid "'"
+msgstr ""
+
+#: src/datewin_glade.cc:80 src/datewin_popup_glade.cc:69
+#: src/datewin_popup_glade.cc:97
+#, fuzzy
+msgid "leer"
+msgstr "empty"
+
+#: src/datewin_popup_glade.cc:63 src/datewin_popup_glade.cc:81
+msgid "Datum"
+msgstr ""
+
+#: src/datewin_popup_glade.cc:66 src/datewin_popup_glade.cc:89
+msgid "Woche"
+msgstr ""
+
+#: src/datewin_popup_glade.cc:137
+msgid "Datumseigenschaften"
+msgstr ""
+
+#: src/IntStringBox_glade.cc:55
+msgid "Int"
+msgstr "No"
+
+#: src/IntStringBox_glade.cc:56
+msgid "Name1"
+msgstr "Name1"
+
+#: src/IntStringBox_glade.cc:57
+msgid "Name2"
+msgstr "Name2"
+
+#: src/IntStringBox_glade.cc:61
+msgid "leeren"
+msgstr "empty"
 
 #: src/KundenBox2.cc:31 src/PersonenBox.cc:31 src/ZahlungsArtBox.cc:33
 msgid "Id"
@@ -27,41 +69,37 @@ msgstr "Name"
 msgid "Ort"
 msgstr "City"
 
-#: src/WTelefon.cc:50
-msgid " (privat)"
-msgstr " (private)"
+#: src/LandesBox.cc:34
+msgid "LKZ"
+msgstr "country code"
 
-#: src/WTelefon.cc:148 src/WTelefon_glade.cc:73
-msgid "Nummer"
-msgstr "Number"
-
-#: src/WTelefon.cc:149
-msgid "Art"
-msgstr "Type"
-
-#: src/WTelefon_glade.cc:59
-msgid "Nummer löschen"
-msgstr "Delete Number"
-
-#: src/WTelefon_glade.cc:65 src/LandesBox.cc:34
+#: src/LandesBox.cc:34 src/WTelefon_glade.cc:65
 msgid "Land"
 msgstr "Country"
 
-#: src/WTelefon_glade.cc:69
-msgid "Vorwahl"
-msgstr "Area"
+#: src/Optionmenu_Instanz.cc:60
+msgid "KEINE INSTANZ"
+msgstr ""
 
-#: src/WTelefon_glade.cc:77
-msgid "Durchwahl"
-msgstr "Extension"
+#: src/Optionmenu_Kundengruppe.cc:47 src/Optionmenu_Warengruppe_sql.pgcc:79
+msgid "-- Alle Gruppen --"
+msgstr "-- all groups --"
 
-#: src/WTelefon_glade.cc:84
-msgid "Text"
-msgstr "text"
+#: src/PersonenBox.cc:31
+msgid "Nachname"
+msgstr "Last Name"
 
-#: src/WTelefon_glade.cc:89
-msgid "Neue Nummer eingeben"
-msgstr "Enter new number"
+#: src/PersonenBox.cc:31
+msgid "Vorname"
+msgstr "First Name"
+
+#: src/PreisBox.cc:30
+msgid "Nr."
+msgstr "No."
+
+#: src/PreisBox.cc:30
+msgid "Bezeichnung"
+msgstr "description"
 
 #: src/SimpleTree.cc:370
 msgid "Zurücksetzen"
@@ -111,46 +149,38 @@ msgstr "Expand all"
 msgid "Alles zuklappen"
 msgstr "Close all"
 
-#: src/LandesBox.cc:34
-msgid "LKZ"
-msgstr "country code"
+#: src/WTelefon.cc:50
+msgid " (privat)"
+msgstr " (private)"
 
-#: src/PersonenBox.cc:31
-msgid "Nachname"
-msgstr "Last Name"
+#: src/WTelefon.cc:148 src/WTelefon_glade.cc:73
+msgid "Nummer"
+msgstr "Number"
 
-#: src/PersonenBox.cc:31
-msgid "Vorname"
-msgstr "First Name"
+#: src/WTelefon.cc:149
+msgid "Art"
+msgstr "Type"
 
-#: src/PreisBox.cc:30
-msgid "Nr."
-msgstr "No."
+#: src/WTelefon_glade.cc:59
+msgid "Nummer löschen"
+msgstr "Delete Number"
 
-#: src/PreisBox.cc:30
-msgid "Bezeichnung"
-msgstr "description"
+#: src/WTelefon_glade.cc:69
+msgid "Vorwahl"
+msgstr "Area"
+
+#: src/WTelefon_glade.cc:77
+msgid "Durchwahl"
+msgstr "Extension"
+
+#: src/WTelefon_glade.cc:84
+msgid "Text"
+msgstr "text"
+
+#: src/WTelefon_glade.cc:89
+msgid "Neue Nummer eingeben"
+msgstr "Enter new number"
 
 #: src/ZahlungsArtBox.cc:33
 msgid "Zahlungsart"
 msgstr "mode of payment"
-
-#: src/IntStringBox_glade.cc:55
-msgid "Int"
-msgstr "No"
-
-#: src/IntStringBox_glade.cc:56
-msgid "Name1"
-msgstr "Name1"
-
-#: src/IntStringBox_glade.cc:57
-msgid "Name2"
-msgstr "Name2"
-
-#: src/IntStringBox_glade.cc:61
-msgid "leeren"
-msgstr "empty"
-
-#: src/Optionmenu_Kundengruppe.cc:47 src/Optionmenu_Warengruppe_sql.pgcc:79
-msgid "-- Alle Gruppen --"
-msgstr "-- all groups --"

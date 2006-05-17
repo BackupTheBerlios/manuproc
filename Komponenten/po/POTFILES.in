@@ -1,12 +1,18 @@
 # List of source files containing translatable strings.
+./src/datewin_glade.cc
+./src/datewin_popup_glade.cc
+./src/IntStringBox.cc
+./src/IntStringBox_glade.cc
 ./src/KundenBox2.cc
-./src/WTelefon.cc
-./src/WTelefon_glade.cc
-./src/SimpleTree.cc
 ./src/LandesBox.cc
+./src/Optionmenu_AuftragLabel.cc
+./src/Optionmenu_Instanz.cc
+./src/Optionmenu_Kundengruppe.cc
+./src/Optionmenu_Lager.cc
+./src/Optionmenu_Warengruppe_sql.pgcc
 ./src/PersonenBox.cc
 ./src/PreisBox.cc
+./src/SimpleTree.cc
+./src/WTelefon.cc
+./src/WTelefon_glade.cc
 ./src/ZahlungsArtBox.cc
-./src/IntStringBox_glade.cc
-src/Optionmenu_Kundengruppe.cc
-src/Optionmenu_Warengruppe_sql.pgcc
