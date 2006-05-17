@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.46 2006/05/17 07:35:27 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.47 2006/05/17 07:35:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -176,17 +176,37 @@ const UniqueValue::value_t ArtikelStamm::trace_channel
 
 const int ArtikelStamm::NO_CHECK;
 
+// for initial inventory
+#include <Lager/FertigWarenLager.h>
+
 ArtikelBase ArtikelStamm::Anlegen(ArtikelTyp::ID warengruppe,
 		int default_Schema,ppsInstanz::ID bestellen_bei,
 		Einheit::ID einheit)
 {  ArtikelBase db_id;
    Query("select nextval('artikelbezeichnun_artikelid_seq')").FetchOne(db_id);
+
+   int mindbest=NO_CHECK;
+#if defined(MABELLA_EXTENSIONS) && defined(MANUPROC_DYNAMICENUMS_CREATED)
+   if(ArtikelTyp::hasAttribute(ArtikelTyp(warengruppe),ArtikelTypAttr::lagerartikel))
+     mindbest=0;
+#endif
    Query("insert into artikelstamm "
-	"(id,warengruppe,defaultschema,bestellen_bei,einheit,uid) "
-	"values (?,?,?,?,?,?)")
+	"(id,warengruppe,defaultschema,bestellen_bei,einheit,uid,mindbestand) "
+	"values (?,?,?,?,?,?,?)")
      << db_id << warengruppe << default_Schema 
      << Query::NullIf(bestellen_bei,ppsInstanzID::None)
-     << Query::NullIf(einheit,EinheitID::None) << getuid();
+     << Query::NullIf(einheit,EinheitID::None) << getuid()
+     << Query::NullIf(mindbest,NO_CHECK);
+
+#if defined(MABELLA_EXTENSIONS) && defined(MANUPROC_DYNAMICENUMS_CREATED)
+   if(ArtikelTyp::hasAttribute(ArtikelTyp(warengruppe),ArtikelTypAttr::lagerartikel))
+    {FertigWaren fw(db_id,FertigWaren::eInventur,0);
+     FertigWarenLager fwl(fw,FertigWarenLager::default_lagerid);
+     fwl.Inventur();
+    }
+#endif
+
+
    return db_id;
 }
 
