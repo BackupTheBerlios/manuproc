@@ -1,4 +1,4 @@
-// $Id: safemap.h,v 1.8 2003/06/04 09:22:59 christof Exp $
+// $Id: safemap.h,v 1.9 2006/05/17 07:35:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -74,6 +74,7 @@ public:
   _Tp& operator[](const key_type& k) { init(); return (*m)[k]; }
   iterator find(const key_type& __x) { init(); return m->find(__x); }
   void erase(iterator i) { init(); m->erase(i); }
+  void erase(key_type const& k) { init(); m->erase(k); }
 
   // if your default constructor is private, friend this class  
   typedef _Rep_type stl_type;

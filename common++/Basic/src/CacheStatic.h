@@ -1,4 +1,4 @@
-// $Id: CacheStatic.h,v 1.8 2002/10/24 14:06:49 thoma Exp $
+// $Id: CacheStatic.h,v 1.9 2006/05/17 07:35:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -46,6 +46,9 @@ public:
 	void deregister(const Index &ix) throw()
 	{  typename map_t::iterator i(_mp.find(ix));
 	   if (i!=_mp.end()) _mp.erase(i);
+	}
+	void erase(const Index &ix) throw()
+	{  _mp.erase(ix);
 	}
 	void clear() throw()
 	{  _mp.clear();

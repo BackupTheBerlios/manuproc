@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.h,v 1.25 2006/05/17 07:34:21 christof Exp $
+// $Id: ArtikelStamm.h,v 1.26 2006/05/17 07:35:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -97,5 +97,6 @@ public:
 	static ArtikelBase Anlegen(ArtikelTyp::ID warengruppe,
 		int default_Schema,ppsInstanz::ID bestellen_bei=ppsInstanzID::None,
 		Einheit::ID einheit=EinheitID::None);
+	static void UnCache(ArtikelBase const& was);
 };
 #endif

@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.45 2006/05/17 07:34:21 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.46 2006/05/17 07:35:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -38,6 +38,11 @@ const Oid Query::NullIf_s<Einheit::ID>::postgres_type=Query::NullIf_s<int>::post
 Query::Row &operator>>(Query::Row &is, Einheit &e)
 {  e = Einheit(Einheit::ID(is.Fetch<int>()));
    return is;
+}
+
+void ArtikelStamm::UnCache(ArtikelBase const& a)
+{ cache.erase(a.Id());
+#warning Propagate via Database Event?
 }
 
 ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
