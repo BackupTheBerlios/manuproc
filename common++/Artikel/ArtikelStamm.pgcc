@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.47 2006/05/17 07:35:33 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.48 2006/05/17 07:35:38 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -134,17 +134,22 @@ void ArtikelStamm::setEinheit(const ArtikelBase &artikel,const Einheit e)
 
 void ArtikelStamm::setAktive(const ArtikelBase &artikel, bool ak
 		, bool all_color) throw(SQLerror)
-{ 
- std::string table=cH_ExtBezSchema(ExtBezSchema::default_id,ArtikelTyp::default_ID)->TableName();
-
+{
  if(all_color)
    {
+    ArtikelStamm as(artikel); 
+    cH_ExtBezSchema schema(as.defaultSchema(),as.Warengruppe(as.defaultSchema()));
+    std::string table=schema->TableName();
+
     std::string query("update artikelstamm set stand=now(), "
     	              "aktiv=? where id in ");
     query+=std::string(" (SELECT b1.id from ")+
-    	table+" b1 join "+table+" b2 "+
-	"  on (b1.artikel=b2.artikel and b1.breite=b2.breite "+
-	"      and b1.aufmachung=b2.aufmachung and b2.id=?)) ";
+    	table+" b1 join "+table+" b2 on (";
+    for (ExtBezSchema::const_sigiterator i=schema->sigbegin(1);i!=schema->sigend(1);++i)
+    { if (i->spaltenname=="farbe") continue;
+      query+="b1."+i->spaltenname+"=b2."+i->spaltenname+" and ";
+    }
+    query+="b2.id=?))";
     Query(query) << ak << artikel.Id();
    }
  else
@@ -216,4 +221,5 @@ void ArtikelStamm::set_LagernIn(ArtikelBase const& art, cH_ppsInstanz const& ins
   else q << instanz->Id();
   q << art.Id();
   q.Check100();
+  cache.deregister(art.Id());
 }
