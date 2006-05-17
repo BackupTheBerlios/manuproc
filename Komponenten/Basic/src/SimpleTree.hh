@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.64 2006/05/17 07:36:58 christof Exp $
+// $Id: SimpleTree.hh,v 1.65 2006/05/17 07:37:03 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -48,7 +48,7 @@ public:
         // since this is ambiguous and has caused many bugs select one of the following
 	SIMPLE_TREE_WARN guint Cols() const  { return sts->Properties().Columns();}
 	guint VisibleColumns() const  { return sts->Cols();}
-	guint MaxColumn() const  { return sts->Properties().Columns();}
+	guint MaxColumns() const  { return sts->Properties().Columns();}
 
 	// these are from model
 	void setDataVec(const std::vector<cH_RowDataBase> &d) {  sts->getModel()=d; }
