@@ -10,6 +10,8 @@
 #include <gtkmm/main.h>
 #include <unistd.h>
 
+#define DEFAULT_DB	"sdodb"
+#define OLD_DB		"old_sdodb"
 
 ManuProc_Starter::ManuProc_Starter(void) throw(SQLerror)
 {
@@ -40,6 +42,10 @@ ManuProc_Starter::ManuProc_Starter(void) throw(SQLerror)
  DBCapability::WhiteColumn wc4("offpos","");
  offeneposten->set_sensitive(
      dbcapability->isWhite(DBCapability::ColAct(wc4,DBCapability::EXECUTE)));          
+
+ DBCapability::WhiteColumn old_db("old_sdodb","");
+ db_frame->set_sensitive(
+     dbcapability->isWhite(DBCapability::ColAct(old_db,DBCapability::EXECUTE)));          
      
  if (access("/usr/local/bin/pps.preview",X_OK))
      preview->hide();
@@ -85,7 +91,10 @@ void ManuProc_Starter::on_preise_start_clicked()
 
 void ManuProc_Starter::on_fibu_start_clicked()
 {  
- std::string cmd("/bin/sh -c fibu &");
+ std::string cmd("/bin/sh -c 'fibu ");
+ if(database_OLD->get_active())
+   cmd+=" -d "+std::string(OLD_DB);
+ cmd+="' &";
  system(cmd.c_str());
 
 }
