@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.74 2006/01/10 09:29:12 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.75 2006/05/17 08:15:51 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -214,7 +214,7 @@ private:
 	static const unsigned num_colors=8;
 	// vielleicht noch in Properties?
 	unsigned sortierspalte;
-	std::vector<bool> invert_order; // invert order for this column (Pfeil nach oben)
+	std::vector<bool> invert_order; // invert order for idx (Pfeil nach oben)
 //	bool invert_sortierspalte;
 
 	unsigned stamp;
@@ -340,7 +340,7 @@ public:
 	{  return please_detach; }
 	SigC::Signal0<void> &signal_please_attach()
 	{  return please_attach; }
-	const std::string getColTitle(guint idx) const;
+	const std::string getColTitle(guint nr) const;
 	
 	const_iterator begin() const
 	{  return root.children.begin();

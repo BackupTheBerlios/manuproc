@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.90 2006/05/17 07:36:58 christof Exp $
+// $Id: SimpleTree.cc,v 1.91 2006/05/17 08:15:51 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,6 +33,11 @@
 #include <iostream>
 
 #define FIRST_COLUMN 1
+
+#ifdef MPC_ST_EXCEL_EXPORT
+# include <WinFileReq.hh>
+# include "BasicExcel.hpp"
+#endif
 
 void SimpleTree_Basic::detach()
 {  set_model(Glib::RefPtr<Gtk::TreeModel>());
@@ -392,6 +397,9 @@ void SimpleTree_Basic::fillMenu()
   optionen->set_submenu(*optionen_menu);
   add_mitem(menu,_("Alles aufklappen"),SigC::slot(*this,&SimpleTree_Basic::Expand_recursively));
   add_mitem(menu,_("Alles zuklappen"),SigC::slot(*this,&SimpleTree_Basic::Collapse));
+#ifdef MPC_ST_EXCEL_EXPORT
+  add_mitem(menu,_("Excel-Datei schreiben"),SigC::slot(*this,&SimpleTree_Basic::write_excel_via_filerequester));
+#endif
   
   // separator
   for (std::list<std::pair<sigc::signal0<void>,Glib::ustring> >::iterator i=user_menuitems.begin();
@@ -571,3 +579,55 @@ void SimpleTree::nodes_select_leaves()
   { select_leaves(*i);
   }
 }
+
+#ifdef MPC_ST_EXCEL_EXPORT
+// a hack? ... but seems to be the most efficient
+std::wstring make_wstring(std::string const& x)
+{ static wchar_t wstring[1024];
+  mbstowcs(wstring,x.c_str(),sizeof(wstring)/sizeof(wchar_t));
+  return wstring;
+}
+
+static void write_excel_sub(SimpleTree *tv,YExcel::BasicExcelWorksheet* sheet,unsigned &row,const Gtk::TreeModel::Children &ch)
+{ for (Gtk::TreeModel::iterator i=ch.begin();i!=ch.end();++i)
+  { Gtk::TreeModel::Path p(tv->get_model()->get_path(*i));
+    if (!i->children().empty() && tv->row_expanded(p))
+    { // recursion
+      write_excel_sub(tv,sheet,row,i->children());
+    }
+    else
+    { // output
+      // recognize integers?
+      for (unsigned int c=0;c<tv->VisibleColumns();++c)
+      { sheet->Cell(row,c)->SetWString(make_wstring(static_cast<Glib::ustring>((*i)[tv->getStore()->m_columns.cols[c]])).c_str());
+      }
+      ++row;
+    }
+  }
+}
+
+void SimpleTree::write_excel(std::string const& filename) const
+{ YExcel::BasicExcel e;
+  e.New(1);
+  std::string name=getStore()->Properties().InstanceName();
+  if (name.empty()) name=_("Tabelle");
+  e.RenameWorksheet(size_t(0),make_wstring(name).c_str());
+  YExcel::BasicExcelWorksheet* sheet = e.GetWorksheet(size_t(0));
+  assert(sheet);
+  for (unsigned int i=0;i<VisibleColumns();++i)
+    sheet->Cell(0,i)->SetWString(make_wstring(getColTitle(i)).c_str());
+  unsigned row=1;
+  SimpleTree* non_const_this=const_cast<SimpleTree*>(this);
+  write_excel_sub(non_const_this,sheet,row,non_const_this->get_model()->children());
+  e.SaveAs(filename.c_str());
+}
+
+void SimpleTree::write_excel_via_filerequester() const
+{ std::string fname=getStore()->Properties().InstanceName();
+  if (fname.empty()) fname=_("Tabelle");
+  if (getenv("HOME")) fname=std::string(getenv("HOME"))+"/"+fname;
+  fname+=".xls";
+  WinFileReq::create(sigc::mem_fun(*this,&SimpleTree::write_excel),fname);
+//      "Excel Tabellen (*.xls)\0*.xls\0","xls",false);
+}
+#endif

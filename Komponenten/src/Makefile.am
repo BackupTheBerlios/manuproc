@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.62 2006/04/03 10:02:14 christof Exp $
+# $Id: Makefile.am,v 1.63 2006/05/17 08:15:51 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  -DCOMPILE_KOMPONENTEN \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -31,7 +31,7 @@ LINKS= EingabeBox.cc EingabeBox.hh datewin.cc datewin.h \
 	IntStringBox_sql.pgcc IntStringBox_gui.hh IntStringBox_glade.hh \
 	IntStringBox_gui.cc IntStringPopup_glade.cc IntStringPopup_glade.hh \
 	datewin_popup_glade.hh datewin_popup_glade.cc datewin_popup.hh \
-	datewin_popup.cc OrderBox.cc
+	datewin_popup.cc OrderBox.cc BasicExcel.cpp BasicExcel.hpp
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
@@ -76,7 +76,8 @@ libKomponenten_a_SOURCES= \
         Optionmenu_AuftragLabel.cc Optionmenu_Lager.cc \
         VerfuegbarPixmap.cc \
         WTelefon_glade.cc WTelefon.cc ZahlungsArtBox.cc \
-	PersonenBox.cc datewin_popup_glade.cc datewin_popup.cc 
+	PersonenBox.cc datewin_popup_glade.cc datewin_popup.cc \
+	BasicExcel.cpp
 
 BUILT_SOURCES_L= $(LINKS) \
 	IntStringBox_sql.cc ArtikelBox_sql.cc AB_Breitensuche_sql.cc \

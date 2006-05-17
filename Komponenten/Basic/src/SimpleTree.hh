@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.65 2006/05/17 07:37:03 christof Exp $
+// $Id: SimpleTree.hh,v 1.66 2006/05/17 08:15:51 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
@@ -23,6 +23,8 @@
 
 #include <SimpleTreeStore.h>
 #include <gtkmm/treeview.h>
+
+#define MPC_ST_EXCEL_EXPORT
 
 class SimpleTreeStore_Proxy
 {protected:
@@ -116,6 +118,9 @@ private:
 	void on_zuruecksetzen_clicked();
 	void on_abbrechen_clicked();
 	void on_spalten_geaendert();
+#ifdef MPC_ST_EXCEL_EXPORT
+        virtual void write_excel_via_filerequester() const=0;
+#endif
 	bool MouseButton(GdkEventButton *event);
 	void sel_change_cb(const Gtk::TreeModel::iterator&it,
 			std::vector<cH_RowDataBase> *l,
@@ -282,6 +287,11 @@ public:
  // selected nodes select the matching leaves 
  void nodes_select_leaves();
  void select_leaves(Gtk::TreeModel::Path const& p);
+ 
+#ifdef MPC_ST_EXCEL_EXPORT
+ void write_excel(std::string const& filename) const;
+ void write_excel_via_filerequester() const;
+#endif
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.116 2006/02/16 15:45:04 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.117 2006/05/17 08:15:51 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -320,8 +320,8 @@ void SimpleTreeStore::init()
      inited=true;
    }
   }
-  vec_hide_cols.resize(Cols());
-  invert_order.resize(Cols());
+  vec_hide_cols.resize(MaxCol());
+  invert_order.resize(MaxCol());
   for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
     (*i) = true;
    defaultSequence();
@@ -406,8 +406,8 @@ void SimpleTreeStore::on_column_changed(guint idx)
 }
 #endif
 
-const std::string SimpleTreeStore::getColTitle(guint idx) const
-{  return SimpleTreeModel_Properties_Proxy::getColTitle(currseq[idx])+SpaltenMarkierung(idx);
+const std::string SimpleTreeStore::getColTitle(guint nr) const
+{  return SimpleTreeModel_Properties_Proxy::getColTitle(currseq[nr])+SpaltenMarkierung(currseq[nr]);
 }
 
 void SimpleTreeStore::defaultSequence()
