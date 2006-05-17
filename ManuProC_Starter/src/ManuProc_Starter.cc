@@ -64,6 +64,8 @@ void ManuProc_Starter::on_database_toggled()
     DBCapability::WhiteColumn kd("old_sdodb","kundendaten");
     kunden_start->set_sensitive(
     dbcapability->isWhite(DBCapability::ColAct(kd,DBCapability::EXECUTE)));
+    kunden_neu_start->set_sensitive(
+    dbcapability->isWhite(DBCapability::ColAct(kd,DBCapability::EXECUTE)));
 
     DBCapability::WhiteColumn ver("old_sdodb","vertrieb");
     vertrieb_start->set_sensitive(
@@ -77,6 +79,8 @@ else
  {
   pps_start->set_sensitive(true);
   kunden_start->set_sensitive(true);
+  kunden_neu_start->set_sensitive(true);
+
   vertrieb_start->set_sensitive(true);
   fibu_start->set_sensitive(true);
 
@@ -121,6 +125,20 @@ void ManuProc_Starter::on_kunden_start_enter()
  database_default->set_active(true);
 }
 
+
+void ManuProc_Starter::on_kunden_neu_start_enter()
+{
+ std::string cmd("/bin/sh -c '");
+
+ if(database_OLD->get_active())
+   cmd+="export PGDATABASE="+std::string(OLD_DB)+"; kundendaten_gtk2 ";
+ else
+   cmd+="kundendaten_gtk2";
+ cmd+="' &";
+ system(cmd.c_str());
+ database_default->set_active(true);
+}
+
 void ManuProc_Starter::on_lager_start_clicked()
 {  
  std::string cmd("/bin/sh -c fertigwlager &");
@@ -148,9 +166,11 @@ void ManuProc_Starter::on_preise_start_clicked()
 
 void ManuProc_Starter::on_fibu_start_clicked()
 {  
- std::string cmd("/bin/sh -c 'fibu ");
+ std::string cmd("/bin/sh -c ' ");
  if(database_OLD->get_active())
-   cmd+=" -d "+std::string(OLD_DB);
+   cmd+="export PGDATABASE="+std::string(OLD_DB)+"; fibu ";
+ else 
+   cmd+="fibu";
  cmd+="' &";
  system(cmd.c_str());
  database_default->set_active(true);
@@ -165,12 +185,16 @@ void ManuProc_Starter::on_fibu_alt_start_clicked()
 
 void ManuProc_Starter::on_vertrieb_start_clicked()
 {
- std::string cmd("/bin/sh -c 'vertrieb ");
+ std::string cmd("/bin/sh -c '");
+
  if(database_OLD->get_active())
-   cmd+=" -d "+std::string(OLD_DB);
+   cmd+="export PGDATABASE="+std::string(OLD_DB)+"; vertrieb ";
+ else
+   cmd+="vertrieb";
  cmd+="' &";
  system(cmd.c_str());
- database_default->set_active(true);  
+ database_default->set_active(true);
+
 }
 
 void ManuProc_Starter::on_ooo_clicked()
