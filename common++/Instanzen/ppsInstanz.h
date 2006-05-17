@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.34 2006/05/03 07:14:55 christof Exp $
+// $Id: ppsInstanz.h,v 1.35 2006/05/17 07:35:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -127,7 +127,9 @@ class cH_ppsInstanz : public Handle<const ppsInstanz>
   public:
      cH_ppsInstanz(){};
      cH_ppsInstanz(ppsInstanz::ID iid);
-     cH_ppsInstanz(const ppsInstanz *s) : Handle<const ppsInstanz>(s) {};
+     cH_ppsInstanz(const ppsInstanz *s) : Handle<const ppsInstanz>(s) {}
+     cH_ppsInstanz(Handle<const ppsInstanz> const& s) 
+       : Handle<const ppsInstanz>(s) {}
 
      static std::vector<cH_ppsInstanz> get_all_instanz() throw(SQLerror);
 
