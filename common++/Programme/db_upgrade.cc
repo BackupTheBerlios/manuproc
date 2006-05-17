@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.48 2005/11/17 11:42:03 christof Exp $
+// $Id: db_upgrade.cc,v 1.49 2006/05/17 07:34:09 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -273,6 +273,9 @@ int main(int argc,char *argv[])
   
   // eigentlich nur für shindo?
   check_column("kunden","debitorenkonto","integer");
+  
+  // genauere Lagerkontrolle
+  check_column("artikelstamm","lagern_in","integer");
 
   ManuProC::dbdisconnect();
   return 0;
