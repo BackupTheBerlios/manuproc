@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.38 2006/05/03 07:31:21 christof Exp $
+# $Id: Makefile.am,v 1.39 2006/05/17 08:47:48 christof Exp $
 AM_CXXFLAGS= @COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
@@ -33,7 +33,7 @@ libManuProC_Widgets_a_SOURCES=EingabeBox.cc \
 		TreeModelDebug.cc int_ImageButton.cc \
 		IntStringBox_gui.cc IntStringBox.cc IntStringBox_glade.cc \
 		IntStringPopup_glade.cc datewin.cc datewin_glade.cc \
-		datewin_popup.cc datewin_popup_glade.cc
+		datewin_popup.cc datewin_popup_glade.cc BasicExcel.cpp
 
 BUILT_SOURCES=datewin.hh logwin.hh IntStringBox_sql.cc
 
