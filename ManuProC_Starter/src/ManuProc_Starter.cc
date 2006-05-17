@@ -54,9 +54,12 @@ ManuProc_Starter::ManuProc_Starter(void) throw(SQLerror)
 
 void ManuProc_Starter::on_pps_start_clicked()
 {  
- std::string cmd("/bin/sh -c 'pps ");
+ std::string cmd("/bin/sh -c '");
+
  if(database_OLD->get_active())
-   cmd+=" -d "+std::string(OLD_DB);
+   cmd+="export PGDATABASE="+std::string(OLD_DB)+"; pps ";
+ else
+   cmd+="pps";
  cmd+="' &";
  system(cmd.c_str());
 }
