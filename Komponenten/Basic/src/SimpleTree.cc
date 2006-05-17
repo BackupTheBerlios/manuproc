@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.92 2006/05/17 08:15:55 christof Exp $
+// $Id: SimpleTree.cc,v 1.93 2006/05/17 08:15:59 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -31,6 +31,8 @@
 #  include <sigc++/bind.h>
 #endif
 #include <iostream>
+#include <Misc/EntryValueFixed.h>
+#include <Misc/EntryValueIntString.h>
 
 #define FIRST_COLUMN 1
 
@@ -599,14 +601,24 @@ static void write_excel_sub(SimpleTree *tv,YExcel::BasicExcelWorksheet* sheet,un
     { // output
       // recognize integers?
       for (unsigned int c=0;c<tv->VisibleColumns();++c)
-      { if (c<(*i)[tv->getStore()->m_columns.deep])
-          sheet->Cell(row,c)->SetWString(make_wstring(
-              static_cast<cH_RowDataBase>((*i)[tv->getStore()->m_columns.leafdata])
-              ->Value(tv->getStore()->get_seq()[c],tv->getStore()->ValueData())
-              ->getStrVal()).c_str());
-        else 
-          sheet->Cell(row,c)->SetWString(make_wstring(
-              static_cast<Glib::ustring>((*i)[tv->getStore()->m_columns.cols[c]])).c_str());
+      { cH_EntryValue val;
+        if (c>(*i)[tv->getStore()->m_columns.deep]
+            && !!static_cast<Handle<TreeRow> >((*i)[tv->getStore()->m_columns.row]))
+          val=static_cast<Handle<TreeRow> >((*i)[tv->getStore()->m_columns.row])->Value(tv->getStore()->get_seq()[c],tv->getStore()->ValueData());
+        else
+          val=static_cast<cH_RowDataBase>((*i)[tv->getStore()->m_columns.leafdata])->Value(tv->getStore()->get_seq()[c],tv->getStore()->ValueData());
+          
+        if (!!val.cast_dynamic<const EntryValueFixed<1> >())
+          sheet->Cell(row,c)->SetDouble(val.cast_dynamic<const EntryValueFixed<1> >()->Wert().as_float());
+        else if (!!val.cast_dynamic<const EntryValueFixed<2> >())
+          sheet->Cell(row,c)->SetDouble(val.cast_dynamic<const EntryValueFixed<2> >()->Wert().as_float());
+        else if (!!val.cast_dynamic<const EntryValueFixed<3> >())
+          sheet->Cell(row,c)->SetDouble(val.cast_dynamic<const EntryValueFixed<3> >()->Wert().as_float());
+        else if (!!val.cast_dynamic<const EntryValueIntString>() 
+            && itos(val->getIntVal())==val->getStrVal())
+          sheet->Cell(row,c)->SetInteger(val.cast_dynamic<const EntryValueIntString>()->getIntVal());
+        else
+          sheet->Cell(row,c)->SetWString(make_wstring(val->getStrVal()).c_str());
       }
       ++row;
     }
