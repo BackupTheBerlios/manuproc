@@ -129,7 +129,7 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
     >> zahlziel
     >> Query::Row::MapNull(zahlartid,Zahlungsart::none_id)
     >> Query::Row::MapNull(notiz)
-    >> Query::Row::MapNull(verknr);
+    >> Query::Row::MapNull(verknr,Kunde::none_id);
   waehrung=cP_Waehrung(Waehrung::ID(waehrungsid));
   status=AufStatVal(i_status);
   zahlart=zahlartid;

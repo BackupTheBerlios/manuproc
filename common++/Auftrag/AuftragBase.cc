@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.60 2006/04/03 09:59:04 christof Exp $
+// $Id: AuftragBase.cc,v 1.61 2006/05/17 07:35:11 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -160,7 +160,7 @@ AuftragBase::AuftragBase(cH_ppsInstanz _instanz, ID aufid,Kunde::ID kid) throw(S
  Query("select auftragid,verknr from auftrag "
  	"where instanz=? and kundennr=? and youraufnr=?")
  	<< instanz->Id() << kid << aufid
- 	>> auftragid >> verknr;
+ 	>> auftragid >> FetchIStream::MapNull(verknr,Kunde::none_id);;
 }
 
 ArgumentList &operator<<(ArgumentList &q, const AuftragBase &ab)
