@@ -11,6 +11,7 @@ createdb $PGDATABASE
 (for i in \
    artikelbezeichnung \
    artikelstamm \
+   artikelbezeichnun_artikelid_seq \
    artikelzusammensetzung \
    artbez_3_1 \
    artbez_3_1000 \

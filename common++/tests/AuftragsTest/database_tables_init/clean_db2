@@ -14,4 +14,8 @@ delete from lieferscheinentryzusatz;
 SELECT pg_catalog.setval ('ketten_kettid_seq', 5675, true);
 SELECT pg_catalog.setval ('prod_changejournal_chid_seq', 44371, true);
 SELECT pg_catalog.setval ('schaertabelle_entryid_seq', 211774, true);
+SELECT pg_catalog.setval ('artikelbezeichnun_artikelid_seq', 28, true);
+delete from artikelstamm where id<100000;
+delete from artikelzusammensetzung where id<100000;
+delete from artbez_3_1 where id<100000;
 EOF

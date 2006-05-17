@@ -38,6 +38,8 @@
 #include <Ketten/KettplanKette.h>
 #endif
 
+#include <Artikel/ArtikelStamm.h>
+
 static bool Zusatzinfo()
 {	
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
@@ -741,5 +743,23 @@ static bool Repair_uncommitted(AufEintrag &AE)
 }
 
 static TestReihe Ru_(&Repair_uncommitted,"Repair (uncommitted)","Ru");
+
+static bool Alias()
+{ Auftrag A=Auftrag(Auftrag::Anlegen(KUNDENINSTANZ),KUNDE);
+  ArtikelBase newart=ArtikelStamm::Anlegen(ArtikelTypID::Jumborollen,1,ppsInstanzID::None,EinheitID::m);
+  ArtikelBezeichnung::Anlegen(cH_ExtBezSchema(1,ArtikelTypID::Band),
+   		newart,"artikel,breite,farbe,aufmachung", "1234,15,1,9999");
+  ArtikelBaum::Anlegen(newart,ARTIKEL_BANDLAGER,ProzessID::Aequivalenz,1);
+  ArtikelBase newart2=ArtikelStamm::Anlegen(ArtikelTypID::Band,1,ppsInstanzID::Rollerei,EinheitID::St_);
+  ArtikelBezeichnung::Anlegen(cH_ExtBezSchema(1,ArtikelTypID::Band),
+   		newart2,"artikel,breite,farbe,aufmachung", "1234,15,1,25");
+  ArtikelBaum::Anlegen(newart2,newart,ProzessID::Rollen,25);
+   
+  AufEintragBase AEBP=A.push_back(100,DATUM,newart2,OPEN,true);
+  vergleichen(Check::Menge,"Al_anlegen","Anlegen","");
+  return true;
+}
+
+static TestReihe Al_(&Alias,"Aliasartikel","Al");
 
 #endif

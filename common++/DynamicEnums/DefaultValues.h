@@ -1,4 +1,4 @@
-/* $Id: DefaultValues.h,v 1.20 2005/04/11 08:59:14 christof Exp $ */
+/* $Id: DefaultValues.h,v 1.21 2006/05/17 07:33:24 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -26,6 +26,7 @@
 #define _DEFAULT_VALUES_H
 
 #include <DynamicEnums/DynamicEnums.h>
+#include <ManuProCConfig.h>
 
 
 /////////////////////////////////////////////////////////////////////////
