@@ -1,4 +1,4 @@
-// $Id: WTelefon.cc,v 1.13 2005/11/15 13:18:29 christof Exp $
+// $Id: WTelefon.cc,v 1.14 2006/05/17 08:15:45 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig
@@ -231,8 +231,13 @@ void WTelefon::text_activate()
   
 void WTelefon::clear(bool withtree) const
 {
+#ifdef MABELLA_EXTENSIONS
+ _land->set_text("");
+ _vorwahl->set_text("");
+#else
  _land->set_text(itos(Telefon::Landeskennzahl));
  _vorwahl->set_text(itos(Telefon::Vorwahl));
+#endif
  _nummer->set_text("");
  _durchwahl->set_text("");
  textfeld->set_text("");
