@@ -357,4 +357,9 @@ ArtikelBase ArtikelBox::QueryForNext() throw(SQLerror)
  return cH_ArtikelBezeichnung(artikel,schema)->Next(); 
 }
 
+ArtikelBase ArtikelBox::QueryForPrev() throw(SQLerror)
+{
+ return cH_ArtikelBezeichnung(artikel,schema)->Previous(); 
+}
+
 
