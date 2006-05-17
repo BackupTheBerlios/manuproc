@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.91 2006/05/17 08:15:51 christof Exp $
+// $Id: SimpleTree.cc,v 1.92 2006/05/17 08:15:55 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -599,7 +599,14 @@ static void write_excel_sub(SimpleTree *tv,YExcel::BasicExcelWorksheet* sheet,un
     { // output
       // recognize integers?
       for (unsigned int c=0;c<tv->VisibleColumns();++c)
-      { sheet->Cell(row,c)->SetWString(make_wstring(static_cast<Glib::ustring>((*i)[tv->getStore()->m_columns.cols[c]])).c_str());
+      { if (c<(*i)[tv->getStore()->m_columns.deep])
+          sheet->Cell(row,c)->SetWString(make_wstring(
+              static_cast<cH_RowDataBase>((*i)[tv->getStore()->m_columns.leafdata])
+              ->Value(tv->getStore()->get_seq()[c],tv->getStore()->ValueData())
+              ->getStrVal()).c_str());
+        else 
+          sheet->Cell(row,c)->SetWString(make_wstring(
+              static_cast<Glib::ustring>((*i)[tv->getStore()->m_columns.cols[c]])).c_str());
       }
       ++row;
     }
