@@ -1,4 +1,4 @@
-// $Id: PreisListe_sql.pgcc,v 1.18 2005/11/22 13:04:34 christof Exp $
+// $Id: PreisListe_sql.pgcc,v 1.19 2006/06/12 14:20:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,12 +18,11 @@
  */
 
 #include <Kunde/PreisListe.h>
+#include <Kunde/Kunde.h>
 #include <Misc/Transaction.h>
 #include <Misc/Waehrung.h>
 #include <Misc/Query.h>
 #include <Misc/i18n.h>
-
-exec sql include sqlca;
 
 PreisListe cH_PreisListe::default_object; 
 bool cH_PreisListe::default_object_ref=cH_PreisListe::default_object.is_static(true);
@@ -76,40 +75,25 @@ PreisListe::PreisListe(ID _id) throw(SQLerror)
 }
 
 /*
+// Typ und Währung sollte als Argument übergeben werden
 PreisListe::ID PreisListe::createPreisliste(const std::string &name) throw(SQLerror)
 {
- exec sql begin declare section;
  int NR;
- char *NOTIZ;
- int WAEHID;
- exec sql end declare section;
 
- exec sql select nextval('kunden_personen_persnr_seq') into :NR;
- SQLerror::test(__FILELINE__);
-
- NOTIZ = (char*) name.c_str();
- WAEHID = WaehrungID::EUR;
-
- exec sql insert into ku_preisliste (prlsnr,notiz,waehrungid,art) values
-	(:NR,:NOTIZ,:WAEHID,'V');
- SQLerror::test(__FILELINE__);
-
+ Query ("select nextval('kunden_personen_persnr_seq')") >> NR;
+ Query("insert into ku_preisliste (prlsnr,notiz,waehrungid,art) "
+	"values (?,?,?,'V')")
+	<< NR << name << WaehrungID::EUR;
  return NR;
 }
 */
 
 
-
 void PreisListe::setRabatt(bool fest, rabatt_t rab) throw(SQLerror)
-{exec sql begin declare section;
- int NR=Id();
- int IRABATT=fest?0:-1;
- float RABATT=rab.as_float();
- exec sql end declare section;
- 
- exec sql update ku_preisliste set bruttosatz=:RABATT:IRABATT
- 	where prlsnr=:NR;
- SQLerror::test(__FILELINE__);
+{Query q("update ku_preisliste set bruttosatz=? where prlsnr=?");
+ if (fest) q << rab;
+ else q << Query::null<rabatt_t>();
+ q << Id();
 
  rabatt=rab;
  rabatt_gesetzt=fest;
@@ -131,4 +115,16 @@ const std::string PreisListe::getPreisSelClausel() const
  return "preis";    
 }
 
-
+std::vector<ManuProcHandle<>::ID> PreisListe::KundenMitDieserListe() const
+{ std::vector<ManuProcHandle<>::ID> result=kunden_mit_dieser_liste;
+  if (result.empty())
+  { (Query("select distinct kundennr from ku_warenkorb where prslsnr=? order by kundennr")
+	<< Id()).FetchArray(kunden_mit_dieser_liste);
+    if (kunden_mit_dieser_liste.empty()) kunden_mit_dieser_liste.push_back(Kunde::none_id);
+    result=kunden_mit_dieser_liste;
+  }
+  assert(!result.empty());
+  // negatives Cachen
+  if (result[0]==Kunde::none_id) return std::vector<ManuProcHandle<>::ID>();
+  return result;
+}

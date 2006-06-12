@@ -1,6 +1,6 @@
 // $Id: Artikelpreis_sql.pgcc,v 1.19 2003/06/05 12:48:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 1998-2006 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -563,4 +563,21 @@ void Artikelpreis::create_single(PreisListe::ID liste, const ArtikelBase &a,
    Artikelpreis::UnCache(liste,a);
    ManuProC::Event::Event("artikelpreis",itos(liste)+","+itos(a.Id()));
    tr.commit();
+}
+
+std::vector<Artikelpreis> Artikelpreis::Bezugspreise(ArtikelBase const& a)
+{ std::vector<Artikelpreis> result;
+  Query q("select kundennr,preis,preismenge,waehrung,mindestmenge "
+      "from artikelpreise where artikelid=? "
+      "order by preis/coalesce(preismenge,1)");
+  q << a;
+  Query::Row r;
+  while ((q>>r).good())
+  { Artikelpreis x;
+    x.gefunden=true;
+    x.artikel=a.Id();
+    q >> x.gefunden_in >> static_cast<Preis&>(x) >> x.mindestmenge;
+    result.push_back(x);
+  }
+  return result;
 }

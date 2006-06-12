@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.28 2006/01/23 11:25:23 christof Exp $
+// $Id: Preis.cc,v 1.29 2006/06/12 14:20:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -127,6 +127,7 @@ const Preis operator*(fixedpoint<5> f, const Preis &p)
    return Preis(p.Wert()*f.as_float(),p.getWaehrung(),p.BezugsMenge());
 }
 
+// Preis, Menge, Waehrung
 Query::Row &operator>>(Query::Row &is, Preis &v)
 {  double p,pm;
    int w;

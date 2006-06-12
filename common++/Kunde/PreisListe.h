@@ -1,4 +1,4 @@
-// $Id: PreisListe.h,v 1.17 2005/11/25 12:46:58 christof Exp $
+// $Id: PreisListe.h,v 1.18 2006/06/12 14:20:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,7 +27,7 @@
 #include <BaseObjects/ManuProcHandle.h>
 #include <Misc/Waehrung.h>
 #include <Misc/fixedpoint.h>
-
+//#include <Kunde/Kunde.h>
 
 #define DEF_VIEW_TABLE	"artikelpreise"
 
@@ -48,6 +48,8 @@ private:
 protected:
  fixedpoint<3> fkt_parent;
  fixedpoint<3> add_parent;
+ 
+ mutable std::vector<ManuProcHandle<>::ID> kunden_mit_dieser_liste;
 
 public:
   PreisListe(ID id) throw(SQLerror);
@@ -68,7 +70,8 @@ public:
   const std::string getPreisSelClausel() const;
   fixedpoint<3> Faktor() const { return fkt_parent; }
   fixedpoint<3> Aufschlag() const { return add_parent; }
-  
+
+  std::vector<ManuProcHandle<>::ID> KundenMitDieserListe() const;
 };
 
 

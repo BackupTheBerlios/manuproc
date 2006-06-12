@@ -1,6 +1,6 @@
-// $Id: Artikelpreis.h,v 1.30 2006/06/12 14:20:15 christof Exp $
+// $Id: Artikelpreis.h,v 1.31 2006/06/12 14:20:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG
+ *  Copyright (C) 1998-2006 Adolf Petig GmbH & Co. KG
  *		 written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
