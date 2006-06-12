@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.38 2005/10/18 21:46:11 christof Exp $
+// $Id: AufEintragZu.cc,v 1.39 2006/06/12 14:17:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -74,24 +74,25 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_listFull(bool kinder,bool nur_en
 {
  ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,NV("Kinder",kinder),NV("NurEnde",nur_ende));
  list_t tv=get_Referenz_list(*this,kinder,list_ohneArtikel);
- list_t vaeb;
+ list_t result;
  list_t tvxx;
 reloop:
- tv.splice(tv.end(),tvxx);
+ tv.splice(tv.end(),tvxx); // tvxx anhängen
  for (list_t::iterator i=tv.begin();i!=tv.end();++i)
    {
      tvxx=get_Referenz_list(i->AEB,kinder,list_ohneArtikel);
      if(nur_ende)
       {
-        if (tvxx.empty()) vaeb.splice(vaeb.end(),tv,i) ;
+        if (tvxx.empty()) result.splice(result.end(),tv,i) ;
         else tv.erase(i) ; 
       }
-     else vaeb.splice(vaeb.end(),tv,i) ;
+     else result.splice(result.end(),tv,i) ;
      goto reloop;
    }
- return vaeb;
+ return result;
 }
 
+#if 0
 std::vector<AufEintragBase> AufEintragZu::getKundenAuftragV() const
 {
   ManuProC::Trace _t(trace_channel, __FUNCTION__);
@@ -101,6 +102,7 @@ std::vector<AufEintragBase> AufEintragZu::getKundenAuftragV() const
     V.push_back(i->AEB);
   return V;
 }
+#endif
 
 AufEintragZu::map_t AufEintragZu::get_Kinder_nach_Artikel(const AufEintragBase &aeb,bool kinder,bool sorted)
 {  list_t KindListeU(AufEintragZu::get_Referenz_list(aeb,kinder,AufEintragZu::list_Artikel,sorted));
@@ -152,37 +154,39 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,b
    if (kinder) squery+=",prioritaet";
  }
  
- std::list<st_reflist> vaeb;
+ std::list<st_reflist> result;
  if (kinder && sorted && artikel)
  { static PreparedQuery pq;
    if (pq.Command().empty()) pq=PreparedQuery(squery);
-   (Query(pq) << aeb).FetchArray(vaeb);
+   (Query(pq) << aeb).FetchArray(result);
  }
  else if (kinder && !sorted && artikel)
  { static PreparedQuery pq;
    if (pq.Command().empty()) pq=PreparedQuery(squery);
-   (Query(pq) << aeb).FetchArray(vaeb);
+   (Query(pq) << aeb).FetchArray(result);
  }
  else if (kinder && !sorted && !artikel)
  { static PreparedQuery pq;
    if (pq.Command().empty()) pq=PreparedQuery(squery);
-   (Query(pq) << aeb).FetchArray(vaeb);
+   (Query(pq) << aeb).FetchArray(result);
  }
  else if (!kinder && sorted && !artikel)
  { static PreparedQuery pq;
    if (pq.Command().empty()) pq=PreparedQuery(squery);
-   (Query(pq) << aeb).FetchArray(vaeb);
+   (Query(pq) << aeb).FetchArray(result);
  }
  else
- { (Query(squery).lvalue() << aeb).FetchArray(vaeb);
+ { (Query(squery).lvalue() << aeb).FetchArray(result);
  }
- return vaeb;
+ return result;
 }
 
 AufEintragZu::list_t AufEintragZu::get_Referenz_list_without_child() const throw(SQLerror)
 {return get_Referenz_list(*this,list_kinder,list_ohneArtikel);
 }
 
+// wer braucht das?
+#if 0
 std::list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)
 {
  ManuProC::Trace _t(trace_channel, __FUNCTION__,*this);
@@ -201,10 +205,14 @@ std::list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)
  LK.unique();
  return LK;
 }
+#endif
 
-// wieso ist das in AufEintragZu ?
+#if 0
+// Komische Funktion!!!
+// [wieso ist das in AufEintragZu?: Es ist zu speziell]
+// nur 0er Aufträge
 std::list<AufEintragBase> AufEintragZu::get_AufEintragList_from_Artikel
-               (const ArtikelBase& artikel,ppsInstanz::ID instanz,AufStatVal status)
+               (const ArtikelBase& artikel,ppsInstanz::ID nichtinstanz,AufStatVal status)
 {
   ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("artikel",artikel),NV("status",status),NV("instanz",instanz));
   std::list<AufEintragBase> L;
@@ -219,6 +227,7 @@ std::list<AufEintragBase> AufEintragZu::get_AufEintragList_from_Artikel
   .FetchArray(L);
   return L;
 }
+#endif
 
 void AufEintragZu::Neu(const AufEintragBase& neuAEB,const mengen_t menge)
 { ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,

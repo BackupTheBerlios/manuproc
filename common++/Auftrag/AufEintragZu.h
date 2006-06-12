@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.29 2004/09/01 12:25:48 christof Exp $
+// $Id: AufEintragZu.h,v 1.30 2006/06/12 14:17:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -59,7 +59,7 @@ public:
 
 public:
     AuftragBase::mengen_t getMenge(const AufEintragBase& aeb) const;
-    // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen:
+    // Eine Benachbarte Liste von Kind- bzw. ElternauftrÃ¤gen:
     static list_t get_Referenz_list(const AufEintragBase& aeb,bool kinder,bool artikel,bool sorted=true) throw(SQLerror);
     static const bool list_kinder=true;
     static const bool list_eltern=false;
@@ -69,45 +69,49 @@ public:
 
     static map_t get_Kinder_nach_Artikel(const AufEintragBase &aeb,bool kinder=list_kinder,bool sorted=true);
 
-    // Eine Benachbarte Liste von (Kind-)aufträgen aber nur ungeplante(0er) Aufträge:
+    // Eine Benachbarte Liste von (Kind-)auftrÃ¤gen aber nur geplante(1|20000er) AuftrÃ¤ge:
+    // wird von freie_dispomenge_verwenden verwendet 
+    __deprecated list_t get_Referenz_list_geplant(bool kinder=true) const throw(SQLerror);
+
+#if 0
+    // Eine Benachbarte Liste von (Kind-)auftrÃ¤gen aber nur ungeplante(0er) AuftrÃ¤ge:
     __deprecated list_t get_Referenz_list_ungeplant(bool kinder=true,bool artikel=list_ohneArtikel) const throw(SQLerror)
       {return get_Referenz_list_id(AuftragBase::ungeplante_id,kinder,artikel);}
 
-    // Eine Benachbarte Liste von (Kind-)aufträgen aber nur dispo(2er) Aufträge:
+    // Eine Benachbarte Liste von (Kind-)auftrÃ¤gen aber nur dispo(2er) AuftrÃ¤ge:
     __deprecated list_t get_Referenz_list_dispo(bool kinder=true) const throw(SQLerror)
       {return get_Referenz_list_id(AuftragBase::dispo_auftrag_id,kinder);}
 
-    // Eine Benachbarte Liste von (Kind-)aufträgen aber nur geplante(1|20000er) Aufträge:
-    __deprecated list_t get_Referenz_list_geplant(bool kinder=true) const throw(SQLerror);
-
-    // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen des zu mir gehörenden
+    // Eine Benachbarte Liste von Kind- bzw. ElternauftrÃ¤gen des zu mir gehÃ¶renden
     // geplanten Auftrags holen
     __deprecated list_t get_Referenz_list_for_geplant(bool kinder=false) const throw(SQLerror);
 
     __deprecated list_t get_Referenz_list_for_geplant_neu(bool kinder=false) const throw(SQLerror);
-    // Für einen KOMPLETTEN Auftragsbaum nur_ende=false setzen
-    // die folgende Funktion liefert sonst nur die Endaufträge OHNE Knoten
-// noch mal überdenken, was davon notwendig ist
+#endif
+    
+    // FÃ¼r einen KOMPLETTEN Auftragsbaum nur_ende=false setzen
+    // die folgende Funktion liefert sonst nur die EndauftrÃ¤ge OHNE Knoten
+// noch mal Ã¼berdenken, was davon notwendig ist
     list_t get_Referenz_listFull(bool kinder,bool nur_ende=true) const throw(SQLerror);
-                 //kinder=false:   Elternaufträge 
-                 //kinder=true:    Kinderaufträge 
+                 //kinder=false:   ElternauftrÃ¤ge 
+                 //kinder=true:    KinderauftrÃ¤ge 
 
-    // Doppelte Einträge in der Kundenliste werden gelöscht:
-    std::list<cH_Kunde> get_Referenz_Kunden() const throw(SQLerror);
-    std::vector<AufEintragBase> getKundenAuftragV() const;
+    // Doppelte EintrÃ¤ge in der Kundenliste werden gelÃ¶scht:
+//    std::list<cH_Kunde> get_Referenz_Kunden() const throw(SQLerror);
+//    std::vector<AufEintragBase> getKundenAuftragV() const;
 
-    static std::list<AufEintragBase> get_AufEintragList_from_Artikel
-               (const ArtikelBase& artikel,ppsInstanz::ID instanz,AufStatVal status);
+//    static std::list<AufEintragBase> get_AufEintragList_from_Artikel
+//               (const ArtikelBase& artikel,ppsInstanz::ID instanz,AufStatVal status);
 
     static mengen_t Summe(const list_t &l,ID wovon=none_id);
 
-    // Neue Einträg anlegen:
+    // Neue EintrÃ¤g anlegen:
     void Neu(const AufEintragBase& neuAEB,const mengen_t menge);
 
-    // gibt die Menge zurück, die verändert wurde. Falls reduziert werden sollte
-    // müssen die input/output menge nicht übereinstimmen, da keine negativen Mengen
-    // bestellt werden können
-    // äquivalent zu Neu?
+    // gibt die Menge zurÃ¼ck, die verÃ¤ndert wurde. Falls reduziert werden sollte
+    // mÃ¼ssen die input/output menge nicht Ã¼bereinstimmen, da keine negativen Mengen
+    // bestellt werden kÃ¶nnen
+    // Ã¤quivalent zu Neu?
     mengen_t setMengeDiff__(const AufEintragBase& neuAEB,mengen_t menge);
 
     static bool remove(const AufEintragBase& alt_AEB,const AufEintragBase& neu_AEB,

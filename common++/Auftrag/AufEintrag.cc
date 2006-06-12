@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.116 2006/04/03 09:59:15 christof Exp $
+// $Id: AufEintrag.cc,v 1.117 2006/06/12 14:17:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -95,6 +95,7 @@ void AufEintrag::move_to(AufEintrag ziel,mengen_t menge) throw(std::exception)
   tr.commit();
 }
 
+#if 0
 AufEintragBase AufEintrag::getFirstKundenAuftrag() const
 {
  ManuProC::Trace _t(trace_channel, __FUNCTION__);
@@ -102,6 +103,7 @@ AufEintragBase AufEintrag::getFirstKundenAuftrag() const
  if(V.empty()) return *this;
  return *(V.begin());
 }
+#endif
 
 void AufEintrag::Planen(mengen_t menge, AufEintrag &ziel) throw(std::exception)
 {
@@ -137,7 +139,7 @@ void AufEintrag::AlsGeplantMarkieren() const
 {  assert(Id()>=handplan_auftrag_id);
 //---- ProzessInstanz setzen ------
     // Kundenauftrag suchen
-#warning eigentlich sollte das über Verfügbarkeit.cc gehen
+// sollte das über Verfügbarkeit.cc gehen? Verfügbarkeit erhält die Zuordnung nicht
     AufEintragZu::list_t ReferenzAufEintrag =
 			         AufEintragZu(*this).get_Referenz_listFull(false);
     for (AufEintragZu::list_t::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)

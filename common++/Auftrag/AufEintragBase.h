@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.50 2006/04/03 09:59:15 christof Exp $
+// $Id: AufEintragBase.h,v 1.51 2006/06/12 14:17:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -101,6 +101,8 @@ public:
   static AufEintragBase PassendeZeile(const AuftragBase &a,
           const ManuProC::Datum &lieferdatum, const ArtikelBase& artikel,
           AufStatVal status) throw(SQLerror);
+//  static std::list<AufEintragBase> PassendeZeilen(ArtikelBase const& art,
+//          ppsInstanz::ID instanz,AufStatVal status) throw(SQLerror);
 };
 
 std::ostream &operator<<(std::ostream &o,const AufEintragBase &ae);
