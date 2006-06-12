@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm2.cc,v 1.1 2006/06/12 14:20:36 christof Exp $
+// $Id: ArtikelStamm2.cc,v 1.2 2006/06/12 14:20:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,13 +24,13 @@
 ManuProcEntity<>::ID ArtikelStamm::Bezugsquelle() const
 { if (payload.bezugsquelle) return payload.bezugsquelle;
   std::vector<Artikelpreis> bezug=Artikelpreis::Bezugspreise(art);
-  if (bezug.empty()) // gibt es nirgendwo
-    payload.bezugsquelle=ManuProcEntity<>::none_id;
-  else
-  { cH_PreisListe prsl(bezug[0].GefundenIn());
+  payload.bezugsquelle=ManuProcEntity<>::none_id; // gibt es nirgendwo
+
+  for (std::vector<Artikelpreis>::const_iterator i=bezug.begin();i!=bezug.end();++i)
+  { cH_PreisListe prsl(i->GefundenIn());
+    if (prsl->Art()!=PreisListe::PL_EINKAUF) continue;
     std::vector<ManuProcHandle<>::ID> kunden=prsl->KundenMitDieserListe();
-    if (kunden.empty()) payload.bezugsquelle=ManuProcEntity<>::none_id;
-    else payload.bezugsquelle=kunden[0];
+    if (!kunden.empty()) payload.bezugsquelle=kunden[0];
   }
   return payload.bezugsquelle;
 }
