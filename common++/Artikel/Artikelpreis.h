@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.29 2005/11/25 12:46:58 christof Exp $
+// $Id: Artikelpreis.h,v 1.30 2006/06/12 14:20:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG
  *		 written by Christof Petig
@@ -35,7 +35,7 @@ class Artikelpreis : public Preis
         PreisListe::ID gefunden_in;
         ArtikelBase::ID artikel;
         int mindestmenge;
-        PreisListe::ID pl_parent;        
+        PreisListe::ID pl_parent;
         
 	Preis &getPreis()
 	{  return *(Preis*)this; }
@@ -88,6 +88,8 @@ public:
    // basic routine, change/create exactly one price
    static void create_single(PreisListe::ID liste, const ArtikelBase &a, 
                const Preis &p, int mindestmenge) throw(SQLerror);
+
+   static std::vector<Artikelpreis> Bezugspreise(ArtikelBase const& a);
 };
  
 #endif
