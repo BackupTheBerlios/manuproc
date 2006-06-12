@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema_sql.pgcc,v 1.28 2006/06/12 14:18:00 christof Exp $
+// $Id: ExtBezSchema_sql.pgcc,v 1.29 2006/06/12 14:18:04 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -72,7 +72,7 @@ ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
 #endif
  	"from extbezschema "
 	"where (extartbezid,artikeltyp)=(?,?) "
-	"order by case when signifikanz<0 then 1000-signifikanz else signifikanz end,bezkomptype");
+	"order by case when signifikanz<=0 then 1000-signifikanz else signifikanz end,bezkomptype");
  q << eid << int(t);
  FetchIStream is;
  q.ThrowOnBad(__FUNCTION__);
