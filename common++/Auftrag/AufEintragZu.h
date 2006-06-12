@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.30 2006/06/12 14:17:31 christof Exp $
+// $Id: AufEintragZu.h,v 1.31 2006/06/12 14:18:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -97,7 +97,7 @@ public:
                  //kinder=true:    Kinderaufträge 
 
     // Doppelte Einträge in der Kundenliste werden gelöscht:
-//    std::list<cH_Kunde> get_Referenz_Kunden() const throw(SQLerror);
+    std::list<cH_Kunde> get_Referenz_Kunden() const throw(SQLerror);
 //    std::vector<AufEintragBase> getKundenAuftragV() const;
 
 //    static std::list<AufEintragBase> get_AufEintragList_from_Artikel

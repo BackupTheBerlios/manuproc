@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.39 2006/06/12 14:17:31 christof Exp $
+// $Id: AufEintragZu.cc,v 1.40 2006/06/12 14:18:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -185,8 +185,8 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list_without_child() const throw
 {return get_Referenz_list(*this,list_kinder,list_ohneArtikel);
 }
 
-// wer braucht das?
-#if 0
+// wer braucht das? class_instanz_trees.hh - Warum sabotiertst Du mich?
+#if 1
 std::list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)
 {
  ManuProC::Trace _t(trace_channel, __FUNCTION__,*this);

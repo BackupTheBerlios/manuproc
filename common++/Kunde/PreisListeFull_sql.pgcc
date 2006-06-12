@@ -252,3 +252,168 @@ PreisListeFull::PreisListeFull(bool with_artbez,ID id, bool art_in_list,
 }
 
 
+//
+// PreisListePSig
+//
+
+void PreisListePSig::load_preisliste(ID id, bool art_in_list, ArtikelTyp at)
+{
+ std::string bezkomps,bezorder;
+
+ std::string beztable;
+
+ int signifikanz=1;
+ int bez_sign=ArtikelTyp::none_id; 
+ 
+ cH_ExtBezSchema ebz(ExtBezSchema::default_id,at);
+
+ bool mit_bez = 
+#ifdef HAS_WG_ATTRIB_mit_bezeichnung
+       ArtikelTyp::hasAttribute(at.Id(),
+           ManuProC::DynamicEnums::ArtikelTyp_Attributes::mit_bezeichnung);
+#else
+       false;
+#endif
+
+    bez_columns.erase(bez_columns.begin(),bez_columns.end());
+    
+    ExtBezSchema::const_psigiterator bezit=ebz->psigbegin(true);
+    ExtBezSchema::const_psigiterator bezend=ebz->psigend(true);    
+    unsigned idx=1;
+    for(;bezit!=bezend;++bezit,++idx)
+    {
+       bezkomps+=" b."+(*bezit).spaltenname+" as "+(*bezit).spaltenname+",";
+       bezorder+=" "+(*bezit).spaltenname+",";
+
+       bez_columns.push_back((*bezit).bezkomptext);
+      }
+    beztable = cH_ExtBezSchema(ebz->Id(),at)->TableName();
+
+#ifdef GLOB_SET_BEZ_SIGN_BASENAME          
+    if(mit_bez)
+      {bez_sign=at.SpecialSignifikanz(
+            std::string(GLOB_SET_BEZ_SIGN_BASENAME)+itos(at.Id()));
+       ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(bez_sign);
+       ExtBezSchema::const_sigiterator bezend=ebz->sigend(bez_sign);    
+       mit_bez=false;
+       for(idx=1;bezit!=bezend;++bezit,++idx)
+       {
+          bezkomps+=" b."+(*bezit).spaltenname+",";      
+          mit_bez=true;
+          bez_columns.push_back((*bezit).bezkomptext);}
+      }
+#endif
+      
+
+   
+
+ std::string qu;
+ payoff.erase(payoff.begin(),payoff.end());
+
+  
+ std::string plid=itos(RealId());
+ std::string preis_sel=getPreisSelClausel();
+ 
+ if(art_in_list)
+   {qu=std::string("select ");
+        qu+=bezkomps;
+	qu+=" "+preis_sel+",preismenge,coalesce(mindestmenge,1),"
+	" coalesce(k.pl_parent,-1) as parent"
+        " from artikelpreise p join ku_preisliste k on "
+        " (k.prlsnr=p.kundennr and p.kundennr="+plid+")"
+ 	" join artikelstamm s on (p.artikelid=s.id and "
+	" s.warengruppe="+itos(at.Id())+") ";
+
+      qu+=" join "+beztable+" b using (id) ";
+
+    if(isDepending())
+      {  
+       qu+=" UNION ";
+       qu+=" (select ";
+       qu+=bezkomps;
+       qu+=" preis,preismenge,coalesce(mindestmenge,1),"
+        "  coalesce(k.pl_parent,-1) as parent"
+        "  from artikelpreise p join ku_preisliste k on "
+        "  (k.prlsnr=p.kundennr and p.kundennr="+itos(id)+")"
+        "  join artikelstamm s on (p.artikelid=s.id and "
+	" s.warengruppe="+itos(at.Id())+") ";
+
+          qu+=" join "+beztable+" b using (id) ";
+
+      qu+=") "; // UNION end 
+      qu+="order by "+bezorder+" parent";
+      }
+    else
+       qu+=" order by "+bezorder+" artikelid";
+      
+   }
+ else
+   {
+    qu=std::string("select ");
+
+    qu+=bezkomps;
+
+    qu+=" coalesce(preis_alt,0),0,"
+	" coalesce(c.mindestmenge,1),-1 from artikelstamm s "
+	" left join preis_change_journal c on "
+	" (c.artikelid=s.id and c.prlsnr="+itos(id);
+    qu+=" and preis_alt is not null and cast(preis_neu as float) = 0.0) ";
+
+    qu+=" join "+beztable+" b using (id) ";
+
+    qu+=" where not exists"
+ 	" (select p.artikelid from artikelpreise p"
+	"  where p.artikelid=s.id and kundennr = ";
+    qu+=itos(id)+") and s.warengruppe="+itos(at.Id())+" order by zeitpunkt";
+   }
+ 
+ Query q(qu); 
+
+ Query::Row is=q.Fetch();
+
+ int sort_sequence=0;
+ while(is.good())
+   {
+    float PREIS;
+    int PREISMENGE;
+    int MINDMENGE;
+    int PARENT;
+    std::string beztext;
+    struct PayOff po;
+    std::string bez_psig; //
+    
+       for(unsigned int i=0; i<ebz->size(true); i++)
+         {is >> Query::Row::MapNull(beztext);
+          po.b.push_back(cH_EntryValueIntString(beztext));
+	  bez_psig+="-"+beztext;
+         }
+       #ifdef GLOB_SET_BEZ_SIGN_BASENAME          
+       if(mit_bez) {is >> Query::Row::MapNull(beztext);
+                    po.b.push_back(cH_EntryValueIntString(beztext));}
+       #endif
+
+    is  >> PREIS >> PREISMENGE >> MINDMENGE >> PARENT;  
+
+    po.p=Preis(PREIS,getWaehrung(),PREISMENGE);
+    po.pl_parent=PARENT;
+    po.sort_sequence=sort_sequence++;
+    payoff[UniqPreis(bez_psig,MINDMENGE)]=po;
+    is=q.Fetch();
+   }
+
+ std::map<UniqPreis,struct PayOff>::const_iterator itb=payoff.begin();
+ std::map<UniqPreis,struct PayOff>::const_iterator ite=payoff.end(); 
+ for(; itb!=ite; ++itb)
+   sorted_payoff[(*itb).second.sort_sequence]=(*itb).second;
+
+}
+
+
+PreisListePSig::PreisListePSig(ID id, bool art_in_list,
+			ArtikelTyp at) throw(SQLerror) : PreisListe(id)
+{
+ load_preisliste(id,art_in_list,at);
+}
+
+
+

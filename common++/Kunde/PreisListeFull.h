@@ -1,4 +1,4 @@
-// $Id: PreisListeFull.h,v 1.21 2005/07/06 10:26:51 jacek Exp $
+// $Id: PreisListeFull.h,v 1.22 2006/06/12 14:18:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -57,6 +57,37 @@ public:
   PreisListeFull(bool with_artbez,ID id, bool art_in_list=true, 
 	ArtikelTyp at=ArtikelTyp::default_ID) throw(SQLerror); 
   PreisListeFull() {}
+  const std::map<UniqPreis,struct PayOff > &PayOff() const { return payoff; }
+  const std::map<int, struct PayOff > &Sort_PayOff() const { return sorted_payoff; }  
+  const std::vector<std::string> &Bez_Columns() const { return bez_columns; }  
+};
+
+
+// Liste nach der preis signatur; kumuliert nach den im Preis 
+// nicht signifikanten Spalten, z.B. farbe
+class PreisListePSig : public PreisListe
+{
+public:
+ typedef std::pair<std::string,int> UniqPreis; // Artikel mit Mindestmenge
+
+ struct PayOff {
+       Preis p;
+       ID pl_parent;
+       std::vector<cH_EntryValueIntString> b;
+       int sort_sequence;
+     };
+     
+private:
+ std::map<UniqPreis,struct PayOff> payoff;
+ std::map<int,struct PayOff> sorted_payoff; 
+ std::vector<std::string> bez_columns;
+ 
+ void load_preisliste(ID id, bool art_in_list, ArtikelTyp at);
+
+public:
+  PreisListePSig(ID id, bool art_in_list=true, 
+  		ArtikelTyp at=ArtikelTyp::default_ID) throw(SQLerror);
+  PreisListePSig() {}
   const std::map<UniqPreis,struct PayOff > &PayOff() const { return payoff; }
   const std::map<int, struct PayOff > &Sort_PayOff() const { return sorted_payoff; }  
   const std::vector<std::string> &Bez_Columns() const { return bez_columns; }  
