@@ -10,7 +10,13 @@ execute "true"
    file "tests/AuftragsTest/database_tables_init/clean_db2"
 execute "true"
 
+   file "tests/AuftragsTest/database_tables_init/initdb.script"
+execute "true"
+
    file "tests/AuftragsTest/database_tables_init_Mabella/clean_db2"
+execute "true"
+
+   file "tests/AuftragsTest/database_tables_init_Mabella/initdb.script"
 execute "true"
 
    file "tests/AuftragsTest/massage_log"

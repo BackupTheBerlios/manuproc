@@ -168,7 +168,6 @@ int main(int argc,char *argv[])
 #elif defined PETIG_TEST
    putenv("PGDATABASE=testdb");
 #endif
-   putenv("LANG=C"); // to eliminate locale differences in psql/diff output
 
   TestReihe *mode=0;
   for (mode=TestReihe::first; mode; mode=mode->next)
