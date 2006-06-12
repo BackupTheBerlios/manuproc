@@ -1,4 +1,4 @@
-// $Id: Changejournal_sql.pgcc,v 1.15 2003/03/19 14:12:22 jacek Exp $
+// $Id: Changejournal_sql.pgcc,v 1.16 2006/06/12 14:20:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,6 +19,7 @@
 
 #include"Changejournal.h"
 #include<Misc/Transaction.h>
+#include<Auftrag/AufEintrag.h>
 
 exec sql include sqlca;
 
@@ -32,7 +33,8 @@ const pps_ChJournalEntry pps_ChJournalEntry::newChange(
  		CID change)
 throw(SQLerror)
 {
- if(instid->Id()!=ppsInstanzID::Kundenauftraege) return pps_ChJournalEntry();
+// if(instid->Id()!=ppsInstanzID::Kundenauftraege) return pps_ChJournalEntry();
+ if(aufe.Id() < AufEintrag::handplan_id)  return pps_ChJournalEntry();
  exec sql begin declare section;
  int INSID=instid->Id();
  int CHID;
@@ -84,7 +86,8 @@ const pps_ChJournalEntry pps_ChJournalEntry::newChange(
  		CID change)
 throw(SQLerror)
 {
- if(instid->Id()!=ppsInstanzID::Kundenauftraege) return pps_ChJournalEntry();
+// if(instid->Id()!=ppsInstanzID::Kundenauftraege) return pps_ChJournalEntry();
+ if(aufe.Id() < AufEintrag::handplan_id)  return pps_ChJournalEntry();
  exec sql begin declare section;
  int INSID=instid->Id();
  int CHID;
