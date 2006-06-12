@@ -576,7 +576,7 @@ std::vector<Artikelpreis> Artikelpreis::Bezugspreise(ArtikelBase const& a)
   { Artikelpreis x;
     x.gefunden=true;
     x.artikel=a.Id();
-    q >> x.gefunden_in >> static_cast<Preis&>(x) >> x.mindestmenge;
+    r >> x.gefunden_in >> static_cast<Preis&>(x) >> x.mindestmenge;
     result.push_back(x);
   }
   return result;
