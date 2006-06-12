@@ -245,4 +245,26 @@ static bool EinkaufSplit()
 
 static TestReihe EinfaufSplit_(&EinkaufSplit,"Splitten im Einkauf (bugcheck)","SplE");
 
+// Dieser Test testet einen Datumswechsel im Einkauf
+static bool EinkaufDatum2()
+{  vergleichen(Check::Menge,"DAeA","Ausgangspunkt","a");
+
+   Auftrag auftrag3=Auftrag(Auftrag::Anlegen(ppsInstanzID::Einkauf),LIEFERANT);
+   AufEintragBase AEB3=auftrag3.push_back(30,DATUM,ARTIKEL_TRIO,OPEN,true);
+   Auftrag auftrag4=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
+   AufEintragBase AEB4=auftrag4.push_back(30,DATUM+20,ARTIKEL_TRIO,OPEN,true);
+   Lieferschein ls(EINKAUF,cH_Kunde(LIEFERANT));
+   AufEintrag AE3(AEB3);
+   LieferscheinEntryBase lsb(ls,ls.push_back(AE3,ARTIKEL_TRIO,20,0,0));
+   LieferscheinEntry le(lsb);
+   le.setLagerid(1); // offenbar nicht ppsInstanzID::Fertigwarenlager);
+   le.changeStatus(OPEN,true);
+   vergleichen(Check::Menge,"DAeE2_l","Lieferung","l");   
+   AE3.updateLieferdatum(DATUM+5);
+   vergleichen(Check::Menge,"DAeE2_t","Terminänderung","t");   
+   return true;
+}
+
+static TestReihe EinfaufDatum2_(&EinkaufDatum2,"Datumsänderung im Einkauf (bugcheck)","DAeE2");
+
 #endif
