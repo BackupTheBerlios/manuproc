@@ -1,4 +1,4 @@
-// $Id: PreisListe_sql.pgcc,v 1.20 2006/06/12 14:20:48 christof Exp $
+// $Id: PreisListe_sql.pgcc,v 1.21 2006/06/12 14:21:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -118,8 +118,8 @@ const std::string PreisListe::getPreisSelClausel() const
 std::vector<ManuProcHandle<>::ID> PreisListe::KundenMitDieserListe() const
 { std::vector<ManuProcHandle<>::ID> result=kunden_mit_dieser_liste;
   if (result.empty())
-  { (Query("select distinct kundennr from ku_warenkorb where prlsnr=? order by kundennr")
-	<< Id()).FetchArray(kunden_mit_dieser_liste);
+  { static PreparedQuery pq("select distinct kundennr from ku_warenkorb where prlsnr=? order by kundennr");
+    (Query(pq) << Id()).FetchArray(kunden_mit_dieser_liste);
     if (kunden_mit_dieser_liste.empty()) kunden_mit_dieser_liste.push_back(Kunde::none_id);
     result=kunden_mit_dieser_liste;
   }

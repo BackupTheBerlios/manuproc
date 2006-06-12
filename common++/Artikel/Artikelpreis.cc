@@ -567,9 +567,10 @@ void Artikelpreis::create_single(PreisListe::ID liste, const ArtikelBase &a,
 
 std::vector<Artikelpreis> Artikelpreis::Bezugspreise(ArtikelBase const& a)
 { std::vector<Artikelpreis> result;
-  Query q("select kundennr,preis,preismenge,waehrung,mindestmenge "
+  static PreparedQuery pq("select kundennr,preis,preismenge,waehrung,mindestmenge "
       "from artikelpreise where artikelid=? "
       "order by preis/coalesce(preismenge,1)");
+  Query q(pq);
   q << a;
   Query::Row r;
   while ((q>>r).good())
