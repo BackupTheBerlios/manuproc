@@ -88,3 +88,23 @@ Kunde::ID AuftragBase::getVerknr() const throw(SQLerror)
  return verknr;
 }
 
+std::string AuftragBase::getLabel(const int lid) throw(SQLerror)
+{
+ ExtraColumns ec("auftrag","instanz","auftragid");
+ if(!ec.hasColumn("label")) return "";
+
+ if(!labels.empty()) return labels[lid];
+
+ int i; std::string s;
+ Query q("select alid,kurz from auftrag_label");
+
+ FetchIStream fi=q.Fetch();
+ while(fi.good())
+   {fi >> i >> s;
+    labels[i]=s;
+    fi=q.Fetch();
+   }
+
+ return labels[lid];
+
+}

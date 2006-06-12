@@ -1,4 +1,4 @@
-// $Id: Auftrag.cc,v 1.23 2006/05/03 07:21:46 christof Exp $
+// $Id: Auftrag.cc,v 1.24 2006/06/12 14:17:44 christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -270,3 +270,6 @@ Auftrag::ID Auftrag::getIdFromYourAufId(ppsInstanz::ID instanz,
 Auftrag::ID Auftrag::getIdFromYourAufId(const char *youraufid) throw(SQLerror)
 { return getIdFromYourAufId(Instanz(),youraufid);
 }
+
+
+

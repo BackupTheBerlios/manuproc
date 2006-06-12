@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.64 2005/10/12 08:59:38 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.65 2006/06/12 14:17:44 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski
@@ -133,6 +133,12 @@ public:
    static void setzeAktuellesJahr(int j);
    
    static std::string ID2string(ID id);
+   
+protected:
+   static std::map<int, std::string> labels;
+public:   
+   static std::string getLabel(const int lid) throw(SQLerror);	
+   
 };
 
 std::ostream &operator<<(std::ostream &o,const AuftragBase &a);

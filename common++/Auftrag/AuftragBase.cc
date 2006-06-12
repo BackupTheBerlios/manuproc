@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.61 2006/05/17 07:35:11 christof Exp $
+// $Id: AuftragBase.cc,v 1.62 2006/06/12 14:17:44 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,6 +32,7 @@
 #include <Lager/Lager.h>
 #include <Misc/Ausgabe_neu.h>
 
+std::map<int, std::string> AuftragBase::labels;
 
 std::string AuftragBase::str() const
 {
