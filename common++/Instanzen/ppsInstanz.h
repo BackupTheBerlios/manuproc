@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.35 2006/05/17 07:35:23 christof Exp $
+// $Id: ppsInstanz.h,v 1.36 2006/06/12 14:17:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -85,6 +85,7 @@ public:
  ID EinlagernIn() const { return einlagern_in;}
  bool AutomatischEinlagern() const {return automatisch_einlagern;}
  bool ExterneBestellung() const {return externe_bestellung;}
+ char getTyp() const { return typ; }
  // n�hste Instanz fr einen Artikel (dort wird von hier bestellt)
  ID NaechsteInstanz(const ArtikelStamm &art) const;
 
