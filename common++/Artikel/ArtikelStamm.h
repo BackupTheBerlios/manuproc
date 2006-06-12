@@ -1,6 +1,6 @@
-// $Id: ArtikelStamm.h,v 1.26 2006/05/17 07:35:27 christof Exp $
+// $Id: ArtikelStamm.h,v 1.27 2006/06/12 14:20:36 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 1998-2006 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <Instanzen/ppsInstanz.h>
 #include <Artikel/Einheiten.h>
 #include <Misc/UniqueValue.h>
+#include <BaseObjects/ManuProcEntity.h>
 
 class ArtikelStamm
 {	// we can't include ExtBezSchema.h, so we duplicate what we need
@@ -40,13 +41,15 @@ class ArtikelStamm
 	   Einheit einh;
            // Vorsicht !!! Mindestverfügbare (d.h. unversprochene) Menge auf Lager
            int mindbest;
+           mutable ManuProcEntity<>::ID bezugsquelle;
 	   
 	   payload_t() 
 	   : typ((ArtikelTyp::ID)0), interntyp((ArtikelTyp::ID)0),
 	                 bestellen_bei(cH_ppsInstanz(ppsInstanzID::None)), 
 	                 lagern_in(), 
 	                 defaultschema(ExtBezSchema_default_ID),
-	                 einh(Einheit::default_id),mindbest(NO_CHECK)
+	                 einh(Einheit::default_id),mindbest(NO_CHECK),
+	                 bezugsquelle()
 	                 {}
 	};
 	
@@ -93,6 +96,7 @@ public:
 	// Mindestmenge auf Lager (Vorsicht !!!)
 	int getMindBest() const { return payload.mindbest; }
 	void setMindBest(int mb) throw(SQLerror);
+	ManuProcEntity<>::ID Bezugsquelle() const;
 	
 	static ArtikelBase Anlegen(ArtikelTyp::ID warengruppe,
 		int default_Schema,ppsInstanz::ID bestellen_bei=ppsInstanzID::None,
