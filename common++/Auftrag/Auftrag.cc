@@ -1,4 +1,4 @@
-// $Id: Auftrag.cc,v 1.24 2006/06/12 14:17:44 christof Exp $
+// $Id: Auftrag.cc,v 1.25 2006/06/20 13:35:27 christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -94,13 +94,8 @@ void Auftrag::insert(unsigned zeilennr, const mengen_t bestellt,
 		<< getuid();
 
  if(Instanz()==ppsInstanzID::Kundenauftraege)
-  { pps_ChJournalEntry::newChange(
-                        instanz,
-			AufEintragBase(*this,zeilennr),
-                        artikel,
-                        bestellt.as_float(),
-                        bestellt.as_float(),
-                        pps_ChJournalEntry::CH_MENGE);
+  { pps_ChJournalEntry::newChange(AufEintragBase(*this,zeilennr),
+                        artikel,bestellt,bestellt);
   }
 
 #ifdef MABELLA_EXTENSIONS

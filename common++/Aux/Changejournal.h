@@ -1,4 +1,4 @@
-// $Id: Changejournal.h,v 1.13 2006/06/20 13:35:15 christof Exp $
+// $Id: Changejournal.h,v 1.14 2006/06/20 13:35:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *  Copyright (C) 2006 Christof Petig
@@ -59,7 +59,7 @@ private:
  AufEintragBase auftragentry;
  AuftragBase::mengen_t newval;
  ManuProC::Datum newdate;
- AuftragBase::mengen_t delta;
+ AuftragBase::mengen_t delta; // Menge oder Tage
  ChJType type;   
 
 public:
@@ -72,10 +72,10 @@ public:
  }
  static const __deprecated pps_ChJournalEntry newChange(cH_ppsInstanz inst,
  		const AufEintragBase &aufe, const ArtikelBase &art,
- 		const ManuProC::Datum &_newdat, AuftragBase::mengen_t _delta, ChJType _type,
+ 		const ManuProC::Datum &_newdat, int _deltatage, ChJType _type,
  		CID change=0) throw(SQLerror)
  { assert(inst==aufe.Instanz());
-   return newChange(aufe,art,_newdat,_delta,_type,change);
+   return newChange(aufe,art,_newdat,_deltatage,_type,change);
  }
 
  static const pps_ChJournalEntry newChange(const AufEintragBase &aufe, 
@@ -84,7 +84,7 @@ public:
                 CID change=0) throw(SQLerror);
  static const pps_ChJournalEntry newChange(const AufEintragBase &aufe, 
                 const ArtikelBase &art, const ManuProC::Datum &_newdat, 
-                AuftragBase::mengen_t _delta, ChJType _type=CH_LIEFDAT,
+                int _deltatage, ChJType _type=CH_LIEFDAT,
  		CID change=0) throw(SQLerror);
  		
  pps_ChJournalEntry(cH_ppsInstanz instid, CID change) throw(SQLerror);

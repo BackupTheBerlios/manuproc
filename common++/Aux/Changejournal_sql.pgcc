@@ -1,4 +1,4 @@
-// $Id: Changejournal_sql.pgcc,v 1.17 2006/06/20 13:35:15 christof Exp $
+// $Id: Changejournal_sql.pgcc,v 1.18 2006/06/20 13:35:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *  Copyright (C) 2006 Christof Petig
@@ -37,7 +37,7 @@ const pps_ChJournalEntry pps_ChJournalEntry::newChange(
        "(insid,auftragid,auftragzeile, chid, artikelid,new_val,"
  		"delta,chtype)"
        "values (?,?,?, ?, ?,?,?,?)")
-    << aufe << change << art << _newval << _delta << _type;
+    << aufe << change << art << _newval << _delta << char(_type);
 
  pps_ChJournalEntry retval(aufe.Instanz(),change);
  tr.commit();
@@ -46,7 +46,7 @@ const pps_ChJournalEntry pps_ChJournalEntry::newChange(
 
 const pps_ChJournalEntry pps_ChJournalEntry::newChange(
  		const AufEintragBase &aufe, const ArtikelBase &art,
- 		const ManuProC::Datum &_newdat, AuftragBase::mengen_t _delta, ChJType _type,
+ 		const ManuProC::Datum &_newdat, int _deltatage, ChJType _type,
  		CID change) throw(SQLerror)
 {
  if(aufe.Id() < AufEintrag::handplan_id)  return pps_ChJournalEntry();
@@ -59,7 +59,7 @@ const pps_ChJournalEntry pps_ChJournalEntry::newChange(
        "(insid,auftragid,auftragzeile, chid, artikelid,new_dat,"
  		"delta,chtype)"
        "values (?,?,?, ?, ?,?,?,?)")
-    << aufe << change << art << _newdat << _delta << _type;
+    << aufe << change << art << _newdat << _deltatage << char(_type);
 
  pps_ChJournalEntry retval(aufe.Instanz(),change);
  tr.commit();

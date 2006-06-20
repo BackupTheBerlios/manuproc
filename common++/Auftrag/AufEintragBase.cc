@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.54 2006/04/03 09:59:15 christof Exp $
+// $Id: AufEintragBase.cc,v 1.55 2006/06/20 13:35:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -225,8 +225,7 @@ AuftragBase::mengen_t AufEintragBase::updateStkDiffBase__(const mengen_t &menge)
 	<< NEWMENGE << getuid() << *this;
  SQLerror::test("updateStkDiff: update stk in auftragentry");
 
- pps_ChJournalEntry::newChange(instanz, *this,ArtikelBase(ARTIKELID),
- 	NEWMENGE.as_float(),MENGE.as_float(),pps_ChJournalEntry::CH_MENGE);
+ pps_ChJournalEntry::newChange(*this,ArtikelBase(ARTIKELID),NEWMENGE,MENGE);
 
  tr.commit(); 
  return MENGE;

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.119 2006/06/20 13:34:11 christof Exp $
+// $Id: AufEintrag.cc,v 1.120 2006/06/20 13:35:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -335,21 +335,13 @@ void AufEintrag::setStatus(AufStatVal newstatus,bool force,bool instanzen,bool p
 
  if(newstatus==OPEN && bestellt!=0 && Id()>=handplan_auftrag_id)
    {
-    pps_ChJournalEntry::newChange(
-			instanz, *this, artikel,
-			bestellt.as_float(),
-			bestellt.as_float(),
-			pps_ChJournalEntry::CH_MENGE);
+    pps_ChJournalEntry::newChange(*this, artikel,bestellt,bestellt);
   }
  else if(newstatus==CLOSED && oldentrystatus!=UNCOMMITED
  	&& geliefert-bestellt!=0 && Id()>=handplan_auftrag_id)
  // UNCOMMITED->CLOSED => kein Eintrag
    {
-    pps_ChJournalEntry::newChange(
-			instanz, *this, artikel,
-			geliefert.as_float(),
-			(geliefert-bestellt).as_float(),
-			pps_ChJournalEntry::CH_MENGE);
+    pps_ChJournalEntry::newChange(*this, artikel,geliefert,geliefert-bestellt);
    }
 
  tr.commit();
@@ -407,11 +399,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld,bool planen) throw(SQL
   {
    try
     {
-     pps_ChJournalEntry::newChange(
-  			instanz, *this,
-  			artikel, ld,
-  			(double)(ld-getLieferdatum()),
-  			pps_ChJournalEntry::CH_LIEFDAT);
+     pps_ChJournalEntry::newChange(*this,artikel, ld,ld-getLieferdatum());
     }
    catch(SQLerror &e)
      {tr.rollback(); throw; }
@@ -471,15 +459,10 @@ int AufEintrag::split(mengen_t newmenge, const Petig::Datum &newld,bool dispopla
  }
 
  if(STATUS==OPEN)
-   {   pps_ChJournalEntry::newChange(
-    			instanz, *this,
-    			artikel, BESTELLT_OLD.as_float(), (BESTELLT_OLD-bestellt).as_float(),
-    			pps_ChJournalEntry::CH_MENGE);
-       pps_ChJournalEntry::newChange(
-    			instanz, *this,
-    			artikel, newmenge.as_float(), newmenge.as_float(),
-    			pps_ChJournalEntry::CH_MENGE);
-   }
+ { pps_ChJournalEntry::newChange(*this,artikel, BESTELLT_OLD,
+                                           BESTELLT_OLD-bestellt);
+   pps_ChJournalEntry::newChange(*this,artikel, newmenge, newmenge);
+ }
 
  tr.commit();
  reload(); // Vorsicht ist die Mutter der Porzellankiste
