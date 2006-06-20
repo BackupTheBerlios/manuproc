@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.93 2006/06/20 13:34:26 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.94 2006/06/20 13:35:49 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *  Copyright (C) 2006 Christof Petig
@@ -187,7 +187,6 @@ private:
  // wurde von ProduziertNG abgelöst
  __deprecated void WurdeProduziert(mengen_t menge,const AufEintragBase &ElternAEB);
  
- void reload() throw(SQLerror, AufEintrag::NoAEB_Error);
 
  class ArtikelInternAbbestellen_cb : public distribute_children_cb
  {	const AufEintrag &mythis;
@@ -372,13 +371,16 @@ public:
    static void Einlagern(cH_ppsInstanz instanz,const ArtikelBase artikel,
          const mengen_t &menge,bool produziert,
          const ProductionContext &ctx) throw(SQLerror);
-   // Menge wurde als Produziert markiert, kam aber ins Lager zurück
+
+   // Inhalt neu von Datenbank einlesen
+   void reload() throw(SQLerror, AufEintrag::NoAEB_Error);
 private:
    static AufEintragBase ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
  	mengen_t menge,const ManuProC::Datum &lieferdatum,const ArtikelBase& artikel,
  	const AufEintragBase& ElternAEB);
    static void MengeVormerken(cH_ppsInstanz instanz,const ArtikelBase &artikel,
 		mengen_t menge, bool abbestellen, const ProductionContext &ctx);
+   // ?? Menge wurde als Produziert markiert, kam aber ins Lager zurück ??
    // für ProduziertSelbst Instanzen
    mengen_t ProdRueckgaengigMenge(mengen_t) const;
    // ehemals increase_parents__reduce_assingments
