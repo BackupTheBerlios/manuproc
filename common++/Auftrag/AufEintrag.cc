@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.117 2006/06/12 14:17:30 christof Exp $
+// $Id: AufEintrag.cc,v 1.118 2006/06/20 13:33:46 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -295,11 +295,11 @@ void AufEintrag::setStatus(AufStatVal newstatus,bool force,bool instanzen,bool p
     return;
  }
  if(newstatus == UNCOMMITED)
- {  std::cerr << "best�igte Zeilen k�nen nicht wieder unbest�igt werden\n";
+ {  std::cerr << "bestätigte Zeilen können nicht wieder unbestätigt werden\n";
     return;
  }
  if(newstatus == OPEN && entrystatus != UNCOMMITED && !force)
- {  std::cerr << "nur unbest�igte Zeilen k�nen ge�fnet werden\n";
+ {  std::cerr << "nur unbestätigte Zeilen können geöffnet werden\n";
     return;
  }
 
@@ -351,6 +351,7 @@ void AufEintrag::setStatus(AufStatVal newstatus,bool force,bool instanzen,bool p
    }
 
  tr.commit();
+ reload();
 }
 
 void AufEintrag::updatePreis(const Preis &pr) throw(SQLerror)
