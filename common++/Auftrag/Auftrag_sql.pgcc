@@ -235,8 +235,8 @@ Auftrag Auftrag::PassenderPlanungsAuftrag(ppsInstanz::ID id)
  	"and datum>now()-cast('1hour' as interval) "
  	"and kundennr=?")
       << (YEAR*yearfactor) << ((YEAR+1)*yearfactor-1) << id
-      << Kunde::default_id
+      << Kunde::eigene_id
       >> Query::Row::MapNull(auftragid);
   if (auftragid) return Auftrag(make_value(AuftragBase(id,auftragid)));
-  return Auftrag(Anlegen(id),Kunde::default_id,std::string(),OPEN);
+  return Auftrag(Anlegen(id),Kunde::eigene_id,std::string(),OPEN);
 }
