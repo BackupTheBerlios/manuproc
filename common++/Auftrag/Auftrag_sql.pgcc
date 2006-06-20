@@ -21,7 +21,6 @@
 #include <strstream>
 #include <Misc/SQLerror.h>
 #include <Misc/Transaction.h>
-exec sql include sqlca;
 #include <Auftrag/selFullAufEntry.h>
 #include <Misc/string0.h>
 #include <Kunde/Zahlungsart.h>
@@ -143,151 +142,71 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
 }
 
 
-Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr) throw(SQLerror)
+Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr,
+              AufStatVal st) throw(SQLerror)
 	: AuftragBase(cH_ppsInstanz(_instanz),invalid_id),
 	  zahlart(Zahlungsart::none_id)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
  	NV("Anlegen.instanz",_instanz.instanz),NV("kdnr",kdnr),
  	NV("yaufnr",yaufnr));
- exec sql begin declare section;
- int AUFTRAGID;
- char DATUM[11];
- int YEAR;
- int KUNDENNR=kdnr;
- int STATUS=UNCOMMITED;
- int INSTANZ=Instanz();
- int WAEHRUNG;
- int VERKNR;
- int IVERKNR=0;
- char *YOURAUFNR=(char*)yaufnr.c_str();
- exec sql end declare section;
-
- exec sql select waehrungid,coalesce(verknr,-1) 
-	into :WAEHRUNG,:VERKNR from kunden where kundennr= :KUNDENNR;
- SQLerror::test(__FILELINE__"select waehrung from kunden");
 
  Transaction tr;
-
- exec sql lock table auftrag in exclusive mode;
- SQLerror::test(__FILELINE__"lock table auftrag");
-
- YEAR=AuftragBase::aktuellesJahr()%100;
+ Query("lock table auftrag in exclusive mode");
  
- exec sql select coalesce(max(auftragid)+1,:YEAR*10000) 
- 		into :AUFTRAGID from auftrag 
- 		where auftragid between (:YEAR*10000) and (:YEAR+1)*10000-1
- 		and instanz=:INSTANZ;
- SQLerror::test("Auftrag: select neue auftragid");
- if (AUFTRAGID<handplan_auftrag_id) AUFTRAGID=handplan_auftrag_id;
-
- exec sql insert into auftrag (auftragid, kundennr, 
-				stat, waehrung, instanz)
- 	values (:AUFTRAGID, :KUNDENNR, :STATUS, :WAEHRUNG,:INSTANZ);
- SQLerror::test(__FILELINE__" insert into auftrag");
-  
-#ifdef MABELLA_EXTENSIONS
- if(!yaufnr.empty())
-   {exec sql update auftrag set youraufnr=nullif(:YOURAUFNR,'') where
-	(auftragid,instanz)=(:AUFTRAGID,:INSTANZ);
-    SQLerror::test(__FILELINE__":Auftrag: update youraufnr");	
-   }
-
- if(VERKNR==-1) IVERKNR=-1;
- exec sql update auftrag set verknr=:VERKNR:IVERKNR where
-	(auftragid,instanz)=(:AUFTRAGID,:INSTANZ);
- SQLerror::test(__FILELINE__":Auftrag: update auftrag");	
-
- exec sql update auftrag set notiz=(select auf_notiz from kunden
-	where kundennr=:KUNDENNR) where (auftragid,instanz)=
-	  (:AUFTRAGID,:INSTANZ);
- SQLerror::test(__FILELINE__":Auftrag: update notiz");	
-#endif
-
- ExtraColumns ec("auftrag","instanz","auftragid");
- ec << INSTANZ << AUFTRAGID;
-
- if(ec.hasColumn("uid"))
-   Query("update auftrag set uid=? where (instanz,auftragid)=(?,?)")
-     << getuid() << INSTANZ << AUFTRAGID;
-     
- exec sql select date(datum) into :DATUM from auftrag 
-   where auftragid= :AUFTRAGID and instanz = :INSTANZ;
- SQLerror::test("Aufrtag: select datum");
-
- kundennr = kdnr;
- datum.from_postgres(DATUM);
-// wrkstatus= INSERTED;
- status=(AufStatVal)STATUS;
- auftragid= AUFTRAGID;
- assert(valid()); 
- waehrung=cP_Waehrung((Waehrung::ID)WAEHRUNG);
+ const int yearfactor=10000;
+ 
+ int YEAR=AuftragBase::aktuellesJahr()%100;
+ Query("select max(auftragid)+1 from auftrag "
+ 	"where auftragid between ? and ? and instanz=?")
+      << (YEAR*yearfactor) << ((YEAR+1)*yearfactor-1) << Instanz()
+      >> Query::Row::MapNull(auftragid,YEAR*yearfactor);
+ 		
+ if (auftragid<handplan_auftrag_id) auftragid=handplan_auftrag_id;
+ 
+ *this=Auftrag(make_value(Anlegen2(*this)), kdnr, yaufnr, st)
  tr.commit();
- youraufnr_cache[*this]=yaufnr;
 }
 
-Auftrag::Auftrag(Anlegen2 AB, long kdnr, const std::string &yaufnr) throw(SQLerror)
-	: AuftragBase(AB), zahlart(Zahlungsart::none_id)
+Auftrag::Auftrag(Anlegen2 AB, long kdnr, const std::string &yaufnr,
+    AufStatVal st) throw(SQLerror)
+	: AuftragBase(AB), zahlart(Zahlungsart::none_id),
+	  kundennr(kdnr), status(st)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Anlegen:",*this),NV("KnNr",kdnr));
- exec sql begin declare section;
- int AUFTRAGID=Id();
- char DATUM[11];
- int KUNDENNR=kdnr;
- int STATUS = OPEN;
- int INSTANZ =Instanz();
- int WAEHRUNG;
- int VERKNR;
- int IVERKNR=0;
- char *YOURAUFNR=(char*)yaufnr.c_str();
- exec sql end declare section;
-
- exec sql select waehrungid,coalesce(verknr,-1) 
-	into :WAEHRUNG,:VERKNR from kunden where kundennr= :KUNDENNR;
- SQLerror::test(__FILELINE__"select waehrung from kunden");
+ ManuProC::Trace _t(AuftragBase::trace_channel, 
+     __FUNCTION__,NV("Anlegen2:",*this),NV1(kdnr),NV1(yaufnr),NV1(st));
 
  Transaction tr;
+ cH_Kunde kunde(kundennr);
+
+ assert(valid()); 
+ waehrung=kunde->getWaehrung();
+
+ Query("insert into auftrag (auftragid, kundennr, stat, waehrung, instanz) "
+       "values (?,?,?,?,?)")
+       << auftragid << kdnr << status << waehrung->Id()
+       << Instanz();
+ AuftragBase ab(Instanz(),auftragid); 
  
- exec sql insert into auftrag (auftragid, kundennr,  
-				stat, waehrung, instanz)
- 	values (:AUFTRAGID, :KUNDENNR, :STATUS, :WAEHRUNG,:INSTANZ);
- SQLerror::test(__FILELINE__" insert auftrag with auftragid 0");
-  
-#ifdef MABELLA_EXTENSIONS
- if(!yaufnr.empty())
-   {exec sql update auftrag set youraufnr=nullif(:YOURAUFNR,'') where
-	(auftragid,instanz)=(:AUFTRAGID,:INSTANZ);
-    SQLerror::test(__FILELINE__":Auftrag: update youraufnr");	
-   }
-
- if(VERKNR==-1) IVERKNR=-1;
- exec sql update auftrag set verknr=:VERKNR:IVERKNR where
-	(auftragid,instanz)=(:AUFTRAGID,:INSTANZ);
- SQLerror::test(__FILELINE__":Auftrag: update auftrag");	
-
- exec sql update auftrag set notiz=(select auf_notiz from kunden
-	where kundennr=:KUNDENNR) where (auftragid,instanz)=
-	  (:AUFTRAGID,:INSTANZ);
- SQLerror::test(__FILELINE__":Auftrag: update notiz");	
-#endif
+ Query("update auftrag set youraufnr=?, verknr=?, notiz=? "
+     "where (instanz,auftragid)=(?,?)")
+      << Query::NullIf(yaufnr) << Query::NullIf(kunde->VerkNr(),-1) 
+      << Query::NullIf(kunde->fixeNotiz(Kunde::AUF_NOTIZ))
+      << ab;
 
  ExtraColumns ec("auftrag","instanz","auftragid");
- ec << INSTANZ << AUFTRAGID;
+ ec << INSTANZ << auftragid;
 
  if(ec.hasColumn("uid"))
    Query("update auftrag set uid=? where (instanz,auftragid)=(?,?)")
-     << getuid() << INSTANZ << AUFTRAGID;
+     << getuid() << ab;
+     
+ Query("select date(datum) from auftrag where (instanz,auftragid)=(?,?)")
+      << ab
+      >> datum;
 
- exec sql select date(datum) into :DATUM from auftrag 
-   where auftragid= :AUFTRAGID and instanz = :INSTANZ;
- SQLerror::test("Aufrtag: select datum");
-
- kundennr = kdnr;
- datum.from_postgres(DATUM);
-// wrkstatus= INSERTED;
- status=(AufStatVal)STATUS;
- youraufnr_cache[*this]=yaufnr;
  tr.commit();
+ youraufnr_cache[*this]=yaufnr;
 }
 
 

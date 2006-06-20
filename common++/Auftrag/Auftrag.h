@@ -1,4 +1,4 @@
-/* $Id: Auftrag.h,v 1.32 2006/02/01 14:38:04 christof Exp $ */
+/* $Id: Auftrag.h,v 1.33 2006/06/20 13:34:37 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -78,8 +78,13 @@ public:
         
 	Auftrag(const AuftragBase& auftrag) throw(SQLerror);
 	// neuen Auftrag anlegen
-        Auftrag(Anlegen2 Auftragsnr, long kundennr, const std::string &yaufnr="") throw(SQLerror);
-        Auftrag(Anlegen instanz, long kundennr, const std::string &yaufnr="") throw(SQLerror);
+        Auftrag(Anlegen2 Auftragsnr, long kundennr, 
+        	const std::string &yaufnr=std::string(), 
+        	AufStatVal st=OPEN) throw(SQLerror);
+        // careful: different default state!
+        Auftrag(Anlegen instanz, long kundennr, 
+        	const std::string &yaufnr=std::string(),
+        	AufStatVal st=UNCOMMITED) throw(SQLerror);
    
         ID Copy(AuftragCopy &ac) throw(SQLerror);
 
