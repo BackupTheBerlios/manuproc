@@ -164,7 +164,7 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr,
  		
  if (auftragid<handplan_auftrag_id) auftragid=handplan_auftrag_id;
  
- *this=Auftrag(make_value(Anlegen2(*this)), kdnr, yaufnr, st)
+ *this=Auftrag(make_value(Anlegen2(*this)), kdnr, yaufnr, st);
  tr.commit();
 }
 
@@ -195,7 +195,7 @@ Auftrag::Auftrag(Anlegen2 AB, long kdnr, const std::string &yaufnr,
       << ab;
 
  ExtraColumns ec("auftrag","instanz","auftragid");
- ec << INSTANZ << auftragid;
+ ec << ab;
 
  if(ec.hasColumn("uid"))
    Query("update auftrag set uid=? where (instanz,auftragid)=(?,?)")
