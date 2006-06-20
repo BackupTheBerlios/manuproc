@@ -1,6 +1,7 @@
-// $Id: Changejournal_sql.pgcc,v 1.16 2006/06/12 14:20:03 christof Exp $
+// $Id: Changejournal_sql.pgcc,v 1.17 2006/06/20 13:35:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2006 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,165 +22,62 @@
 #include<Misc/Transaction.h>
 #include<Auftrag/AufEintrag.h>
 
-exec sql include sqlca;
-
-#warning so wie ich das sehe, ist die Instanz hier VÖLLIG 
-#warning überflüssig, weil sie bereits im AufEintragBase enthalten
-#warning ist, soll ich das umarbeiten? MAT 29.11.01
 const pps_ChJournalEntry pps_ChJournalEntry::newChange(
-		cH_ppsInstanz instid,
  		const AufEintragBase &aufe, const ArtikelBase &art,
- 		double _newval, double _delta, ChJType _type,
- 		CID change)
-throw(SQLerror)
+ 		AuftragBase::mengen_t _newval, AuftragBase::mengen_t _delta, ChJType _type,
+ 		CID change) throw(SQLerror)
 {
-// if(instid->Id()!=ppsInstanzID::Kundenauftraege) return pps_ChJournalEntry();
  if(aufe.Id() < AufEintrag::handplan_id)  return pps_ChJournalEntry();
- exec sql begin declare section;
- int INSID=instid->Id();
- int CHID;
- int AUFID;
- int ZEILENNR;
- double NEWVAL;
- double DELTA;
- char CHTYPE;
- int ARTIKELID;
- exec sql end declare section;
- 
+
  Transaction tr;
- 
- if(change==0)
-   {
-    exec sql select nextval('prod_changejournal_chid_seq') into :CHID;
-    SQLerror::test(__FILELINE__":pps_ChJournalEntry::newChange:"
-    			"select nextval from sequence");
-   }
- else CHID=change; 
+ if(!change)
+   Query("select nextval('prod_changejournal_chid_seq')") >> change;
 
- ARTIKELID=art.Id();
- AUFID=aufe.Id();
- ZEILENNR=aufe.ZNr();
- NEWVAL=_newval;
- DELTA=_delta; 
- CHTYPE=_type;
-  
- exec sql insert into prod_changejournal
- 	(insid, chid, artikelid, auftragid, auftragzeile, new_val,
- 		delta, chtype)
- 	values
- 	(:INSID, :CHID, :ARTIKELID, :AUFID, :ZEILENNR,
- 	 :NEWVAL, :DELTA, :CHTYPE);
- SQLerror::test(__FILELINE__":pps_ChJournalEntry::newChange:"
-    			"insert into prod_changejournal");
+ Query("insert into prod_changejournal "
+       "(insid,auftragid,auftragzeile, chid, artikelid,new_val,"
+ 		"delta,chtype)"
+       "values (?,?,?, ?, ?,?,?,?)")
+    << aufe << change << art << _newval << _delta << _type;
 
- pps_ChJournalEntry retval((ppsInstanz::ID)INSID,CHID);
-
+ pps_ChJournalEntry retval(aufe.Instanz(),change);
  tr.commit();
-
  return retval;
 }
 
 const pps_ChJournalEntry pps_ChJournalEntry::newChange(
-		cH_ppsInstanz instid,
  		const AufEintragBase &aufe, const ArtikelBase &art,
- 		const ManuProC::Datum &_newdat, double _delta, ChJType _type,
- 		CID change)
-throw(SQLerror)
+ 		const ManuProC::Datum &_newdat, AuftragBase::mengen_t _delta, ChJType _type,
+ 		CID change) throw(SQLerror)
 {
-// if(instid->Id()!=ppsInstanzID::Kundenauftraege) return pps_ChJournalEntry();
  if(aufe.Id() < AufEintrag::handplan_id)  return pps_ChJournalEntry();
- exec sql begin declare section;
- int INSID=instid->Id();
- int CHID;
- int AUFID;
- int ZEILENNR;
- char NEWDAT[21];
- double DELTA;
- char CHTYPE;
- int ARTIKELID;
- exec sql end declare section;
- 
+
  Transaction tr;
- 
- if(change==0)
-   {
-    exec sql select nextval('prod_changejournal_chid_seq') into :CHID;
-    SQLerror::test(__FILELINE__":pps_ChJournalEntry::newChange:"
-    			"select nextval from sequence");
-   }
- else CHID=change; 
+ if(!change)
+   Query("select nextval('prod_changejournal_chid_seq')") >> change;
 
- ARTIKELID=art.Id();
- AUFID=aufe.Id();
- ZEILENNR=aufe.ZNr();
- _newdat.write_postgres(NEWDAT, sizeof NEWDAT);
- DELTA=_delta; 
- CHTYPE=_type;
-  
- exec sql insert into prod_changejournal
- 	(insid, chid, artikelid, auftragid, auftragzeile, new_dat,
- 		delta, chtype)
- 	values
- 	(:INSID, :CHID, :ARTIKELID, :AUFID, :ZEILENNR,
- 	 :NEWDAT, :DELTA, :CHTYPE);
- SQLerror::test(__FILELINE__":pps_ChJournalEntry::newChange:"
-    			"insert into prod_changejournal");
+ Query("insert into prod_changejournal "
+       "(insid,auftragid,auftragzeile, chid, artikelid,new_dat,"
+ 		"delta,chtype)"
+       "values (?,?,?, ?, ?,?,?,?)")
+    << aufe << change << art << _newdat << _delta << _type;
 
- pps_ChJournalEntry retval((ppsInstanz::ID)INSID,CHID);
-
+ pps_ChJournalEntry retval(aufe.Instanz(),change);
  tr.commit();
-
  return retval;
 }
 
-
-
-
-
-pps_ChJournalEntry::pps_ChJournalEntry(cH_ppsInstanz instid, CID change)
-throw(SQLerror)
+pps_ChJournalEntry::pps_ChJournalEntry(cH_ppsInstanz instid, CID change) throw(SQLerror)
+  : pps_ChJournalEntryBase(instid,change)
 {
- exec sql begin declare section;
- int INSID=instid->Id();
- int CHID=change;
- int AUFID;
- int ZEILENNR;
- double NEWVAL;
- double DELTA;
- char CHTYPE;
- int ARTIKELID;
- int STATUS;
- char DATUM[20];
- char NEWDATUM[20];
-// int INEWVAL, IDELTA;
- int INEWDATUM;
- exec sql end declare section;
-
- Transaction tr;
- 
- exec sql select datum,status,artikelid,auftragid,auftragzeile,
- 		coalesce(new_val,0),new_dat,coalesce(delta,0),chtype
- 	into
- 		:DATUM, :STATUS, :ARTIKELID, :AUFID, :ZEILENNR, :NEWVAL,
- 		:NEWDATUM:INEWDATUM, :DELTA, :CHTYPE
- 	from prod_changejournal
- 	where insid= :INSID and chid= :CHID;
- SQLerror::test(__FILELINE__":pps_ChJournalEntry::pps_ChJournalEntry:"
-	 		"select from prod_changejournal");
- 
- instanz = cH_ppsInstanz(instid);
- chid = change;
- datum = ManuProC::Datum(DATUM);
- status = (ChJStatVal)STATUS;
- artikel = ArtikelBase(ARTIKELID);
- auftragentry = AufEintragBase((ppsInstanz::ID)INSID,AUFID,ZEILENNR);
- newval = NEWVAL;
- newdate = INEWDATUM ? ManuProC::Datum() : ManuProC::Datum(NEWDATUM);
- delta = DELTA;
- type = (ChJType)CHTYPE;   
-
+ int status2, type2;
+ Query("select datum,status,artikelid, insid,auftragid,auftragzeile, "
+ 		"new_val,new_dat,coalesce(delta,0),chtype "
+ 	"from prod_changejournal "
+ 	"where (insid,chid)=(?,?)")
+      << instid->Id() << change
+      >> datum >> status2 >> artikel >> auftragentry
+      >> Query::Row::MapNull(newval) >> newdate 
+      >> Query::Row::MapNull(delta) >> type2;
+  status=ChJStatVal(status2);
+  type=ChJType(type2);
 }
-
-
-
-

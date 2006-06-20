@@ -1,6 +1,7 @@
-// $Id: Changejournal.h,v 1.12 2003/01/08 09:46:56 christof Exp $
+// $Id: Changejournal.h,v 1.13 2006/06/20 13:35:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2006 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,6 +36,8 @@ public:
  
  pps_ChJournalEntryBase(ppsInstanz::ID i,int c)
  	: instanz(i), chid(c) {}
+ pps_ChJournalEntryBase(cH_ppsInstanz const& i,CID c)
+ 	: instanz(i), chid(c) {}
  	
  CID CId() { return chid; } 
  ppsInstanz::ID IId() { return instanz->Id(); }
@@ -54,25 +57,39 @@ private:
  ChJStatVal status;
  ArtikelBase artikel;
  AufEintragBase auftragentry;
- double newval;
+ AuftragBase::mengen_t newval;
  ManuProC::Datum newdate;
- double delta;
+ AuftragBase::mengen_t delta;
  ChJType type;   
 
 public:
- static const pps_ChJournalEntry newChange(cH_ppsInstanz inst,
+ static const __deprecated pps_ChJournalEntry newChange(cH_ppsInstanz inst,
  		const AufEintragBase &aufe, const ArtikelBase &art,
- 		double _newval, double _delta, ChJType _type,
+ 		AuftragBase::mengen_t _newval, AuftragBase::mengen_t _delta, ChJType _type,
+ 		CID change=0) throw(SQLerror)
+ { assert(inst==aufe.Instanz());
+   return newChange(aufe,art,_newval,_delta,_type,change);
+ }
+ static const __deprecated pps_ChJournalEntry newChange(cH_ppsInstanz inst,
+ 		const AufEintragBase &aufe, const ArtikelBase &art,
+ 		const ManuProC::Datum &_newdat, AuftragBase::mengen_t _delta, ChJType _type,
+ 		CID change=0) throw(SQLerror)
+ { assert(inst==aufe.Instanz());
+   return newChange(aufe,art,_newdat,_delta,_type,change);
+ }
+
+ static const pps_ChJournalEntry newChange(const AufEintragBase &aufe, 
+                const ArtikelBase &art, AuftragBase::mengen_t _newval,
+                AuftragBase::mengen_t _delta, ChJType _type=CH_MENGE, 
+                CID change=0) throw(SQLerror);
+ static const pps_ChJournalEntry newChange(const AufEintragBase &aufe, 
+                const ArtikelBase &art, const ManuProC::Datum &_newdat, 
+                AuftragBase::mengen_t _delta, ChJType _type=CH_LIEFDAT,
  		CID change=0) throw(SQLerror);
- 	
- static const pps_ChJournalEntry newChange(cH_ppsInstanz inst,
- 		const AufEintragBase &aufe, const ArtikelBase &art,
- 		const ManuProC::Datum &_newdat, double _delta, ChJType _type,
- 		CID change=0) throw(SQLerror); 	
  		
  pps_ChJournalEntry(cH_ppsInstanz instid, CID change) throw(SQLerror);
  pps_ChJournalEntry() : 
    pps_ChJournalEntryBase(ppsInstanzID::None,ManuProcEntity<>::none_id),
-   status(NONE),newval(0),delta(0),type(CH_NONE) {}
+   status(NONE),type(CH_NONE) {}
 
 };
