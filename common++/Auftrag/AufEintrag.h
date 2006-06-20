@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.92 2006/06/20 13:33:47 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.93 2006/06/20 13:34:26 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *  Copyright (C) 2006 Christof Petig
@@ -187,7 +187,7 @@ private:
  // wurde von ProduziertNG abgelöst
  __deprecated void WurdeProduziert(mengen_t menge,const AufEintragBase &ElternAEB);
  
- void reload();
+ void reload() throw(SQLerror, AufEintrag::NoAEB_Error);
 
  class ArtikelInternAbbestellen_cb : public distribute_children_cb
  {	const AufEintrag &mythis;

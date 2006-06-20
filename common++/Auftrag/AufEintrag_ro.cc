@@ -1,4 +1,4 @@
-// $Id: AufEintrag_ro.cc,v 1.15 2006/06/20 13:33:47 christof Exp $
+// $Id: AufEintrag_ro.cc,v 1.16 2006/06/20 13:34:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -115,10 +115,10 @@ AufEintrag::AufEintrag(const AufEintragBase &aebb) throw (SQLerror,NoAEB_Error)
 }
 
 void AufEintrag::reload() throw (SQLerror,NoAEB_Error)
-{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,aebb);
+{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,static_cast<const AufEintragBase&>(*this));
  try{
   SelectedFullAufList aufids((SQLFullAuftragSelector)
-    (SQLFullAuftragSelector::sel_AufidZnr(aebb)));
+    (SQLFullAuftragSelector::sel_AufidZnr(static_cast<const AufEintragBase&>(*this))));
 
   if ( aufids.size()!=1 ) throw NoAEB_Error(aufids.size());
 
