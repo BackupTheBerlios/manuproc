@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.118 2006/06/20 13:33:46 christof Exp $
+// $Id: AufEintrag.cc,v 1.119 2006/06/20 13:34:11 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -256,6 +256,7 @@ void AufEintrag::Verzeigern(mengen_t M, bool nach_oben)
        // 2er anlegen
        if (!!m) Ueberplanen(Artikel(),m,getLieferdatum());
        tr.commit();
+       reload();
     }
     else // planen rckg�gig (Pfeile von oben ebenfalls anlegen)
     {  Transaction tr;
@@ -272,6 +273,7 @@ void AufEintrag::Verzeigern(mengen_t M, bool nach_oben)
        assert(m<=AufEintrag(*this).getGeliefert());
 #endif
        tr.commit();
+       reload();
     }
 }
 
@@ -354,6 +356,7 @@ void AufEintrag::setStatus(AufStatVal newstatus,bool force,bool instanzen,bool p
  reload();
 }
 
+// soll hier geändert nicht geändert werden?
 void AufEintrag::updatePreis(const Preis &pr) throw(SQLerror)
 {ManuProC::Trace _t(trace_channel, __FUNCTION__);
  Query("update auftragentry "
@@ -479,6 +482,7 @@ int AufEintrag::split(mengen_t newmenge, const Petig::Datum &newld,bool dispopla
    }
 
  tr.commit();
+ reload(); // Vorsicht ist die Mutter der Porzellankiste
  return ZEILENNR;
 }
 
