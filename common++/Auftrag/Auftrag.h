@@ -1,6 +1,7 @@
-/* $Id: Auftrag.h,v 1.33 2006/06/20 13:34:37 christof Exp $ */
+/* $Id: Auftrag.h,v 1.34 2006/06/20 13:34:51 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2006 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -85,13 +86,16 @@ public:
         Auftrag(Anlegen instanz, long kundennr, 
         	const std::string &yaufnr=std::string(),
         	AufStatVal st=UNCOMMITED) throw(SQLerror);
+	// für implizite Planungszwecke
+	// letzten Auftrag suchen und akzeptieren wenn maximal 1h alt und intern
+	static Auftrag PassenderPlanungsAuftrag(ppsInstanz::ID id);
    
         ID Copy(AuftragCopy &ac) throw(SQLerror);
 
         // please prefer the second, static variant 
         // (creating an Auftrag just to ask for a different one is nonsense)
 	ID getIdFromYourAufId(const char *youraufid) throw(SQLerror);
-	// fuzzy = begins with string
+	// fuzzy means youraufid begins with given string
 	static ID getIdFromYourAufId(ppsInstanz::ID instanz, 
 			const std::string &youraufid, 
 			Kunde::ID kundennr=Kunde::none_id,

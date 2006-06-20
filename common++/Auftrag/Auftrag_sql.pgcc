@@ -1,5 +1,6 @@
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2006 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -141,6 +142,7 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  youraufnr_cache[*this]=youraufnr;
 }
 
+static const int yearfactor=10000;
 
 Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr,
               AufStatVal st) throw(SQLerror)
@@ -153,8 +155,6 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr,
 
  Transaction tr;
  Query("lock table auftrag in exclusive mode");
- 
- const int yearfactor=10000;
  
  int YEAR=AuftragBase::aktuellesJahr()%100;
  Query("select max(auftragid)+1 from auftrag "
@@ -225,4 +225,18 @@ void Auftrag::setVerknr(const Kunde::ID vid) throw(SQLerror)
  (Query("update auftrag set verknr=? where (instanz,auftragid)=(?,?)")
    << Query::NullIf(vid,Kunde::none_id) << Instanz() << Id()).Check100();
  verknr=vid;
+}
+
+Auftrag Auftrag::PassenderPlanungsAuftrag(ppsInstanz::ID id)
+{ int auftragid;
+  int YEAR=AuftragBase::aktuellesJahr()%100;
+  Query("select max(auftragid) from auftrag "
+ 	"where auftragid between ? and ? and instanz=? "
+ 	"and datum>now()-cast('1hour' as interval) "
+ 	"and kundennr=?")
+      << (YEAR*yearfactor) << ((YEAR+1)*yearfactor-1) << id
+      << Kunde::default_id
+      >> Query::Row::MapNull(auftragid);
+  if (auftragid) return Auftrag(make_value(AuftragBase(id,auftragid)));
+  return Auftrag(Anlegen(id),Kunde::default_id,std::string(),OPEN);
 }
