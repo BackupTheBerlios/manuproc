@@ -1,4 +1,4 @@
-// $Id: Auftrag_serialize.cc,v 1.2 2006/06/26 07:53:19 christof Exp $
+// $Id: Auftrag_serialize.cc,v 1.3 2006/06/26 07:53:22 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) Christof Petig
  *
@@ -72,14 +72,15 @@ Tag serialize(AuftragFull const& a, bool bestaetigung)
   if (!a.Notiz().empty()) result.push_back("Notiz",a.Notiz());
   result.push_back("Währung",a.getWaehrung()->Langbezeichnung())
     .setAttr("Kurzbezeichnung",a.getWaehrung()->Kurzbezeichnung());
-  if (a.getAuftragsRabatt()) result.setAttr("Rabatt",a.getAuftragsRabatt().String());
+  if (!!a.getAuftragsRabatt()) 
+    result.setAttr("Rabatt",a.getAuftragsRabatt().String());
   if (!a.getBemerkung().empty()) result.push_back("Bemerkung",a.getBemerkung());
   result.setAttr("Datum",a.getDatum().to_locale());
   
   for (AuftragFull::const_iterator i=a.begin();i!=a.end();++i)
   { Tag &zeile=result.push_back("Zeile");
     zeile.setAttr("Nummer",i->ZNr());
-    Tag &menge=zeile.push_back("Menge",i->getStueck()->String());
+    Tag &menge=zeile.push_back("Menge",i->getStueck().String());
 //    menge.setAttr("Einheit",i->);
     Tag &unsArt=zeile.push_back("UnserArtikel"); // Bezeichnung+Schema
     Tag &yourArt=zeile.push_back("IhrArtikel"); // B+S
