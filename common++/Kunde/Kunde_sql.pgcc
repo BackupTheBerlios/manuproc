@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.77 2006/06/20 13:34:43 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.78 2006/06/26 07:53:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,7 +22,7 @@
 //#include <Kunde/Person.h>
 #include <Misc/Transaction.h>
 #include <Kunde/Telefon.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 exec sql include sqlca;
 
 void Kunde::setVerkNr(Kunde::ID v) throw(SQLerror)
@@ -514,7 +514,7 @@ const std::list<std::pair<int,PreisListe::ID> > &Kunde::Preislisten() const
  Query q("select prlsnr,suchfolge from ku_warenkorb"
          " where kundennr=? order by suchfolge");
  q << Id();
- FetchIStream fi=q.Fetch();
+ Query::Row fi=q.Fetch();
  while(fi.good())
    {
     fi >> P >> S;
@@ -872,7 +872,7 @@ std::string Kunde::fixeNotiz(const NotizZiel nz) const throw(SQLerror)
 
  std::string query="select "+column+" from kunden where kundennr=?";
  std::string notiz;
- Query(query) << entityid >> FetchIStream::MapNull(notiz,"");
+ Query(query) << entityid >> Query::Row::MapNull(notiz,"");
  return notiz;
 }
 
@@ -966,7 +966,7 @@ bool Kunde::isInGrp(const std::string groupname) const throw(SQLerror)
 
  q << groupname << Id();
 
- FetchIStream fi=q.Fetch();
+ Query::Row fi=q.Fetch();
 
  return fi.good();
 }

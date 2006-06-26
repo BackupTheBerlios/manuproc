@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum_new_del.cc,v 1.9 2005/04/18 16:18:56 christof Exp $
+// $Id: ArtikelBaum_new_del.cc,v 1.10 2006/06/26 07:53:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, 
  *  written by Malte Thoma and Christof Petig
@@ -90,7 +90,7 @@ struct st_aam
 };
 }
 
-static FetchIStream &operator>>(FetchIStream &is, st_aam &b)
+static Query::Row &operator>>(Query::Row &is, st_aam &b)
 {  return is >> b.oldAEB >> b.AEB >> b.menge;
 }
 

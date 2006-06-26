@@ -17,13 +17,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: checkGeliefert.pgcc,v 1.8 2003/03/24 10:41:19 christof Exp $
+// $Id: checkGeliefert.pgcc,v 1.9 2006/06/26 07:53:03 christof Exp $
 
 //#include <Lieferschein/Lieferschein.h>
 #include <Auftrag/AuftragFull.h>
 exec sql include sqlca;
 #include <Misc/Transaction.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/dbconnect.h>
 
 int main()
@@ -32,7 +32,7 @@ int main()
    Transaction tr;
    Query query2("select auftragid from auftrag where instanz=1 and"
    	" auftragid between 10000 and 30000 order by auftragid");
-   FetchIStream is;
+   Query::Row is;
    while ((query2>>is).good())
    {  int id;
       is >> id;
@@ -42,7 +42,7 @@ int main()
          Query("select sum(coalesce(menge,1)*coalesce(stueck,1)) "
          	"from lieferscheinentry where refzeilennr="+itos(i->ZNr())
       		+" and refauftragid="+itos(id)+" and instanz=1").Fetch() 
-      		>> FetchIStream::MapNull(menge,0) ;
+      		>> Query::Row::MapNull(menge,0) ;
          if (i->getGeliefert()!=AuftragBase::mengen_t(menge))
          {  cout << "-- Auftrag " << i->Instanz()->Id() << '.' 
          	<< i->Id() << '.' << i->ZNr() << ' '

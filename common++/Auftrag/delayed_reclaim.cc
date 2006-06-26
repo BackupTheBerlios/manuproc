@@ -1,4 +1,4 @@
-// $Id: delayed_reclaim.cc,v 1.11 2004/09/06 10:36:01 christof Exp $
+// $Id: delayed_reclaim.cc,v 1.12 2006/06/26 07:53:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -21,7 +21,7 @@
 #include <Auftrag/AufEintrag_delayedreclaim.h>
 #include <Misc/TraceNV.h>
 #include <Misc/Transaction.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Lager/Lager.h>
 #include <Auftrag/VerfuegbareMenge.h>
 //#include <Auftrag/selFullAufEntry.h>

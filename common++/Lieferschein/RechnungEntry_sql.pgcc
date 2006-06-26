@@ -20,7 +20,7 @@
 #include"Rechnung.h"
 #include<Misc/Transaction.h>
 #include <Auftrag/AufEintrag.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 exec sql include sqlca;
 
 std::map<int,struct RechnungEntryBase::rng_payoff> RechnungEntryBase::rgdata;
@@ -147,7 +147,7 @@ fixedpoint<2> RechnungEntry::ProvSatz() const throw(SQLerror)
  Query q("select provsatz from rechnungentry where"
         " (rngid,zeilennr) = (?,?)");
 
- q << Id() << Zeile() >> FetchIStream::MapNull(provsatz,0);
+ q << Id() << Zeile() >> Query::Row::MapNull(provsatz,0);
  SQLerror::test(__FILELINE__);
 
  return provsatz;

@@ -1,4 +1,4 @@
-// $Id: FertigWarenLager.h,v 1.26 2005/10/30 00:58:07 christof Exp $
+// $Id: FertigWarenLager.h,v 1.27 2006/06/26 07:53:02 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -22,7 +22,7 @@
 
 #include "FertigWaren.h"
 #include "Lager.h"
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 
 
 class LagerError : public std::exception

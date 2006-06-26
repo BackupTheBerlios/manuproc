@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.23 2006/05/03 07:16:33 christof Exp $
+// $Id: auftrag_repair.cc,v 1.24 2006/06/26 07:53:03 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -326,7 +326,7 @@ restart:
     ++loops;
     alles_ok=true;
     if (actions&b_links && !analyse_only)
-    {  FetchIStream is;
+    {  Query::Row is;
        Query q("select instanz,auftragid,zeilennr from auftragentry "
        		"where not exists (select true from auftrag "
        		"where (auftragentry.instanz,auftragentry.auftragid)="

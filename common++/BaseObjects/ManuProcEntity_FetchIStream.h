@@ -1,10 +1,10 @@
 
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include "ManuProcEntity.h"
 
 
-template <class T> FetchIStream &operator>>
-(FetchIStream &is, ManuProcEntity<T> &me)
+template <class T> Query::Row &operator>>
+(Query::Row &is, ManuProcEntity<T> &me)
 {
  int _id;
  is >> _id;

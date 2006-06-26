@@ -18,37 +18,37 @@
  */
 
 #include "ppsInstanz.h"
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/i18n.h>
 
-FetchIStream &operator>>(FetchIStream &is, ppsInstanz::ID &v)
+Query::Row &operator>>(Query::Row &is, ppsInstanz::ID &v)
 {  int i;
    is >> i;
    v=ppsInstanz::ID(i);
    return is;
 }
 
-FetchIStream &operator>>(FetchIStream &is, cH_ppsInstanz &v)
+Query::Row &operator>>(Query::Row &is, cH_ppsInstanz &v)
 {  int i;
    is >> i;
    v=ppsInstanz::ID(i);
    return is;
 }
 
-FetchIStream &operator>>(FetchIStream &is, ppsInstanz &i)
+Query::Row &operator>>(Query::Row &is, ppsInstanz &i)
 {  is >> i.name 
-	>> FetchIStream::MapNull(i.lager_fuer,ppsInstanzID::None)
+	>> Query::Row::MapNull(i.lager_fuer,ppsInstanzID::None)
 	>> i.sortierung
-	>> FetchIStream::MapNull(i.lieferschein)
-	>> FetchIStream::MapNull(i.produziert_selbst)
-	>> FetchIStream::MapNull(i.lagername)
-	>> FetchIStream::MapNull(i.produktionsdauer_tage)
-	>> FetchIStream::MapNull(i.einlagern_in,ppsInstanzID::None)
-	>> FetchIStream::MapNull(i.automatisch_einlagern)
+	>> Query::Row::MapNull(i.lieferschein)
+	>> Query::Row::MapNull(i.produziert_selbst)
+	>> Query::Row::MapNull(i.lagername)
+	>> Query::Row::MapNull(i.produktionsdauer_tage)
+	>> Query::Row::MapNull(i.einlagern_in,ppsInstanzID::None)
+	>> Query::Row::MapNull(i.automatisch_einlagern)
 	>> i.typ
-	>> FetchIStream::MapNull(i.externe_bestellung)
-	>> FetchIStream::MapNull(i.overview)
-	>> FetchIStream::MapNull(i.alt_group_nr,ppsInstanzID::None)
+	>> Query::Row::MapNull(i.externe_bestellung)
+	>> Query::Row::MapNull(i.overview)
+	>> Query::Row::MapNull(i.alt_group_nr,ppsInstanzID::None)
 	;
  assert(i.typ=='L' || i.typ=='l' || i.typ=='P' || i.typ=='E');
  return is;

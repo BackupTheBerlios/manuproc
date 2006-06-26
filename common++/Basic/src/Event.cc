@@ -1,4 +1,4 @@
-// $Id: Event.cc,v 1.8 2004/04/29 13:17:23 christof Exp $
+// $Id: Event.cc,v 1.9 2006/06/26 07:53:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -49,7 +49,7 @@ void ManuProC::Event::connect(bool ignore_old) {}
 int ManuProC::Event::filedesc() { return -1; }
 
 #else
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <libpq-fe.h>
 #include <Misc/Transaction.h>
 
@@ -79,12 +79,12 @@ void ManuProC::Event::read_notifications()
    Query q("SELECT channel,key,data FROM events "
    	"WHERE ? < zeit and zeit <= ? ORDER BY zeit");
    q << last_processed << bis;
-   FetchIStream is;
+   Query::Row is;
    while ((q >> is).good())
    {  std::string channel,key,data;
       is >> channel 
-      	 >> FetchIStream::MapNull(key)
-      	 >> FetchIStream::MapNull(data);
+      	 >> Query::Row::MapNull(key)
+      	 >> Query::Row::MapNull(data);
       event_sig(channel,key,data);
 #if MPC_SIGC_VERSION<0x120
       if (!channels[channel]) channels[channel]=new filteredsignal_t();

@@ -1,4 +1,4 @@
-// $Id: Webangaben.cc,v 1.16 2005/10/14 12:12:30 christof Exp $
+// $Id: Webangaben.cc,v 1.17 2006/06/26 07:53:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -20,7 +20,7 @@
 
 
 #include "Webangaben.hh"
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/itos.h>
 
 void Webangaben::set_Laengen(int kettlaenge,int schnittlaenge)
@@ -48,7 +48,7 @@ bool Webangaben::exists() throw(SQLerror)
    return true;
 }
 
-FetchIStream &operator>>(FetchIStream &is, std::pair<ArtikelBase,ArtikelBase> &p)
+Query::Row &operator>>(Query::Row &is, std::pair<ArtikelBase,ArtikelBase> &p)
 {  return is >> p.first >> p.second;
 }
 
@@ -60,16 +60,16 @@ bool Webangaben::Load() throw(SQLerror)
       Query(pq)
 	<< artikel.Id()
 	>> erstellt >> geaendert
-	>> FetchIStream::MapNull(riet)
-	>> FetchIStream::MapNull(bemerkung)
-	>> FetchIStream::MapNull(fangfaden)
-	>> FetchIStream::MapNull(schussdichte)
-	>> FetchIStream::MapNull(variante_von);
+	>> Query::Row::MapNull(riet)
+	>> Query::Row::MapNull(bemerkung)
+	>> Query::Row::MapNull(fangfaden)
+	>> Query::Row::MapNull(schussdichte)
+	>> Query::Row::MapNull(variante_von);
       if (!!variante_von)
       {  Query q("select altmaterial,neumaterial from webang_variante "
       		"where artikel=?");
       	 q << artikel.Id();
-      	 FetchIStream is;
+      	 Query::Row is;
       	 while ((q>>is).good())
          {  ArtikelBase altmaterial,neumaterial;
             is >> altmaterial >> neumaterial >> Query::check_eol();

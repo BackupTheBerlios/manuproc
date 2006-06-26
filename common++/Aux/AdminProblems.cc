@@ -1,4 +1,4 @@
-// $Id: AdminProblems.cc,v 1.11 2002/11/22 15:53:52 christof Exp $
+// $Id: AdminProblems.cc,v 1.12 2006/06/26 07:53:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -18,7 +18,7 @@
  */
 
 #include "AdminProblems.h"
-#include "FetchIStream.h"
+#include <Misc/Query.h>
 
 void AdminProblems::create(const std::string &programm,const std::string &text)
 {

@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.52 2005/06/17 15:35:49 christof Exp $
+// $Id: Lager.cc,v 1.53 2006/06/26 07:53:02 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -22,7 +22,7 @@
 #include <algorithm>
 #include <Misc/relops.h>
 #include <Misc/TraceNV.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Auftrag/AufEintrag.h>
 
 #ifndef MABELLA_LAGERHACK
@@ -218,12 +218,12 @@ void LagerBase::LagerInhaltSum(std::vector<class LagerInhalt>& LI)
    }
 }
 
-FetchIStream &operator>>(FetchIStream &is, LagerInhalt &li)
-{  is >> FetchIStream::MapNull(li.artikel) 
-	>> FetchIStream::MapNull(li.stueck) 
-	>> FetchIStream::MapNull(li.reststueck) 
-	>> FetchIStream::MapNull(li.menge)
-	>> FetchIStream::MapNull(li.restmenge);
+Query::Row &operator>>(Query::Row &is, LagerInhalt &li)
+{  is >> Query::Row::MapNull(li.artikel) 
+	>> Query::Row::MapNull(li.stueck) 
+	>> Query::Row::MapNull(li.reststueck) 
+	>> Query::Row::MapNull(li.menge)
+	>> Query::Row::MapNull(li.restmenge);
    return is;
 }
 

@@ -1,4 +1,4 @@
-// $Id: Auftrag.cc,v 1.25 2006/06/20 13:35:27 christof Exp $
+// $Id: Auftrag.cc,v 1.26 2006/06/26 07:53:01 christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -55,7 +55,7 @@ std::string Auftrag::getYourAufNr(const AuftragBase &ab)
    {  std::string yan;
       Query("select youraufnr from auftrag where (instanz,auftragid)=(?,?)")
    	<< ab
-   	>> FetchIStream::MapNull(yan);
+   	>> Query::Row::MapNull(yan);
       youraufnr_cache[ab]=yan;
       return yan;
    }

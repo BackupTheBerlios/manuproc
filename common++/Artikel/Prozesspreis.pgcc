@@ -1,4 +1,4 @@
-// $Id: Prozesspreis.pgcc,v 1.9 2003/01/08 09:46:56 christof Exp $
+// $Id: Prozesspreis.pgcc,v 1.10 2006/06/26 07:53:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,6 +33,7 @@ struct index_t
    bool operator<(const index_t &b) const 
    { return liste<b.liste || (liste==b.liste && prozess<b.prozess); }
 };
+}
 
 typedef Preis payload_t;
 
@@ -66,4 +67,3 @@ Prozesspreis::Prozesspreis(const Kunde::ID liste,const cH_Prozess &proz)
       cache.Register(index_t(liste,proz->Id()),getPreis());
    }
 }
-};

@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.66 2006/06/20 13:34:56 christof Exp $
+// $Id: Kunde.cc,v 1.67 2006/06/26 07:53:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -291,7 +291,7 @@ void Kunde::load_Gruppen() const throw(SQLerror)
 
  int ret;
 
- FetchIStream fi=q.Fetch();
+ Query::Row fi=q.Fetch();
 
  while(fi.good())
    {fi >> ret;

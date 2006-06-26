@@ -3,7 +3,7 @@
 #include <Misc/SQLerror.h>
 #include <multimap.h>
 #include <pair.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 
 class DBCapability
 {
@@ -26,8 +26,8 @@ public:
  bool isWhite(const StrAct sa);
  bool isWhite(const ColAct ca);
 
- friend FetchIStream &operator>>(FetchIStream &is, std::pair<std::string,Action> &p);
- friend FetchIStream &operator>>(FetchIStream &is, std::pair<WhiteColumn,Action> &p); 
+ friend Query::Row &operator>>(Query::Row &is, std::pair<std::string,Action> &p);
+ friend Query::Row &operator>>(Query::Row &is, std::pair<WhiteColumn,Action> &p); 
 
 };
 

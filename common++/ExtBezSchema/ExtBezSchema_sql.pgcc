@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema_sql.pgcc,v 1.29 2006/06/12 14:18:04 christof Exp $
+// $Id: ExtBezSchema_sql.pgcc,v 1.30 2006/06/26 07:53:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,7 +20,7 @@
 #include <ExtBezSchema/ExtBezSchemaHandle.h>
 #include <Misc/Transaction.h>
 #include <Misc/itos.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/i18n.h>
 
 cH_ExtBezSchema::cache_t cH_ExtBezSchema::cache;
@@ -34,20 +34,20 @@ cH_ExtBezSchema::cH_ExtBezSchema(ExtBezSchema::ID eid,const ArtikelTyp &t) throw
    }
 }
 
-FetchIStream &operator>>(FetchIStream &is, MultiL_Dict::LangTXT &x)
+Query::Row &operator>>(Query::Row &is, MultiL_Dict::LangTXT &x)
 {  x = MultiL_Dict::LangTXT(is.Fetch<int>());
    return is;
 }
 
-FetchIStream &operator>>(FetchIStream &is, ExtBezSchema::BezKomp &b)
+Query::Row &operator>>(Query::Row &is, ExtBezSchema::BezKomp &b)
 {  is >> b.bezkomptype >> b.bezkomptext 
-	>> FetchIStream::MapNull(b.separator,"") 
+	>> Query::Row::MapNull(b.separator,"") 
 	>> b.spaltenname
-	>> FetchIStream::MapNull(b.signifikanz,0) 
-	>> FetchIStream::MapNull(b.preissignifikant,false) 
-	>> FetchIStream::MapNull(b.TeXtabformat,"c");
+	>> Query::Row::MapNull(b.signifikanz,0) 
+	>> Query::Row::MapNull(b.preissignifikant,false) 
+	>> Query::Row::MapNull(b.TeXtabformat,"c");
 #ifndef PETIG_EXTENSIONS
-   is >> FetchIStream::MapNull(b.textid,(MultiL_Dict::LangTXT)0);
+   is >> Query::Row::MapNull(b.textid,(MultiL_Dict::LangTXT)0);
 #endif
    b.bezkomptext=dbgettext(b.bezkomptext);
    return is;
@@ -74,7 +74,7 @@ ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
 	"where (extartbezid,artikeltyp)=(?,?) "
 	"order by case when signifikanz<=0 then 1000-signifikanz else signifikanz end,bezkomptype");
  q << eid << int(t);
- FetchIStream is;
+ Query::Row is;
  q.ThrowOnBad(__FUNCTION__);
  while ((q>>is).good()) 
  {  BezKomp komp;

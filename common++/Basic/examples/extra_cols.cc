@@ -17,13 +17,13 @@
  */
 
 #include <iostream>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/dbconnect.h>
 #include <Misc/ExtraColumns.h>
 #include <cassert>
 
 int main()
-{ FetchIStream::Fake fk("200"),fk2;
+{ Query::Row::Fake fk("200"),fk2;
   std::cout << fk.FetchMap<int>() << '\t' << fk2.FetchMap<int>() << '\n';
   
   ManuProC::dbconnect();

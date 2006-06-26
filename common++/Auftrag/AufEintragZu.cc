@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.40 2006/06/12 14:18:08 christof Exp $
+// $Id: AufEintragZu.cc,v 1.41 2006/06/26 07:53:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -118,7 +118,7 @@ AufEintragZu::map_t AufEintragZu::get_Kinder_nach_Artikel(const AufEintragBase &
    return MapArt;
 }
 
-FetchIStream &operator>>(FetchIStream &i, AufEintragZu::st_reflist &rl)
+Query::Row &operator>>(Query::Row &i, AufEintragZu::st_reflist &rl)
 {  return i >> rl.AEB >> rl.Menge >> rl.Art >> rl.Pri;
 }
 
@@ -265,7 +265,7 @@ namespace { struct pri_menge
    AuftragBase::mengen_t menge;
 };}
 
-FetchIStream &operator>>(FetchIStream &is,pri_menge &a)
+Query::Row &operator>>(Query::Row &is,pri_menge &a)
 {  return is >> a.pri >> a.menge;
 }
 

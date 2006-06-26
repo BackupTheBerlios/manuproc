@@ -1,4 +1,4 @@
-// $Id: Waehrung_sql.pgcc,v 1.18 2005/11/22 13:04:34 christof Exp $
+// $Id: Waehrung_sql.pgcc,v 1.19 2006/06/26 07:53:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,7 +18,7 @@
  */
 
 #include<Misc/Waehrung.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/i18n.h>
 
 Waehrung::Waehrung(WaehID id)  throw(SQLerror)
@@ -45,7 +45,7 @@ cP_Waehrung::cP_Waehrung(Waehrung::ID wid)
    else *this=cache.Register(wid,Waehrung(wid));
 }
 
-FetchIStream &operator>>(FetchIStream &is, Waehrung::ID &wid)
+Query::Row &operator>>(Query::Row &is, Waehrung::ID &wid)
 {
   int i;
   is >> i;

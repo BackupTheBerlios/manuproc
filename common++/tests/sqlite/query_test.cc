@@ -1,4 +1,4 @@
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <stdio.h>
 #include <Misc/dbconnect.h>
 

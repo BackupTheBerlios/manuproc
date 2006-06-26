@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.94 2006/06/20 13:35:49 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.95 2006/06/26 07:53:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *  Copyright (C) 2006 Christof Petig
@@ -57,7 +57,7 @@ class AufEintrag : public AufEintragBase
      friend class AuftragBase;
      friend class ppsInstanzReparatur;
      friend class VerfuegbareMenge; // besser hier hin ...
-     friend FetchIStream &operator>>(FetchIStream &is, AufEintrag &ae);
+     friend Query::Row &operator>>(Query::Row &is, AufEintrag &ae);
 
      class MichEinlagern;
      class AbbestellenUndVormerken;

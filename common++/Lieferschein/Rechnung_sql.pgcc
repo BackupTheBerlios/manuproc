@@ -19,7 +19,7 @@
 
 #include "Rechnung.h"
 #include <Misc/Transaction.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/Trace.h>
 #include<math.h>
 #include <Lieferschein/LieferscheinVoll.h>
@@ -285,11 +285,11 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
  Query("select min(zeile) from lieferscheinentry where "
 	" (instanz,lfrsid)=(?,?) and status in (0,1) ")
  	<< lfrs.Instanz()->Id() << lfrs.Id()
- 	>> FetchIStream::MapNull(MINZNR);
+ 	>> Query::Row::MapNull(MINZNR);
  Query("lock table rechnungentry in exclusive mode"); 
  Query("select max(zeilennr) from rechnungentry where rngid=?")
  	<< Id()
- 	>> FetchIStream::MapNull(MAXZNR);
+ 	>> Query::Row::MapNull(MAXZNR);
  MAXZNR++;
  
  LieferscheinVoll lv(lfrs.Instanz(),lfrs.Id());
@@ -368,7 +368,7 @@ Rechnung::geldbetrag_t Rechnung::Betrag(bool brutto) const throw(SQLerror)
     q << Id();
     SQLerror::test(__FILELINE__);
 
-    q >> FetchIStream::MapNull(betrag,0.0);   
+    q >> Query::Row::MapNull(betrag,0.0);   
    }
  else
    {Query q("select  sum(round((round(preis*((100-coalesce(rabatt,0))/100), case "
@@ -378,7 +378,7 @@ Rechnung::geldbetrag_t Rechnung::Betrag(bool brutto) const throw(SQLerror)
 	" from rechnungentry where rngid = ?");
     q << HELPFKT << ROUND << Id(); 
     SQLerror::test(__FILELINE__);
-    q >> FetchIStream::MapNull(betrag,0.0);   
+    q >> Query::Row::MapNull(betrag,0.0);   
 
     float rab = 1 - .01*rabatt.as_float();
     betrag = betrag.as_float() * rab; 
@@ -406,7 +406,7 @@ const std::string Rechnung::Notiz() const throw(SQLerror)
 
  Query("select notiz from rechnung where rngid=?")
  	<< Id()
- 	>> FetchIStream::MapNull(notiz);
+ 	>> Query::Row::MapNull(notiz);
  notiz_valid=true;
  return notiz;
 }

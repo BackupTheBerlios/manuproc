@@ -18,7 +18,7 @@
  */
 
 #include "Global_Settings.h"
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 
 std::string Global_Settings::database_load(int userid,const std::string& program,const std::string& name)
 {std::string wert;

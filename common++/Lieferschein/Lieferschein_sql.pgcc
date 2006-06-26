@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.40 2006/06/26 07:52:50 christof Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.41 2006/06/26 07:53:03 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,7 +21,7 @@
 #include<Misc/Transaction.h>
 exec sql include sqlca;
 #include <Misc/TraceNV.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Lager/FertigWarenLager.h>
 
 Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,int lid) throw(SQLerror)
@@ -46,19 +46,19 @@ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("Liefers
  q << Instanz()->Id() << Id();
  SQLerror::test(__FILELINE__);
 
- FetchIStream fi=q.Fetch();
+ Query::Row fi=q.Fetch();
 
  fi >> KDNR
     >> lsdatum 
-    >> FetchIStream::MapNull(rngid,ManuProcEntity<>::none_id) 
+    >> Query::Row::MapNull(rngid,ManuProcEntity<>::none_id) 
     >> geliefertam
 #ifdef DPD_LIEFERSCHEINE
-    >> FetchIStream::MapNull(paeckchen,0) 
-    >> FetchIStream::MapNull(pakete,0) 
-    >> FetchIStream::MapNull(dpdliefnr,ManuProcEntity<>::none_id)
-    >> FetchIStream::MapNull(brutto_kg,0)
-    >> FetchIStream::MapNull(netto_kg,0)
-    >> FetchIStream::MapNull(verknr,Kunde::none_id)
+    >> Query::Row::MapNull(paeckchen,0) 
+    >> Query::Row::MapNull(pakete,0) 
+    >> Query::Row::MapNull(dpdliefnr,ManuProcEntity<>::none_id)
+    >> Query::Row::MapNull(brutto_kg,0)
+    >> Query::Row::MapNull(netto_kg,0)
+    >> Query::Row::MapNull(verknr,Kunde::none_id)
 #endif
     ;
 

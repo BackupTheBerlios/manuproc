@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.66 2005/10/21 07:06:00 christof Exp $
+// $Id: Check.cc,v 1.67 2006/06/26 07:53:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -20,7 +20,7 @@
 
 #include <ManuProCConfig.h>
 #include "Check.hh"
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Auftrag/AufEintragZu.h>
 #include <Auftrag/AufEintrag.h>
 #include <Artikel/ArtikelBezeichnung.h>

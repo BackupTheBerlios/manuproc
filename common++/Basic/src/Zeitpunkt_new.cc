@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.cc,v 1.24 2005/12/14 07:35:21 christof Exp $
+// $Id: Zeitpunkt_new.cc,v 1.25 2006/06/26 07:53:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,7 +25,7 @@
 #include <Misc/itos.h>
 #include <Misc/Ausgabe_neu.h>
 #ifdef DEFAULT_DB // actually we should test for database support
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #endif
 
 Zeitpunkt_new &Zeitpunkt_new::Precision(precision p)
@@ -221,10 +221,10 @@ std::string Zeitpunkt_new::Short(const ManuProC::Datum &d) const
 #ifdef DEFAULT_DB // actually we should test for database support
 #include <Misc/pg_type.h>
 
-FetchIStream &operator>>(FetchIStream &is, Zeitpunkt_new &v)
+Query::Row &operator>>(Query::Row &is, Zeitpunkt_new &v)
 {  std::string s;
    int ind;
-   is >> FetchIStream::WithIndicator(s,ind);
+   is >> Query::Row::WithIndicator(s,ind);
    if (ind==-1) v=Zeitpunkt_new();
    else v=Zeitpunkt_new(s.c_str());
    return is;

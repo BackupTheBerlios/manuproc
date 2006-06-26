@@ -53,7 +53,7 @@ bool DBCapability::isWhite(const ColAct ca)
 
 
 
-FetchIStream &operator>>(FetchIStream &is, 
+Query::Row &operator>>(Query::Row &is, 
 		std::pair<std::string,DBCapability::Action> &p)
 {
  char a;
@@ -63,7 +63,7 @@ FetchIStream &operator>>(FetchIStream &is,
  return is;
 }
 
-FetchIStream &operator>>(FetchIStream &is, 
+Query::Row &operator>>(Query::Row &is, 
 		std::pair<DBCapability::WhiteColumn,DBCapability::Action> &p)
 {
  std::string tab;

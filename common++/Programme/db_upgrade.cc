@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.49 2006/05/17 07:34:09 christof Exp $
+// $Id: db_upgrade.cc,v 1.50 2006/06/26 07:53:03 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,7 +19,7 @@
 
 #include <Misc/dbconnect.h>
 #include <Misc/exception.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/inbetween.h>
 #include <ecpgerrno.h>
 

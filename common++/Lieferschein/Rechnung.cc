@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.27 2006/05/03 07:21:31 christof Exp $
+// $Id: Rechnung.cc,v 1.28 2006/06/26 07:53:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -19,7 +19,7 @@
 
 
 #include "Rechnung.h"
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/itos.h>
 #include <Misc/Transaction.h>
 #include <Auftrag/auftrag_status.h>

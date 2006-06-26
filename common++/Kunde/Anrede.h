@@ -1,4 +1,4 @@
-// $Id: Anrede.h,v 1.10 2005/10/27 11:37:25 jacek Exp $
+// $Id: Anrede.h,v 1.11 2006/06/26 07:53:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -71,7 +71,7 @@ class cH_Anrede : public Handle<const Anrede>
   static cache_t cache;
   friend class std::map<int,cH_Anrede>;
   static Anrede default_object;
-  static bool cH_Anrede::default_object_ref;
+  static bool default_object_ref;
 public:
   cH_Anrede() : Handle<const Anrede>(&default_object) {}
   cH_Anrede(const Anrede *p) : Handle<const Anrede>(p) {}

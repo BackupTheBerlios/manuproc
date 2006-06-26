@@ -1,4 +1,4 @@
-// $Id: Lieferart.h,v 1.3 2005/06/17 14:48:18 christof Exp $
+// $Id: Lieferart.h,v 1.4 2006/06/26 07:53:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,7 +26,7 @@
 #include <Misc/Datum.h>
 #include <Misc/multi_lang.h>
 #include <Misc/compiler_ports.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <vector>
 #include <Misc/CacheStatic.h>
 
@@ -38,7 +38,7 @@ private:
     std::string bezeichnung;
     int textid;
 
-    friend FetchIStream &NOTGCC295(::)operator>>(FetchIStream &is, Lieferart &za);
+    friend Query::Row &NOTGCC295(::)operator>>(Query::Row &is, Lieferart &za);
     
 public:
     Lieferart(ID _id) throw (SQLerror) ;

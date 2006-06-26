@@ -1,4 +1,4 @@
-// $Id: LandesListe.h,v 1.8 2003/04/24 13:44:37 jacek Exp $
+// $Id: LandesListe.h,v 1.9 2006/06/26 07:53:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -51,7 +51,7 @@ class cH_LandesListe : public Handle<const LandesListe>
   static cache_t cache;
   friend class std::map<int,cH_LandesListe>;
   static LandesListe default_object;
-  static bool cH_LandesListe::default_object_ref;
+  static bool default_object_ref;
 public:
   cH_LandesListe() : Handle<const LandesListe>(&default_object) {}
   cH_LandesListe(const LandesListe *p) : Handle<const LandesListe>(p) {}

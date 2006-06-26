@@ -84,7 +84,7 @@ Kunde::ID AuftragBase::getVerknr() const throw(SQLerror)
 
  Query("select verknr from auftrag where (instanz,auftragid)=(?,?)") 
 	<< InstanzID() << Id() >> 
-	FetchIStream::MapNull(verknr,Kunde::none_id);
+	Query::Row::MapNull(verknr,Kunde::none_id);
  return verknr;
 }
 
@@ -98,7 +98,7 @@ std::string AuftragBase::getLabel(const int lid) throw(SQLerror)
  int i; std::string s;
  Query q("select alid,kurz from auftrag_label");
 
- FetchIStream fi=q.Fetch();
+ Query::Row fi=q.Fetch();
  while(fi.good())
    {fi >> i >> s;
     labels[i]=s;

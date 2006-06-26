@@ -1,4 +1,4 @@
-// $Id: FertigWaren.h,v 1.16 2004/05/21 12:38:32 jacek Exp $
+// $Id: FertigWaren.h,v 1.17 2006/06/26 07:53:02 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -25,7 +25,7 @@
 #include<Artikel/ArtikelBezeichnung.h>
 #include <Misc/Zeitpunkt_new.h>
 #include <BaseObjects/ManuProcEntity.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <unistd.h>
 #include <pwd.h>
 #include <sys/types.h>
@@ -87,9 +87,9 @@ private:
 public:
  int getUserID() const { return uid; }
   
- friend FetchIStream &operator>>(FetchIStream &is, FertigWaren &fw);
+ friend Query::Row &operator>>(Query::Row &is, FertigWaren &fw);
 };
 
-FetchIStream &operator>>(FetchIStream &is, FertigWaren &fw);
+Query::Row &operator>>(Query::Row &is, FertigWaren &fw);
 
 #endif

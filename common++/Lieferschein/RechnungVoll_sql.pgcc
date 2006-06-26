@@ -1,4 +1,4 @@
-/* $Id: RechnungVoll_sql.pgcc,v 1.21 2005/05/02 15:09:14 jacek Exp $ */
+/* $Id: RechnungVoll_sql.pgcc,v 1.22 2006/06/26 07:53:03 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -56,7 +56,7 @@ void RechnungVoll::loadEntries(bool order_by_artikel) throw(SQLerror)
 
  Query query(qu);
  
- FetchIStream fi=query.Fetch();
+ Query::Row fi=query.Fetch();
  while(fi.good())
    {
     int ARTIKELID, STUECK, ZEILE;
@@ -67,7 +67,7 @@ void RechnungVoll::loadEntries(bool order_by_artikel) throw(SQLerror)
 
     fi >> ARTIKELID >> ZEILE >> STUECK >> MENGE >> RABATT >> LFRSID
        >> LIEFERZEILE >> PREISMENGE 
-       >> FetchIStream::MapNull(LIEFERDATUM,ManuProC::Datum()) 
+       >> Query::Row::MapNull(LIEFERDATUM,ManuProC::Datum()) 
        >> PREIS >> AUFTRAGID;
        
     Preis p(PREIS,getWaehrung(),PREISMENGE);       

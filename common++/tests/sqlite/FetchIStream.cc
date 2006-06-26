@@ -1,4 +1,4 @@
-// $Id: FetchIStream.cc,v 1.1 2004/03/11 21:06:17 jacek Exp $
+// $Id: FetchIStream.cc,v 1.2 2006/06/26 07:53:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,7 +18,7 @@
  */
 
 
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/dbconnect.h>
 #include <iterator>
 
@@ -37,8 +37,8 @@ int main()
    float f;
    int ind3=0;
    
-   query >> s >> s2 >> FetchIStream::WithIndicator(s3,ind3)
-      >> FetchIStream::MapNull(s4,"<NULL>")
+   query >> s >> s2 >> Query::Row::WithIndicator(s3,ind3)
+      >> Query::Row::MapNull(s4,"<NULL>")
       >> i >> f >> b;
    std::cout << s << ", " << s2 << ", " << ind3 << ", " << s4 << '\n';
    std::cout << i << ", " << f << ", " << b << '\n';
@@ -62,8 +62,8 @@ int main()
    Query ("select ?,?,?,'?',?, ?,?")
    	<< 1 << Query::null() << "test" << in 
    		<< Query::NullIf(1,2) << Query::NullIf(2,2)
-   	>> a >> FetchIStream::MapNull(b,-1) >> x >> y >> z 
-   		>> c >> FetchIStream::MapNull(d,-1);
+   	>> a >> Query::Row::MapNull(b,-1) >> x >> y >> z 
+   		>> c >> Query::Row::MapNull(d,-1);
    std::cout << a << ' ' << b << ' ' << x << ' ' << y << ' ' << z 
    		<< ' ' << c << ' ' << d << '\n';
   }

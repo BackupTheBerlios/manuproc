@@ -1,4 +1,4 @@
-/* $Id: ArtikelBase.cc,v 1.6 2005/12/14 07:35:21 christof Exp $ */
+/* $Id: ArtikelBase.cc,v 1.7 2006/06/26 07:53:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,13 +19,13 @@
 
 #include<Artikel/ArtikelBase.h>
 #include<Artikel/ArtikelBezeichnung.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 
-FetchIStream& operator>>(FetchIStream& is,ArtikelBase &AB)
+Query::Row& operator>>(Query::Row& is,ArtikelBase &AB)
 {
   int a;
   int ind;
-  is >> FetchIStream::WithIndicator(a,ind);
+  is >> Query::Row::WithIndicator(a,ind);
   if (!ind) AB=ArtikelBase(a);
   else AB=ArtikelBase();
   return is;

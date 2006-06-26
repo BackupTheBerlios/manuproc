@@ -22,13 +22,13 @@
 #include <strstream>
 #include <Misc/SQLerror.h>
 #include <Misc/Transaction.h>
-#include <Auftrag/selFullAufEntry.h>
+#include <Auftrag/SelectedFullAufList.h>
 #include <Misc/string0.h>
 #include <Kunde/Zahlungsart.h>
 #include<Misc/Changejournal.h>
 #include <Artikel/ArtikelStamm.h>
 #include <Misc/TraceNV.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <sys/types.h>
 
 void Auftrag::deleteAuftrag() throw(SQLerror)

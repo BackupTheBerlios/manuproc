@@ -1,4 +1,4 @@
-// $Id: ArtikelEAN_sql.pgcc,v 1.14 2006/01/19 22:53:33 christof Exp $
+// $Id: ArtikelEAN_sql.pgcc,v 1.15 2006/06/26 07:53:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,7 +22,7 @@
 #include"ArtikelEAN.h"
 #include<Misc/itos.h>
 #include<ExtBezSchema/ExtBezSchemaHandle.h>
-#include<Misc/FetchIStream.h>
+#include<Misc/Query.h>
 
 
 ArtikelEAN::ArtikelEAN(const std::string _ean, const ArtikelTyp at) throw(SQLerror)

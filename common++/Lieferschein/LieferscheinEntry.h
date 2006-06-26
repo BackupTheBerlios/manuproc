@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.44 2005/08/24 15:05:15 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.45 2006/06/26 07:53:03 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig
@@ -127,7 +127,7 @@ private:
  void addZusatzEntry_db(const AufEintragBase &AEB,const mengen_t &menge) throw(SQLerror);
  void updateZusatzEntry(const AufEintragBase &Z,const AuftragBase::mengen_t &menge) throw(SQLerror);
  void ZusaetzeLaden();
- friend FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry &aeb);
+ friend Query::Row& operator>>(Query::Row& is,LieferscheinEntry &aeb);
  void showZusatzInfos() const;
  void change_status(AufStatVal new_status);
 };

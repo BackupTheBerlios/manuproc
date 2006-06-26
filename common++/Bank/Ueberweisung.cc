@@ -1,4 +1,4 @@
-/* $Id: Ueberweisung.cc,v 1.10 2005/09/05 16:28:37 christof Exp $ */
+/* $Id: Ueberweisung.cc,v 1.11 2006/06/26 07:53:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,22 +40,22 @@ Ueberweisung::Ueberweisung(ManuProcEntity<>::ID uid) throw(SQLerror)
  SQLerror::test(__FILELINE__);
  
  q >> ownkonto >> ownblz >> konto >> blz 
- 	>> FetchIStream::MapNull(faelligam,ManuProC::Datum())
+ 	>> Query::Row::MapNull(faelligam,ManuProC::Datum())
  	>> betrag 
- 	>> FetchIStream::MapNull(belegbetrag,0) 
+ 	>> Query::Row::MapNull(belegbetrag,0) 
  	>> auftraggeber >> empfaenger
  	>> erfasstam >> erfasstdurch 
- 	>> FetchIStream::MapNull(erfolgtam,ManuProC::Datum()) 
- 	>> FetchIStream::MapNull(erfolgtdurch,-1)
- 	>> FetchIStream::MapNull(kundennr,Kunde::none_id) 	
+ 	>> Query::Row::MapNull(erfolgtam,ManuProC::Datum()) 
+ 	>> Query::Row::MapNull(erfolgtdurch,-1)
+ 	>> Query::Row::MapNull(kundennr,Kunde::none_id) 	
  	>> vzweck[0] 
- 	>> FetchIStream::MapNull(vzweck[1],"") 	 	
- 	>> FetchIStream::MapNull(vzweck[2],"") 	 	
- 	>> FetchIStream::MapNull(vzweck[3],"") 	 	
- 	>> FetchIStream::MapNull(belegdatum,ManuProC::Datum())  	
- 	>> FetchIStream::MapNull(belegnr,ManuProcEntity<>::none_id) 	 	
- 	>> FetchIStream::MapNull(buchungsjournal,ManuProcEntity<>::none_id) 	 	 	
- 	>> FetchIStream::MapNull(buchungskonto,ManuProcEntity<>::none_id);
+ 	>> Query::Row::MapNull(vzweck[1],"") 	 	
+ 	>> Query::Row::MapNull(vzweck[2],"") 	 	
+ 	>> Query::Row::MapNull(vzweck[3],"") 	 	
+ 	>> Query::Row::MapNull(belegdatum,ManuProC::Datum())  	
+ 	>> Query::Row::MapNull(belegnr,ManuProcEntity<>::none_id) 	 	
+ 	>> Query::Row::MapNull(buchungsjournal,ManuProcEntity<>::none_id) 	 	 	
+ 	>> Query::Row::MapNull(buchungskonto,ManuProcEntity<>::none_id);
  	
  struct passwd *pw;
  

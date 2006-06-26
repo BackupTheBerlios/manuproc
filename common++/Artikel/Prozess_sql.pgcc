@@ -1,4 +1,4 @@
-// $Id: Prozess_sql.pgcc,v 1.12 2003/03/24 10:41:19 christof Exp $
+// $Id: Prozess_sql.pgcc,v 1.13 2006/06/26 07:53:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,7 +19,7 @@
 
 #include <Artikel/Prozess.h>
 #include <Misc/Rundungsmacros.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 
 exec sql include sqlca;
 
@@ -65,16 +65,16 @@ cH_Prozess::cH_Prozess(Prozess::ID pid)
    }
 }
 
-FetchIStream &operator>>(FetchIStream &is, Prozess::ID &v)
+Query::Row &operator>>(Query::Row &is, Prozess::ID &v)
 {  int i;
-   is >> FetchIStream::MapNull(i,ProzessID::None);
+   is >> Query::Row::MapNull(i,ProzessID::None);
    v=Prozess::ID(i);
    return is;
 }
 
-FetchIStream &operator>>(FetchIStream &is, cH_Prozess &v)
+Query::Row &operator>>(Query::Row &is, cH_Prozess &v)
 {  int i;
-   is >> FetchIStream::MapNull(i,ProzessID::None);
+   is >> Query::Row::MapNull(i,ProzessID::None);
    v=Prozess::ID(i);
    return is;
 }

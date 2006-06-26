@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.38 2004/11/03 09:07:16 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.39 2006/06/26 07:53:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -22,7 +22,7 @@
 #include <sys/types.h>
 
 #include <Auftrag/AufEintrag.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/string0.h>
 #include <Misc/Transaction.h>
 #include <Auftrag/AufEintragZu.h>

@@ -1,4 +1,4 @@
-// $Id: Kundengruppe.cc,v 1.11 2006/01/10 12:08:09 christof Exp $
+// $Id: Kundengruppe.cc,v 1.12 2006/06/26 07:53:02 christof Exp $
 #include "Kundengruppe.h"
 #include <BaseObjects/ManuProcEntity_FetchIStream.h>
 
@@ -39,14 +39,14 @@ Kundengruppe::Kundengruppe(ID kgid) throw(SQLerror)
 }
 
 
-FetchIStream &operator>>(FetchIStream &is,Kundengruppe &kg)
- {  return is >> kg.entityid 
- 	>> FetchIStream::MapNull(kg.obergruppe,std::string()) 
+Query::Row &operator>>(Query::Row &is,Kundengruppe &kg)
+ {  return is >> (int&)kg.entityid 
+	>> Query::Row::MapNull(kg.obergruppe,std::string()) 
  	>> kg.grpname 
- 	>> FetchIStream::MapNull(kg.kommentar,std::string());
+ 	>> Query::Row::MapNull(kg.kommentar,std::string());
  } 
  
-FetchIStream &operator>>(FetchIStream &is,Kundengruppe::ID &kgid)
+Query::Row &operator>>(Query::Row &is,Kundengruppe::ID &kgid)
  {  return is >> (int&)kgid; 
  }  
 
@@ -64,15 +64,15 @@ cH_Kundengruppe::cH_Kundengruppe()
 }
 
 
-FetchIStream &operator>>(FetchIStream &is,cH_Kundengruppe &kg)
+Query::Row &operator>>(Query::Row &is,cH_Kundengruppe &kg)
  { int _id;
    std::string _obg;
    std::string _bez;
    std::string _komm;
    is >> _id 
-   >> FetchIStream::MapNull(_obg,std::string()) 
+   >> Query::Row::MapNull(_obg,std::string()) 
    >> _bez 
-   >> FetchIStream::MapNull(_komm,std::string());  
+   >> Query::Row::MapNull(_komm,std::string());  
    cH_Kundengruppe ch_kg((Kundengruppe::ID)_id,_obg,_bez,_komm);
    kg=ch_kg;
    return is;

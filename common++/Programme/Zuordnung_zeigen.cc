@@ -1,4 +1,4 @@
-// $Id: Zuordnung_zeigen.cc,v 1.6 2003/07/04 12:58:16 christof Exp $
+// $Id: Zuordnung_zeigen.cc,v 1.7 2006/06/26 07:53:03 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -22,7 +22,7 @@
 #include <Auftrag/AufEintragZu.h>
 #include <Auftrag/AufEintrag.h>
 #include <Misc/exception.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 
 static void show(const AufEintrag &ae)
 {  std::cout << ae << ": " << ae.getStueck();
@@ -76,7 +76,7 @@ int main(int argc,char *argv[])
    {  Query q("select zeilennr from auftragentry "
    	"where (instanz,auftragid)=(?,?) order by zeilennr");
       q << AuftragBase(instanz,id);
-      FetchIStream is;
+      Query::Row is;
       while ((q>>is).good())
       {  show_all(AufEintragBase(instanz,id,is.Fetch<int>()));
       }

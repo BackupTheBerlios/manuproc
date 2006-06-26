@@ -1,4 +1,4 @@
-// $Id: createDynDescr.cc,v 1.4 2004/05/03 17:48:19 jacek Exp $
+// $Id: createDynDescr.cc,v 1.5 2006/06/26 07:53:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig
@@ -18,10 +18,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynDescr.cc,v 1.4 2004/05/03 17:48:19 jacek Exp $
+// $Id: createDynDescr.cc,v 1.5 2006/06/26 07:53:03 christof Exp $
 
 #include <Misc/dbconnect.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/Transaction.h>
 #include <ctime>
 #include <iostream>
@@ -50,7 +50,7 @@ int main()
 {  try
    {  ManuProC::dbconnect();
       Transaction tr;
-      FetchIStream is;
+      Query::Row is;
       
       std::cout << "//  DynamicDescriptions.h  created " << Zeitpunkt_new(time(0)) 
       		<< "\n"

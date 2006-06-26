@@ -96,6 +96,7 @@ struct payload_t
 	}
    payload_t() : errechnet(false),gefunden(false) {}
 };
+}
 
 typedef CacheStatic<index_t,payload_t> cache_t;
 
@@ -163,7 +164,7 @@ Artikelpreis::Artikelpreis(const cH_PreisListe liste,const ArtikelBase &a,
       Query q(query);	      	
       q << a.Id() << plid;
       payload_t pyl(!q.Result(), false);
-      FetchIStream is;
+      Query::Row is;
       int WAEHRUNG=Waehrung::default_id;
       if (!!liste->getWaehrung()) 
          WAEHRUNG=liste->getWaehrung()->Id();
@@ -173,8 +174,8 @@ Artikelpreis::Artikelpreis(const cH_PreisListe liste,const ArtikelBase &a,
          { geldbetrag_t PREIS;
       	   preismenge_t PREISMENGE;
            int MINDESTMENGE, PRIOR, PLSNR;
-           is >> PRIOR >> PREIS >> FetchIStream::MapNull(MINDESTMENGE,1) 
-           	>> FetchIStream::MapNull(PREISMENGE,1) >> PLSNR;
+           is >> PRIOR >> PREIS >> Query::Row::MapNull(MINDESTMENGE,1) 
+           	>> Query::Row::MapNull(PREISMENGE,1) >> PLSNR;
            is.ThrowIfNotEmpty(__FUNCTION__);
 	  PreisListe::ID ppl=liste->isDepending() ? 
 		(PRIOR==0 ? PLSNR : PreisListe::none_id) : PreisListe::none_id;
@@ -517,9 +518,7 @@ void Artikelpreis::remove(const cH_PreisListe liste,const ArtikelBase &a,
  
 }
 
-};
-
-FetchIStream &operator>>(FetchIStream &is,
+Query::Row &operator>>(Query::Row &is,
 	std::pair<Artikelpreis::UniqPreis,Preis::geldbetrag_t> &ag)
 {  return is >> ag.first.artid >> ag.first.mindmenge
 	>> ag.first.plid >> ag.second;

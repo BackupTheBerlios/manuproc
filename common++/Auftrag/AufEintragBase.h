@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.51 2006/06/12 14:17:31 christof Exp $
+// $Id: AufEintragBase.h,v 1.52 2006/06/26 07:53:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -106,7 +106,7 @@ public:
 };
 
 std::ostream &operator<<(std::ostream &o,const AufEintragBase &ae);
-FetchIStream& operator>>(FetchIStream& is,AufEintragBase &aeb);
+Query::Row& operator>>(Query::Row& is,AufEintragBase &aeb);
 ArgumentList &operator<<(ArgumentList&q, const AufEintragBase &aeb);
 
 #endif

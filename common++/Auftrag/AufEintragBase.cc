@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.55 2006/06/20 13:35:26 christof Exp $
+// $Id: AufEintragBase.cc,v 1.56 2006/06/26 07:53:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,18 +30,18 @@
 #include <Artikel/ArtikelBase.h>
 #endif
 #include <Misc/TraceNV.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/Changejournal.h>
 #include <unistd.h>
 #include <sys/types.h>
 
 
-FetchIStream& operator>>(FetchIStream& is,AufEintragBase &aeb)
+Query::Row& operator>>(Query::Row& is,AufEintragBase &aeb)
 {
   int a,b,c;
-  is >> FetchIStream::MapNull(a,ppsInstanzID::None)
-  	>>FetchIStream::MapNull(b,AufEintragBase::none_id)
-  	>>FetchIStream::MapNull(c,AufEintragBase::none_znr);
+  is >> Query::Row::MapNull(a,ppsInstanzID::None)
+  	>>Query::Row::MapNull(b,AufEintragBase::none_id)
+  	>>Query::Row::MapNull(c,AufEintragBase::none_znr);
   cH_ppsInstanz I((ppsInstanz::ID(a)));
   AuftragBase ab(I,b);
   aeb=AufEintragBase(ab,c);

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.120 2006/06/20 13:35:26 christof Exp $
+// $Id: AufEintrag.cc,v 1.121 2006/06/26 07:53:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -19,7 +19,7 @@
  */
 
 #include <Auftrag/AufEintrag.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/string0.h>
 #include <Misc/Transaction.h>
 #include <Auftrag/AufEintragZu.h>
@@ -35,7 +35,7 @@
 #include <Artikel/ArtikelStamm.h>
 #include <Misc/relops.h>
 #include <Auftrag/sqlAuftragSelector.h>
-#include <Auftrag/selFullAufEntry.h>
+#include <Auftrag/SelectedFullAufList.h>
 #include <Auftrag/AufEintrag_delayedreclaim.h>
 #include <Misc/TemporaryValue.h>
 
@@ -482,7 +482,7 @@ fixedpoint<2> AufEintrag::ProvSatz() const throw(SQLerror)
  Query q("select provsatz from auftragentry where"
 	" (instanz,auftragid,zeilennr) = (?,?,?)");
 
- q << InstanzID() << Id() << getZnr() >> FetchIStream::MapNull(provsatz,0);
+ q << InstanzID() << Id() << getZnr() >> Query::Row::MapNull(provsatz,0);
  SQLerror::test(__FILELINE__);
 
  return provsatz;

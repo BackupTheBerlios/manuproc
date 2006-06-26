@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.41 2006/05/03 07:15:10 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.42 2006/06/26 07:53:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.83 2005/10/11 16:26:46 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.84 2006/06/26 07:53:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,12 +18,12 @@
  */
 
 #include "LieferscheinEntry.h"
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/Transaction.h>
 #include <Auftrag/AufEintrag.h>
 #include <unistd.h>
 #include <Lieferschein/Lieferschein.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Auftrag/selFullAufEntry.h>
 #include <Artikel/Einheiten.h>
 #include <Misc/TraceNV.h>
@@ -284,7 +284,7 @@ LieferscheinBase::mengen_t LieferscheinEntry::Abschreibmenge(int _stueck,
    return neue_menge-alte_menge;
 }
 
-FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry::st_AufEintragMenge& z)
+Query::Row& operator>>(Query::Row& is,LieferscheinEntry::st_AufEintragMenge& z)
 { is >> z.aeb >> z.menge;
   // eliminate the valid Instanz
   if (!z.aeb) z.aeb=AufEintragBase();
@@ -305,18 +305,18 @@ void LieferscheinEntry::ZusaetzeLaden()
  	.FetchArray(VZusatz);
 }
 
-FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry& z)
+Query::Row& operator>>(Query::Row& is,LieferscheinEntry& z)
 {bool zusatzinfo;
  AufEintragBase refauftrag;
  int status;
  is >> z.lieferid >> z.zeilennr >> z.artikel 
- 	>> FetchIStream::MapNull(z.stueck)
- 	>> FetchIStream::MapNull(z.menge) 
- 	>> FetchIStream::MapNull(z.palette)
-     >> FetchIStream::MapNull(zusatzinfo) >> refauftrag 
-     >> FetchIStream::MapNull(z.lagerid,FertigWarenLager::none_lagerid)
-     >> FetchIStream::MapNull(status,(AufStatVal)NOSTAT)
-     >> FetchIStream::MapNull(z.text);
+ 	>> Query::Row::MapNull(z.stueck)
+ 	>> Query::Row::MapNull(z.menge) 
+ 	>> Query::Row::MapNull(z.palette)
+     >> Query::Row::MapNull(zusatzinfo) >> refauftrag 
+     >> Query::Row::MapNull(z.lagerid,FertigWarenLager::none_lagerid)
+     >> Query::Row::MapNull(status,(AufStatVal)NOSTAT)
+     >> Query::Row::MapNull(z.text);
  z.status=(AufStatVal)status;
 #ifdef PETIG_EXTENSIONS 
   // gibt es einen Grund, das nicht anzunehmen, immerhin war es früher so

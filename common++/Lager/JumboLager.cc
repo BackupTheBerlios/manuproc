@@ -1,4 +1,4 @@
-// $Id: JumboLager.cc,v 1.11 2005/10/05 08:49:27 christof Exp $
+// $Id: JumboLager.cc,v 1.12 2006/06/26 07:53:02 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -27,7 +27,7 @@
 #include <Misc/itos.h>
 #include <unistd.h>
 #include <Misc/TraceNV.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 
 void JumboLager::Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jumbo_LogTyp typ,
    const std::string& user,const Zeitpunkt_new *zeit,bool produziert)

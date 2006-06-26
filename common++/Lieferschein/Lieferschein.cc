@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.49 2006/06/26 07:52:50 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.50 2006/06/26 07:53:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,7 +19,7 @@
 
 #include"Lieferschein.h"
 #include <Misc/Transaction.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 //#include <Instanzen/Produziert.h>
 #include <unistd.h> 
 #include <Misc/TraceNV.h>
@@ -203,7 +203,7 @@ const ManuProC::Datum Lieferschein::getMaxZahlziel() const throw(SQLerror)
    	"on (refauftragid=auftragid and a.instanz=e.instanz) "
    	"where (e.instanz,e.lfrsid)=(?,?)")
    	<< Instanz()->Id() << Id()
-	>> FetchIStream::MapNull(d,ManuProC::Datum());
+	>> Query::Row::MapNull(d,ManuProC::Datum());
 
  return d;
 }
@@ -216,7 +216,7 @@ const std::string Lieferschein::Notiz() const throw(SQLerror)
 
  Query("select notiz from lieferschein where (instanz,lfrsid)=(?,?)")
  	<< Instanz()->Id() << Id()
- 	>> FetchIStream::MapNull(notiz);
+ 	>> Query::Row::MapNull(notiz);
  notiz_valid=true;
  return notiz;
 }

@@ -1,4 +1,4 @@
-// $Id: createDynConfig.cc,v 1.8 2005/11/22 13:04:34 christof Exp $
+// $Id: createDynConfig.cc,v 1.9 2006/06/26 07:53:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,11 +18,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynConfig.cc,v 1.8 2005/11/22 13:04:34 christof Exp $
+// $Id: createDynConfig.cc,v 1.9 2006/06/26 07:53:03 christof Exp $
 
 
 #include <Misc/dbconnect.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/Transaction.h>
 #include <ctime>
 #include <iostream>
@@ -55,7 +55,7 @@ int main()
   try
    {  ManuProC::dbconnect();
       Transaction tr;
-      FetchIStream is;
+      Query::Row is;
       
       std::cout << "//  DynamicConfig.h  created " << Zeitpunkt_new(time(0)) 
       		<< "\n"
@@ -114,7 +114,7 @@ int main()
       {  Query q("select prozessid,label,text from prozesse order by prozessid");
          while ((q >> is).good())
          {  int id; std::string label,text;
-            is >> id >> label >> FetchIStream::MapNull(text,std::string());
+            is >> id >> label >> Query::Row::MapNull(text,std::string());
             if (!text.empty()) label=label+'_'+text;
             std::cout << "#define HAS_PROCESS_" << toIdentifier(label) << '\n';
          }

@@ -1,7 +1,7 @@
 
 
 #include "multi_lang.h"
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/itos.h>
 
 MultiL_Dict::MultiL_Dict(int sprache, int default_spr) : 
@@ -29,7 +29,7 @@ std::string MultiL_Dict::MLT(const LangTXT textid, std::string def_str)
 	   Query q1("select textid,text_lang from text_bausteine "
  	   "where sprid=? and textid=?");
  	   q1 << sprid << textid;
- 	   FetchIStream fi=q1.FetchOne();
+ 	   Query::Row fi=q1.FetchOne();
 
  	   if(fi.good()) {fi >> text;}
  	   textmap[textid]=text; 	   

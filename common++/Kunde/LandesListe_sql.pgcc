@@ -1,4 +1,4 @@
-// $Id: LandesListe_sql.pgcc,v 1.7 2003/04/24 13:44:37 jacek Exp $
+// $Id: LandesListe_sql.pgcc,v 1.8 2006/06/26 07:53:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,7 +19,7 @@
 
 #include <Kunde/LandesListe.h>
 #include <Misc/Transaction.h>
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <Misc/itos.h>
 #include <Misc/Waehrung.h>
 
