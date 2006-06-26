@@ -20,6 +20,9 @@
 #include "ppsInstanz.h"
 #include <Artikel/ArtikelStamm.h>
 #include <Misc/Ausgabe_neu.h> // UTF8
+#if !defined(__GNUC__) || __GNUC__<3
+#include <algorithm>
+#endif
 
 ppsInstanz::ppsInstanz(ID iid)
  : instid(iid),
