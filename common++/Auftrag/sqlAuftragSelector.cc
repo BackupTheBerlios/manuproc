@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.51 2006/03/09 21:15:04 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.52 2006/06/26 07:53:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Jacek Jakubowski
@@ -100,6 +100,9 @@ std::string SQLFullAuftragSelector::StatusQualifier(AufStatVal stat)
 // if(nonstatus) op="!=";
 // if(nonstatus && UNCOMMITED) assert(!"Nicht implementert");
  switch (stat) {
+   case OPEN_AND_UNCOM : 
+	return "a.stat in ("+itos(OPEN)+","+itos(UNCOMMITED)+") and " 
+	       "e.status in ("+itos(OPEN)+","+itos(UNCOMMITED)+")";
    case OPEN       : return "a.stat=e.status and e.status"+op+status;
    case UNCOMMITED : return "(a.stat= "+status+" and e.status "+nicht_erledigt+
                         " or (a.stat "+nicht_erledigt+" and e.status="+status+"))";
@@ -107,7 +110,7 @@ std::string SQLFullAuftragSelector::StatusQualifier(AufStatVal stat)
    case CLOSED     : return "(a.stat"+op+status+" or e.status"+op+status+")";
    case NOSTAT     : ;
    }
- assert(!"SQLFullAuftragSelector::StatusQualifier komischer Status");
+ assert(!"SQLFullAuftragSelector::StatusQualifier unbekannter Status");
  return "false";
 }
 

@@ -1,4 +1,4 @@
-/* $Id: auftrag_status.h,v 1.4 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: auftrag_status.h,v 1.5 2006/06/26 07:53:12 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,7 +21,7 @@
 #ifndef AUFSTATUS
 #define AUFSTATUS
 
-typedef enum {NOSTAT=-1, UNCOMMITED=0, OPEN, CLOSED, STORNO} AufStatVal;
+typedef enum {NOSTAT=-1, UNCOMMITED=0, OPEN, CLOSED, STORNO, OPEN_AND_UNCOM} AufStatVal;
 typedef enum {REQUEST=0, CONFIRM, PROBLEM} AufChangeStatVal;
 typedef enum {MENGE='M', LIEFDATUM='D', STATUS='S'} AufChangeTypeVal;
 
