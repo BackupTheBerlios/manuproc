@@ -1,4 +1,4 @@
-// $Id: Tag.h,v 1.12 2006/04/13 12:48:11 christof Exp $
+// $Id: Tag.h,v 1.13 2006/06/26 07:53:19 christof Exp $
 /*  ManuProC_Base: Main ManuProC Library
  *  Copyright (C) 1998-2003  Christof Petig
  *
@@ -46,11 +46,13 @@ public: // nice to have for custom parsing
     	 static std::string create_value(const T &val);
     	 
 public:
-    	Tag(const std::string &t,const std::string &v="") throw()
+    	Tag(const std::string &t,const std::string &v=std::string()) throw()
 		: type(t), value(v), parent_ptr(0)
 	{}
 	// this makes a copy !!!
 	Tag &push_back(const Tag t) throw();
+	Tag &push_back(std::string const& t, std::string const& v=std::string()) throw()
+	{ return push_back(Tag(t,v)); }
 	typedef std::list<Tag>::iterator iterator;
 	typedef std::list<Tag>::const_iterator const_iterator;
 	const_iterator begin() const throw()
@@ -111,6 +113,10 @@ public:
     	}
 	bool hasAttr(const std::string &name) const throw();
 	void setAttr(const std::string &name, const std::string &value);
+	template <class T>
+	 void setAttr(const std::string &name, T const& val)
+	{ setAttr(name,create_value<T>(val));
+	}
 	
 	// values of substructures
 	bool hasTag(const std::string &typ) const throw();
@@ -133,7 +139,7 @@ public:
 	// template specialization declarations
 	
 #ifndef TAG_OMIT_DEPRECATED
-	const std::string getAttr(const std::string &name, const std::string &def="") const throw()
+	const std::string getAttr(const std::string &name, const std::string &def=std::string()) const throw()
 	{  return getAttr_def<std::string>(name,def); }
 	bool getBoolAttr(const std::string &typ,bool def=false) const throw()
 	{  return getAttr_def<bool>(typ,def); }
@@ -150,7 +156,7 @@ public:
 	void setIntAttr_nn(const std::string &name, int val)
 	{  if (val) setIntAttr(name,val); }
 
-	const std::string getString(const std::string &typ,const std::string &def="") const throw()
+	const std::string getString(const std::string &typ,const std::string &def=std::string()) const throw()
 	{  return getValue_def<std::string>(typ,def); }
 	bool getBool(const std::string &typ,bool def=false) const throw()
 	{  return getValue_def<bool>(typ,def); }

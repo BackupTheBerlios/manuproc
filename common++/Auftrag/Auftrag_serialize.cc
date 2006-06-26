@@ -1,4 +1,4 @@
-// $Id: Auftrag_serialize.cc,v 1.1 2006/06/26 07:53:17 christof Exp $
+// $Id: Auftrag_serialize.cc,v 1.2 2006/06/26 07:53:19 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) Christof Petig
  *
@@ -47,10 +47,10 @@ void serialize(Tag &where, cH_Kunde const& k,bool nest=true)
     where.setAttr("UnsereNummerBeiIhnen",k->UnsereKundenNr());
   // Kontakte (Telnr, Fax, E-Mail)
   // Betreuer (Name, Kontakt)
-  if (nest && k->Rngan()>0 && k->Rngan!=k->Id())
+  if (nest && k->Rngan()>0 && k->Rngan()!=k->Id())
   { serialize(where.push_back("Rechnungsempfänger"),cH_Kunde(k->Rngan()),false);
   }
-  if (nest && k->Lfran()>0 && k->Lfran!=k->Id())
+  if (nest && k->Lfran()>0 && k->Lfran()!=k->Id())
   { serialize(where.push_back("LieferungAn"),cH_Kunde(k->Lfran()),false);
   }
 }
@@ -58,14 +58,14 @@ void serialize(Tag &where, cH_Kunde const& k,bool nest=true)
 Tag serialize(AuftragFull const& a, bool bestaetigung)
 { Tag result(bestaetigung?"Auftragsbestätigung":"Auftragserteilung");
   Tag &Auftraggeber=result.push_back("Auftraggeber");
-  serialize(Auftraggeber,bestaetigung?cH_Kunde(a.getKundennr():cH_Kunde(Kunde::eigene_id)));
+  serialize(Auftraggeber,bestaetigung?cH_Kunde(a.getKundennr()):cH_Kunde(Kunde::eigene_id));
   Tag &Lieferant=result.push_back("Lieferant");
   serialize(Lieferant,bestaetigung?cH_Kunde(Kunde::eigene_id):cH_Kunde(a.getKundennr()));
   result.setAttr("unsereNummer",a.getAuftragidToStr());
   if (bestaetigung) 
   { result.setAttr("IhreNummer",a.getYourAufNr());
     Tag &zahlungsart=result.push_back("Zahlungsart",a.Zahlart()->Bezeichnung());
-    zahlungsart.setAttr("Frist",itos(a.Zahlart()->getZahlungsfrist));
+    zahlungsart.setAttr("Frist",a.Zahlart()->getZahlungsfrist());
     zahlungsart.setAttr("Kurzbezeichnung",a.Zahlart()->Kurzbezeichnung());
   }
   result.setAttr("Kennung",AuftragBase::getLabel(a.Label()));
@@ -79,7 +79,7 @@ Tag serialize(AuftragFull const& a, bool bestaetigung)
   for (AuftragFull::const_iterator i=a.begin();i!=a.end();++i)
   { Tag &zeile=result.push_back("Zeile");
     zeile.setAttr("Nummer",i->ZNr());
-    Tag &menge=zeile.push_back("Menge",i->getStk()->String());
+    Tag &menge=zeile.push_back("Menge",i->getStueck()->String());
 //    menge.setAttr("Einheit",i->);
     Tag &unsArt=zeile.push_back("UnserArtikel"); // Bezeichnung+Schema
     Tag &yourArt=zeile.push_back("IhrArtikel"); // B+S

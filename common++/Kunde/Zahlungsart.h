@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.h,v 1.25 2005/10/11 10:19:30 christof Exp $
+// $Id: Zahlungsart.h,v 1.26 2006/06/26 07:53:19 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -70,7 +70,7 @@ public:
     const bool getBankeinzug() const { return bankeinzug; }
     const bool getMonatsende() const { return monatsende; }
     const fixedpoint<2> getEinzugrabatt() const {return einzugrabatt;} 
-    const std::string Kurzbezeichung() const {return kurzbezeichung;}
+    const std::string Kurzbezeichnung() const {return kurzbezeichung;}
     const std::string Bezeichnung() const {return bezeichnung;}
     const std::string getKurzbezeichung() const {return kurzbezeichung;}
     const std::string getBezeichnung() const {return bezeichnung;}
