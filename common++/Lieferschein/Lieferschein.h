@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.29 2005/08/24 14:46:09 christof Exp $ */
+/* $Id: Lieferschein.h,v 1.30 2006/06/26 07:52:50 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -47,12 +47,13 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  mutable std::string notiz;
  mutable bool notiz_valid;
  Kunde::ID verknr;
-
+ 
  public:
         
  	Lieferschein(const LieferscheinBase &source)
  		: LieferscheinBase(source), kunde(Kunde::none_id),
- 			notiz_valid(false),verknr(Kunde::none_id)  {}
+ 			notiz_valid(false),verknr(Kunde::none_id)  
+ 			{}
  		
  	Lieferschein() : LieferscheinBase(),
  			lsdatum(ManuProC::Datum::today()),
@@ -64,8 +65,9 @@ class Lieferschein : public LieferscheinBase, public HandleContent
 #endif
 			,notiz_valid(false)
 			,verknr(Kunde::none_id)
- 			{}
+			{}
  			
+
  	Lieferschein(const cH_ppsInstanz& instanz,int lid) throw(SQLerror);
 	Lieferschein(const LieferscheinBase &lsbase,
 			const ManuProC::Datum &_lsdatum,
@@ -74,7 +76,7 @@ class Lieferschein : public LieferscheinBase, public HandleContent
 			
  Lieferschein(const cH_ppsInstanz& instanz,cH_Kunde k,int jahr=0) throw(SQLerror);
  void setDPDDatum() const throw(SQLerror);
-			
+ 
 #ifdef DPD_LIEFERSCHEINE
  const static int Fertig=0;
  const static int Offen=-1;

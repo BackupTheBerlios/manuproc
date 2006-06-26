@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.39 2005/09/05 16:28:37 christof Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.40 2006/06/26 07:52:50 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,6 +27,7 @@ exec sql include sqlca;
 Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,int lid) throw(SQLerror)
 : LieferscheinBase(_instanz,lid),kunde(Kunde::default_id), notiz_valid(false)
 {
+
 ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("LieferscheinId",lid)); 
 
  int KDNR;

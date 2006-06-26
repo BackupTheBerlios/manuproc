@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.48 2005/08/24 15:05:15 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.49 2006/06/26 07:52:50 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -41,7 +41,8 @@ int _dpdlnr)
 #endif
 ,notiz_valid(false)
 ,verknr(Kunde::none_id)
-{}
+{
+}
 
 int Lieferschein::push_back(const ArtikelBase &artikel, int anzahl, 
 		mengen_t mengeneinheit, int palette)
