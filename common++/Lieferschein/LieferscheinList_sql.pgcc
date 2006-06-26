@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList_sql.pgcc,v 1.27 2006/01/19 22:53:29 christof Exp $ */
+/* $Id: LieferscheinList_sql.pgcc,v 1.28 2006/06/26 07:48:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -65,7 +65,8 @@ void LieferscheinList::build_list()
 
  if(vom.valid() && bis.valid())
    {squery+= " and coalesce(li.geliefertam,li.datum)"
-   	" between '"+vom.to_iso()+"' and '"+bis.to_iso()+"'";
+   	" between '"+vom.to_iso()+"' and '"
+   	+ManuProC::TimeStamp(bis,23,59,59).write()+"'";
    }
 
  if(hole_entries)
@@ -144,87 +145,59 @@ std::string LieferscheinList::SQuery(bool no_gts)
  std::string squery;
 
  if(hole_entries)
-   squery = "select lfrsid,zeile,li.kundennr,li.datum,coalesce(li.rngid,-1),"
-        " coalesce(pakete,0),coalesce(paeckchen,0), "
-        " coalesce(cast(geliefertam as text),cast(li.datum as text),''), "
-        " coalesce(dpdliefnr,0) from lieferschein li join "
+   squery = "select lfrsid,zeile,li.kundennr,li.datum,li.rngid,"
+        " pakete,paeckchen, "
+        " coalesce(geliefertam,li.datum), "
+        " dpdliefnr from lieferschein li join "
         " lieferscheinentry le using (lfrsid,instanz) ";
 
  else
-   squery = "select lfrsid,0,li.kundennr,li.datum,coalesce(li.rngid,-1), "
-        " coalesce(pakete,0),coalesce(paeckchen,0), "
-        " coalesce(cast(geliefertam as text),cast(li.datum as text),''), "
-        " coalesce(dpdliefnr,0) from lieferschein li";
+   squery = "select lfrsid,0,li.kundennr,li.datum,li.rngid, "
+        " pakete,paeckchen, "
+        " coalesce(geliefertam,li.datum), "
+        " dpdliefnr from lieferschein li";
 
  if(no_gts)
      squery+=" where not exists (select true from rechnung r"
 		" where r.rngid=li.rngid and r.rngart='G') ";
-
-
  return squery;
 }
 
-void LieferscheinList::fuelle(const std::string &squery) throw(SQLerror)
+void LieferscheinList::fuelle(const std::string &squery, ArgumentList const& args) 
+                                                    throw(SQLerror)
 {
- exec sql begin declare section;
- int LFRSID[100];
- int KDNR[100];
- int RNGID[100];
- char DATUM[100][11];
- int PAECKCHEN[100], PAKETE[100];
- char GELIEFERTAM[100][11];
- int DPDLIEFNR[100];
- int ZEILE[100];
- char *query;
- exec sql end declare section;
-
- query = (char*) squery.c_str();
-
  Transaction tr;
- exec sql prepare llist_ein_ from :query ;
- exec sql declare llist_ein cursor for llist_ein_ ;
- exec sql open llist_ein;
- SQLerror::test(__FILELINE__,100);
- if(sqlca.sqlcode) return;
 
- // wann ändert sich der Lieferschein beim holen
+ // wann Ã¤ndert sich der Lieferschein beim holen
  int akt_lfrsid=ManuProcEntity<>::none_id;
 
- while(true)
-   {
-    exec sql fetch 100 in llist_ein
-		into :LFRSID, :ZEILE, :KDNR, :DATUM, :RNGID,
-			:PAKETE, :PAECKCHEN,
-			:GELIEFERTAM, :DPDLIEFNR;
-    SQLerror::test(__FILELINE__,100);
-    if(sqlca.sqlcode) break;
+ Query q("llist",squery);
+ q << args;
+ Query::Row r;
 
-    int geholt=sqlca.sqlerrd[2];
-    for(int j=0; j<geholt; j++)
-	{
-	 if(LFRSID[j]!=akt_lfrsid)
-	   {
-        	ManuProC::Datum d,gelam;
-        	d.from_postgres(DATUM[j]);
-        	std::string geliefertam = GELIEFERTAM[j];
-        	if(geliefertam=="") gelam=ManuProC::Datum();
-        	else gelam.from_postgres(GELIEFERTAM[j]);
-        	sellist.push_back(new Lieferschein(
-    			LieferscheinBase(instanz,LFRSID[j]),d,
-        			KDNR[j],RNGID[j],PAECKCHEN[j],PAKETE[j],
-    			gelam,DPDLIEFNR[j]) );
-	    akt_lfrsid=LFRSID[j];
-	   }
-	 liefzeilen[LFRSID[j]].push_back(
-		LieferscheinEntryBase(LieferscheinBase(instanz,LFRSID[j]),ZEILE[j]));
-	}
-    if(geholt < 100) break;
-
+ while((q >> r).good())
+ { int LFRSID;
+     int KDNR;
+     int RNGID;
+     ManuProC::Datum DATUM;
+     int PAECKCHEN, PAKETE;
+     ManuProC::Datum GELIEFERTAM;
+     int DPDLIEFNR;
+     int ZEILE;
+    r >> LFRSID >> ZEILE >> KDNR >> DATUM >> Query::Row::MapNull(RNGID,-1)
+      >> Query::Row::MapNull(PAKETE) >> Query::Row::MapNull(PAECKCHEN)
+      >> GELIEFERTAM >> Query::Row::MapNull(DPDLIEFNR);
+    if(LFRSID!=akt_lfrsid)
+    { sellist.push_back(new Lieferschein(
+    			LieferscheinBase(instanz,LFRSID),DATUM,
+        		KDNR,RNGID,PAECKCHEN,PAKETE,
+    			GELIEFERTAM,DPDLIEFNR));
+      akt_lfrsid=LFRSID;
+    }
+    liefzeilen[LFRSID].push_back(
+		LieferscheinEntryBase(LieferscheinBase(instanz,LFRSID),ZEILE));
    } 
- exec sql close llist_ein;
-
- tr.close();
-
+  tr.close();
 }
 
 

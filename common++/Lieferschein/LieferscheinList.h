@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList.h,v 1.18 2003/10/02 10:19:49 christof Exp $ */
+/* $Id: LieferscheinList.h,v 1.19 2006/06/26 07:48:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -101,9 +101,11 @@ public:
  bool setDPDData(int dpdlnr) throw(SQLerror);
 #endif
 
- void fuelle(const std::string &query) throw(SQLerror);
+ void fuelle(const std::string &query, ArgumentList const& args=ArgumentList()) 
+                                         throw(SQLerror);
  std::string SQuery(bool no_gts=false);
- unsigned int Size() {return sellist.size();}
+ unsigned Size() {return sellist.size();}
+ unsigned size() {return sellist.size();}
  
  const cH_Lieferschein operator[](unsigned int i)
  	{ return sellist[i]; }
