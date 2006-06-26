@@ -1,4 +1,4 @@
-/* $Id: Auftrag.h,v 1.34 2006/06/20 13:34:51 christof Exp $ */
+/* $Id: Auftrag.h,v 1.35 2006/06/26 07:53:14 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *  Copyright (C) 2006 Christof Petig
@@ -116,6 +116,7 @@ public:
 	void Label(unsigned int labelid) throw(SQLerror);
 	
    const ManuProC::Datum &getDatum() const { return datum; } 
+   void Datum(ManuProC::Datum const&) throw(SQLerror);
    const ManuProC::Datum &Zahlziel() const { return zahlziel; }
    const cH_Zahlungsart Zahlart() const { return zahlart; }   
    

@@ -218,6 +218,13 @@ void Auftrag::setBemerkung(const std::string &bem) throw(SQLerror)
   bemerkung=bem;
 }
 
+void Auftrag::Datum(ManuProC::Datum const& d) throw(SQLerror)
+{
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this, d);
+  (Query("update auftrag set datum=? where (instanz,auftragid)=(?,?)")
+   << d << Instanz() << Id()).Check100();
+  datum=d;
+}
 
 void Auftrag::setVerknr(const Kunde::ID vid) throw(SQLerror)
 {
