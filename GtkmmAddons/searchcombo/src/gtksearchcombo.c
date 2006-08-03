@@ -311,7 +311,7 @@ gtk_searchcombo_popup_list (GtkSearchCombo * searchcombo)
   gint height, width, x, y;
 
   gtk_searchcombo_get_pos (searchcombo, &x, &y, &height, &width);
-  DEBUG(printf("new position %dx%d%+d%+d\n",width,height,x,y));
+  DEBUG(printf("SCB pl: new position %dx%d%+d%+d\n",width,height,x,y));
   gtk_widget_set_uposition (searchcombo->popwin, x, y);
   gtk_widget_set_usize (searchcombo->popwin, width, height);
   gtk_widget_realize (searchcombo->popwin);
@@ -332,7 +332,7 @@ gtk_searchcombo_activate (GtkWidget        *widget,
    gtk_searchcombo_stop_if_running(searchcombo);
    gtk_signal_emit (GTK_OBJECT (searchcombo), searchcombo_signals[SELECTED]);
    searchcombo->value_selected=TRUE;
-DEBUG(printf("SCB: abe, value_selected=%d\n",searchcombo->value_selected));
+DEBUG(printf("SCB abe: value_selected=%d\n",searchcombo->value_selected));
 }
 
 static GtkListItem *
@@ -644,7 +644,8 @@ gtk_searchcombo_fill_list(GtkSearchCombo      *searchcombo)
    searchcombo->search_in_progress=TRUE;
    searchcombo->already_started=FALSE;
    searchcombo->value_selected=FALSE;
-DEBUG(printf("SCB: fl, value_selected=%d\n",searchcombo->value_selected));
+DEBUG(printf("SCB fl: value_selected=%d si=%d\n",searchcombo->value_selected,
+      searchcombo->start_idle));
    
    if (!searchcombo->start_idle)
    {  while (children_present<SEARCHCOMBO_FIRST_SEARCH)
@@ -682,7 +683,7 @@ gtk_searchcombo_entry_focus_in (GtkEntry      *entry,
    DEBUG(printf("gtk_searchcombo_entry_focus_in\n"));
    
    // do not pop up if value selected and no change happened
-   DEBUG(printf("value_selected %d\n",searchcombo->value_selected));
+   DEBUG(printf("SCB efi: value_selected %d\n",searchcombo->value_selected));
    if (searchcombo->value_selected)
    {  if (select_on_refocus)
       {  DEBUG(printf("select_on_refocus\n"));
@@ -690,6 +691,9 @@ gtk_searchcombo_entry_focus_in (GtkEntry      *entry,
       }
       return FALSE;
    }
+   DEBUG(printf("SCB efi: sip %d sf %d tl %d af %d\n",searchcombo->search_in_progress,
+         searchcombo->search_finished,GTK_ENTRY(searchcombo->entry)->text_length,
+         searchcombo->always_fill));
    if (searchcombo->search_in_progress || searchcombo->search_finished)
       gtk_searchcombo_popup_list(searchcombo); 
    else if (GTK_ENTRY(searchcombo->entry)->text_length 
@@ -790,7 +794,7 @@ gtk_searchcombo_button_click(GtkButton *button, GtkSearchCombo *searchcombo)
       else 
          gtk_searchcombo_popup_list(searchcombo);
       searchcombo->value_selected=FALSE;
-DEBUG(printf("SCB: bc, value_selected=%d\n",searchcombo->value_selected));
+DEBUG(printf("SCB bc: value_selected=%d\n",searchcombo->value_selected));
       gtk_widget_grab_focus (searchcombo->entry);
    }
    return FALSE;
@@ -828,7 +832,7 @@ static void gtk_searchcombo_clear_list(GtkSearchCombo      *searchcombo)
    gtk_widget_hide (searchcombo->popwin);
    searchcombo->search_finished=FALSE;
    searchcombo->value_selected=FALSE;
-DEBUG(printf("SCB: cl, value_selected=%d\n",searchcombo->value_selected));
+DEBUG(printf("SCB cl: value_selected=%d\n",searchcombo->value_selected));
 }
 
 /** sets text, hides window, clears list, new search at next focus */
@@ -843,7 +847,7 @@ void	gtk_searchcombo_set_text		(GtkSearchCombo      *searchcombo,
    // delete list
    gtk_searchcombo_clear_list(searchcombo);
    searchcombo->value_selected=TRUE;
-DEBUG(printf("SCB: st, value_selected=%d\n",searchcombo->value_selected));
+DEBUG(printf("SCB st: value_selected=%d\n",searchcombo->value_selected));
 }
 
 const gchar *	gtk_searchcombo_get_text		(const GtkSearchCombo      *searchcombo)
@@ -885,9 +889,11 @@ gtk_searchcombo_stop_if_running	(GtkSearchCombo *searchcombo)
       gtk_idle_remove(searchcombo->idle_handler_id);
 DEBUG(printf("SCB sir: removing %d @%p\n",searchcombo->idle_handler_id,searchcombo));
       searchcombo->idle_handler_id=-1;
-DEBUG(printf("SCB sir: idle_handler_id=%d @%p\n",searchcombo->idle_handler_id,searchcombo));
+DEBUG(printf("SCB sir: idle_handler_id=%d @%p as %d\n",
+          searchcombo->idle_handler_id,searchcombo,searchcombo->already_started));
       searchcombo->search_in_progress=FALSE;
-      gtk_signal_emit (GTK_OBJECT (searchcombo), searchcombo_signals[SEARCH],
+      if (searchcombo->already_started)
+        gtk_signal_emit (GTK_OBJECT (searchcombo), searchcombo_signals[SEARCH],
    		NULL, GTK_SEARCH_CLOSE);
    }
 }
@@ -901,7 +907,9 @@ gtk_searchcombo_reset	(GtkSearchCombo *searchcombo)
    gtk_searchcombo_set_text(searchcombo, "");
    gtk_searchcombo_clear_list(searchcombo);
    searchcombo->value_selected=FALSE;
-DEBUG(printf("SCB: r, value_selected=%d\n",searchcombo->value_selected));
+DEBUG(printf("SCB r: value_selected=%d\n",searchcombo->value_selected));
+   if (searchcombo->always_fill)
+     gtk_searchcombo_fill_list(searchcombo);
 }
 
 static gint gtk_searchcombo_complete(GtkSearchCombo *searchcombo)
