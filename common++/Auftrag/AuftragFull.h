@@ -1,4 +1,4 @@
-/* $Id: AuftragFull.h,v 1.31 2005/02/08 11:27:45 jacek Exp $ */
+/* $Id: AuftragFull.h,v 1.32 2006/08/03 11:17:36 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -81,4 +81,7 @@ public:
 
    void setStatusAuftragFull(AufStatVal status) throw(SQLerror);
 };
+
+class Tag;
+Tag serialize(AuftragFull const& a,bool bestaetigung=true);
 #endif

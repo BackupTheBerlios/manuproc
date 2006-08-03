@@ -1,4 +1,4 @@
-// $Id: auftrag_serialize.cc,v 1.1 2006/08/03 11:17:31 christof Exp $
+// $Id: auftrag_serialize.cc,v 1.2 2006/08/03 11:17:36 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -18,68 +18,28 @@
  */
 
 #include <iostream>
+#include <Misc/TagStream.h>
+#include <Auftrag/AuftragFull.h>
 #include <Misc/dbconnect.h>
-#include <Auftrag/AufEintragZu.h>
-#include <Auftrag/AufEintrag.h>
 #include <Misc/exception.h>
-#include <Misc/Query.h>
-
-static void show(const AufEintrag &ae)
-{  std::cout << ae << ": " << ae.getStueck();
-   if (!!ae.getGeliefert()) std::cout << '(' << ae.getGeliefert() << ')';
-   std::cout << ' ' << cH_ArtikelBezeichnung(ae.Artikel())->Bezeichnung()
-      << ' ' << ae.getLieferdatum();
-   if (ae.getCombinedStatus()==UNCOMMITED) std::cout << " UNCOMMITTED";
-   else if (ae.getCombinedStatus()==CLOSED) std::cout << " CLOSED";
-   else if (ae.getCombinedStatus()==STORNO) std::cout << " STORNO";
-   std::cout << '\n';
-}
-
-static void show(const AufEintragBase &ae, bool kinder, int indent=0)
-{  AufEintragZu::list_t l=AufEintragZu::get_Referenz_list(ae,kinder,AufEintragZu::list_ohneArtikel);
-   ++indent;
-   for (AufEintragZu::list_t::const_iterator i=l.begin();i!=l.end();++i)
-   {  std::cout << std::string(indent,' ') << (kinder?"=":"<=") 
-   	<< i->Menge << (kinder?"=>":"=");
-      try 
-      {  show(i->AEB);
-         show(i->AEB,kinder,indent);
-      } catch (...) // SQLerror &e)
-      {  std::cout << i->AEB << " fehlt !!!\n";
-      }
-   }
-}
-
-static void show_all(const AufEintragBase &ae)
-{  show(ae);
-   show(ae,AufEintragZu::list_kinder);
-   show(ae,AufEintragZu::list_eltern);
-
-}
 
 int main(int argc,char *argv[])
 {  if (argc<4) 
-   {  std::cerr << "Usage: " << argv[0] << " <instanz> <id> <zeile>\n";
+   {  std::cerr << "Usage: " << argv[0] << " <instanz> <id>\n";
       return 1;
    }
    ppsInstanz::ID instanz=ppsInstanz::ID(atoi(argv[1]));
-   int id=atoi(argv[2]),zeile=atoi(argv[3]);
+   int id=atoi(argv[2]);
    if (int(instanz)<1 || id<0) return 2;
 
    ManuProC::PrintUncaughtExceptions();
    ManuProC::dbconnect();
 
-   if (zeile>0)
-   { show_all(AufEintragBase(instanz,id,zeile));
-   }
-   else
-   {  Query q("select zeilennr from auftragentry "
-   	"where (instanz,auftragid)=(?,?) order by zeilennr");
-      q << AuftragBase(instanz,id);
-      Query::Row is;
-      while ((q>>is).good())
-      {  show_all(AufEintragBase(instanz,id,is.Fetch<int>()));
-      }
-   }
+   AuftragFull auf(AuftragBase(instanz,id));
+   Tag t=serialize(auf);
+   TagStream ts;
+   ts.setContent(t);
+   ts.write(std::cout);
    ManuProC::dbdisconnect();
+   return 0;
 }

@@ -1,4 +1,4 @@
-// $Id: Auftrag_serialize.cc,v 1.5 2006/08/03 11:17:21 christof Exp $
+// $Id: Auftrag_serialize.cc,v 1.6 2006/08/03 11:17:36 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) Christof Petig
  *
@@ -61,7 +61,7 @@ void serialize(Tag &dest, cH_ArtikelBezeichnung const& bez)
   for (ExtBezSchema::const_iterator i=bez->getExtBezSchema()->begin();
       i!=bez->getExtBezSchema()->end();++i)
   { // hoffentlich ist bezkomptext ein gültiger XML-Identifier 
-    dest.setAttr(i->bezkomptext, (*bez)[i->bezkomptype]);
+    dest.setAttr(i->bezkomptext, (*bez)[i->bezkomptype]->getStrVal());
   }
 }
 
