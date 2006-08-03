@@ -1,4 +1,4 @@
-// $Id: Auftrag_serialize.cc,v 1.6 2006/08/03 11:17:36 christof Exp $
+// $Id: Auftrag_serialize.cc,v 1.7 2006/08/03 11:17:40 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) Christof Petig
  *
@@ -74,31 +74,31 @@ void serialize(Tag &dest, Preis const& pr, Einheit const& e)
   dest.setAttr("Währung",pr.getWaehrung()->Kurzbezeichnung());
 }
 
-Tag serialize(AuftragFull const& a, bool bestaetigung)
-{ Tag result(bestaetigung?"Auftragsbestätigung":"Auftragserteilung");
-  Tag &Auftraggeber=result.push_back("Auftraggeber");
+void serialize(Tag &dest,AuftragFull const& a, bool bestaetigung)
+{ dest.Type(bestaetigung?"Auftragsbestätigung":"Auftragserteilung");
+  Tag &Auftraggeber=dest.push_back("Auftraggeber");
   cH_Kunde kunde(a.getKundennr());
   serialize(Auftraggeber,bestaetigung?kunde:cH_Kunde(Kunde::eigene_id));
-  Tag &Lieferant=result.push_back("Lieferant");
+  Tag &Lieferant=dest.push_back("Lieferant");
   serialize(Lieferant,bestaetigung?cH_Kunde(Kunde::eigene_id):kunde);
-  result.setAttr("unsereNummer",a.getAuftragidToStr());
+  dest.setAttr("unsereNummer",a.getAuftragidToStr());
   if (bestaetigung) 
-  { result.setAttr("IhreNummer",a.getYourAufNr());
-    Tag &zahlungsart=result.push_back("Zahlungsart",a.Zahlart()->Bezeichnung());
+  { dest.setAttr("IhreNummer",a.getYourAufNr());
+    Tag &zahlungsart=dest.push_back("Zahlungsart",a.Zahlart()->Bezeichnung());
     zahlungsart.setAttr("Frist",a.Zahlart()->getZahlungsfrist());
     zahlungsart.setAttr("Kurzbezeichnung",a.Zahlart()->Kurzbezeichnung());
   }
-  result.setAttr("Kennung",AuftragBase::getLabel(a.Label()));
-  if (!a.Notiz().empty()) result.push_back("Notiz",a.Notiz());
-  result.push_back("Währung",a.getWaehrung()->Langbezeichnung())
+  dest.setAttr("Kennung",AuftragBase::getLabel(a.Label()));
+  if (!a.Notiz().empty()) dest.push_back("Notiz",a.Notiz());
+  dest.push_back("Währung",a.getWaehrung()->Langbezeichnung())
     .setAttr("Kurzbezeichnung",a.getWaehrung()->Kurzbezeichnung());
   if (!!a.getAuftragsRabatt()) 
-    result.setAttr("Rabatt",a.getAuftragsRabatt().String());
-  if (!a.getBemerkung().empty()) result.push_back("Bemerkung",a.getBemerkung());
-  result.setAttr("Datum",a.getDatum().to_locale());
+    dest.setAttr("Rabatt",a.getAuftragsRabatt().String());
+  if (!a.getBemerkung().empty()) dest.push_back("Bemerkung",a.getBemerkung());
+  dest.setAttr("Datum",a.getDatum().to_locale());
   
   for (AuftragFull::const_iterator i=a.begin();i!=a.end();++i)
-  { Tag &zeile=result.push_back("Zeile");
+  { Tag &zeile=dest.push_back("Zeile");
     zeile.setAttr("Nummer",i->ZNr());
     Tag &menge=zeile.push_back("Menge",i->getStueck().String());
     Einheit einh(i->Artikel());

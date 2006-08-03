@@ -1,4 +1,4 @@
-/* $Id: AuftragFull.h,v 1.32 2006/08/03 11:17:36 christof Exp $ */
+/* $Id: AuftragFull.h,v 1.33 2006/08/03 11:17:40 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -83,5 +83,5 @@ public:
 };
 
 class Tag;
-Tag serialize(AuftragFull const& a,bool bestaetigung=true);
+void serialize(Tag &dest, AuftragFull const& a,bool bestaetigung=true);
 #endif

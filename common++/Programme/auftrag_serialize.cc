@@ -1,4 +1,4 @@
-// $Id: auftrag_serialize.cc,v 1.2 2006/08/03 11:17:36 christof Exp $
+// $Id: auftrag_serialize.cc,v 1.3 2006/08/03 11:17:40 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -24,7 +24,7 @@
 #include <Misc/exception.h>
 
 int main(int argc,char *argv[])
-{  if (argc<4) 
+{  if (argc<3) 
    {  std::cerr << "Usage: " << argv[0] << " <instanz> <id>\n";
       return 1;
    }
@@ -36,9 +36,9 @@ int main(int argc,char *argv[])
    ManuProC::dbconnect();
 
    AuftragFull auf(AuftragBase(instanz,id));
-   Tag t=serialize(auf);
    TagStream ts;
-   ts.setContent(t);
+   ts.setContent(Tag("serialize"));
+   serialize(ts.getContent(),auf);
    ts.write(std::cout);
    ManuProC::dbdisconnect();
    return 0;
