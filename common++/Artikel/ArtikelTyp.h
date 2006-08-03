@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.h,v 1.24 2005/07/04 11:47:24 jacek Exp $
+// $Id: ArtikelTyp.h,v 1.25 2006/08/03 11:17:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -52,6 +52,7 @@ public:
 	operator ID() const { return t; }
 	operator int() const { return int(t); }
 	ID Id() const { return t; }
+	std::string Bezeichnung() { return get_string(Id()); }
 
 	bool operator==(const ArtikelTyp &b) const { return t==b.t; }
 	bool operator==(ID b) const { return t==b; }

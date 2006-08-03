@@ -1,4 +1,4 @@
-// $Id: Auftrag_serialize.cc,v 1.3 2006/06/26 07:53:22 christof Exp $
+// $Id: Auftrag_serialize.cc,v 1.4 2006/08/03 11:17:15 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) Christof Petig
  *
@@ -55,12 +55,31 @@ void serialize(Tag &where, cH_Kunde const& k,bool nest=true)
   }
 }
 
+void serialize(Tag &dest, cH_ArtikelBezeichnung const& bez)
+{ // Signifikanzen trennen?
+  for (ExtBezSchema::const_iterator i=bez->getExtBezSchema()->begin();
+      i!=bez->getExtBezSchema()->end())
+  { // hoffentlich ist bezkomptext ein gültiger XML-Identifier 
+    dest.setAttr(i->bezkomptext, (*bez)[i->bezkomtype]);
+  }
+}
+
+void serialize(Tag &dest, Preis const& pr, Einheit const& e)
+{ dest.setAttr("Wert",pr.Wert().String());
+  if (pr.BezugsMenge()!=1)
+    dest.setAttr("Bezugsmenge",pr.BezugsMenge().String());
+  if (e!=EinheitID::St_)
+    dest.setAttr("Einheit",e->Bezeichnung());
+  dest.setAttr("Währung",pr.getWaehrung()->Kurzbezeichnung());
+}
+
 Tag serialize(AuftragFull const& a, bool bestaetigung)
 { Tag result(bestaetigung?"Auftragsbestätigung":"Auftragserteilung");
   Tag &Auftraggeber=result.push_back("Auftraggeber");
-  serialize(Auftraggeber,bestaetigung?cH_Kunde(a.getKundennr()):cH_Kunde(Kunde::eigene_id));
+  cH_Kunde kunde(a.getKundennr());
+  serialize(Auftraggeber,bestaetigung?kunde:cH_Kunde(Kunde::eigene_id));
   Tag &Lieferant=result.push_back("Lieferant");
-  serialize(Lieferant,bestaetigung?cH_Kunde(Kunde::eigene_id):cH_Kunde(a.getKundennr()));
+  serialize(Lieferant,bestaetigung?cH_Kunde(Kunde::eigene_id):kunde);
   result.setAttr("unsereNummer",a.getAuftragidToStr());
   if (bestaetigung) 
   { result.setAttr("IhreNummer",a.getYourAufNr());
@@ -81,11 +100,26 @@ Tag serialize(AuftragFull const& a, bool bestaetigung)
   { Tag &zeile=result.push_back("Zeile");
     zeile.setAttr("Nummer",i->ZNr());
     Tag &menge=zeile.push_back("Menge",i->getStueck().String());
-//    menge.setAttr("Einheit",i->);
-    Tag &unsArt=zeile.push_back("UnserArtikel"); // Bezeichnung+Schema
+    Einheit einh(i->Artikel());
+    menge.setAttr("Einheit",einh->einh.Bezeichnung());
+    menge.setAttr("Termin",i->getLieferdatum().to_locale);
+    { ArtikelTyp at(i->Artikel());
+      Tag &warengruppe=zeile.push_back("Warengruppe",at->Bezeichnung());
+      warengruppe.setAttr<int>("Id",at->Id());
+    }
+    cH_ArtikelBezeichnung unsArtB(i->Artikel()),yourArtB(i->Artikel,kunde->getSchemaId());
+    if (unsArtB->getSchema()!=yourArtB->getSchema())
+    { Tag &unsArt=zeile.push_back("UnserArtikel"); // Bezeichnung+Schema
+      serialize(unsArt, unsArtB);
+    }
     Tag &yourArt=zeile.push_back("IhrArtikel"); // B+S
-//    Tag &spreis=zeile.push_back("Einzelpreis",->String());
-    // Waehrung, per N Stueck
+    serialize(yourArt, yourArtB);
+    Tag &spreis=zeile.push_back("Einzelpreis");
+    serialize(spreis,i->EPreis(),einh);
+    if (!!i->Rabatt()) spreis.setAttr("Rabatt",i->Rabatt().String());
+    Tag &gpreis=zeile.push_back("Gesamtpreis");
+    serialize(gpreis,i->GPreis(),Einheit(EinheitID::St_));
+    getLieferdatum
   }
   // Betrag, MwSt etc
 }
