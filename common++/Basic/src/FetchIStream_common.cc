@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.42 2006/06/26 07:53:01 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.43 2006/08/03 11:17:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -348,6 +348,7 @@ ArgumentList &ArgumentList::operator<<(unsigned long i)
 {  return add_argument(ulltos(i),INT4OID);
 }
 template<> const Oid Query::NullIf_s<unsigned long>::postgres_type=INT4OID;
+template<> const Oid Query::NullIf_s<unsigned int>::postgres_type=INT4OID;
 
 ArgumentList &ArgumentList::operator<<(unsigned long long i)
 {  return add_argument(ulltos(i),INT8OID);
