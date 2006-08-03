@@ -1,4 +1,4 @@
-// $Id: Tag.h,v 1.13 2006/06/26 07:53:19 christof Exp $
+// $Id: Tag.h,v 1.14 2006/08/03 11:17:31 christof Exp $
 /*  ManuProC_Base: Main ManuProC Library
  *  Copyright (C) 1998-2003  Christof Petig
  *
@@ -112,10 +112,10 @@ public:
     	   catch (std::out_of_range &e) { return def; }
     	}
 	bool hasAttr(const std::string &name) const throw();
-	void setAttr(const std::string &name, const std::string &value);
+	void setAttr_ll(const std::string &name, const std::string &value);
 	template <class T>
 	 void setAttr(const std::string &name, T const& val)
-	{ setAttr(name,create_value<T>(val));
+	{ setAttr_ll(name,create_value<T>(val));
 	}
 	
 	// values of substructures
@@ -152,7 +152,7 @@ public:
 	void setBoolAttr(const std::string &name, bool val);
 	// Spezialfall: nur setzen wenn !=""
 	void setAttr_ne(const std::string &name, const std::string &value)
-	{  if (!value.empty()) setAttr(name,value); }
+	{  if (!value.empty()) setAttr_ll(name,value); }
 	void setIntAttr_nn(const std::string &name, int val)
 	{  if (val) setIntAttr(name,val); }
 
@@ -214,14 +214,17 @@ template <> long Tag::parse_value<long>(const std::string &value) throw(std::out
 template <> double Tag::parse_value<double>(const std::string &value) throw(std::out_of_range);
 template <> float Tag::parse_value<float>(const std::string &value) throw(std::out_of_range);
 template <> std::string Tag::parse_value<std::string>(const std::string &value) throw(std::out_of_range);
+template <>
+ inline void Tag::setAttr<std::string>(const std::string &name, std::string const& val)
+{ setAttr_ll(name,val); }
 
 #ifndef TAG_OMIT_DEPRECATED
 inline void Tag::setIntAttr(const std::string &name, int val)
-{  setAttr(name,create_value<int>(val)); }
+{  setAttr_ll(name,create_value<int>(val)); }
 inline void Tag::setFloatAttr(const std::string &name, double val)
-{  setAttr(name,create_value<double>(val)); }
+{  setAttr_ll(name,create_value<double>(val)); }
 inline void Tag::setBoolAttr(const std::string &name, bool val)
-{  setAttr(name,create_value<bool>(val)); }
+{  setAttr_ll(name,create_value<bool>(val)); }
 #endif
 
 // g++ 2.95 does not like these inlined

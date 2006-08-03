@@ -1,4 +1,4 @@
-// $Id: Tag.cc,v 1.9 2004/06/03 14:33:20 christof Exp $
+// $Id: Tag.cc,v 1.10 2006/08/03 11:17:31 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -164,7 +164,7 @@ bool Tag::hasAttr(const std::string &name) const throw()
 {  return attfind(name)!=attend();
 }
 
-void Tag::setAttr(const std::string &name, const std::string &value)
+void Tag::setAttr_ll(const std::string &name, const std::string &value)
 {  attributes[name]=value;
 }
 

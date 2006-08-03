@@ -1,4 +1,4 @@
-// $Id: pgxml.cc,v 1.1 2005/11/04 09:56:04 christof Exp $
+// $Id: pgxml.cc,v 1.2 2006/08/03 11:17:31 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -35,7 +35,7 @@ int main(int argc,char **argv)
     Query::Row r;
     ts.setContent(Tag("Query"));
     Tag &rows=ts.getContent();
-    rows.setAttr("SQL",argv[1]);
+    rows.setAttr<std::string>("SQL",argv[1]);
     while ((q >> r).good())
     { Tag &row=rows.push_back(Tag("Row"));
       try
