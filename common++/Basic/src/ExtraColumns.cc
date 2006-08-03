@@ -1,4 +1,4 @@
-// $Id: ExtraColumns.cc,v 1.9 2005/11/08 14:36:31 christof Exp $
+// $Id: ExtraColumns.cc,v 1.10 2006/08/03 11:18:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -148,8 +148,7 @@ void ExtraColumns::Execute_if_complete()
   }
 }
 
-#ifdef HAVE_LIBPQ_INT_H
-Query::Row::Fake ExtraColumns::fake_istream(const std::string &column)
+Query::Row::Fake ExtraColumns::fake_contents(const std::string &column)
 { if (!good()) throw Query::Error("fake_istream",100,"no line available");
   std::map<std::string,value_t>::const_iterator v=column_values.find(column);
   if (v!=column_values.end()) 
@@ -171,7 +170,6 @@ Query::Row::Fake ExtraColumns::fake_istream(const std::string &column)
   { v2.null=false; return Query::Row::Fake(v2.value); }
   return Query::Row::Fake();
 }
-#endif
 
 bool ExtraColumns::hasColumn(const std::string &column) const
 { return (which->available_columns.find(column)!=which->available_columns.end());

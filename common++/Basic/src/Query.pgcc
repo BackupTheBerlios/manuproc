@@ -1,7 +1,8 @@
-// $Id: Query.pgcc,v 1.21 2005/12/14 07:34:57 christof Exp $
+// $Id: Query.pgcc,v 1.22 2006/08/03 11:18:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
- *  written by Christof Petig
+ *  		written by Christof Petig
+ *  Copyright (C) 2006 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,6 +30,7 @@
 #include <libpq-fe.h>
 #include <Misc/pg_type.h>
 #endif
+#include <cassert>
 
 exec sql include sqlca;
 
@@ -73,14 +75,25 @@ extern PGresult **ECPGdescriptor_lvalue(int line, const char *descriptor);
 }
 
 Query_Row::Query_Row(const std::string &descr, int line)
-	: naechstesFeld(0), zeile(line), result(0)
+	: naechstesFeld(), zeile(line), is_fake(), fake_null(), result()
 {  PGresult **r=ECPGdescriptor_lvalue(__LINE__,descr.c_str());
    if (r) result=*r;
 }
 //#endif
 
 Query_Row &Query_Row::operator>>(std::string &str)
-{  if (!result)
+{  if (is_fake)
+   { if (naechstesFeld || zeile)
+	mythrow(SQLerror(__FUNCTION__,ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end on fake"));
+     if (fake_null)
+	mythrow(SQLerror(__FUNCTION__,ECPG_MISSING_INDICATOR,"missing indicator on fake"));
+     str=fake_result;
+     if (Query::debugging.on) 
+        std::cerr << "FIS fake result="<<str << '\n';
+     naechstesFeld++;
+     return *this;
+   }
+   if (!result)
 	mythrow(SQLerror(__FUNCTION__,ECPG_UNKNOWN_DESCRIPTOR,"no result to fetch from (left?)"));
    if (naechstesFeld>=PQnfields(result)) 
 	mythrow(SQLerror(__FUNCTION__,ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end"));
@@ -103,13 +116,20 @@ void Query_Row::ThrowIfNotEmpty(const char *where)
 }
 
 int Query_Row::getIndicator() const
-{  if (naechstesFeld>=PQnfields(result)) 
+{  if (is_fake)
+   { if (naechstesFeld || zeile)
+	mythrow(SQLerror("Query_Row::getIndicator",ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end on fake"));
+     return fake_null;
+   }
+   if (naechstesFeld>=PQnfields(result)) 
 	mythrow(SQLerror("Query_Row::getIndicator",ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end"));
    return -PQgetisnull(result, zeile, naechstesFeld);
 }
 
 bool Query_Row::good() const
-{  return result && naechstesFeld<PQnfields(result); }
+{ if (is_fake) return !naechstesFeld && !zeile;
+  return result && naechstesFeld<PQnfields(result);
+}
 
 std::string Query_Row::getFieldName() const
 {  if (naechstesFeld>=PQnfields(result)) 
@@ -262,6 +282,9 @@ sqlca.sqlcode=0;
         raise(PQresultErrorField(result, PG_DIAG_SQLSTATE), ECPG_PGSQL, 
           PQresultErrorField(result, PG_DIAG_MESSAGE_PRIMARY),
           PQresultErrorField(result,PG_DIAG_MESSAGE_DETAIL));
+      // since we overwrite it below ...
+      PQclear(result);
+      result=0;
       prepare->name=prepname;
       prepare->connection=conn;
     }
@@ -343,7 +366,12 @@ Query::Query(const std::string &command)
 {  const char *p=query.c_str();
    while ((p=ArgumentList::next_insert(p))) { ++num_params; ++p; }
    params.setNeededParams(num_params);
-   Execute_if_complete();
+   try
+   { Execute_if_complete();
+   } catch (...)
+   { free();
+     throw;
+   }
 }
 
 Query::Query(std::string const& _portal_name,std::string const&command)
@@ -354,7 +382,12 @@ Query::Query(std::string const& _portal_name,std::string const&command)
 {  const char *p=query.c_str();
    while ((p=ArgumentList::next_insert(p))) { ++num_params; ++p; }
    params.setNeededParams(num_params);
-   Execute_if_complete();
+   try
+   { Execute_if_complete();
+   } catch (...)
+   { free();
+     throw;
+   }
 }
 
 Query::Query(PreparedQuery &prep)
@@ -367,25 +400,16 @@ Query::Query(PreparedQuery &prep)
 #if !defined(USE_PARAMETERS) || !defined(HAVE_PQPREPARE)
    query=prep.Command();
 #endif
-   Execute_if_complete();
+   try
+   { Execute_if_complete();
+   } catch (...)
+   { free();
+     throw;
+   }
 }
 
-Query::~Query()
-{  if (!params.complete())
-   {  std::cerr << "The query " << query << " still needed " 
-   	<< params.HowManyNeededParams() 
-   	<< " parameters on destruction and got never executed!\n";
-      if (Query::debugging.on)
-      {  std::cerr << "existing parameters: ";
-         for (ArgumentList::const_iterator i=params.begin();i!=params.end();
-			++i)
-            std::cerr << *i << ',';
-         std::cerr << '\n';
-      }
-      sqlca.sqlcode=ECPG_TOO_FEW_ARGUMENTS;
-   }
-   else
-   {  
+void Query::free()
+{
       if (!portal_name.empty())
       { Query("close \""+portal_name+"\"");
       }
@@ -406,6 +430,25 @@ Query::~Query()
       if (result) PQclear(result);
       result=0;
 #endif
+}
+
+Query::~Query()
+{  if (!params.complete())
+   {  std::cerr << "The query " << query << " still needed " 
+   	<< params.HowManyNeededParams() 
+   	<< " parameters on destruction and got never executed!\n";
+      if (Query::debugging.on)
+      {  std::cerr << "existing parameters: ";
+         for (ArgumentList::const_iterator i=params.begin();i!=params.end();
+			++i)
+            std::cerr << *i << ',';
+         std::cerr << '\n';
+      }
+      sqlca.sqlcode=ECPG_TOO_FEW_ARGUMENTS;
+      assert(!result); // make sure to not leak
+   }
+   else
+   {  free();
    }
 }
 
@@ -457,50 +500,5 @@ int Query::Code() {
 unsigned Query::Lines() { 
 	return sqlca.sqlerrd[2]; 
 }
-
-#ifdef HAVE_LIBPQ_INT_H
-#include <internal/libpq-int.h>
-
-void Query_Row::Fake::init()
-{  PGresult *res=PQmakeEmptyPGresult(0,PGRES_TUPLES_OK);
-   res->ntups=1;
-   res->numAttributes=1;
-   res->attDescs=(PGresAttDesc*)calloc(1,sizeof(PGresAttDesc));
-   res->attDescs->name="col";
-   res->attDescs->typid=25;
-   res->attDescs->typlen=0;
-   res->attDescs->atttypmod=0;
-   res->tuples=(PGresAttValue**)calloc(1,sizeof(PGresAttValue*));
-   res->tuples[0]=(PGresAttValue*)calloc(1,sizeof(PGresAttValue));
-   res->tuples[0][0].len=NULL_LEN;   
-   res->tupArrSize=1;
-   res->binary=false;
-   result=res;
-}
-
-Query_Row::Fake::Fake(const std::string &val) : value(val)
-{  init();
-   const_cast<PGresult*>(result)->tuples[0][0].len=value.size();
-   const_cast<PGresult*>(result)->tuples[0][0].value=
-		const_cast<char*>(value.c_str());
-}
-
-Query_Row::Fake::Fake(const Fake &a) : value(a.value)
-{  init();
-   if (a.result->tuples[0][0].value)
-   { const_cast<PGresult*>(result)->tuples[0][0].len=value.size();
-     const_cast<PGresult*>(result)->tuples[0][0].value=
-		const_cast<char*>(value.c_str());
-   }
-}
-
-Query_Row::Fake::~Fake()
-{  if (result) 
-   { free(result->attDescs);
-     free(result->tuples[0]);
-     PQclear(const_cast<PGresult*>(result));
-   }
-}
-#endif
 
 #endif

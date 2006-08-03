@@ -1,7 +1,8 @@
-// $Id: Query.h,v 1.25 2006/02/27 13:33:45 christof Exp $
+// $Id: Query.h,v 1.26 2006/08/03 11:18:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
- *  written by Christof Petig
+ *  		written by Christof Petig
+ *  Copyright (C) 2006 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -53,12 +54,19 @@ extern "C" {
 class Query_Row
 {public:
 	struct check_eol { check_eol() {} };
-#ifdef HAVE_LIBPQ_INT_H	
-	class Fake;
-#endif
+	struct Fake
+	{ std::string what;
+	  bool is_null;
+	  explicit Fake(std::string const& w) : what(w), is_null() {}
+	  explicit Fake() : is_null(true) {}
+	};
 private:
 	int naechstesFeld;
 	/* const */ int zeile;
+	
+	bool is_fake;
+	std::string fake_result;
+	bool fake_null;
 	
 #ifdef MPC_SQLITE
 	const char * const * result;
@@ -98,11 +106,12 @@ public:
 #ifndef MPC_SQLITE
 	Query_Row(const std::string &descr, int line=0);
 	Query_Row(const PGresult *res=0, int line=0)
-	  : naechstesFeld(0), zeile(line), result(res)
+	  : naechstesFeld(), zeile(line), is_fake(), fake_null(), result(res)
 	{}
 #else
 	Query_Row(const char *const *res=0, unsigned nfields=0, int line=0);
 #endif
+        Query_Row(Fake const& f);
 	
 	int getIndicator() const;
 #ifdef MPC_POSTGRESQL
@@ -161,21 +170,6 @@ public:
 	
 	void ThrowIfNotEmpty(const char *where);
 };
-
-#ifdef HAVE_LIBPQ_INT_H
-// one time internal (fake) result (mostly a hack)
-class Query_Row::Fake : public Query_Row
-{ 	  std::string value;
-          void operator=(const Fake &);
-          
-          void init();
-public:
-          Fake() { init(); } // NULL
-          Fake(const std::string &value);
-          Fake(const Fake &);
-          ~Fake();
-};
-#endif
 
 struct Query_types
 {	template <class T>
@@ -288,6 +282,7 @@ class Query : public Query_types
 	static std::string standardize_parameters(std::string const& in);
 	bool already_run() const { return result; }
 
+	void free(); // called by destructor and failed constructor
 public:
         typedef Query_Row Row;
 	struct check100 { check100(){} };

@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.52 2005/11/22 13:04:34 christof Exp $
+# $Id: configure.in,v 1.53 2006/08/03 11:18:28 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(libcommon++, 0.0, [manuproc-developer-de@berlios.de])
@@ -70,26 +70,6 @@ then
           ],[AC_DEFINE(HAVE_PQPREPARE, 1, [Define to 1 if PQprepare is available in libpq.])
                   AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)])
   fi
-  
-  AC_MSG_CHECKING(for postgresql server includes)
-  for serverdir in /usr/include/postgresql /usr/include/postgresql/?.?
-  do 
-    if test -d $serverdir/server
-      then LIBPQ_INT_CFLAGS="-I$serverdir/server $LIBPQ_INT_CFLAGS"
-    fi
-  done
-  AC_MSG_RESULT($LIBPQ_INT_CFLAGS)
-  AC_SUBST(LIBPQ_INT_CFLAGS)
-
-  AC_MSG_CHECKING(for working libpq-int.h)
-  CXXFLAGS="$CXXFLAGS $LIBPQ_INT_CFLAGS"
-  AC_COMPILE_IFELSE([
-  #include <libpq-fe.h>
-  #include <internal/libpq-int.h>
-  int main() {  PGresult *res; res->ntups=1; }
-  	],[AC_DEFINE(HAVE_LIBPQ_INT_H, 1, [Define to 1 if libpq-int.h is includeable.])
-  		AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)])
-  
   CXXFLAGS="$tmp_CXXFLAGS"
 else
   prefer_sqlite=1

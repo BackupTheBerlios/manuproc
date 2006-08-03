@@ -1,6 +1,7 @@
-// $Id: Handles.cc,v 1.5 2003/05/26 14:40:10 christof Exp $
+// $Id: Handles.cc,v 1.6 2006/08/03 11:18:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2006 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,6 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#define MPC_HANDLES_INTERNAL
 #include <Misc/Handles.h>
 #if defined DEBUG_HANDLE_CONTENT || defined DEBUG_HANDLES
 #include <iostream>
@@ -24,6 +26,10 @@
 
 HandleContent::~HandleContent()
 {  
+#ifdef MPC_HANDLE_MAGIC
+   MPC_HANDLE_CHECK_MAGIC(this);
+   _magic=0;
+#endif
    if (_references) 
    {  std::cerr << "Handled Object @"<<(void*)this<<" ("<<typeid(*this).name() <<") still referenced "<<_references<<" times on destruction\n";
       if (getenv("MANUPROC_PICKY_HANDLES")) abort();

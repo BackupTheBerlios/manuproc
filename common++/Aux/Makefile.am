@@ -1,7 +1,7 @@
-# $Id: Makefile.am,v 1.75 2005/12/14 07:35:07 christof Exp $
+# $Id: Makefile.am,v 1.76 2006/08/03 11:18:28 christof Exp $
 
 # this is needed for FetchIStream's Fake hack on debian sid
-AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@ @LIBPQ_INT_CFLAGS@
+AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 

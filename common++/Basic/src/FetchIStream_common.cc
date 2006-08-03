@@ -1,6 +1,8 @@
-// $Id: FetchIStream_common.cc,v 1.43 2006/08/03 11:17:54 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.44 2006/08/03 11:18:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
+ *  		written by Christof Petig
+ *  Copyright (C) 2006 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -426,11 +428,23 @@ void Query::ThrowOnBad(const char *where) const
 
 #ifdef MPC_SQLITE
 Query_Row::Query_Row(const char *const *res, unsigned _nfields, int line)
-	: naechstesFeld(), zeile(line), result(res), nfields(_nfields)
+	: naechstesFeld(), zeile(line), is_fake(), fake_null(), 
+	  result(res), nfields(_nfields)
 {}
 
 Query_Row &Query_Row::operator>>(std::string &str)
-{  if (!result)
+{  if (is_fake)
+   { if (naechstesFeld || zeile)
+	mythrow(SQLerror(__FUNCTION__,ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end on fake"));
+     if (fake_null)
+	mythrow(SQLerror(__FUNCTION__,ECPG_MISSING_INDICATOR,"missing indicator on fake"));
+     str=fake_result;
+     if (Query::debugging.on) 
+        std::cerr << "FIS fake result="<<str << '\n';
+     naechstesFeld++;
+     return *this;
+   }
+   if (!result)
 	mythrow(SQLerror(__FUNCTION__,ECPG_UNKNOWN_DESCRIPTOR,"no result to fetch from (left?)"));
    if (naechstesFeld>=nfields) 
 	mythrow(SQLerror(__FUNCTION__,ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end"));
@@ -527,26 +541,14 @@ int Query::Code()
 }
 
 bool Query_Row::good() const
-{  return result && naechstesFeld<nfields; }
-
-void Query_Row::Fake::init()
-{  result=(const char * const *)malloc(sizeof(*result));
-   *const_cast<const char * *>(result)=0;
-   nfields=1;
+{ if (is_fake) return !naechstesFeld && !zeile;
+  return result && naechstesFeld<nfields;
 }
 
-Query_Row::Fake::Fake(const std::string &val) : value(val)
-{  init();
-   *const_cast<const char * *>(result)=value.c_str();
-}
-
-Query_Row::Fake::Fake(const Fake &a) : value(a.value)
-{  init();
-   if (*a.result) *const_cast<const char * *>(result)=value.c_str();
-}
-
-Query_Row::Fake::~Fake()
-{  if (result) free(const_cast<void*>((const void*)result));
-}
 #endif
 
+Query_Row::Query_Row(Fake const& val) 
+  : naechstesFeld(), zeile(), is_fake(true), fake_result(val.what), 
+    fake_null(val.is_null), result()
+{
+}

@@ -1,4 +1,4 @@
-/* $Id: ManuProCConfig.h.in,v 1.7 2005/11/08 14:36:31 christof Exp $ */
+/* $Id: ManuProCConfig.h.in,v 1.8 2006/08/03 11:18:28 christof Exp $ */
 /*  ManuProCBase: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -49,6 +49,3 @@
 
 /* Define to 1 if PQprepare is available in libpq. */
 #undef HAVE_PQPREPARE
-
-/* Define to 1 if libpq-int.h is includeable. */
-#undef HAVE_LIBPQ_INT_H
