@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.63 2006/05/17 08:15:51 christof Exp $
+# $Id: Makefile.am,v 1.64 2006/08/03 11:57:22 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  -DCOMPILE_KOMPONENTEN \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -21,6 +21,7 @@ LINKS= EingabeBox.cc EingabeBox.hh datewin.cc datewin.h \
 	FlashingPixmap.hh LabelSpin.hh MyWindow.hh MyScale.hh \
 	bool_properties.hh bool_ImageButton.hh bool_CheckButton.hh \
 	int_SpinButton.hh string_Entry.hh GType_cH_EntryValue.h \
+	fixp_SpinButton.hh \
 	SimpleTree.hh ModelWidgetConnection.h string_Label.cc \
 	string_Label.hh Event.cc Association.h Association.cc \
 	bvector_item_CheckMenuItem.hh SimpleTreeStore_test.cc \

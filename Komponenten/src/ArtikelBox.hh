@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.hh,v 1.38 2006/05/17 07:36:39 christof Exp $
+// $Id: ArtikelBox.hh,v 1.39 2006/08/03 11:57:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.38 2006/05/17 07:36:39 christof Exp $
+// $Id: ArtikelBox.hh,v 1.39 2006/08/03 11:57:22 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -135,11 +135,15 @@ class ArtikelBox : public Gtk::EventBox
  typedef std::vector<user_menu_t> user_menus_t;
  user_menus_t user_menus;
  
+ std::vector<std::pair<int,int> > suchvorgaben;
+ 
 // ---- widgets ( GUI part ) ----
  typedef std::vector<Gtk::SearchCombo *> t_combos;
  typedef std::vector<t_combos> t_combos2;
  typedef std::vector<Gtk::Label *> t_labels;
  typedef std::vector<t_labels> t_labels2;
+ 
+ std::vector<Gtk::Widget*> dependant_widgets;
 
  Gtk::Container *oberstes;
  t_combos2 combos;
@@ -305,5 +309,7 @@ public:
 	{ artikel_anlegen_funcptr=f;
 	  artikel_anlegen_gptr=ud;
 	}
+	
+	void depends(Gtk::Widget *w);
 };
 #endif

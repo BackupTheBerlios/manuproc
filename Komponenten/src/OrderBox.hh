@@ -1,4 +1,4 @@
-// $Id: OrderBox.hh,v 1.3 2006/04/03 10:02:38 christof Exp $
+// $Id: OrderBox.hh,v 1.4 2006/08/03 11:57:22 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2006 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -45,6 +45,7 @@ private:
 public:
   OrderBox(int _instanz=1, what_t w=Order);
   void SearchThreshold(int st) { search_th=st; }
+  void Instanz(int inst, what_t w=Order);
   int SearchThreshold() { return search_th; }
 };
 

@@ -1,4 +1,4 @@
-// $Id: OrderBox.cc,v 1.5 2006/04/03 10:02:38 christof Exp $
+// $Id: OrderBox.cc,v 1.6 2006/08/03 11:57:22 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -30,6 +30,14 @@ instanz(_instanz), extra_string(), search_th(0)
 //  signal_activate().connect(SigC::slot(*this, &auftrag_bearbeiten_glade::on_aufnrscombo_activate));
 //  signal_search().connect(sigc::mem_fun(*this, &OrderBox::on_search), false);
   extra_string=ExtraColumns("auftrag","instanz","auftragid").hasColumn("label");
+}
+
+void OrderBox::Instanz(int inst, what_t w)
+{ if (inst==instanz && what==w) return;
+  reset();
+  instanz=inst;
+  what=w;
+  reset(); // just to make sure
 }
 
 void OrderBox::on_search(int *_continue, GtkSCContext newsearch) throw()

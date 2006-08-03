@@ -1,6 +1,6 @@
-// $Id: ArtikelBox.cc,v 1.39 2006/05/03 07:28:02 christof Exp $
+// $Id: ArtikelBox.cc,v 1.40 2006/08/03 11:57:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
- *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
+ *  Copyright (C) 1998-2006 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,8 @@ void ArtikelBox::selectFunc(unsigned sp,unsigned l) throw(SQLerror)
  else
   {
     // Signifikanz testen
-    if(kombiniertbool || sp == (schema->sigsize(signifikanz[l])-1))
+    if(signifikanz[l]>0 &&
+    	(kombiniertbool || sp == (schema->sigsize(signifikanz[l])-1)))
     {try
         {
          loadArtikel(l);
@@ -82,10 +83,13 @@ void ArtikelBox::selectFunc(unsigned sp,unsigned l) throw(SQLerror)
         }
       return;
     }
+    if (signifikanz[l]<0) suchvorgaben.push_back(std::make_pair(l,sp));
     pixmap_setzen(false);
     artikel=ArtikelBase();
 //    combos[l][sp+1]->reset();
-    combos[l][sp+1]->grab_focus();
+    if (sp+1<combos[l].size()) combos[l][sp+1]->grab_focus();
+    else if (l+1<combos.size()) combos[l+1][0]->grab_focus();
+    else combos[0][0]->grab_focus();
   }
 }
 
@@ -137,9 +141,11 @@ void ArtikelBox::set_value(const ArtikelBase &art)
 throw(SQLerror,ArtikelBoxErr)
 {cH_ArtikelBezeichnung artbez(art,schema->Id());
  artikel=art;
+  suchvorgaben.clear();
 
  pixmap_setzen(true);
- 
+
+ // nochmals nachhaken 
  if (schema!=artbez->getExtBezSchema()) 
  {  Glib::signal_idle().connect(SigC::bind(SigC::slot
  		(*this,&ArtikelBox::set_value_idle),
@@ -333,6 +339,8 @@ Gtk::Container* ArtikelBox::init_table(int l)
     sc->signal_search().connect(SigC::bind(SigC::slot(*this,&ArtikelBox::searchFunc),i,l));
     sc->signal_activate().connect(SigC::bind(SigC::slot(*this,&ArtikelBox::selectFunc),i,l));
     sc->get_entry()->signal_focus_in_event().connect(SigC::bind(SigC::slot(*this,&ArtikelBox::FocusInFunc),i,l));
+    // nicht erstes? dann always_fill
+    if (j!=schema->sigbegin(signifikanz[l])) sc->set_always_fill(true);
 
     Gtk::Label *lb;
 
@@ -569,7 +577,7 @@ void ArtikelBox::Einschraenken(const std::string &e, bool an)
 void ArtikelBox::Einschraenken_b(bool an)
 {  eingeschraenkt=an;
    fuelleMenu();
-   pixmap_setzen(artikel.Id()!=0);
+   pixmap_setzen(!!artikel);
 }
 
 void ArtikelBox::ClearUserMenus()
@@ -642,6 +650,14 @@ void ArtikelBox::pixmap_setzen(bool valid)
       pixmap->set(loader->get_pixbuf());
    }
    else pixmap->set(Gtk::Stock::CANCEL,Gtk::ICON_SIZE_SMALL_TOOLBAR);
+   for (std::vector<Gtk::Widget*>::const_iterator i=dependant_widgets.begin();
+   			i!=dependant_widgets.end();++i)
+     (*i)->set_sensitive(valid);
+}
+
+void ArtikelBox::depends(Gtk::Widget *w)
+{ dependant_widgets.push_back(w);
+  w->set_sensitive(!!artikel);
 }
 
 void ArtikelBox::Neuer_Eintrag_automatisch(Gtk::CheckMenuItem *cmi)
@@ -675,6 +691,7 @@ void ArtikelBox::reset()
 //     joinstring="";
   pixmap_setzen(false); // von GTK1 portiert (richtig?)
   artikel=ArtikelBase(); // von GTK1 portiert (richtig?)
+  suchvorgaben.clear();
 }  
 
 void ArtikelBox::set_editable(bool edit)
@@ -688,9 +705,13 @@ void ArtikelBox::set_autoexpand(bool exp)
         (*i)->set_autoexpand(exp); }  
 
 void ArtikelBox::set_always_fill(bool fill)
-   { for (t_combos2::iterator j=combos.begin();std_neq(j,combos.end());++j)  
+{ // std::cerr << "ArtikelBox::set_always_fill is now standard, please remove your calls.\n";
+#if 1 // bewirkt auch, dass sich die jeweils erste Box sofort öffnet
+ for (t_combos2::iterator j=combos.begin();std_neq(j,combos.end());++j)  
       for (t_combos::iterator i=j->begin();std_neq(i,j->end());++i)
-        (*i)->set_always_fill(fill); }  
+        (*i)->set_always_fill(fill); 
+#endif
+}
 
 void ArtikelBox::set_focus(int sig, int field)
 {  if (sig<0) sig+=combos.size();
@@ -726,7 +747,7 @@ static bool select_all_text(Gtk::Editable *e)
 
 bool ArtikelBox::FocusInFunc(GdkEventFocus *ev, guint sp, guint l)
 {  if (block_selection) return true;
-   if (reset_on_focus) combos[l][sp]->reset();
+   if (reset_on_focus) combos[l][sp]->reset(); // leeren
    else 
    {  // HACK: show available options (even nonmatching and enable overwrite)
       combos[l][sp]->get_entry()->select_region(0,-1);

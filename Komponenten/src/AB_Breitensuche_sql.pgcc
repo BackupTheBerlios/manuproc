@@ -18,7 +18,7 @@
 
 #include <ManuProCConfig.h>
 #include "ArtikelBox.hh"
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
 #include <sigc++/bind.h>
 #include <sigc++/compatibility.h>
@@ -36,7 +36,7 @@ struct intint
 {  int first,second;
 };
 
-FetchIStream &operator>>(FetchIStream &is, intint &i)
+Query::Row &operator>>(Query::Row &is, intint &i)
 {  return is >> i.first >> i.second;
 }
 

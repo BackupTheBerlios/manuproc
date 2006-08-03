@@ -19,18 +19,18 @@
 
 #include <ManuProCConfig.h>
 #include "ArtikelBox.hh"
-#include <Aux/itos.h>
+#include <Misc/itos.h>
 #include <algorithm>
 #include <unistd.h>
-#include <Aux/FetchIStream.h>
+#include <Misc/Query.h>
 #if (defined PETIG_EXTENSIONS) || (defined MABELLA_EXTENSIONS) 
 #include <Instanzen/ppsInstanz.h>
 #include <Artikel/Prozess.h>
 #endif
 #ifdef MABELLA_EXTENSIONS
-#include <Aux/EAN.h>
+#include <Misc/EAN.h>
 #endif
-#include <Aux/Global_Settings.h>
+#include <Misc/Global_Settings.h>
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
 #include <sigc++/bind.h>
 #include <sigc++/compatibility.h>
@@ -65,11 +65,21 @@ void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned sp,unsig
     {  if (!kombiniertbool) what = i->spaltenname;
        if (newsearch==GTK_SEARCH_REOPEN)
           constraint+="true";
-       else constraint += "text("+i->spaltenname +") like '"+(*vi)->getStrVal()+"\%'";
+       else constraint += "cast("+i->spaltenname +" as text) like '"+(*vi)->getStrVal()+"\%'";
        break;
     }
     else 
-       constraint += "text("+i->spaltenname +")='"+(*vi)->getStrVal()+"' AND ";
+       constraint += "cast("+i->spaltenname +" as text)='"+(*vi)->getStrVal()+"' AND ";
+  }
+ }
+ {for (std::vector<std::pair<int,int> >::const_iterator i=suchvorgaben.begin();
+ 		i!=suchvorgaben.end();++i)
+  { assert(i->second<schema->sigsize(signifikanz[i->first]));
+    if (combos[i->first][i->second]->get_text().empty()) continue;
+    ExtBezSchema::const_sigiterator si=schema->sigbegin(signifikanz[i->first]);
+    for (unsigned x=0;x<i->second;++x) ++si;
+    constraint+=" AND cast("+si->spaltenname+" as text)='"
+        +combos[i->first][i->second]->get_text()+"'";
   }
  }
   if (kombiniertbool)
@@ -116,10 +126,10 @@ case GTK_SEARCH_FETCH:
       }
    }
    else
-  {FetchIStream is("spalten");
+  {Query::Row is("spalten");
    if (!kombiniertbool)
    {  std::string t;
-      is >> FetchIStream::MapNull<std::string>(t,"");
+      is >> Query::Row::MapNull<std::string>(t,"");
       combos[l][sp]->add_item(t);
    }
    else
@@ -127,7 +137,7 @@ case GTK_SEARCH_FETCH:
       try
       {  std::string t;
          for (;;)
-         {  is >> FetchIStream::MapNull<std::string>(t,"");
+         {  is >> Query::Row::MapNull<std::string>(t,"");
             sv.push_back(t);
          }
       } catch (SQLerror &e) {} // Endemarkierung

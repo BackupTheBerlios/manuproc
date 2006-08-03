@@ -1,4 +1,4 @@
-// $Id: Optionmenu_Lager.cc,v 1.3 2005/09/07 14:18:06 christof Exp $
+// $Id: Optionmenu_Lager.cc,v 1.4 2006/08/03 11:57:22 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -43,7 +43,7 @@ try
  { 
  Query q("select lagerid,bezeichnung from lager order by lagerid");
 
- FetchIStream fi=q.Fetch();
+ Query::Row fi=q.Fetch();
 
  int count=0;
 
