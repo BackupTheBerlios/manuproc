@@ -908,7 +908,7 @@ gtk_searchcombo_reset	(GtkSearchCombo *searchcombo)
    gtk_searchcombo_clear_list(searchcombo);
    searchcombo->value_selected=FALSE;
 DEBUG(printf("SCB r: value_selected=%d\n",searchcombo->value_selected));
-   if (searchcombo->always_fill)
+   if (searchcombo->always_fill && GTK_WIDGET_HAS_FOCUS (searchcombo->entry))
      gtk_searchcombo_fill_list(searchcombo);
 }
 
