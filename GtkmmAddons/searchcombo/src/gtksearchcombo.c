@@ -967,6 +967,11 @@ static int
 gtk_searchcombo_entry_key_press (GtkEntry * entry, GdkEventKey * event, GtkSearchCombo * searchcombo)
 {
   searchcombo->backspace= (event->keyval == GDK_BackSpace);
+  // if nothing else happens, at least start a search and display the window on BS
+  if (searchcombo->backspace && !searchcombo->always_fill 
+      && !searchcombo->search_finished && !searchcombo->search_in_progress
+      && !GTK_ENTRY(searchcombo->entry)->text_length)
+    gtk_searchcombo_fill_list(searchcombo);
   /* completion */
   if ((searchcombo->enable_tab || (event->state & GDK_MOD1_MASK)) && (event->keyval == GDK_Tab) ) 
   { 
