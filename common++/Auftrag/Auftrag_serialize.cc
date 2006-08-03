@@ -1,4 +1,4 @@
-// $Id: Auftrag_serialize.cc,v 1.4 2006/08/03 11:17:15 christof Exp $
+// $Id: Auftrag_serialize.cc,v 1.5 2006/08/03 11:17:21 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) Christof Petig
  *
@@ -19,6 +19,7 @@
 
 #include <Misc/Tag.h>
 #include <AuftragFull.h>
+#include <Artikel/Einheiten.h>
 
 void serialize(Tag &where, cH_Kunde const& k,bool nest=true)
 { where.setAttr<int>("Nummer",k->Id());
@@ -58,9 +59,9 @@ void serialize(Tag &where, cH_Kunde const& k,bool nest=true)
 void serialize(Tag &dest, cH_ArtikelBezeichnung const& bez)
 { // Signifikanzen trennen?
   for (ExtBezSchema::const_iterator i=bez->getExtBezSchema()->begin();
-      i!=bez->getExtBezSchema()->end())
+      i!=bez->getExtBezSchema()->end();++i)
   { // hoffentlich ist bezkomptext ein gültiger XML-Identifier 
-    dest.setAttr(i->bezkomptext, (*bez)[i->bezkomtype]);
+    dest.setAttr(i->bezkomptext, (*bez)[i->bezkomptype]);
   }
 }
 
@@ -69,7 +70,7 @@ void serialize(Tag &dest, Preis const& pr, Einheit const& e)
   if (pr.BezugsMenge()!=1)
     dest.setAttr("Bezugsmenge",pr.BezugsMenge().String());
   if (e!=EinheitID::St_)
-    dest.setAttr("Einheit",e->Bezeichnung());
+    dest.setAttr("Einheit",e.Bezeichnung());
   dest.setAttr("Währung",pr.getWaehrung()->Kurzbezeichnung());
 }
 
@@ -101,14 +102,15 @@ Tag serialize(AuftragFull const& a, bool bestaetigung)
     zeile.setAttr("Nummer",i->ZNr());
     Tag &menge=zeile.push_back("Menge",i->getStueck().String());
     Einheit einh(i->Artikel());
-    menge.setAttr("Einheit",einh->einh.Bezeichnung());
-    menge.setAttr("Termin",i->getLieferdatum().to_locale);
+    menge.setAttr("Einheit",einh.Bezeichnung());
+    menge.setAttr("Termin",i->getLieferdatum().to_locale());
     { ArtikelTyp at(i->Artikel());
-      Tag &warengruppe=zeile.push_back("Warengruppe",at->Bezeichnung());
-      warengruppe.setAttr<int>("Id",at->Id());
+      Tag &warengruppe=zeile.push_back("Warengruppe",at.Bezeichnung());
+      warengruppe.setAttr<int>("Id",at.Id());
     }
-    cH_ArtikelBezeichnung unsArtB(i->Artikel()),yourArtB(i->Artikel,kunde->getSchemaId());
-    if (unsArtB->getSchema()!=yourArtB->getSchema())
+    cH_ArtikelBezeichnung unsArtB(i->Artikel())
+        ,yourArtB(i->Artikel(),kunde->getSchemaId());
+    if (!(unsArtB->getExtBezSchema()==yourArtB->getExtBezSchema()))
     { Tag &unsArt=zeile.push_back("UnserArtikel"); // Bezeichnung+Schema
       serialize(unsArt, unsArtB);
     }
@@ -119,7 +121,6 @@ Tag serialize(AuftragFull const& a, bool bestaetigung)
     if (!!i->Rabatt()) spreis.setAttr("Rabatt",i->Rabatt().String());
     Tag &gpreis=zeile.push_back("Gesamtpreis");
     serialize(gpreis,i->GPreis(),Einheit(EinheitID::St_));
-    getLieferdatum
   }
   // Betrag, MwSt etc
 }
