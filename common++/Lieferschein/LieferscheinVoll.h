@@ -52,8 +52,8 @@ public:
 
 class cH_LieferscheinVoll : public Handle<const LieferscheinVoll>
 {
-protected:
-//public:
+//protected:
+public: // warum sollte man kein leeres Handle machen können, dazu sind sie ja da
   cH_LieferscheinVoll() {}
  public:
   cH_LieferscheinVoll(LieferscheinVoll *r) : Handle<const LieferscheinVoll>(r){}
