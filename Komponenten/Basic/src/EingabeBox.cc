@@ -1,4 +1,4 @@
-// $Id: EingabeBox.cc,v 1.16 2005/11/25 16:16:04 christof Exp $
+// $Id: EingabeBox.cc,v 1.17 2006/08/03 11:27:11 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
  *  1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -121,10 +121,12 @@ const std::string EingabeBox::get_value(int col) const
    return entries[col]->get_text(); 
 }
 
-void EingabeBox::set_value(int col,const std::string &s)
-{  grow(col+1); entries[col]->set_text(s); 
+void EingabeBox::set_value(int col,const std::string &s,bool editable)
+{  grow(col+1); entries[col]->set_text(s);
+   entries[col]->set_editable(editable);
+   // jetzt in Artikeleingabe
    // EAN-COde darf nicht editiert werden:
-   if(labels[col]->get_text()=="EAN-Code") entries[col]->set_editable(false);
+   // if(labels[col]->get_text()=="EAN-Code") entries[col]->set_editable(false);
 }
 
 void EingabeBox::set_width(int col,int width)

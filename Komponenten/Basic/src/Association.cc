@@ -1,4 +1,4 @@
-// $Id: Association.cc,v 1.5 2004/07/16 06:58:43 christof Exp $
+// $Id: Association.cc,v 1.6 2006/08/03 11:27:11 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -22,6 +22,7 @@
 #include "bool_CheckButton.hh"
 #include "bool_CheckMenuItem.hh"
 #include "int_SpinButton.hh"
+#include "fixp_SpinButton.hh"
 #include "string_Entry.hh"
 #include "string_Label.hh"
 #include "int_ImageButton.hh"
@@ -50,7 +51,7 @@ void ManuProC::attach(Glib::Object &widget, SigC::Object &connobj,
    widget.set_data(*q,&connobj,&destruct_object);
 }
 
-template <class T,class W,class C>
+template <class T,class W,class C >
  static typename C::Connection &Association_impl(W &w)
 {  SigC::Object *r=0;
    if ((r=lookup(w))) 
@@ -63,6 +64,11 @@ template <class T,class W,class C>
    typename C::Connection *r2=new typename C::Connection(&w);
    attach(w,*r2);
    return *r2;
+}
+
+
+ModelWidgetConnection<fixedpoint<2>,Gtk::SpinButton> &ManuProC::Associationf2(Gtk::SpinButton &w)
+{  return Association_impl<fixedpoint<2>,Gtk::SpinButton,fixp_SpinButton<2> >(w);
 }
 
 ModelWidgetConnection<int,Gtk::SpinButton> &ManuProC::Association(Gtk::SpinButton &w)

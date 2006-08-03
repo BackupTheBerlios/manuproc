@@ -1,4 +1,4 @@
-// $Id: with_class.cc,v 1.29 2005/11/07 07:31:06 christof Exp $
+// $Id: with_class.cc,v 1.30 2006/08/03 11:27:11 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -16,7 +16,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.29 2005/11/07 07:31:06 christof Exp $
+// $Id: with_class.cc,v 1.30 2006/08/03 11:27:11 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -224,6 +224,7 @@ with_class::with_class()
    datavec.push_back(new MyRowData(1,"1810",40,100,"9999"));
    datavec.push_back(new MyRowData(1,"1955",25,855,"50m"));
    datavec.push_back(new MyRowData(1,"1955",40,210,"Jumbo ein ganz langer Text"));
+   datavec.push_back(new MyRowData(1,"A",20,2,"äöüßÄÖÜ€&\\'\"()<>|*"));
 #endif
    treebase->setDataVec(datavec);
    

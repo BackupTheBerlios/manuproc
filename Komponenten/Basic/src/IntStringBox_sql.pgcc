@@ -1,4 +1,4 @@
-// $Id: IntStringBox_sql.pgcc,v 1.1 2005/11/21 18:21:53 christof Exp $
+// $Id: IntStringBox_sql.pgcc,v 1.2 2006/08/03 11:27:11 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
  *  1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -18,8 +18,8 @@
  */
 
 #include "IntStringBox.hh"
-#include <Aux/itos.h>
-#include <Aux/FetchIStream.h>
+#include <Misc/itos.h>
+#include <Misc/Query.h>
 
 bool IntStringBox::try_to_get_id()
 {
@@ -44,7 +44,7 @@ bool IntStringBox::try_to_get_id()
   SQLerror::test(__FILELINE__,100);
   if (sqlca.sqlcode) return false;
 
-  FetchIStream is = q >> id;
+  Query::Row is = q >> id;
   sc_int->set_text(itos(id));
   if(string_2_info_only) 
     {std::string s;
@@ -241,7 +241,7 @@ void IntStringBox::string1_search(gboolean *_continue, GtkSCContext newsearch)
 }
 
 
-/* not FetchIStream
+/* not Query::Row
 void IntStringBox::string1_search(gboolean *_continue, GtkSCContext newsearch)
 {
    exec sql begin declare section;

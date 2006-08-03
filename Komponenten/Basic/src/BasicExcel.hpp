@@ -16,6 +16,27 @@
 	// - Remove code for ExtSST because it was causing problems with reading and writing to Excel files containing many strings.
 // Version 1.6 (16 May 2006)
 	// - Optimized code for reading and writing.
+// Version 1.7 (22 May 2006)
+	// - Fixed code to remove some warnings.
+	// - Fixed bug with BasicExcelWorksheet::Cell.
+	// - Fixed bug with BasicExcel::UpdateWorksheets().
+// Version 1.8 (23 May 2006)
+	// - Fixed bug with reading Excel files containing many unicode strings.
+	// - Fixed code to remove some warnings.
+	// - Fixed variable code_ duplication in BoolErr.
+	// - Minor changes to BasicExcelCell:Set functions.
+// Version 1.9 (24 May 2006)
+	// - Changed name_ in Style from SmallString to LargeString.
+	// - Fixed bug in BasicExcelCell::GetString and BasicExcelCell::GetWString.
+	// - Minor changes to functions in BasicExcel and BasicExcelWorksheet which checks for unicode.
+	// - Minor change to SmallString::Read.
+// Version 1.10 (30 May 2006)
+	// - Fixed bug with reading Excel files containing many strings.
+	// - Remove memory leaks.
+// Version 1.11 (2 June 2006)
+	// - Fixed bug with reading and writing Excel files containing many unicode and ANSI strings.
+// Version 1.12 (6 June 2006)
+	// - Fixed bug with reading and writing Excel files containing many unicode and ANSI strings.
 
 #ifndef BASICEXCEL_HPP
 #define BASICEXCEL_HPP
@@ -83,7 +104,6 @@ struct LittleEndian
 	static void Read(const char* buffer, Type& retVal, int pos=0, int bytes=0)
 	{
 		retVal = Type(0);
-		char c;
 		if (bytes == 0) bytes = sizeof(Type);
 		for (size_t i=0; i<bytes; ++i)
 		{
@@ -118,7 +138,6 @@ struct LittleEndian
 	static void Read(const vector<char>& buffer, Type& retVal, int pos=0, int bytes=0)
 	{
 		retVal = Type(0);
-		char c;
 		if (bytes == 0) bytes = sizeof(Type);
 		for (size_t i=0; i<bytes; ++i)
 		{
@@ -351,7 +370,7 @@ protected:
 			{
 				int result = wcscmp(lhs.name_, rhs.name_);
 				if (result <= 0) return true;
-				else if (result > 0) return false;
+				else return false;
 			}
 		}
 		friend bool operator!=(const CompoundFile::Property& lhs, const CompoundFile::Property& rhs) {return !(lhs == rhs);}
@@ -378,8 +397,11 @@ protected:
 		int startBlock_;				// Starting block of the file, used as the first block in the file and the pointer to the next block from the BAT (0x74)
 		int size_;						// Actual size of the file this property points to. (used to truncate the blocks to the real size). (0x78)
 	};
-	struct PropertyTree
+	class PropertyTree
 	{
+	public:
+		PropertyTree();
+		~PropertyTree();
 		PropertyTree* parent_;
 		Property* self_;
 		size_t index_;
@@ -547,8 +569,8 @@ struct SmallString
 	const SmallString& operator=(const char* str);
 	const SmallString& operator=(const wchar_t* str);
 	void Reset();
-	void Read(const char* data);
-	void Write(char* data);	
+	size_t Read(const char* data);
+	size_t Write(char* data);	
 	size_t DataSize();
 	size_t RecordSize();
 	size_t StringSize();
@@ -566,9 +588,9 @@ struct LargeString
 	const LargeString& operator=(const char* str);
 	const LargeString& operator=(const wchar_t* str);
 	void Reset();
-	void Read(const char* data);
-	void ContinueRead(const char* data, size_t size);
-	void Write(char* data);	
+	size_t Read(const char* data);
+	size_t ContinueRead(const char* data, size_t size);
+	size_t Write(char* data);	
 	size_t DataSize();
 	size_t RecordSize();
 	size_t StringSize();
@@ -657,7 +679,7 @@ public:
 		short XFRecordIndex_;
 		char identifier_;
 		char level_;
-		SmallString name_;		
+		LargeString name_;		
 	};
 	struct Palette;
 	struct UseSelfs;
@@ -814,7 +836,7 @@ public:
 					short rowIndex_;
 					short colIndex_;
 					short XFRecordIndex_;
-					char code_;
+					char value_;
 					char error_;	
 				};
 				struct LabelSST : public Record

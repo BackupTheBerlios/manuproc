@@ -1,4 +1,4 @@
-// $Id: IntStringBox.cc,v 1.4 2006/02/23 16:13:00 christof Exp $
+// $Id: IntStringBox.cc,v 1.5 2006/08/03 11:27:11 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
  *  1998-2006 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -92,9 +92,6 @@ gint IntStringBox::try_grab_focus(GtkWidget *w,gpointer gp)
 {
    IntStringBox *this2((IntStringBox*)gp);
    assert(dynamic_cast<Gtk::EventBox*>(this2));
-/*
-   assert(Gtk::Table::isA(this2)); // very weak check
-*/
    this2->sc_int->grab_focus();
    return true;
 }
@@ -111,7 +108,6 @@ tr3("",false),
  // redirect our grab_focus
  gtk_signal_connect(GTK_OBJECT(gobj()), "grab_focus",
                  GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
-// sc_int->get_entry()->set_width_chars(8); // done within the gui class
 }
 
 void IntStringBox::set_value(ManuProcEntity<>::ID i,const std::string &s, 
@@ -175,5 +171,7 @@ void IntStringBox::setExpandStr1(bool expand)
  sc1_string->set_enable_tab(true);  
 }
 
-
-
+void IntStringBox::FocusToString1()
+{
+  sc1_string->grab_focus();
+}

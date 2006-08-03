@@ -1,6 +1,7 @@
-// $Id: SimpleTreeStore.cc,v 1.117 2006/05/17 08:15:51 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.118 2006/08/03 11:27:12 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2006 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -1075,7 +1076,7 @@ Gtk::TreeModel::Path SimpleTreeStore::getPath(const cH_RowDataBase &data) const
   return getPath(l.front());
 }
 
-Gtk::TreeModel::Path SimpleTreeStore::getPath(iterator it) const
+Gtk::TreeModel::Path SimpleTreeStore::getPath(const_iterator it) const
 {  std::vector<unsigned> store;
    store.reserve(max_column);
    while(true)
@@ -1089,6 +1090,10 @@ Gtk::TreeModel::Path SimpleTreeStore::getPath(iterator it) const
    }
    ManuProC::Trace _t(trace_channel,__FUNCTION__,res.to_string());
    return res;
+}
+
+Gtk::TreeModel::Path SimpleTreeStore::getPath(iterator it) const
+{  return getPath(static_cast<const_iterator>(it));
 }
 
 unsigned SimpleTreeStore::Node2nth_child(const Node &nd) const

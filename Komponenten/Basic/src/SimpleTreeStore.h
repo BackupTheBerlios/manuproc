@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.75 2006/05/17 08:15:51 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.76 2006/08/03 11:27:12 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -193,6 +193,7 @@ protected:
         static void default_save(const std::string&program, const std::string&instance, const std::pair<std::string,std::string>&value);
         
 	friend class SimpleTree_Basic;
+	friend class SimpleTree;
 	sequence_t currseq; 
 	SimpleTreeStoreNode root;
 
@@ -257,6 +258,7 @@ private:
    void iterclear(vfunc_iter_t iter) const;
    void iterinit(vfunc_iter_t iter,const const_iterator &schema) const;
    Path getPath(iterator it) const;
+   Path getPath(const_iterator it) const;
    TreeModel::iterator getIter(iterator it) const;
    
    iterator iterbyNode(Node &nd) const;

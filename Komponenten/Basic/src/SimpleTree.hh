@@ -1,7 +1,8 @@
-// $Id: SimpleTree.hh,v 1.66 2006/05/17 08:15:51 christof Exp $
+// $Id: SimpleTree.hh,v 1.67 2006/08/03 11:27:11 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski and Christof Petig
+ *  Copyright (C) 2006 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -197,7 +198,12 @@ private:
  			bool only_one_line)
  {  for (const_iterator i=b;i!=e;++i)
     {  if (!i->second.childrens_deep && i->second.leafdata==t)
-       {  get_selection()->select(getStore()->getIter(i));
+       {  // we can only select visible rows
+          Gtk::TreePath tosel=getStore()->getPath(i);
+          expand_to_path(tosel);
+          // using an iterator is slower currently since it is converted back
+          // (see gtk_tree_selection_select_iter)
+          get_selection()->select(tosel);
           if (only_one_line) return;
        }
        else if (!i->second.children.empty())

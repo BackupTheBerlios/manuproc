@@ -408,6 +408,16 @@ void CompoundFile::Property::Read(char* block)
 }
 /********************************** End of Class Property ************************************/
 
+/********************************** Start of Class PropertyTree **********************************/
+CompoundFile::PropertyTree::PropertyTree() {};
+
+CompoundFile::PropertyTree::~PropertyTree()
+{
+	size_t maxChildren = children_.size();
+	for (size_t i=0; i<maxChildren; ++i) delete children_[i];
+}
+/********************************** End of Class PropertyTree ************************************/
+
 /********************************** Start of Class CompoundFile ******************************/
 // PURPOSE: Manage a compound file.
 CompoundFile::CompoundFile() :
@@ -1452,7 +1462,8 @@ size_t CompoundFile::ReadData(size_t startIndex, char* data, bool isBig)
 			copy (buffer+start, 
 				  buffer+start+header_.smallBlockSize_, 
 				  data+i*header_.smallBlockSize_);
-		}	
+		}
+		delete[] buffer;
 		return maxIndices*header_.smallBlockSize_;
 	}
 }
@@ -2496,18 +2507,20 @@ void SmallString::Reset()
 	if (name_) {delete[] name_; name_ = 0;}
 	if (wname_) {delete[] wname_; wname_ = 0;}
 }
-void SmallString::Read(const char* data)
+size_t SmallString::Read(const char* data)
 {
 	Reset();
-	size_t stringSize;
+	char stringSize;
 	LittleEndian::Read(data, stringSize, 0, 1);
 	LittleEndian::Read(data, unicode_, 1, 1);
+	size_t bytesRead = 2;
 	if (unicode_ == 0)
 	{
 		// ANSI string	
 		name_ = new char[stringSize+1];
 		LittleEndian::ReadString(data, name_, 2, stringSize);
 		name_[stringSize] = 0;
+		bytesRead += stringSize;
 	}
 	else
 	{
@@ -2515,11 +2528,14 @@ void SmallString::Read(const char* data)
 		wname_ = new wchar_t[stringSize+1];
 		LittleEndian::ReadString(data, wname_, 2, stringSize);
 		wname_[stringSize] = 0;
+		bytesRead += stringSize*2;
 	}
+	return bytesRead;
 }
-void SmallString::Write(char* data)
+size_t SmallString::Write(char* data)
 {
 	size_t stringSize = 0;
+	size_t bytesWrite = 0;
 	if (unicode_ == 0)
 	{
 		// ANSI string
@@ -2529,11 +2545,13 @@ void SmallString::Write(char* data)
 			LittleEndian::Write(data, stringSize, 0, 1);
 			LittleEndian::Write(data, unicode_, 1, 1);
 			LittleEndian::WriteString(data, name_, 2, stringSize);
+			bytesWrite = 2 + stringSize;
 		}
 		else
 		{
 			LittleEndian::Write(data, stringSize, 0, 1);
 			LittleEndian::Write(data, unicode_, 1, 1);
+			bytesWrite = 2;
 		}
 	}
 	else
@@ -2545,13 +2563,16 @@ void SmallString::Write(char* data)
 			LittleEndian::Write(data, stringSize, 0, 1);
 			LittleEndian::Write(data, unicode_, 1, 1);
 			LittleEndian::WriteString(data, wname_, 2, stringSize);
+			bytesWrite = 2 + stringSize*2;
 		}
 		else
 		{
 			LittleEndian::Write(data, stringSize, 0, 1);
 			LittleEndian::Write(data, unicode_, 1, 1);
+			bytesWrite = 2;
 		}
 	}
+	return bytesWrite;
 }
 size_t SmallString::DataSize() {return (unicode_ == 0) ? StringSize()+2 : StringSize()*2+2;}
 size_t SmallString::RecordSize() {return DataSize();}
@@ -2565,6 +2586,7 @@ size_t SmallString::StringSize()
 	{
 		if (wname_) return wcslen(wname_);
 	}
+	return 0;
 }
 /************************************************************************************************************/
 
@@ -2605,7 +2627,7 @@ const LargeString& LargeString::operator=(const wchar_t* str)
 	wcscpy(&*(wname_.begin()), str);	
 	return *this;
 }
-void LargeString::Read(const char* data)
+size_t LargeString::Read(const char* data)
 {
 	size_t stringSize;
 	LittleEndian::Read(data, stringSize, 0, 2);
@@ -2619,11 +2641,13 @@ void LargeString::Read(const char* data)
 	if (unicode_ & 4) LittleEndian::Read(data, phonetic_, npos, 4);
 	name_.clear();
 	wname_.clear();
-	ContinueRead(data+2, stringSize);
+	size_t bytesRead = 2;
+	bytesRead += ContinueRead(data+2, stringSize);
+	return bytesRead;
 }
-void LargeString::ContinueRead(const char* data, size_t size)
+size_t LargeString::ContinueRead(const char* data, size_t size)
 {
-	if (size == 0) return;
+	if (size == 0) return 0;
 
 	char unicode;
 	LittleEndian::Read(data, unicode, 0, 1);
@@ -2640,6 +2664,7 @@ void LargeString::ContinueRead(const char* data, size_t size)
 		if (unicode & 1)
 		{
 			LittleEndian::ReadString(data, &*(wname_.begin())+strpos, npos, size);
+			npos += size * SIZEOFWCHAR_T;
 		}
 		else
 		{
@@ -2647,7 +2672,11 @@ void LargeString::ContinueRead(const char* data, size_t size)
 			vector<char> name(size);
 			LittleEndian::ReadString(data, &*(name.begin()), npos, size);
 			mbstowcs(&*(wname_.begin())+strpos, &*(name.begin()), size);
+			npos += size;
 		}
+		if (richtext_) npos += 4*richtext_;
+		if (phonetic_) npos += phonetic_;
+		return npos;
 	}
 	else
 	{
@@ -2664,16 +2693,22 @@ void LargeString::ContinueRead(const char* data, size_t size)
 			vector<wchar_t> name(size);
 			LittleEndian::ReadString(data, &*(name.begin()), npos, size);
 			wcstombs(&*(name_.begin())+strpos, &*(name.begin()), size);
+			npos += size * SIZEOFWCHAR_T;
 		}
 		else
 		{
 			LittleEndian::ReadString(data, &*(name_.begin())+strpos, npos, size);
+			npos += size;
 		}
+		if (richtext_) npos += 4*richtext_;
+		if (phonetic_) npos += phonetic_;
+		return npos;
 	}
 }
-void LargeString::Write(char* data)
+size_t LargeString::Write(char* data)
 {
 	size_t stringSize = 0;
+	size_t bytesWrite = 0;
 	if (unicode_ & 1)
 	{
 		// UNICODE
@@ -2684,11 +2719,13 @@ void LargeString::Write(char* data)
 			LittleEndian::Write(data, stringSize, 0, 2);
 			LittleEndian::Write(data, unicode_, 2, 1);
 			LittleEndian::WriteString(data, &*(wname_.begin()), 3, stringSize);
+			bytesWrite = 3 + stringSize * SIZEOFWCHAR_T;
 		}
 		else
 		{
 			LittleEndian::Write(data, stringSize, 0, 2);
 			LittleEndian::Write(data, unicode_, 2, 1);
+			bytesWrite = 3;
 		}
 	}
 	else
@@ -2701,13 +2738,16 @@ void LargeString::Write(char* data)
 			LittleEndian::Write(data, stringSize, 0, 2);
 			LittleEndian::Write(data, unicode_, 2, 1);
 			LittleEndian::WriteString(data, &*(name_.begin()), 3, stringSize);
+			bytesWrite = 3 + stringSize;
 		}
 		else
 		{
 			LittleEndian::Write(data, stringSize, 0, 2);
 			LittleEndian::Write(data, unicode_, 2, 1);
+			bytesWrite = 3;
 		}
 	}
+	return bytesWrite;
 }
 size_t LargeString::DataSize() 
 {
@@ -3050,8 +3090,7 @@ size_t Workbook::SharedStringTable::Read(const char* data)
 	{
 		for (size_t i=0; i<uniqueStringsTotal_; ++i)
 		{
-			strings_[i].Read(&*(data_.begin())+npos);
-			npos += strings_[i].RecordSize();
+			npos += strings_[i].Read(&*(data_.begin())+npos);
 		}
 	}
 	else
@@ -3061,41 +3100,42 @@ size_t Workbook::SharedStringTable::Read(const char* data)
 
 		for (size_t i=0, c=0; i<uniqueStringsTotal_; ++i)
 		{
+			char unicode;
 			size_t stringSize;
 			LittleEndian::Read(data_, stringSize, npos, 2);
-			if (c >= maxContinue || npos+stringSize+3 <= continueIndices_[c])
+			LittleEndian::Read(data_, unicode, npos+2, 1);
+			size_t multiplier = unicode & 1 ? 2 : 1;
+			if (c >= maxContinue || npos+stringSize*multiplier+3 <= continueIndices_[c])
 			{
 				// String to be read is not split into two records
-				strings_[i].Read(&*(data_.begin())+npos);
-				npos += strings_[i].RecordSize();
+				npos += strings_[i].Read(&*(data_.begin())+npos);
 			}
 			else
 			{
 				// String to be read is split into two or more records
-				npos += 2;	// Start from unicode field
+				int bytesRead = 2;// Start from unicode field
 
-				int size = continueIndices_[c] - npos - 1;
+				int size = continueIndices_[c] - npos - 1 - bytesRead;
 				++c;
 				if (size > 0) 
 				{
-					strings_[i].ContinueRead(&*(data_.begin())+npos, size);
-					npos += size + 1;
+					size /= multiplier;	// Number of characters available for string in current record.
+					bytesRead += strings_[i].ContinueRead(&*(data_.begin())+npos+bytesRead, size);
 					stringSize -= size;
 					size = 0;
 				}
 				while (c<maxContinue && npos+stringSize+1>continueIndices_[c])
 				{
-					size_t dataSize = continueIndices_[c] - continueIndices_[c-1] - 1;
-					strings_[i].ContinueRead(&*(data_.begin())+npos, dataSize);
-					npos += dataSize + 1;
+					size_t dataSize = (continueIndices_[c] - continueIndices_[c-1] - 1) / multiplier;
+					bytesRead += strings_[i].ContinueRead(&*(data_.begin())+npos+bytesRead, dataSize);
 					stringSize -= dataSize + 1;
 					++c;
 				};
 				if (stringSize>0)
 				{
-					strings_[i].ContinueRead(&*(data_.begin())+npos, stringSize);
-					npos += stringSize + 1;
+					bytesRead += strings_[i].ContinueRead(&*(data_.begin())+npos+bytesRead, stringSize);
 				}
+				npos += bytesRead;
 			}
 		}
 	}
@@ -3110,8 +3150,7 @@ size_t Workbook::SharedStringTable::Write(char* data)
 	size_t maxContinue = continueIndices_.size();
 	for (size_t i=0, c=0, npos=8; i<uniqueStringsTotal_; ++i)
 	{
-		strings_[i].Write(&*(data_.begin())+npos);
-		npos += strings_[i].StringSize()+3;
+		npos += strings_[i].Write(&*(data_.begin())+npos);
 		if (c<maxContinue && npos==continueIndices_[c]) ++c;
 		else if (c<maxContinue && npos > continueIndices_[c])
 		{
@@ -3129,7 +3168,7 @@ size_t Workbook::SharedStringTable::DataSize()
 	dataSize_ = 8;
 	continueIndices_.clear();
 	size_t curMax = 8224;
-	for (size_t i=0, c=0; i<uniqueStringsTotal_; ++i)
+	for (size_t i=0; i<uniqueStringsTotal_; ++i)
 	{
 		size_t stringSize = strings_[i].StringSize();
 		if (dataSize_+stringSize+3 <= curMax)
@@ -3140,20 +3179,33 @@ size_t Workbook::SharedStringTable::DataSize()
 		{
 			// If have >= 12 bytes (2 for size, 1 for unicode and >=9 for data, can split string
 			// otherwise, end record and start continue record.
+			bool unicode = strings_[i].unicode_ & 1;
 			if (curMax - dataSize_ >= 12)
 			{
+				if (unicode && !((curMax-dataSize_)%2)) --curMax;	// Make sure space reserved for unicode strings is even.
 				continueIndices_.push_back(curMax);
 				stringSize -= (curMax - dataSize_ - 3);
 				dataSize_ = curMax;
 				curMax += 8224;
 
-				size_t additionalContinueRecords = stringSize / 8223; // 8223 because the first byte is for unicode
+				size_t additionalContinueRecords = unicode ? stringSize/8222 : stringSize/8223; // 8222 or 8223 because the first byte is for unicode identifier
 				for (size_t j=0; j<additionalContinueRecords; ++j)
 				{
-					continueIndices_.push_back(curMax);
-					curMax += 8224;
-					dataSize_ += 8224;
-					stringSize -= 8223;
+					if (unicode)
+					{
+						--curMax;
+						continueIndices_.push_back(curMax);
+						curMax += 8223;
+						dataSize_ += 8223;
+						stringSize -= 8222;
+					}
+					else
+					{
+						continueIndices_.push_back(curMax);
+						curMax += 8224;
+						dataSize_ += 8224;
+						stringSize -= 8223;
+					}
 				}
 				dataSize_ += stringSize + 1;
 			}
@@ -3171,18 +3223,30 @@ size_t Workbook::SharedStringTable::DataSize()
 					// otherwise, end record and start continue record.
 					if (curMax - dataSize_ >= 12)
 					{
+						if (unicode && !((curMax-dataSize_)%2)) --curMax;	// Make sure space reserved for unicode strings is even.
 						continueIndices_.push_back(curMax);
 						stringSize -= (curMax - dataSize_ - 3);
 						dataSize_ = curMax;
 						curMax += 8224;
 
-						size_t additionalContinueRecords = stringSize / 8223; // 8223 because the first byte is for unicode
+						size_t additionalContinueRecords = unicode ? stringSize/8222 : stringSize/8223; // 8222 or 8223 because the first byte is for unicode identifier
 						for (size_t j=0; j<additionalContinueRecords; ++j)
 						{
-							continueIndices_.push_back(curMax);
-							curMax += 8224;
-							dataSize_ += 8224;
-							stringSize -= 8223;
+							if (unicode)
+							{
+								--curMax;
+								continueIndices_.push_back(curMax);
+								curMax += 8223;
+								dataSize_ += 8223;
+								stringSize -= 8222;
+							}
+							else
+							{
+								continueIndices_.push_back(curMax);
+								curMax += 8224;
+								dataSize_ += 8224;
+								stringSize -= 8223;
+							}
 						}
 						dataSize_ += stringSize + 1;
 					}
@@ -3432,7 +3496,7 @@ size_t Worksheet::CellTable::RowBlock::CellBlock::Blank::Write(char* data)
 }
 
 Worksheet::CellTable::RowBlock::CellBlock::BoolErr::BoolErr() : Record(),
-	rowIndex_(0), colIndex_(0), XFRecordIndex_(0), code_(0), error_(0)
+	rowIndex_(0), colIndex_(0), XFRecordIndex_(0), value_(0), error_(0)
 	{code_ = CODE::BOOLERR; dataSize_ = 8; recordSize_ = 12;}
 size_t Worksheet::CellTable::RowBlock::CellBlock::BoolErr::Read(const char* data)
 {
@@ -3440,7 +3504,7 @@ size_t Worksheet::CellTable::RowBlock::CellBlock::BoolErr::Read(const char* data
 	LittleEndian::Read(data_, rowIndex_, 0, 2);
 	LittleEndian::Read(data_, colIndex_, 2, 2);
 	LittleEndian::Read(data_, XFRecordIndex_, 4, 2);
-	LittleEndian::Read(data_, code_, 6, 1);
+	LittleEndian::Read(data_, value_, 6, 1);
 	LittleEndian::Read(data_, error_, 7, 1);
 	return RecordSize();
 }	
@@ -3450,7 +3514,7 @@ size_t Worksheet::CellTable::RowBlock::CellBlock::BoolErr::Write(char* data)
 	LittleEndian::Write(data_, rowIndex_, 0, 2);
 	LittleEndian::Write(data_, colIndex_, 2, 2);
 	LittleEndian::Write(data_, XFRecordIndex_, 4, 2);
-	LittleEndian::Write(data_, code_, 6, 1);
+	LittleEndian::Write(data_, value_, 6, 1);
 	LittleEndian::Write(data_, error_, 7, 1);
 	return Record::Write(data);
 }
@@ -4032,7 +4096,8 @@ size_t Worksheet::CellTable::RowBlock::CellBlock::DataSize()
 
 		case CODE::FORMULA:
 			return formula_.DataSize();
-	}	
+	}
+	abort();
 }
 size_t Worksheet::CellTable::RowBlock::CellBlock::RecordSize() 
 {
@@ -4061,7 +4126,8 @@ size_t Worksheet::CellTable::RowBlock::CellBlock::RecordSize()
 
 		case CODE::FORMULA:
 			return formula_.RecordSize();
-	}	
+	}
+	abort();
 }
 short Worksheet::CellTable::RowBlock::CellBlock::RowIndex()
 {
@@ -4090,7 +4156,8 @@ short Worksheet::CellTable::RowBlock::CellBlock::RowIndex()
 
 		case CODE::FORMULA:
 			return formula_.rowIndex_;
-	}	
+	}
+	abort();
 }
 short Worksheet::CellTable::RowBlock::CellBlock::ColIndex()
 {
@@ -4119,7 +4186,8 @@ short Worksheet::CellTable::RowBlock::CellBlock::ColIndex()
 
 		case CODE::FORMULA:
 			return formula_.colIndex_;
-	}	
+	}
+	abort();
 }
 
 /************************************************************************************************************/
@@ -4496,7 +4564,7 @@ BasicExcelWorksheet* BasicExcel::GetWorksheet(const char* name)
 	size_t maxWorksheets = yesheets_.size();
 	for (size_t i=0; i<maxWorksheets; ++i)
 	{
-		if (workbook_.boundSheets_[i].name_.unicode_ != 0) continue;
+		if (workbook_.boundSheets_[i].name_.unicode_ & 1) continue;
 		if (strcmp(name, workbook_.boundSheets_[i].name_.name_) == 0) return &(yesheets_[i]);
 	}
 	return 0;
@@ -4509,7 +4577,7 @@ BasicExcelWorksheet* BasicExcel::GetWorksheet(const wchar_t* name)
 	size_t maxWorksheets = yesheets_.size();
 	for (size_t i=0; i<maxWorksheets; ++i)
 	{
-		if (workbook_.boundSheets_[i].name_.unicode_ == 0) continue;
+		if (!(workbook_.boundSheets_[i].name_.unicode_ & 1)) continue;
 		if (wcscmp(name, workbook_.boundSheets_[i].name_.wname_) == 0) return &(yesheets_[i]);
 	}
 	return 0;
@@ -4542,7 +4610,7 @@ BasicExcelWorksheet* BasicExcel::AddWorksheet(const char* name, int sheetIndex)
 	size_t maxWorksheets = yesheets_.size();
 	for (size_t i=0; i<maxWorksheets; ++i)
 	{
-		if (workbook_.boundSheets_[i].name_.unicode_ != 0) continue;
+		if (workbook_.boundSheets_[i].name_.unicode_ & 1) continue;
 		if (strcmp(name, workbook_.boundSheets_[i].name_.name_) == 0) return 0;
 	}
 
@@ -4583,7 +4651,7 @@ BasicExcelWorksheet* BasicExcel::AddWorksheet(const wchar_t* name, int sheetInde
 	size_t maxWorksheets = yesheets_.size();
 	for (size_t i=0; i<maxWorksheets; ++i)
 	{
-		if (workbook_.boundSheets_[i].name_.unicode_ == 0) continue;
+		if (!(workbook_.boundSheets_[i].name_.unicode_ & 1)) continue;
 		if (wcscmp(name, workbook_.boundSheets_[i].name_.wname_) == 0) return 0;
 	}
 
@@ -4637,7 +4705,7 @@ bool BasicExcel::DeleteWorksheet(const char* name)
 	size_t maxWorksheets = yesheets_.size();
 	for (size_t i=0; i<maxWorksheets; ++i)
 	{
-		if (workbook_.boundSheets_[i].name_.unicode_ != 0) continue;
+		if (workbook_.boundSheets_[i].name_.unicode_ & 1) continue;
 		if (strcmp(name, workbook_.boundSheets_[i].name_.name_) == 0) return DeleteWorksheet(i);
 	}
 	return false;
@@ -4650,7 +4718,7 @@ bool BasicExcel::DeleteWorksheet(const wchar_t* name)
 	size_t maxWorksheets = worksheets_.size();
 	for (size_t i=0; i<maxWorksheets; ++i)
 	{
-		if (workbook_.boundSheets_[i].name_.unicode_ == 0) continue;
+		if (!(workbook_.boundSheets_[i].name_.unicode_ & 1)) continue;
 		if (wcscmp(name, workbook_.boundSheets_[i].name_.wname_) == 0) return DeleteWorksheet(i);
 	}
 	return false;
@@ -4661,7 +4729,7 @@ bool BasicExcel::DeleteWorksheet(const wchar_t* name)
 // Returns 0 if name is in Unicode format.
 char* BasicExcel::GetAnsiSheetName(size_t sheetIndex)
 {
-	if (workbook_.boundSheets_[sheetIndex].name_.unicode_ == 0)
+	if (!(workbook_.boundSheets_[sheetIndex].name_.unicode_ & 1))
 	{
 		return workbook_.boundSheets_[sheetIndex].name_.name_;
 	}
@@ -4673,7 +4741,7 @@ char* BasicExcel::GetAnsiSheetName(size_t sheetIndex)
 // Returns 0 if name is in Ansi format.
 wchar_t* BasicExcel::GetUnicodeSheetName(size_t sheetIndex)
 {
-	if (workbook_.boundSheets_[sheetIndex].name_.unicode_ != 0)
+	if (workbook_.boundSheets_[sheetIndex].name_.unicode_ & 1)
 	{
 		return workbook_.boundSheets_[sheetIndex].name_.wname_;
 	}
@@ -4685,7 +4753,7 @@ wchar_t* BasicExcel::GetUnicodeSheetName(size_t sheetIndex)
 // Returns false if name is in Unicode format.
 bool BasicExcel::GetSheetName(size_t sheetIndex, char* name)
 {
-	if (workbook_.boundSheets_[sheetIndex].name_.unicode_ == 0)
+	if (!(workbook_.boundSheets_[sheetIndex].name_.unicode_ & 1))
 	{
 		strcpy(name, workbook_.boundSheets_[sheetIndex].name_.name_);
 		return true;
@@ -4698,7 +4766,7 @@ bool BasicExcel::GetSheetName(size_t sheetIndex, char* name)
 // Returns false if name is in Ansi format.
 bool BasicExcel::GetSheetName(size_t sheetIndex, wchar_t* name)
 {
-	if (workbook_.boundSheets_[sheetIndex].name_.unicode_ != 0)
+	if (workbook_.boundSheets_[sheetIndex].name_.unicode_ & 1)
 	{
 		wcscpy(name, workbook_.boundSheets_[sheetIndex].name_.wname_);
 		return true;
@@ -4716,7 +4784,7 @@ bool BasicExcel::RenameWorksheet(size_t sheetIndex, const char* to)
 	{
 		for (size_t i=0; i<maxWorksheets; ++i)
 		{
-			if (workbook_.boundSheets_[i].name_.unicode_ != 0) continue;
+			if (workbook_.boundSheets_[i].name_.unicode_ & 1) continue;
 			if (strcmp(to, workbook_.boundSheets_[i].name_.name_) == 0) return false;
 		}
 		workbook_.boundSheets_[sheetIndex].name_ = to;
@@ -4735,7 +4803,7 @@ bool BasicExcel::RenameWorksheet(size_t sheetIndex, const wchar_t* to)
 	{
 		for (size_t i=0; i<maxWorksheets; ++i)
 		{
-			if (workbook_.boundSheets_[i].name_.unicode_ == 0) continue;
+			if (!(workbook_.boundSheets_[i].name_.unicode_ & 1)) continue;
 			if (wcscmp(to, workbook_.boundSheets_[i].name_.wname_) == 0) return false;
 		}
 		workbook_.boundSheets_[sheetIndex].name_ = to;
@@ -4751,12 +4819,12 @@ bool BasicExcel::RenameWorksheet(const char* from, const char* to)
 	size_t maxWorksheets = yesheets_.size();
 	for (size_t i=0; i<maxWorksheets; ++i)
 	{
-		if (workbook_.boundSheets_[i].name_.unicode_ != 0) continue;
+		if (workbook_.boundSheets_[i].name_.unicode_ & 1) continue;
 		if (strcmp(from, workbook_.boundSheets_[i].name_.name_) == 0)
 		{
 			for (size_t j=0; j<maxWorksheets; ++j)
 			{
-				if (workbook_.boundSheets_[j].name_.unicode_ != 0) continue;
+				if (workbook_.boundSheets_[j].name_.unicode_ & 1) continue;
 				if (strcmp(to, workbook_.boundSheets_[j].name_.name_) == 0) return false;
 			}
 			workbook_.boundSheets_[i].name_ = to;
@@ -4773,12 +4841,12 @@ bool BasicExcel::RenameWorksheet(const wchar_t* from, const wchar_t* to)
 	size_t maxWorksheets = worksheets_.size();
 	for (size_t i=0; i<maxWorksheets; ++i)
 	{
-		if (workbook_.boundSheets_[i].name_.unicode_ == 0) continue;
+		if (!(workbook_.boundSheets_[i].name_.unicode_ & 1)) continue;
 		if (wcscmp(from, workbook_.boundSheets_[i].name_.wname_) == 0)
 		{
 			for (size_t j=0; j<maxWorksheets; ++j)
 			{
-				if (workbook_.boundSheets_[j].name_.unicode_ == 0) continue;
+				if (!(workbook_.boundSheets_[j].name_.unicode_ & 1)) continue;
 				if (wcscmp(to, workbook_.boundSheets_[j].name_.wname_) == 0) return false;
 			}
 			workbook_.boundSheets_[i].name_ = to;
@@ -4893,12 +4961,10 @@ void BasicExcel::AdjustDBCellPositions()
 			
 			offset += worksheets_[i].cellTable_.rowBlocks_[j].dbcell_.RecordSize();
 
-
 			// Adjust DBCell first row offsets
 			worksheets_[i].cellTable_.rowBlocks_[j].dbcell_.firstRowOffset_ = firstRowOffset;
 
 			// Adjust DBCell offsets
-			size_t lastCell = 0;
 			size_t l=0;
 			{for (size_t k=0; k<maxRows; ++k)
 			{
@@ -5101,7 +5167,7 @@ void BasicExcel::UpdateWorksheets()
 					if (newRow)
 					{
 						// Prepare Row and DBCell for new row with data.
-						Worksheet::CellTable::RowBlock& rRowBlock = rRowBlocks.back();
+						Worksheet::CellTable::RowBlock& rRowBlock = rRowBlocks[curRowBlock-1];
 						rRowBlock.rows_.push_back(row);
 						rRowBlock.rows_.back().rowIndex_ = r;
 						rRowBlock.rows_.back().lastCellColIndexPlusOne_ = maxCols;
@@ -5321,7 +5387,7 @@ BasicExcelWorksheet::BasicExcelWorksheet(BasicExcel* excel, size_t sheetIndex) :
 // Returns 0 if name is in Unicode format.
 char* BasicExcelWorksheet::GetAnsiSheetName()
 {
-	if (excel_->workbook_.boundSheets_[sheetIndex_].name_.unicode_ == 0)
+	if (!(excel_->workbook_.boundSheets_[sheetIndex_].name_.unicode_ & 1))
 	{
 		return excel_->workbook_.boundSheets_[sheetIndex_].name_.name_;
 	}
@@ -5332,7 +5398,7 @@ char* BasicExcelWorksheet::GetAnsiSheetName()
 // Returns 0 if name is in Ansi format.
 wchar_t* BasicExcelWorksheet::GetUnicodeSheetName()
 {
-	if (excel_->workbook_.boundSheets_[sheetIndex_].name_.unicode_ != 0)
+	if (excel_->workbook_.boundSheets_[sheetIndex_].name_.unicode_ & 1)
 	{
 		return excel_->workbook_.boundSheets_[sheetIndex_].name_.wname_;
 	}
@@ -5343,7 +5409,7 @@ wchar_t* BasicExcelWorksheet::GetUnicodeSheetName()
 // Returns false if name is in Unicode format.
 bool BasicExcelWorksheet::GetSheetName(char* name)
 {
-	if (excel_->workbook_.boundSheets_[sheetIndex_].name_.unicode_ == 0)
+	if (!(excel_->workbook_.boundSheets_[sheetIndex_].name_.unicode_ & 1))
 	{
 		strcpy(name, excel_->workbook_.boundSheets_[sheetIndex_].name_.name_);
 		return true;
@@ -5355,7 +5421,7 @@ bool BasicExcelWorksheet::GetSheetName(char* name)
 // Returns false if name is in Ansi format.
 bool BasicExcelWorksheet::GetSheetName(wchar_t* name)
 {
-	if (excel_->workbook_.boundSheets_[sheetIndex_].name_.unicode_ != 0)
+	if (excel_->workbook_.boundSheets_[sheetIndex_].name_.unicode_ & 1)
 	{
 		wcscpy(name, excel_->workbook_.boundSheets_[sheetIndex_].name_.wname_);
 		return true;
@@ -5370,7 +5436,7 @@ bool BasicExcelWorksheet::Rename(const char* to)
 	size_t maxWorksheets = excel_->workbook_.boundSheets_.size();
 	for (size_t i=0; i<maxWorksheets; ++i)
 	{
-		if (excel_->workbook_.boundSheets_[i].name_.unicode_ != 0) continue;
+		if (excel_->workbook_.boundSheets_[i].name_.unicode_ & 1) continue;
 		if (strcmp(to, excel_->workbook_.boundSheets_[i].name_.name_) == 0) return false;
 	}
 
@@ -5385,7 +5451,7 @@ bool BasicExcelWorksheet::Rename(const wchar_t* to)
 	size_t maxWorksheets = excel_->workbook_.boundSheets_.size();
 	for (size_t i=0; i<maxWorksheets; ++i)
 	{
-		if (excel_->workbook_.boundSheets_[i].name_.unicode_ == 0) continue;
+		if (!(excel_->workbook_.boundSheets_[i].name_.unicode_ & 1)) continue;
 		if (wcscmp(to, excel_->workbook_.boundSheets_[i].name_.wname_) == 0) return false;
 	}
 
@@ -5473,17 +5539,17 @@ BasicExcelCell* BasicExcelWorksheet::Cell(size_t row, size_t col)
 	if (row>65535 || col>255) return 0;
 
 	// Increase size of cells matrix if necessary
-	if (row>=maxRows_) 
-	{
-		// Increase number of rows.
-		maxRows_ = row + 1;
-		cells_.resize(maxRows_, vector<BasicExcelCell>(maxCols_));
-	}
 	if (col>=maxCols_)
 	{
 		// Increase number of columns.
 		maxCols_ = col + 1;
 		for (size_t i=0; i<maxRows_; ++i) cells_[i].resize(maxCols_);
+	}
+	if (row>=maxRows_) 
+	{
+		// Increase number of rows.
+		maxRows_ = row + 1;
+		cells_.resize(maxRows_, vector<BasicExcelCell>(maxCols_));
 	}
 
 	return &(cells_[row][col]);
@@ -5692,7 +5758,7 @@ double BasicExcelCell::GetDouble() const
 const char* BasicExcelCell::GetString() const
 {
 	vector<char> str(str_.size());
-	if (Get(&*(str.begin()))) return &*(str_.begin());
+	if (!str.empty() && Get(&*(str.begin()))) return &*(str_.begin());
 	else return 0;
 }
 
@@ -5701,40 +5767,32 @@ const char* BasicExcelCell::GetString() const
 const wchar_t* BasicExcelCell::GetWString() const
 {
 	vector<wchar_t> wstr(wstr_.size());
-	if (Get(&*(wstr.begin()))) return &*(wstr_.begin());
+	if (!wstr.empty() && Get(&*(wstr.begin()))) return &*(wstr_.begin());
 	else return 0;
 }
 
 // Set content of current Excel cell to an integer.
 void BasicExcelCell::Set(int val) 
 {
-	type_ = INT; 
-	ival_ = val;
+	SetInteger(val);
 }
 
 // Set content of current Excel cell to a double.
 void BasicExcelCell::Set(double val) 
 {
-	type_ = DOUBLE; 
-	dval_ = val;
+	SetDouble(val);
 }
 
 // Set content of current Excel cell to an ANSI string.
 void BasicExcelCell::Set(const char* str) 
 {
-	type_ = STRING;
-	str_ = vector<char>(strlen(str)+1);
-	strcpy(&*(str_.begin()), str);
-	wstr_.clear();
+	SetString(str);
 }
 
 // Set content of current Excel cell to an Unicode string.
 void BasicExcelCell::Set(const wchar_t* str)	
 {
-	type_ = WSTRING;
-	wstr_ = vector<wchar_t>(wcslen(str)+1);
-	wcscpy(&*(wstr_.begin()), str);
-	str_.clear();
+	SetWString(str);
 }
 
 // Set content of current Excel cell to an integer.

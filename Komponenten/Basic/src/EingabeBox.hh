@@ -1,6 +1,7 @@
-// $Id: EingabeBox.hh,v 1.10 2005/11/25 16:16:04 christof Exp $
+// $Id: EingabeBox.hh,v 1.11 2006/08/03 11:27:11 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2001-2006 Adolf Petig GmbH & Co. KG
+ *  written by Jacek Jakubowski & Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: EingabeBox.hh,v 1.10 2005/11/25 16:16:04 christof Exp $
+// $Id: EingabeBox.hh,v 1.11 2006/08/03 11:27:11 christof Exp $
 
 #ifndef _EINGABEBOX_HH
 #define _EINGABEBOX_HH
@@ -59,8 +60,9 @@ public:
 	const std::string get_label(int col) const;
 	void set_label(int col,const std::string &s);
 	const std::string get_value(int col) const;
-   void set_value(int col,const std::string &s);
+	void set_value(int col,const std::string &s, bool editable=true);
 	void set_width(int col,int width);
+	void clear() { set_size(0); }
 	void set_size(int cols);
 //   void activate_entry(int nr);
 	int size() const

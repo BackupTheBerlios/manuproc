@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.93 2006/05/17 08:15:59 christof Exp $
+// $Id: SimpleTree.cc,v 1.94 2006/08/03 11:27:11 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -63,6 +63,7 @@ void SimpleTree_Basic::attach()
    if (sts->expandieren_bool && sts->ShowDeep().Value())
    {  aufklappen(this,Gtk::TreeModel::Path(),get_model()->children(),sts->ShowDeep().Value());
    }
+//   get_selection()->unselect_all();
 }
 
 //void SimpleTree_Basic::on_redisplay()
@@ -583,6 +584,12 @@ void SimpleTree::nodes_select_leaves()
 }
 
 #ifdef MPC_ST_EXCEL_EXPORT
+bool is_ascii(std::string const& x)
+{ for (std::string::const_iterator i=x.begin();i!=x.end();++i)
+    if (*i&0x80) return false;
+  return true;
+}
+
 // a hack? ... but seems to be the most efficient
 std::wstring make_wstring(std::string const& x)
 { static wchar_t wstring[1024];
@@ -599,14 +606,21 @@ static void write_excel_sub(SimpleTree *tv,YExcel::BasicExcelWorksheet* sheet,un
     }
     else
     { // output
-      // recognize integers?
       for (unsigned int c=0;c<tv->VisibleColumns();++c)
       { cH_EntryValue val;
-        if (c>(*i)[tv->getStore()->m_columns.deep]
-            && !!static_cast<Handle<TreeRow> >((*i)[tv->getStore()->m_columns.row]))
-          val=static_cast<Handle<TreeRow> >((*i)[tv->getStore()->m_columns.row])->Value(tv->getStore()->get_seq()[c],tv->getStore()->ValueData());
+        if ((*i)[tv->getStore()->m_columns.childrens_deep]
+            && c>=(*i)[tv->getStore()->m_columns.childrens_deep])
+        { if (!!static_cast<Handle<TreeRow> >((*i)[tv->getStore()->m_columns.row]))
+            val=static_cast<Handle<TreeRow> >((*i)[tv->getStore()->m_columns.row])
+              ->Value(tv->getStore()->get_seq()[c],tv->getStore()->ValueData());
+          else
+            ; // leer lassen
+        }
         else
-          val=static_cast<cH_RowDataBase>((*i)[tv->getStore()->m_columns.leafdata])->Value(tv->getStore()->get_seq()[c],tv->getStore()->ValueData());
+          val=static_cast<cH_RowDataBase>((*i)[tv->getStore()->m_columns.leafdata])
+              ->Value(tv->getStore()->get_seq()[c],tv->getStore()->ValueData());
+        
+        std::string strval=val->getStrVal();
           
         if (!!val.cast_dynamic<const EntryValueFixed<1> >())
           sheet->Cell(row,c)->SetDouble(val.cast_dynamic<const EntryValueFixed<1> >()->Wert().as_float());
@@ -614,11 +628,16 @@ static void write_excel_sub(SimpleTree *tv,YExcel::BasicExcelWorksheet* sheet,un
           sheet->Cell(row,c)->SetDouble(val.cast_dynamic<const EntryValueFixed<2> >()->Wert().as_float());
         else if (!!val.cast_dynamic<const EntryValueFixed<3> >())
           sheet->Cell(row,c)->SetDouble(val.cast_dynamic<const EntryValueFixed<3> >()->Wert().as_float());
+        else if (!!val.cast_dynamic<const EntryValueFixed<2,double,long,false> >())
+          sheet->Cell(row,c)->SetDouble(val.cast_dynamic<const EntryValueFixed<2,double,long,false> >()->Wert().as_float());
         else if (!!val.cast_dynamic<const EntryValueIntString>() 
-            && itos(val->getIntVal())==val->getStrVal())
+            && itos(val->getIntVal())==strval)
           sheet->Cell(row,c)->SetInteger(val.cast_dynamic<const EntryValueIntString>()->getIntVal());
-        else
-          sheet->Cell(row,c)->SetWString(make_wstring(val->getStrVal()).c_str());
+        else if (strval.empty()) ; // nichts tun
+        else if (is_ascii(strval))
+          sheet->Cell(row,c)->SetString(strval.c_str());
+        else // unicode
+          sheet->Cell(row,c)->SetWString(make_wstring(strval).c_str());
       }
       ++row;
     }
@@ -634,7 +653,12 @@ void SimpleTree::write_excel(std::string const& filename) const
   YExcel::BasicExcelWorksheet* sheet = e.GetWorksheet(size_t(0));
   assert(sheet);
   for (unsigned int i=0;i<VisibleColumns();++i)
-    sheet->Cell(0,i)->SetWString(make_wstring(getColTitle(i)).c_str());
+  { std::string title=getColTitle(i);
+    if (!is_ascii(title))
+      sheet->Cell(0,i)->SetWString(make_wstring(title).c_str());
+    else
+      sheet->Cell(0,i)->SetString(title.c_str());
+  }
   unsigned row=1;
   SimpleTree* non_const_this=const_cast<SimpleTree*>(this);
   write_excel_sub(non_const_this,sheet,row,non_const_this->get_model()->children());
@@ -646,7 +670,7 @@ void SimpleTree::write_excel_via_filerequester() const
   if (fname.empty()) fname=_("Tabelle");
   if (getenv("HOME")) fname=std::string(getenv("HOME"))+"/"+fname;
   fname+=".xls";
-  WinFileReq::create(sigc::mem_fun(*this,&SimpleTree::write_excel),fname);
-//      "Excel Tabellen (*.xls)\0*.xls\0","xls",false);
+  WinFileReq::create(sigc::mem_fun(*this,&SimpleTree::write_excel),fname,
+      "Excel Tabellen (*.xls)\0*.xls\0","xls","Tabelle speichern",false);
 }
 #endif

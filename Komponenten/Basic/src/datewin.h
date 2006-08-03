@@ -1,4 +1,4 @@
-// $Id: datewin.h,v 1.19 2006/05/03 07:28:09 christof Exp $
+// $Id: datewin.h,v 1.20 2006/08/03 11:27:12 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,6 +34,7 @@ class datewin : public datewin_glade
         std::string instance;
         bool kw_bevorzugen;
         datewin_popup *popup;
+        SigC::Connection switch_page_connection;
 
 //        static PAGE defaultpage;
 

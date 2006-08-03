@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.26 2006/05/03 07:28:09 christof Exp $
+// $Id: datewin.cc,v 1.27 2006/08/03 11:27:12 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,8 +33,21 @@ void datewin::preferWeek(bool b)
   set_value(get_value().KW());
 }
 
+//#include <glib-object.h>
+//#include <gtk/gtknotebook.h>
+#include <sigc++/compatibility.h>
+
 datewin::~datewin()
 {
+#if 0 // should be possible as well
+ guint switch_page_num=g_signal_lookup("switch_page",GTK_TYPE_NOTEBOOK);
+std::cerr << "num " << switch_page_num << '\n';
+ int num=g_signal_handlers_disconnect_matched(G_OBJECT(notebook->gobj()),
+                     G_SIGNAL_MATCH_ID,switch_page_num,0,0,0,0);
+std::cerr << "- " << num << '\n';
+#endif
+
+ switch_page_connection.disconnect();
  if (popup) delete popup; 
  popup=0; 
 }
@@ -50,6 +63,7 @@ datewin::datewin() : // const std::string &inst) : block(false),
    jahr->signal_changed().connect(changed.slot());
    kw_spinbutton->signal_changed().connect(changed.slot());
    jahr_spinbutton->signal_changed().connect(changed.slot());
+   switch_page_connection=notebook->signal_switch_page().connect(SigC::slot(*this, &datewin::on_datewin_change_current_page), true);
 }
 
 ManuProC::Datum datewin::get_value() const throw()

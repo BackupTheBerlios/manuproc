@@ -1,4 +1,4 @@
-// $Id: IntStringBox_gui.cc,v 1.3 2006/03/09 21:13:14 christof Exp $
+// $Id: IntStringBox_gui.cc,v 1.4 2006/08/03 11:27:11 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *

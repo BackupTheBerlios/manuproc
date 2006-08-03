@@ -1,4 +1,4 @@
-// $Id: window1.cc,v 1.5 2005/12/01 18:36:28 christof Exp $
+// $Id: window1.cc,v 1.6 2006/08/03 11:27:11 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *

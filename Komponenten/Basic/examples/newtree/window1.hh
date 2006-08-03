@@ -10,7 +10,7 @@ class window1 : public window1_glade
 	virtual void refresh();
 	virtual void change1();
 	virtual void change2();
-
+	void on_button_test_clicked();
 public:
 	window1();
 };

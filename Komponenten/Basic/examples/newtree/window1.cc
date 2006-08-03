@@ -138,6 +138,7 @@ public:
 window1::window1() : st(SP_ANZ)
 {  scrolledwindow1->add(st);
    st.show();
+   st.set_remember("(example)","newtree");
 
   std::vector <std::string> v(st.Cols());
    v[SP_ATT0]="Integer";
@@ -192,9 +193,9 @@ window1::window1() : st(SP_ANZ)
       std::cout << "=" << of.Sum() << '\n';
    }
 #endif
-   st.set_remember("(example)","newtree");
 //   TreeModelDebug(st.getTreeModel());
    st.debug();
+//   st.get_selection()->select(Gtk::TreePath("2"));
    
 //   ManuProC::Tracer::Enable(SimpleTreeStore::trace_channel);
 }
@@ -235,4 +236,17 @@ void window1::change2()
       st.getModel().has_changed(row);
    }
    catch (...) {}
+}
+
+void window1::on_button_test_clicked()
+{
+   // test for selecting hidden lines (which fails, so they have to be shown implicitely)
+   std::vector <cH_RowDataBase> datavec;
+   datavec.push_back(new MyRowData(1,"X",2,3,"A"));
+   datavec.push_back(new MyRowData(1,"X",3,4,"B"));
+   datavec.push_back(new MyRowData(2,"Y",2,3,"A"));
+   datavec.push_back(new MyRowData(10,"Z",2,3,"A"));
+   st.setDataVec(datavec);
+   st.selectMatchingLines(1);
+   st.ScrollToSelection();
 }
