@@ -6,6 +6,7 @@
 #include "kundendaten_aux.hh"
 #include "MyMessage.h"
 #include <Kunde/Kundengruppe.h>
+#include <DynamicEnums/DynamicConfig.h>
 
 void windowTop::show_details()
 {
@@ -49,9 +50,15 @@ void windowTop::show_details()
    geburtstag->setLabel(_("Geburtstag"));
 
    checkbutton_zeilenrabatt->set_active(kundendaten->zeilenrabatt());
+#ifdef HAS_ADDR_GROUP_Lieferadresse   
    checkbuttonLieferAdr->set_active(kundendaten->isInGrp(KundengruppeID::Lieferadresse));
+#endif
+#ifdef HAS_ADDR_GROUP_Rechnungsadresse
    checkbuttonRchngAdr->set_active(kundendaten->isInGrp(KundengruppeID::Rechnungsadresse));
+#endif
+#ifdef HAS_ADDR_GROUP_Auftragsadresse
    checkbuttonAuftrAdr->set_active(kundendaten->isInGrp(KundengruppeID::Auftragsadresse));
+#endif
    checkbutton_rng_an_postfach->set_active(kundendaten->Rng_an_postfach());
    ab_an_rngadresse->set_active(kundendaten->AB_an_rngadresse());   
    checkbutton_entsorgung->set_active(kundendaten->entsorgung());

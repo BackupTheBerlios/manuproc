@@ -7,7 +7,7 @@
 #include <gtkmm/notebook.h>
 #include <Kunde/Kundengruppe.h>
 #include "kundendaten_aux.hh"
-
+#include <DynamicEnums/DynamicConfig.h>
 
 void windowTop::Model_Refresh(void *x)
 {
@@ -75,19 +75,23 @@ windowTop::windowTop(unsigned id)
  kundenauswahl->setExpandStr2(true); 
  geburtstag->setLabel("");
  geburtstag->setExpandYear(false);
- 
+
+#ifdef HAS_ADDR_GROUP_Rechnungsadresse 
  rng_an->EinschraenkenKdGr(KundengruppeID::Rechnungsadresse);
+#endif
+#ifdef HAS_ADDR_GROUP_Lieferadresse
  lfr_an->EinschraenkenKdGr(KundengruppeID::Lieferadresse);
+#endif
 
   betreuer->setExpandStr1(true);
   betreuer->setExpandStr2(true); 
-#ifdef MABELLA_EXTENSIONS  
+#ifdef HAS_ADDR_GROUP_Personen  
   betreuer->set_gruppe(KundengruppeID::Personen);
   KontaktPersonenBox->set_gruppe(KundengruppeID::Personen);
 #endif
 
  scc_verkaeufer->reset();
-#ifdef MABELLA_EXTENSIONS 
+#ifdef HAS_ADDR_GROUP_Verkaeufer
  scc_verkaeufer->set_gruppe(KundengruppeID::Verkaeufer);
 #endif 
  scc_verkaeufer->setExpandStr1(true);

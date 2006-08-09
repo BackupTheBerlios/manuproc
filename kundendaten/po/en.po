@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: kundendaten 0.0\n"
 "Report-Msgid-Bugs-To: manuproc-developer-de@berlios.de\n"
-"POT-Creation-Date: 2006-03-07 14:42+0100\n"
+"POT-Creation-Date: 2006-08-05 18:47+0200\n"
 "PO-Revision-Date: 2006-03-07 14:09+0100\n"
 "Last-Translator: Jacek Jakubowski <jacek@telebel.de>\n"
 "Language-Team: english <en@li.org>\n"
@@ -15,163 +15,163 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/windowTop_glade.cc:95
+#: src/windowTop_glade.cc:97
 msgid "Filter"
 msgstr "Filter"
 
-#: src/windowTop_glade.cc:102 src/windowTop_glade.cc:587
+#: src/windowTop_glade.cc:104 src/windowTop_glade.cc:589
 msgid "Gruppen"
 msgstr "group"
 
-#: src/windowTop_glade.cc:106
+#: src/windowTop_glade.cc:108
 msgid "label8"
 msgstr "label8"
 
-#: src/windowTop_glade.cc:111
+#: src/windowTop_glade.cc:113
 msgid "aktiv"
 msgstr "active"
 
-#: src/windowTop_glade.cc:113
+#: src/windowTop_glade.cc:115
 msgid "  Stand:"
 msgstr "as of:"
 
-#: src/windowTop_glade.cc:117
+#: src/windowTop_glade.cc:119
 msgid "Status"
 msgstr "status"
 
-#: src/windowTop_glade.cc:122
+#: src/windowTop_glade.cc:124
 msgid "Kommunikation"
 msgstr "Contact"
 
-#: src/windowTop_glade.cc:126
+#: src/windowTop_glade.cc:128
 msgid "<b>Firma / Vorname</b>"
 msgstr "<b>Company / First name</b>"
 
-#: src/windowTop_glade.cc:130
+#: src/windowTop_glade.cc:132
 msgid "<small>zusätzliche Zeile vor der Straße</small>"
 msgstr "<small>additional row before street</small>"
 
-#: src/windowTop_glade.cc:134
+#: src/windowTop_glade.cc:136
 msgid "<small>zusätzliche Zeile nach der Straße</small>"
 msgstr "<small>additional row after street</small>"
 
-#: src/windowTop_glade.cc:138
+#: src/windowTop_glade.cc:140
 msgid "Hausnummer"
 msgstr "number"
 
-#: src/windowTop_glade.cc:142
+#: src/windowTop_glade.cc:144
 msgid "<b>Straße</b>"
 msgstr "<b>Street</b>"
 
-#: src/windowTop_glade.cc:146
+#: src/windowTop_glade.cc:148
 msgid "Postfach"
 msgstr "P.O. Box"
 
-#: src/windowTop_glade.cc:150
+#: src/windowTop_glade.cc:152
 msgid "PLZ (Postfach)"
 msgstr "Aerea Code (P.O. Box)"
 
-#: src/windowTop_glade.cc:155
+#: src/windowTop_glade.cc:157
 msgid "<small>Firma /  Familienname</small>"
 msgstr "<small>Company / Last name</small>"
 
-#: src/windowTop_glade.cc:159
+#: src/windowTop_glade.cc:161
 msgid "Anrede"
 msgstr "Title"
 
-#: src/windowTop_glade.cc:166
+#: src/windowTop_glade.cc:168
 msgid "<b>Ort</b>"
 msgstr "<b>City</b>"
 
-#: src/windowTop_glade.cc:170
+#: src/windowTop_glade.cc:172
 msgid "<b>PLZ</b>"
 msgstr "<b>Area Code</b>"
 
-#: src/windowTop_glade.cc:174
+#: src/windowTop_glade.cc:176
 msgid "Anschrift"
 msgstr "Address"
 
-#: src/windowTop_glade.cc:178
+#: src/windowTop_glade.cc:180
 msgid "IDNr"
 msgstr "VAT -No"
 
-#: src/windowTop_glade.cc:182
+#: src/windowTop_glade.cc:184
 msgid "Sortiername"
 msgstr "Sorting name"
 
-#: src/windowTop_glade.cc:188
+#: src/windowTop_glade.cc:190
 msgid "Adresse"
 msgstr "Address"
 
-#: src/windowTop_glade.cc:192
+#: src/windowTop_glade.cc:194
 msgid "Geburtstag"
 msgstr "Birthday"
 
-#: src/windowTop_glade.cc:197
+#: src/windowTop_glade.cc:199
 msgid "Artikelbezeichnung"
 msgstr "Item Description"
 
-#: src/windowTop_glade.cc:203
+#: src/windowTop_glade.cc:205
 msgid "Rechnung an"
 msgstr "Invoice to"
 
-#: src/windowTop_glade.cc:209
+#: src/windowTop_glade.cc:211
 msgid "Lieferung an"
 msgstr "Delivery to"
 
-#: src/windowTop_glade.cc:211
+#: src/windowTop_glade.cc:213
 msgid "Aufträge"
 msgstr "Orders"
 
-#: src/windowTop_glade.cc:212
+#: src/windowTop_glade.cc:214
 msgid "Lieferscheine"
 msgstr "Delivery notes"
 
-#: src/windowTop_glade.cc:213
+#: src/windowTop_glade.cc:215
 msgid "Rechnungen"
 msgstr "Invoices"
 
-#: src/windowTop_glade.cc:216
+#: src/windowTop_glade.cc:218
 msgid "Adresse verwenden für"
 msgstr "Address to be used for"
 
-#: src/windowTop_glade.cc:218
+#: src/windowTop_glade.cc:220
 msgid "Rechnung an Postfach"
 msgstr "Invoice to P.O. Box"
 
-#: src/windowTop_glade.cc:219
+#: src/windowTop_glade.cc:221
 msgid "AB an Rng.-Adresse"
 msgstr "C/O to Invoice Address"
 
-#: src/windowTop_glade.cc:222
+#: src/windowTop_glade.cc:224
 msgid "Option"
 msgstr "option"
 
-#: src/windowTop_glade.cc:226
+#: src/windowTop_glade.cc:228
 msgid "Ablauf"
 msgstr "plan"
 
-#: src/windowTop_glade.cc:230
+#: src/windowTop_glade.cc:232
 msgid "Betreuer"
 msgstr "Customer Service"
 
-#: src/windowTop_glade.cc:235
+#: src/windowTop_glade.cc:237
 msgid "Kreditorenkonto"
 msgstr "Creditoraccount"
 
-#: src/windowTop_glade.cc:240
+#: src/windowTop_glade.cc:242
 msgid "Debitorenkonto"
 msgstr "Debitoracount"
 
-#: src/windowTop_glade.cc:245
+#: src/windowTop_glade.cc:247
 msgid "Sachkonto"
 msgstr "Sachkonto"
 
-#: src/windowTop_glade.cc:248
+#: src/windowTop_glade.cc:250
 msgid "Buchung"
 msgstr "Buchung"
 
-#: src/windowTop_glade.cc:252
+#: src/windowTop_glade.cc:254
 msgid ""
 "Eigene Nummer \n"
 "<small>bei Lieferant/Kunde</small>"
@@ -179,377 +179,377 @@ msgstr ""
 "Our number \n"
 "<small>bei Lieferant/Kunde</small>"
 
-#: src/windowTop_glade.cc:258
+#: src/windowTop_glade.cc:260
 msgid "Verkäufer"
 msgstr "Sales person"
 
-#: src/windowTop_glade.cc:263
+#: src/windowTop_glade.cc:265
 msgid "Firmenpapier"
 msgstr "Company paper"
 
-#: src/windowTop_glade.cc:268
+#: src/windowTop_glade.cc:270
 msgid "Weißes Papier"
 msgstr "white paper"
 
-#: src/windowTop_glade.cc:271
+#: src/windowTop_glade.cc:273
 msgid "Rechnungsdruck (Anzahl)"
 msgstr "Invoice print (Number)"
 
-#: src/windowTop_glade.cc:274
+#: src/windowTop_glade.cc:276
 msgid "Eigene Daten"
 msgstr "Own details"
 
-#: src/windowTop_glade.cc:278
+#: src/windowTop_glade.cc:280
 msgid "Verein"
 msgstr "Organization"
 
-#: src/windowTop_glade.cc:280
+#: src/windowTop_glade.cc:282
 msgid "qm"
 msgstr "m²"
 
-#: src/windowTop_glade.cc:285
+#: src/windowTop_glade.cc:287
 msgid "Fläche"
 msgstr "covered aerea"
 
-#: src/windowTop_glade.cc:290
+#: src/windowTop_glade.cc:292
 msgid "Mitarbeiter"
 msgstr "Number of staff"
 
-#: src/windowTop_glade.cc:295
+#: src/windowTop_glade.cc:297
 msgid "Umsatz"
 msgstr "Turnover"
 
-#: src/windowTop_glade.cc:300
+#: src/windowTop_glade.cc:302
 msgid "Gesamtumsatz"
 msgstr "budget turnover"
 
-#: src/windowTop_glade.cc:305
+#: src/windowTop_glade.cc:307
 msgid "Planumsatz"
 msgstr "budget turnover"
 
-#: src/windowTop_glade.cc:310
+#: src/windowTop_glade.cc:312
 msgid "Notiz"
 msgstr "Comment"
 
-#: src/windowTop_glade.cc:313
+#: src/windowTop_glade.cc:315
 msgid "Firma"
 msgstr "Company"
 
-#: src/windowTop_glade.cc:318
+#: src/windowTop_glade.cc:320
 msgid "Details"
 msgstr "Details"
 
-#: src/windowTop_glade.cc:319
+#: src/windowTop_glade.cc:321
 msgid "Entsorgung"
 msgstr "Waste dISPOSAL"
 
-#: src/windowTop_glade.cc:322
+#: src/windowTop_glade.cc:324
 msgid "Zahlungsart"
 msgstr "Payment"
 
-#: src/windowTop_glade.cc:324 src/windowTop_glade.cc:325
-#: src/windowTop_glade.cc:326 src/windowTop_glade.cc:357
+#: src/windowTop_glade.cc:326 src/windowTop_glade.cc:327
+#: src/windowTop_glade.cc:328 src/windowTop_glade.cc:359
 msgid "Tage"
 msgstr "Tage"
 
-#: src/windowTop_glade.cc:337
+#: src/windowTop_glade.cc:339
 msgid "Skontofrist"
 msgstr "discount date"
 
-#: src/windowTop_glade.cc:339 src/windowTop_glade.cc:340
-#: src/windowTop_glade.cc:341 src/windowTop_glade.cc:364
-#: src/windowTop_glade.cc:374
+#: src/windowTop_glade.cc:341 src/windowTop_glade.cc:342
+#: src/windowTop_glade.cc:343 src/windowTop_glade.cc:366
+#: src/windowTop_glade.cc:376
 msgid "%"
 msgstr "%"
 
-#: src/windowTop_glade.cc:352
+#: src/windowTop_glade.cc:354
 msgid "Skontosatz"
 msgstr "Discount rate"
 
-#: src/windowTop_glade.cc:355
+#: src/windowTop_glade.cc:357
 msgid "Skonto"
 msgstr "Discount"
 
-#: src/windowTop_glade.cc:362
+#: src/windowTop_glade.cc:364
 msgid "Zahlungsfrist"
 msgstr "Payment term"
 
-#: src/windowTop_glade.cc:369
+#: src/windowTop_glade.cc:371
 msgid "Einzugrabatt"
 msgstr "Direct debit discount"
 
-#: src/windowTop_glade.cc:375
+#: src/windowTop_glade.cc:377
 msgid "Zeilenrabatt"
 msgstr "Line discount"
 
-#: src/windowTop_glade.cc:378
+#: src/windowTop_glade.cc:380
 msgid "Rabatt"
 msgstr "Discount"
 
-#: src/windowTop_glade.cc:382
+#: src/windowTop_glade.cc:384
 msgid "Währung"
 msgstr "Currency"
 
-#: src/windowTop_glade.cc:384
+#: src/windowTop_glade.cc:386
 msgid "Lieferung frei Haus"
 msgstr "Cariage paid"
 
-#: src/windowTop_glade.cc:387
+#: src/windowTop_glade.cc:389
 msgid "Lieferbedingungen"
 msgstr "Delivery terms"
 
-#: src/windowTop_glade.cc:391
+#: src/windowTop_glade.cc:393
 msgid "Konto Nr."
 msgstr "Accont No."
 
-#: src/windowTop_glade.cc:395 src/window_neue_bank_anlegen_glade.cc:60
+#: src/windowTop_glade.cc:397 src/window_neue_bank_anlegen_glade.cc:62
 msgid "BLZ"
 msgstr "Banc ID-Code"
 
-#: src/windowTop_glade.cc:397
+#: src/windowTop_glade.cc:399
 msgid "Banknamen ändern"
 msgstr "Change Bankname"
 
-#: src/windowTop_glade.cc:399
+#: src/windowTop_glade.cc:401
 msgid "Bankeinzug"
 msgstr "direct debit"
 
-#: src/windowTop_glade.cc:401
+#: src/windowTop_glade.cc:403
 msgid "bei"
 msgstr "at"
 
-#: src/windowTop_glade.cc:403
+#: src/windowTop_glade.cc:405
 msgid "Bankverbindung"
 msgstr "Bank details"
 
-#: src/windowTop_glade.cc:405
+#: src/windowTop_glade.cc:407
 msgid "DTAUS"
 msgstr "DTAUS"
 
-#: src/windowTop_glade.cc:406
+#: src/windowTop_glade.cc:408
 msgid "ABI"
 msgstr "ABI"
 
-#: src/windowTop_glade.cc:407
+#: src/windowTop_glade.cc:409
 msgid "CAB"
 msgstr "CAB"
 
-#: src/windowTop_glade.cc:416
+#: src/windowTop_glade.cc:418
 msgid "Bank"
 msgstr "Bank"
 
-#: src/windowTop_glade.cc:417
+#: src/windowTop_glade.cc:419
 msgid "ACC"
 msgstr "ACC"
 
-#: src/windowTop_glade.cc:421
+#: src/windowTop_glade.cc:423
 msgid "RIBA"
 msgstr "RIBA"
 
-#: src/windowTop_glade.cc:422
+#: src/windowTop_glade.cc:424
 msgid "IBAN"
 msgstr "IBAN"
 
-#: src/windowTop_glade.cc:431
+#: src/windowTop_glade.cc:433
 msgid "LCR"
 msgstr "LCR"
 
-#: src/windowTop_glade.cc:435
+#: src/windowTop_glade.cc:437
 msgid "Zahlung & Rabatt"
 msgstr "Payment & Discount"
 
-#: src/windowTop_glade.cc:437
+#: src/windowTop_glade.cc:439
 msgid ""
 "Preisliste\n"
 "löschen"
 msgstr "Pricelist/s delete"
 
-#: src/windowTop_glade.cc:439
+#: src/windowTop_glade.cc:441
 msgid "Hinzufügen"
 msgstr "Add"
 
-#: src/windowTop_glade.cc:443
+#: src/windowTop_glade.cc:445
 msgid "Preisautomatik"
 msgstr "automatic pricing"
 
-#: src/windowTop_glade.cc:447
+#: src/windowTop_glade.cc:449
 msgid "Preislisten"
 msgstr "Price lists"
 
-#: src/windowTop_glade.cc:451
+#: src/windowTop_glade.cc:453
 msgid "Zahlung / Preislisten"
 msgstr "Payment / Price lists"
 
-#: src/windowTop_glade.cc:460
+#: src/windowTop_glade.cc:462
 msgid "Notiz (firmenbezogen)"
 msgstr "Comment (company related)"
 
-#: src/windowTop_glade.cc:463
+#: src/windowTop_glade.cc:465
 msgid ""
 "Kontaktperson\n"
 "löschen"
 msgstr "Contactperson/s delete"
 
-#: src/windowTop_glade.cc:468 src/windowTop.cc:90
+#: src/windowTop_glade.cc:470 src/windowTop.cc:102
 msgid "Position"
 msgstr "Position"
 
-#: src/windowTop_glade.cc:476
+#: src/windowTop_glade.cc:478
 msgid "Kontaktpersonen"
 msgstr "Contacts"
 
-#: src/windowTop_glade.cc:479 src/windowTop_glade.cc:491
-#: src/windowTop_glade.cc:503 src/windowTop_glade.cc:595
-#: src/windowTop_glade.cc:603 src/windowTop_glade.cc:611
+#: src/windowTop_glade.cc:481 src/windowTop_glade.cc:493
+#: src/windowTop_glade.cc:505 src/windowTop_glade.cc:597
+#: src/windowTop_glade.cc:605 src/windowTop_glade.cc:613
 msgid "speichern"
 msgstr "save"
 
-#: src/windowTop_glade.cc:487
+#: src/windowTop_glade.cc:489
 msgid "Auftragsnotiz"
 msgstr "Order comment"
 
-#: src/windowTop_glade.cc:499
+#: src/windowTop_glade.cc:501
 msgid "Lieferscheinnotiz"
 msgstr "Delivery note comment"
 
-#: src/windowTop_glade.cc:511
+#: src/windowTop_glade.cc:513
 msgid "Rechnungsnotiz"
 msgstr "Invoice comment"
 
-#: src/windowTop_glade.cc:516
+#: src/windowTop_glade.cc:518
 msgid "Notizen"
 msgstr "Notes"
 
-#: src/windowTop_glade.cc:522
+#: src/windowTop_glade.cc:524
 msgid "<b>andere Gruppen</b>"
 msgstr "<b>all groups</b>"
 
-#: src/windowTop_glade.cc:526 src/windowTop_glade.cc:619
+#: src/windowTop_glade.cc:528 src/windowTop_glade.cc:621
 msgid "zuweisen"
 msgstr "link"
 
-#: src/windowTop_glade.cc:531 src/windowTop_glade.cc:627
+#: src/windowTop_glade.cc:533 src/windowTop_glade.cc:629
 msgid "löschen"
 msgstr "delete"
 
-#: src/windowTop_glade.cc:538
+#: src/windowTop_glade.cc:540
 msgid "<b>zugewiesene Gruppen</b>"
 msgstr "<b>linked groups</b>"
 
-#: src/windowTop_glade.cc:542
+#: src/windowTop_glade.cc:544
 msgid "Gruppenzugehörigkeit"
 msgstr "group relation"
 
-#: src/windowTop_glade.cc:681 src/windowTop_glade.cc:687
+#: src/windowTop_glade.cc:683 src/windowTop_glade.cc:689
 msgid "Gruppen erstellen, bearbeiten oder löschen"
 msgstr "group create, change or delete"
 
-#: src/windowTop_glade.cc:1027 src/windowTop_glade.cc:1039
-#: src/windowTop_glade.cc:1054
+#: src/windowTop_glade.cc:1029 src/windowTop_glade.cc:1043
+#: src/windowTop_glade.cc:1060
 msgid "Die Eingabe muß mit 'Enter' abgeschlossen werden."
 msgstr "Entry has to be finished with \"Enter\""
 
-#: src/windowTop_glade.cc:1713
+#: src/windowTop_glade.cc:1721
 msgid "Die Eingabe der Bankleitzahl muß mit 'Enter' abgeschlossen werden."
 msgstr "Entry of Bank ID-Nr. has to be finished with \"Enter\""
 
-#: src/windowTop_glade.cc:1787 src/windowTop_glade.cc:1795
-#: src/windowTop_glade.cc:1830
+#: src/windowTop_glade.cc:1795 src/windowTop_glade.cc:1803
+#: src/windowTop_glade.cc:1838
 msgid "5-stellig mit führender 0"
 msgstr "5 digits with leading 0"
 
-#: src/windowTop_glade.cc:1861
+#: src/windowTop_glade.cc:1869
 msgid "25-stellig mit LKZ"
 msgstr "25 digits with Country code"
 
-#: src/windowTop_glade.cc:2275
+#: src/windowTop_glade.cc:2283
 msgid "Adressverwaltung"
 msgstr "Addressmenagement"
 
-#: src/windowTop.cc:88
+#: src/windowTop.cc:100
 msgid "Vorname"
 msgstr "First Name"
 
-#: src/windowTop.cc:89
+#: src/windowTop.cc:101
 msgid "Name"
 msgstr "Name"
 
-#: src/windowTop.cc:228
+#: src/windowTop.cc:249
 msgid "Suchreihenfolge"
 msgstr "Searching order"
 
-#: src/windowTop.cc:229
+#: src/windowTop.cc:250
 msgid "Bezeichnung"
 msgstr "Description"
 
-#: src/windowTop.cc:230
+#: src/windowTop.cc:251
 msgid "Nr"
 msgstr "Nr"
 
-#: src/windowTop.cc:234
+#: src/windowTop.cc:255
 msgid "Nr."
 msgstr "Nr."
 
-#: src/windowTop.cc:235
+#: src/windowTop.cc:256
 msgid "Obergruppe"
 msgstr "main group"
 
-#: src/windowTop.cc:236 src/window_neue_Kundennummer_glade.cc:76
+#: src/windowTop.cc:257 src/window_neue_Kundennummer_glade.cc:78
 msgid "Gruppe"
 msgstr "group"
 
-#: src/windowTop.cc:237
+#: src/windowTop.cc:258
 msgid "Kommentar"
 msgstr "Comment"
 
-#: src/dialogInfo_glade.cc:64 src/dialogError_glade.cc:64
+#: src/dialogInfo_glade.cc:66 src/dialogError_glade.cc:66
 msgid "Information"
 msgstr "Information"
 
-#: src/dialogBestaetigen_glade.cc:62
+#: src/dialogBestaetigen_glade.cc:64
 msgid "Kundennr"
 msgstr "Customer No"
 
-#: src/dialogBestaetigen_glade.cc:94
+#: src/dialogBestaetigen_glade.cc:98
 msgid "Vergabe der Kundennummer"
 msgstr "Create Customer No"
 
-#: src/window_neue_Kundennummer_glade.cc:62
+#: src/window_neue_Kundennummer_glade.cc:64
 msgid "Name / Firma"
 msgstr "Name / Company"
 
-#: src/window_neue_Kundennummer_glade.cc:66
+#: src/window_neue_Kundennummer_glade.cc:68
 msgid "Nur ändern, wenn sie genau wissen, was Sie tun"
 msgstr "Change only, if you are really sure"
 
-#: src/window_neue_Kundennummer_glade.cc:68
+#: src/window_neue_Kundennummer_glade.cc:70
 msgid "neue Nummer"
 msgstr "new number"
 
-#: src/window_neue_Kundennummer_glade.cc:72
+#: src/window_neue_Kundennummer_glade.cc:74
 msgid "Vorname / Name2"
 msgstr "First name / Name2"
 
-#: src/window_neue_Kundennummer_glade.cc:171
+#: src/window_neue_Kundennummer_glade.cc:173
 msgid "Vergabe einer neuen Kundennummer"
 msgstr "Create of new customer no"
 
-#: src/window_neue_bank_anlegen_glade.cc:59
+#: src/window_neue_bank_anlegen_glade.cc:61
 msgid "Bankname"
 msgstr "Bank Name"
 
-#: src/window_neue_bank_anlegen_glade.cc:67
+#: src/window_neue_bank_anlegen_glade.cc:69
 msgid "label13"
 msgstr "label13"
 
-#: src/window_neue_bank_anlegen_glade.cc:118
+#: src/window_neue_bank_anlegen_glade.cc:120
 msgid "Neue Bank anlegen"
 msgstr "Create new bank"
 
-#: src/window_Dialog_Bestaetigen_glade.cc:58
+#: src/window_Dialog_Bestaetigen_glade.cc:60
 msgid "label14"
 msgstr "label14"
 
-#: src/window_Dialog_Bestaetigen_glade.cc:76
+#: src/window_Dialog_Bestaetigen_glade.cc:78
 msgid "Bestätigen"
 msgstr "Confirm"
