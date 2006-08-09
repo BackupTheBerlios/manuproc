@@ -11,11 +11,13 @@
 
 void windowTop::Model_Refresh(void *x)
 {
- fixedpoint<2> t(2.3);
-
  if(rabatt.matches(x))
-   std::cout << "Rabatt set to:" << rabatt.get_value() <<" "<<t<< "\n";
-
+   {if(kundendaten->Id()==Kunde::none_id) return;
+    std::cout << "Rabatt set to:" << rabatt.get_value() << "\n";
+    kundendaten->set_rabatt(rabatt.get_value());
+    checkbutton_zeilenrabatt->grab_focus();
+   }
+    
 }
 
 void windowTop::on_notebook1_switch_page(GtkNotebookPage* page,guint pagenr)
