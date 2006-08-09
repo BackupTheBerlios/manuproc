@@ -1,4 +1,4 @@
-/* $Id: Einheiten.h,v 1.24 2006/04/03 09:59:02 christof Exp $ */
+/* $Id: Einheiten.h,v 1.25 2006/08/09 11:10:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.24 2006/04/03 09:59:02 christof Exp $
+// $Id: Einheiten.h,v 1.25 2006/08/09 11:10:59 christof Exp $
 
 #ifndef ARTIKEL_EINHEITEN_H
 #define ARTIKEL_EINHEITEN_H
@@ -28,6 +28,7 @@
 //#include <Misc/Handles.h>
 #include <vector>
 #include <DynamicEnums/DynamicEnums.h>
+#include <DynamicEnums/DynamicConfig.h>
 #include <Misc/multi_lang.h>
 
 namespace EinheitID=ManuProC::DynamicEnums::Einheiten;
@@ -38,7 +39,9 @@ public:
 	typedef EinheitID::enum_t ID;
 	static const ID default_id=EinheitID::St_;
 	static const ID Stueck=EinheitID::St_; // Compatibility
+#ifdef HAS_UNIT_m
 	static const ID Meter=EinheitID::m;
+#endif
 	
 private:
 	ID einh;
