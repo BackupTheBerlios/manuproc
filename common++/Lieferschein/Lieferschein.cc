@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.50 2006/06/26 07:53:02 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.51 2006/08/09 11:11:11 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -186,11 +186,14 @@ const Preis::rabatt_t Lieferschein::AufRabatt() const throw(SQLerror)
 }
 
 LieferscheinBase::mengen_t Lieferschein::StandardLaenge(const ArtikelBase artikel) throw (SQLerror)
-{
- return (Query("select menge from lieferscheinentry e join lieferschein l "
-   "using (lfrsid,instanz) where artikelid=? " // "and l.instanz=? "
-   "order by datum desc limit 1") << artikel.Id() /* << Instanz()->Id() */
+{try 
+ { return (Query("select menge from lieferscheinentry e join lieferschein l "
+     "using (lfrsid,instanz) where artikelid=? " // "and l.instanz=? "
+     "order by datum desc limit 1") << artikel.Id() /* << Instanz()->Id() */
    ).FetchOneMap<LieferscheinBase::mengen_t>();
+ } catch (SQLerror &e)
+ { return 0;
+ }
 }
 
 #ifdef DPD_LIEFERSCHEINE
