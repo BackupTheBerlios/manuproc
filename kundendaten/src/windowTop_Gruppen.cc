@@ -6,10 +6,10 @@ struct KndGrpIN {
 	Kundengruppe::ID gewaehlt;
 	};
 	
-FetchIStream &operator>>(FetchIStream &is, struct KndGrpIN &kgi)
+Query::Row &operator>>(Query::Row &is, struct KndGrpIN &kgi)
 {
  int gew;
- is >> kgi.kg >> FetchIStream::MapNull(gew,-1);
+ is >> kgi.kg >> Query::Row::MapNull(gew,-1);
  kgi.gewaehlt=(Kundengruppe::ID)gew;
  return is;
 }

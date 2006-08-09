@@ -172,7 +172,7 @@ void windowTop::scc_verkaeufer_activate()
 	<< new_verk->Rngan();
   SQLerror::test(__FILELINE__,100);
 	
-  FetchIStream fi=qi.Fetch();
+  Query::Row fi=qi.Fetch();
   fixedpoint<2> p1,p2,rab_old=-1,rab=0;  
   while(fi.good())
     {
