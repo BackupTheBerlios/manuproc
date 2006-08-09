@@ -1,6 +1,7 @@
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001-2004 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig
+ *  Copyright (C) 2006 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,10 +22,9 @@
 #  include "auftrag_lieferschein_glade.hh"
 #  define _AUFTRAG_LIEFERSCHEIN_HH
 
-#include<Lieferschein/LieferscheinVoll.h>
-#include<tclistrowdata.h>
-#include<Auftrag/AufEintragBase.h>
-#include<Artikel/Einheiten.h>
+#include <Lieferschein/LieferscheinVoll.h>
+#include <Auftrag/AufEintragBase.h>
+#include <Artikel/Einheiten.h>
 #include "auftrag_lieferschein_classes.h" 
 
 class auftrag_lieferschein : public auftrag_lieferschein_glade
@@ -33,47 +33,45 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         H_Lieferschein lieferschein;
 //        bool show_offen;
 	std::vector<cH_RowDataBase> datavec_liefoff;
-	std::vector<cH_RowDataBase> datavec_liefdata;
-
+//	std::vector<cH_RowDataBase> datavec_liefdata;
         
         friend class auftrag_lieferschein_glade;
         void set_tree_titles();
 
         void on_daten_leaf_selected(cH_RowDataBase d);
-        void on_daten_unselect_row(int row, int col, GdkEvent* b);
+        void on_daten_unselect_row();
         void on_offen_leaf_selected(cH_RowDataBase d);
-        void on_unselectrow_offauf(int row, int col, GdkEvent* b);
+        void on_unselectrow_offauf();
         bool deleteLiefEntry();
 
 	bool checkVerkConsist(const AufEintragBase &ae=AufEintragBase());
-#ifdef DPD_LIEFERSCHEINE
         void on_button_rng_erledigt_clicked();
+#ifdef DPD_LIEFERSCHEINE
         void on_button_erledigt_clicked();
         void on_spinbutton_paeckchen_activate();
-        gint on_spinbutton_paeckchen_focus_out_event(GdkEventFocus *ev);
+        bool on_spinbutton_paeckchen_focus_out_event(GdkEventFocus *ev);
         void on_spinbutton_pakete_activate();
-        gint on_spinbutton_pakete_focus_out_event(GdkEventFocus *ev);
+        bool on_spinbutton_pakete_focus_out_event(GdkEventFocus *ev);
         void on_spinbutton_brutto_activate();
-        gint on_spinbutton_brutto_focus_out_event(GdkEventFocus *ev);
+        bool on_spinbutton_brutto_focus_out_event(GdkEventFocus *ev);
         void on_spinbutton_netto_activate();
-        gint on_spinbutton_netto_focus_out_event(GdkEventFocus *ev);
+        bool on_spinbutton_netto_focus_out_event(GdkEventFocus *ev);
 #else
-        void on_button_rng_erledigt_clicked(){}
         void on_button_erledigt_clicked(){}
         void on_spinbutton_paeckchen_activate(){}
-        gint on_spinbutton_paeckchen_focus_out_event(GdkEventFocus *ev){return false;}
+        bool on_spinbutton_paeckchen_focus_out_event(GdkEventFocus *ev){return false;}
         void on_spinbutton_pakete_activate(){}
-        gint on_spinbutton_pakete_focus_out_event(GdkEventFocus *ev){return false;}
+        bool on_spinbutton_pakete_focus_out_event(GdkEventFocus *ev){return false;}
         void on_spinbutton_brutto_activate(){}
-        gint on_spinbutton_brutto_focus_out_event(GdkEventFocus *ev){return false;}
+        bool on_spinbutton_brutto_focus_out_event(GdkEventFocus *ev){return false;}
         void on_spinbutton_netto_activate(){}
-        gint on_spinbutton_netto_focus_out_event(GdkEventFocus *ev){return false;}
+        bool on_spinbutton_netto_focus_out_event(GdkEventFocus *ev){return false;}
 #endif
         void on_liefer_close();
         void on_ungeb_lief_show_activate();
         void on_ungeb_lief_print_activate();
         void on_petig_we_activate();
-        gint on_liefer_delete(GdkEventAny *ev);
+        bool on_liefer_delete(GdkEventAny *ev);
         void on_liefer_neu();
         void on_lief_save();
         void on_lief_preview();
@@ -109,11 +107,14 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
 	void display2(int kdnr);
 
 	void adjustOffAufEntry(cH_Data_Lieferdaten dt, int deltaMenge);
+	
+	void init();
 public:
         void set_tree_daten_content(LieferscheinBase::ID lfrsid);
         void set_tree_offen_content();
 
 	auftrag_lieferschein(cH_ppsInstanz _instanz);
+	auftrag_lieferschein(LieferscheinEntryBase const& toload);
 	Kunde::ID getKdNr() { return liefer_kunde->get_value();}
 	const H_Lieferschein getLieferschein() const { return lieferschein; }
         cH_ppsInstanz getInstanz() const { return instanz; }

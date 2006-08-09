@@ -1,17 +1,36 @@
-- fill README file with something useful
+Bug: Abteilungen erscheint immer wieder
+Bug: 1810/25 bei 1810 geht return nicht ...
+Bug: Beim Laden eines Kunden in RG:
 
-- unsicherer vs. fester Termin? spätestmöglicher vs gewünschter Termin ?
-	Könnte für Lageraufträge (A. durch das Lager) wichtig werden.
-- Kontrakte als Aufträge mit unsicherem Termin
+[26429]: ECPGexecute line 128: QUERY: close offliefcur on connection
+mabelladb
+[26429]: ECPGexecute line 128 Ok: CLOSE CURSOR
+[26429]: got TSD connection
+[26429]: ECPGtrans line 87 action = rollback connection = mabelladb
 
-- Lager: Versuch Mengen unter einem bestimmten Wert möglichst schnell
-  wieder aufzufüllen (abhängig von der zukünftigen Bestellmenge ?)
+glibmm-ERROR **: 
+unhandled exception (type std::exception) in signal handler:
+what: vector<bool>::_M_range_check
+
+aborting...
 
 
-- Abspeichern der sichtbaren Spalten (Instanzabhängig)
 
-- Anzeige von Lageraufträgen (verplante Dinge)
+
+----
+
+- unsicherer vs. fester Termin? spÃ¤testmÃ¶glicher vs gewÃ¼nschter Termin ?
+	KÃ¶nnte fÃ¼r LagerauftrÃ¤ge (A. durch das Lager) wichtig werden.
+- Kontrakte als AuftrÃ¤ge mit unsicherem Termin
+
+- Lager: Versuch Mengen unter einem bestimmten Wert mÃ¶glichst schnell
+  wieder aufzufÃ¼llen (abhÃ¤ngig von der zukÃ¼nftigen Bestellmenge ?)
+
+- Abspeichern der sichtbaren Spalten (InstanzabhÃ¤ngig)
+
+- Anzeige von LagerauftrÃ¤gen (verplante Dinge)
 
 - Anzeige von 'Wieviel von Artikel jemals geplant' (Zeitfenster)
 
 - Planen in auftrag_bearbeiten wieder aktivieren
+

@@ -5,13 +5,11 @@
 
 class lieferscheinliste : public lieferscheinliste_glade
 {   
-
         LieferscheinList LL;
-        ArtikelBase artbase;
-        int kundenid;
+        ArtikelBase artbase; // eigentlich durch artikelbox->get_value() abgedeckt
+        int kundenid; // eigentlich durch kundenbox->get_value() abgedeckt
         cH_ppsInstanz instanz;
         
-        friend class lieferscheinliste_glade;
         void kundenbox_activate();
         void kundengruppe_activate();
         void artikelbox_activate();
@@ -26,13 +24,16 @@ class lieferscheinliste : public lieferscheinliste_glade
         void on_button_show_clicked();
         void fill_tree();
         void on_button_drucken_clicked();
-        gint on_button_drucken_button_release_event(GdkEventButton *event);
-        static std::string scale(const Gtk::CList::Row &r,int col,
+        void drucken_clicked();
+        static std::string scale(const Gtk::TreeModel::const_iterator &r,int col,
             const std::string &text,gpointer user_data);
         static void praeambel(std::ostream &os,gpointer user_data);
-
+        
+        enum menu_selection { M_Auftrag, M_Lieferschein, M_Rechnung };
+        void on_menu_selection(menu_selection m);
   public:
-        lieferscheinliste(const cH_ppsInstanz& _instanz);
+        lieferscheinliste(const cH_ppsInstanz& _instanz, 
+              Kunde::ID k=Kunde::none_id, ArtikelBase art=ArtikelBase());
 };
 
 

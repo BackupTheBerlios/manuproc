@@ -16,17 +16,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// generated 2000/12/5 22:26:59 MET by jacek@mimi.
-// using glademm V0.5.10
-//
-// newer (non customized) versions of this file go to termsplidial.hh_glade
-
-// you might replace
-//    class Foo : public Foo_glade { ... };
-// by
-//    typedef Foo_glade Foo;
-// if you didn't make any modifications to the widget
-
 #ifndef _TERMSPLIDIAL_HH
 #  include "termsplidial_glade.hh"
 #  define _TERMSPLIDIAL_HH
@@ -45,9 +34,10 @@ public:
 	termsplidial(auftrag_bearbeiten *ab, const ManuProC::Datum &val);
 	~termsplidial();
         ManuProC::Datum getLiefDatum() 
-		{ guint tag,monat,jahr;
-		  termin_neu->get_date(&jahr,&monat,&tag);
-  		  return ManuProC::Datum(tag,monat+1,jahr);
+		{ // guint tag,monat,jahr;
+		  // termin_neu->get_date(jahr,monat,tag);
+  		  return termin_neu->get_value();
+		  // return ManuProC::Datum(tag,monat+1,jahr);
 		}
 
         int getMenge() { return menge_neu->get_value_as_int();}

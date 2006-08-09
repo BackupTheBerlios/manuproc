@@ -22,11 +22,15 @@ public:
 
    enum SPALTEN{KUNDE,ARTIKEL,MENGE,DATUM};
 
-    virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
+    virtual cH_EntryValue Value(guint seqnr,gpointer gp) const
  { 
     switch (seqnr) {
-      case KUNDE : {//return cH_EntryValueIntString(aufeintrag.get_Kunde()->firma());
+      case KUNDE : 
+         return cH_EntryValue();
+#if 0 // überdenken!
+      {//return cH_EntryValueIntString(aufeintrag.get_Kunde()->firma());
          std::string k;
+#warning hier Lieferanten ermitteln, überprüfen
          std::list<cH_Kunde> LK=AufEintragZu(aufeintrag).get_Referenz_Kunden();
          if(LK.size()==1)
           {
@@ -39,6 +43,7 @@ public:
            }
          return cH_EntryValueIntString(k);
         }
+#endif
       case ARTIKEL : {
          cH_ArtikelBezeichnung AZ(aufeintrag.Artikel());
          return cH_EntryValueIntString(AZ->Bezeichnung());

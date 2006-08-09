@@ -30,7 +30,7 @@ enum {EAN=256, COMBINE};
 
 const static struct option options[]=
 {
-// { "firma",  no_argument, NULL, 'f' },
+ { "firma",  no_argument, NULL, 'f' },
  { "toTeX",  required_argument, NULL, 't' },  
  { "batch",  required_argument, NULL, 'B' },  
  { "ean",  no_argument, NULL, EAN },  
@@ -44,20 +44,21 @@ const static struct option options[]=
  { "copies",	required_argument, NULL, 'Y' },
  { "preview",	no_argument, NULL, 'G' },
  { "only_check",no_argument, NULL, 'c' },
+ { "artikel_tree",no_argument, NULL, 'r' },
  { NULL,      0,       NULL, 0 }
 };       
 
 
 void usage(std::string n,ppsInstanz::ID instanz,std::string database,std::string dbhost)
 {
-   std::cout << "$Id: auftrag_drucken.cc,v 1.26 2005/07/22 08:02:49 christof Exp $\n\n"
+   std::cout << "$Id: auftrag_drucken.cc,v 1.27 2006/08/09 15:36:52 christof Exp $\n\n"
               "USAGE:" << n << " -n <Nr> [-a <Typ>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
 		"\n\t-t<file>\t nur TeX file erzeugen und uneter <file> speichern("<< (Configuration.toTeX?"an":"aus")<< ")\n"
 		"\n\t-B<printer>\t batch mode on <printer>; kein GUI ("<< (Configuration.batch?"an":"aus")<< ")\n"
 //		"\t-p\t drucken ("<< (plot?"an":"aus")<< ")\n"
 		"\t-a\t Aufrag(*), Rechnung, Lieferschein, Intern, Extern\n"
 		"\t-n\t (A./R./L.)-Nummer (wichtig!)\n"
-//		"\t-f\t auf Firmenpapier ("<< (firmenpapier?"an":"aus")<< ")\n"
+		"\t-f\t auf Firmenpapier \n"
 //		"\t-f\t Kopien ("<< (kopie?"an":"aus")<< ")\n"
 		"\t-i\t Instanz auswählen ("<< instanz<< ")\n"
 		"\t-d\t Datenbank ("<< database<< ")\n"
@@ -66,6 +67,7 @@ void usage(std::string n,ppsInstanz::ID instanz,std::string database,std::string
 		"\t-R\t Rückstand zum Auftrag\n"
 		"\t-G\t Direkt anzeigen (kann nicht gedruckt werden)\n"
 		"\t--EAN\t Mit EAN-Code\n"
+		"\t-r\t Mit Artikelbaum; Rohartikel anzeigen\n"
 		"\t-Z\t Rechnung sortieren nach Zeilennr\n";
 		"\t-c\t Rechnungbetraege berechnen, ausgeben und sich beenden\n";
             exit(1);
@@ -88,7 +90,7 @@ int main (int argc, char *argv[])
 
  if(argc==1) usage(argv[0],instanz,database,dbhost);
 
- while ((opt=getopt_long(argc,argv,"Ga:n:pi:d:RZY:t:B:O:c",options,NULL))!=EOF)
+ while ((opt=getopt_long(argc,argv,"Ga:n:pi:d:RZY:t:B:O:crf",options,NULL))!=EOF)
   { switch (opt)
     {  case 'a' : if(std::string("Rechnung")==optarg) was=LR_Base::Rechnung;
 		  else if(std::string("Lieferschein")==optarg) was=LR_Base::Lieferschein;
@@ -102,9 +104,11 @@ int main (int argc, char *argv[])
 	case 'd' : database=optarg;break; 
 	case 'h' : dbhost=optarg;break; 
 	case 'R' : rueckstand=true; break;
+	case 'r' : Configuration.show_article_tree=true; break;
         case 't' : Configuration.toTeX=true; 
 		   Configuration.texfile=optarg;
 		break;
+        case 'f' : Configuration.firmen_papier=true; break;
         case 'B' : Configuration.batch=true;
 		   Configuration.printer=optarg;
 		 break;
@@ -125,10 +129,9 @@ int main (int argc, char *argv[])
       ManuProC::Connection conn;
       conn.setDbase(database);
       conn.setHost(dbhost);
-      ManuProC::dbconnect(conn);  
       Ausgabe_neu::TeX_uses_UTF8=false;
       TeX::TeX_uses_UTF8=false;
-
+      ManuProC::dbconnect(conn);
       // Lieferschein ist bei Einkauf eigentlich ein Wareneingang 
       if(was==LR_Base::Lieferschein)
          if(cH_ppsInstanz(instanz)->ExterneBestellung())

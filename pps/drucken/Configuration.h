@@ -20,6 +20,7 @@
 // sollte irgendwann alle Parameter enthalten (ean_code ...)
 struct Configuration
 {	bool combine;
+	bool show_article_tree;	// Zusammensetzung ggf. anzeigen
 	bool preview_only;
 	std::string copies;
 	bool toTeX;
@@ -30,9 +31,15 @@ struct Configuration
 	bool zaehle_spalten;
 	bool only_check; // calcualte the amounts, get it out and exit
 			// For collecting the invoice data
+	bool firmen_papier;
 	
-	Configuration() : combine(), preview_only(), copies("1,1,1"),
+	Configuration() : combine(), 
+		show_article_tree(),
+		preview_only(), copies("1,1,1"),
 			printer("ps"), toTeX(false),
-			zaehle_spalten(),only_check(false) {}
+			zaehle_spalten(),only_check(false),
+			firmen_papier(false)
+			{}
 };
 extern struct Configuration Configuration;
+

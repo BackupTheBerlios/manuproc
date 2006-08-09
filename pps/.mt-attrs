@@ -1,0 +1,33 @@
+   file "autogen.sh"
+execute "true"
+
+        file "pixmaps/stock_attach.png"
+manual_merge "true"
+
+        file "pixmaps/stock_book_green.png"
+manual_merge "true"
+
+        file "pixmaps/stock_book_open.png"
+manual_merge "true"
+
+        file "pixmaps/stock_book_red.png"
+manual_merge "true"
+
+        file "pixmaps/stock_book_yellow.png"
+manual_merge "true"
+
+        file "pixmaps/stock_mail_forward.png"
+manual_merge "true"
+
+        file "pixmaps/stock_scores.png"
+manual_merge "true"
+
+        file "pixmaps/stock_search_replace.png"
+manual_merge "true"
+
+        file "pixmaps/stock_trash.png"
+manual_merge "true"
+
+        file "sdo_drucken/auftrag_drucken"
+     execute "true"
+manual_merge "true"

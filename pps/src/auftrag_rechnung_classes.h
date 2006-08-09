@@ -1,12 +1,11 @@
 #ifndef RECHNUNGTREEDATA
 #define RECHNUNGTREEDATA
-#include<Misc/EntryValueIntString.h>
-#include<Misc/Datum.h>
-#include<Misc/Ausgabe_neu.h>
-#include<Artikel/ArtikelBezeichnung.h>
-#include<Lieferschein/RechnungEntry.h>
-#include<Lieferschein/Lieferschein.h>
-#include<rowdata.h>
+#include <Misc/EntryValueIntString.h>
+#include <Misc/Datum.h>
+#include <Misc/Ausgabe_neu.h>
+#include <Artikel/ArtikelBezeichnung.h>
+#include <Lieferschein/RechnungEntry.h>
+#include <Lieferschein/Lieferschein.h>
 //#include<Artikel/ArtikelBezeichnung.h>
 //#include<Artikel/Einheiten.h>
 
@@ -19,7 +18,7 @@ class Data_Rechnung : public RowDataBase
 
    enum {LIEFZEILE_SEQ,LIEFNR_SEQ,ARTIKEL_SEQ,STUECK_SEQ,LIEFMNG_SEQ,PREIS_SEQ,GPREIS_SEQ};
 
-   virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
+   virtual cH_EntryValue Value(guint seqnr,gpointer gp) const
     {
          switch(seqnr)
            {
@@ -74,7 +73,7 @@ class Data_RLieferoffen : public RowDataBase
 
    enum SeqNr {KUNDE_SEQ,LIEFNR_SEQ,LIEFDATUM_SEQ,LIEFKUNDE_SEQ};
 
-   virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
+   virtual cH_EntryValue Value(guint seqnr,gpointer gp) const
     {
          switch(seqnr)
            {

@@ -1,5 +1,7 @@
 /*  pps: ManuProC's ProductionPlanningSystem
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
+ *  written by Jacek Jakubowski
+ *  Copyright (C) 2006 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,15 +20,15 @@
 
 #include "auftrag_main.hh"
 #include "auftrag_bearbeiten.hh"
-#include"auftragbase.h"
-#include<Auftrag/AufEintragBase.h>
-#include<Auftrag/AuftragsBaum.h>
-#include<Auftrag/auftrag_status.h>
-#include"auftrag_lieferschein.hh"
-#include"auftrag_rechnung.hh"
+#include "auftragbase.h"
+#include <Auftrag/AufEintragBase.h>
+#include <Auftrag/AuftragsBaum.h>
+#include <Auftrag/auftrag_status.h>
+#include "auftrag_lieferschein.hh"
+#include "auftrag_rechnung.hh"
 #include <Gtk2TeX.h>
 #include <fstream.h>
-#include <gtk--/radiomenuitem.h>
+#include <gtkmm/radiomenuitem.h>
 #include <Artikel/ArtikelStamm.h>
 #include <Artikel/Einheiten.h>
 #include <algorithm>
@@ -39,6 +41,10 @@
 #include <Misc/Trace.h>
 #include <Misc/FILEstream.h>
 #include <Auftrag/Verfuegbarkeit.h>
+#include <sigc++/bind.h>
+#include <Misc/i18n.h>
+#include "lieferscheinliste.hh"
+#include <DynamicEnums/DynamicConfig.h>
 
 const UniqueValue::value_t auftrag_main::trace_instanzen
       = ManuProC::Tracer::channels.get();
@@ -74,7 +80,7 @@ class MatListSort
 };
 
 
-gint auftrag_main::on_delete_event(GdkEventAny*)
+bool auftrag_main::on_delete_event(GdkEventAny*)
 {   
  on_beenden_activate();
  
@@ -85,7 +91,7 @@ gint auftrag_main::on_delete_event(GdkEventAny*)
 void auftrag_main::on_beenden_activate()
 {   
  save_WindowSize();
- maintree_s->detach_from_clist();
+ maintree_s->detach();
 // tree_lager_frei->detach_from_clist();
 // tree_lager_verplant->detach_from_clist();
  Gtk::Main::instance()->quit();
@@ -94,9 +100,9 @@ void auftrag_main::on_beenden_activate()
 void auftrag_main::save_WindowSize()
 {
   gint width,height,x,y;
-  Gdk_Window fenster=get_window();
-  fenster.get_size(width,height);
-  fenster.get_position(x,y);
+  Glib::RefPtr<Gdk::Window> fenster=get_window();
+  fenster->get_size(width,height);
+  fenster->get_position(x,y);
   Global_Settings::create(int(getuid()),"pps","Size",itos(width)+":"+itos(height));
   Global_Settings::create(int(getuid()),"pps","Position",itos(x)+":"+itos(y));
 }
@@ -104,16 +110,19 @@ void auftrag_main::save_WindowSize()
 
 void auftrag_main::on_erfassen_activate()
 {   
-//    hide();
     try
-    { if (selected_AufEintrag) manage(new auftrag_bearbeiten(instanz,selected_AufEintrag));
-//      else  manage(new auftrag_bearbeiten(instanz,AufEintragBase(instanz->Id())));
-      else  manage(new auftrag_bearbeiten(instanz,0));
+    { try 
+      { AufEintragBase to_edit(instanz,searchcombo_auftragid->Content(),-1);
+std::cerr << searchcombo_auftragid->Content() << '-' <<to_edit << '\n';      
+        new auftrag_bearbeiten(instanz,&to_edit);
+      }
+      catch (...)
+      { new auftrag_bearbeiten(instanz,selected_AufEintrag);
+      }
     } catch (SQLerror &e)
     {  std::cerr << e << '\n';
-//       show();
     } 
-    selected_AufEintrag=0;
+//    selected_AufEintrag=0; (es wird doch nichts abgew√§hlt)
 }
 
 void auftrag_main::on_neuladen_activate()
@@ -129,28 +138,28 @@ void auftrag_main::neuladen()
 
 
 
-#define TEXCMD "tex2prn -2"
+#define TEXCMD "tex2prn -2 -t landscape"
 
-#define TEXCMDVIEW "tex2prn -2 -G" // Preview
-
-static std::string print_cmd;
+bool begins_with(std::string const& a,std::string const& part)
+{ return (a.size()>=part.size()) && (a.substr(0,part.size())==part);
+}
 
 static std::string kopfzeile(int col,const std::string &typ,
 const std::string &title,gpointer user_data)
-{  if (!strncmp(title.c_str(),"Verarbeitung",12)) return "p{3.5cm}";
+{  if (begins_with(title,_("Verarbeitung"))) return "p{3.5cm}";
    return typ;
 }
 
-static std::string shorten_some(int col,const std::string &title,
-gpointer user_data)
-{  if (!strncmp(title.c_str(),"Artikel",7) ||
-	!strncmp(title.c_str(),"Breite",6) ||
-	!strncmp(title.c_str(),"Farbe",5) ||
-	!strncmp(title.c_str(),"Meter",5) ||
-	!strncmp(title.c_str(),"Aufmachung",10) ||
-	!strncmp(title.c_str(),"Lieferwoche",11) ||
-	!strncmp(title.c_str(),"Letzte Lief",11) ||
-	!strncmp(title.c_str(),"offene",6))
+#warning Umbenennung der Spalten ist hier nicht ber√ºcksichtigt ...
+static std::string shorten_some(int col,const std::string &title,gpointer user_data)
+{  if (begins_with(title,_("Artikel")) ||
+	begins_with(title,_("Breite")) ||
+	begins_with(title,_("Farbe")) ||
+	begins_with(title,_("Meter")) ||
+	begins_with(title,_("Aufmachung")) ||
+	begins_with(title,_("Lieferwoche")) ||
+	begins_with(title,_("Letzte Lief")) ||
+	begins_with(title,_("offene")))
       return "\\tiny "+Gtk2TeX::string2TeX(title);
    else
       return Gtk2TeX::string2TeX(title);
@@ -158,62 +167,41 @@ gpointer user_data)
 
 void auftrag_main::on_main_drucken_activate()
 {  
-   FILE *f=popen(print_cmd.c_str(),"w");
+   FILE *f=popen(TEXCMD,"w");
    oFILEstream os(f);
 
    Gtk2TeX::HeaderFlags fl;
    fl.ptsize=10;
-   fl.leftmargin=0.5;
-   fl.leftfoot=Gtk2TeX::string2TeX("offene Auftr‰ge");
+   static float inc=2.54;
+   fl.leftmargin=1.0/inc;
+   fl.topmargin=1.0/inc; 
+   fl.rightmargin=1.0/inc;
+   fl.bottommargin=1.0/inc;
+
+   fl.landscape=true;
+
+   fl.leftfoot=Gtk2TeX::string2TeX(_("offene Auftr√§ge"));
    fl.rightfoot="\\today";
    Gtk2TeX::Header(os,fl);
    Gtk2TeX::TableFlags tf;
    tf.columntype_cb=&kopfzeile;
    tf.columntitle_cb=&shorten_some;
-   tf.multicolumn=true;
-   if (maintree_s->selection().begin()!=maintree_s->selection().end())
-   {  // yes, this hackery is not amusing! We need an API change ...
-      // Try to detect size of the selected tree
-      TCListRow *tclapi=(TCListRow*)(maintree_s->selection().begin()->get_data());
-      
-      TCListRow *last=tclapi;
-      int last_visible=-1;
-      while (last->begin()!=last->end())
-        {
-         last=&*(--last->end());
-         if(last->get_lineno()!=-1)
-           last_visible=last->get_lineno();
-        }
-#ifdef PETIG_EXTENSIONS      
-      maintree_s->Expand_recursively(*maintree_s);
-#endif
-      tf.first_line=tclapi->get_lineno();
-      tf.last_line=last_visible;
-
+   tf.multicolumn=true;	
+   if (maintree_s->get_selection()->count_selected_rows())
+   {  
       tf.firstrow_cb=&FirstRow;
       tf.sequence=maintree_s->get_seq();
-
-      try{
-      tf.user_data=(gpointer)(&*(maintree_s->getSelectedRowDataBase_as
-		<Handle<const Data_auftrag> >()));
-#warning how to get deep from a selected leaf ?
-      tf.deep=0; 
+      
+      maintree_s->get_selection()->get_selected_rows().assign_to(tf.selection);
+      
+      { Gtk::TreeModel::Path path=*(maintree_s->get_selection()->get_selected_rows().begin());
+        Gtk::TreeModel::iterator i=maintree_s->getStore()->get_iter(path);
+        tf.user_data=static_cast<cH_RowDataBase>((*i)[maintree_s->getStore()->m_columns.leafdata])->ref();
+        tf.deep=(*i)[maintree_s->getStore()->m_columns.deep];
       }
-      catch(TreeBase::notLeafSelected &ns)
-        {
-         tf.user_data=(gpointer)dynamic_cast<const Data_auftrag*>(&*(maintree_s->getSelectedNode().LeafData()));
-         tf.deep=maintree_s->getSelectedNode().Deep();
-        }
-
-
    }
-   else
-   {
-#ifdef PETIG_EXTENSIONS      
-      maintree_s->Expand_recursively(*maintree_s);
-#endif
-   }
-   Gtk2TeX::CList2Table(os,maintree_s,tf);
+   Gtk2TeX::TreeView2Table(os,maintree_s,tf);
+   if (tf.user_data) HandleContent::unref(tf.user_data);
    Gtk2TeX::Footer(os);
    os.close();
    pclose(f);
@@ -222,12 +210,12 @@ void auftrag_main::on_main_drucken_activate()
 
 void auftrag_main::on_lieferscheine_activate()
 {   
- manage (new auftrag_lieferschein(instanz));
+ new auftrag_lieferschein(instanz);
 }
 
 void auftrag_main::on_rechnung_activate()
 {   
- manage (new auftrag_rechnung(instanz));
+ new auftrag_rechnung(instanz);
 }
 
 // eigentlich sind diese Routine Bestandteil von Tag (in C++)
@@ -314,6 +302,11 @@ void auftrag_main::on_storno_auftraege_activate()
 { if (stornierte_auftraege->get_active())    
    {selected_status=STORNO; statusaenderung();}}
 
+void auftrag_main::on_alle_auftraege_activate()
+{
+ if(alle_auftraege->get_active())
+   {selected_status=OPEN_AND_UNCOM; statusaenderung();}}  
+
 
 
 void auftrag_main::auftrags_id_aenderung()
@@ -321,16 +314,16 @@ void auftrag_main::auftrags_id_aenderung()
   AuftragBase::ID id=auftrag_main::SelectedAuftragsId();
 
   if(id==AuftragBase::ungeplante_id) 
-    { frame_offene_mengen->set_label("ungeplante / fehlende Menge");
+    { frame_offene_mengen->set_label(_("ungeplante / fehlende Menge"));
     }
   else if(id==AuftragBase::plan_auftrag_id) 
-    { frame_offene_mengen->set_label("geplante / bestellte / reservierte Menge");
+    { frame_offene_mengen->set_label(_("geplante / bestellte / reservierte Menge"));
     }
   else if(id==AuftragBase::dispo_auftrag_id)
-    { frame_offene_mengen->set_label("verf¸gbare Menge ");
+    { frame_offene_mengen->set_label(_("verf√ºgbare Menge"));
     }
   else if(id==AuftragBase::none_id)
-    { frame_offene_mengen->set_label("alle Lagermengen");
+    { frame_offene_mengen->set_label(_("alle Lagermengen"));
     }
 
   frame_instanzen->hide() ;
@@ -347,7 +340,7 @@ AuftragBase::ID auftrag_main::SelectedAuftragsId() const
   else if(plan_menge_menu->get_active()) return AuftragBase::plan_auftrag_id;
   else if(dispo_menge_menu->get_active()) return AuftragBase::dispo_auftrag_id;
   else if(alle_lagermengen->get_active()) return AuftragBase::none_id;
-  else assert(!"never get here");
+  else assert(!"get here");
   return AuftragBase::none_id;
 }
 
@@ -417,6 +410,7 @@ void auftrag_main::loadEinstellungen()
   else if(status==UNCOMMITED)  unbestaetigte_auftraege->set_active(true);
   else if(status==STORNO)  stornierte_auftraege->set_active(true);
   else if(status==CLOSED)  geschlossene_auftraege->set_active(true);
+  else if(status==OPEN_AND_UNCOM) alle_auftraege->set_active(true);
   selected_status=status;
 
   AuftragBase::ID _id_;
@@ -450,60 +444,89 @@ void auftrag_main::on_bestellplanung_activate()
    BP=new bestell_plan();
 }
 
-gint auftrag_main::on_mainprint_button_clicked(GdkEventButton *ev)
+void auftrag_main::on_mainprint_button_clicked()
 {
-  if(ev->button==1) print_cmd=TEXCMD;
-  else if(ev->button==3) print_cmd=TEXCMDVIEW;
-  else return false;
-  
   on_main_drucken_activate();
-  
-  return false;
 }
 
 
 auftrag_main::auftrag_main()
-  : allaufids(0), instanz(ppsInstanzID::Kundenauftraege), selected_AufEintrag(0),
-    block_callback(false),atyp(ArtikelTyp::none_id),instanz_auftrag(0)
+  : allaufids(), instanz(ppsInstanzID::Kundenauftraege), selected_AufEintrag(),
+    block_callback(), atyp(ArtikelTyp::none_id), instanz_auftrag()
 {
  menu_instanz();
  loadEinstellungen();
 
-
-#ifdef MABELLA_EXTENSIONS    
+#ifndef PETIG_EXTENSIONS    
     button_faerben->hide();
 #endif     
     button_auftrag_erledigt->hide(); // nicht implementiert
     button_Kunden_erledigt->hide();  // nicht implementiert
 
- kunden_lieferant->setLabel("Lieferantennr","Lieferantenname");
+ kunden_lieferant->setLabel(_("Lieferantennr"),_("Lieferantenname"));
+#ifdef HAS_ADDR_GROUP_Lieferanten
  kunden_lieferant->EinschraenkenKdGr(KundengruppeID::Lieferanten);
+#endif
  set_column_titles_of_simple_tree();
  neuer_auftrag_tree_titel_setzen();
 
  instanz_selected(instanz); 
- radio_instanz_selected(NULL,instanz);
  load_list=true;		// nur beim Start ggf. nicht laden
  maintree_s->set_remember("pps","maintree-"+itos(instanz->Id()));
+ maintree_s->addMenuItem(_("Auftrag anzeigen"))
+   .connect(sigc::bind(sigc::mem_fun(*this,&auftrag_main::on_menu_selection),M_Auftrag));
+ maintree_s->addMenuItem(_("Artikel bearbeiten"))
+   .connect(sigc::bind(sigc::mem_fun(*this,&auftrag_main::on_menu_selection),M_Artikel));
+ maintree_s->addMenuItem(_("Kunde bearbeiten"))
+   .connect(sigc::bind(sigc::mem_fun(*this,&auftrag_main::on_menu_selection),M_Kunde));
+ maintree_s->addMenuItem(_("Lieferungen zeigen"))
+   .connect(sigc::bind(sigc::mem_fun(*this,&auftrag_main::on_menu_selection),M_Lieferungen));
+}
+
+void auftrag_main::on_menu_selection(menu_selection m)
+{ switch (m)
+  { case M_Auftrag:
+      new auftrag_bearbeiten(instanz,selected_AufEintrag);
+      break;
+    case M_Artikel: on_button_artikeleingabe_clicked();
+      break;
+    case M_Kunde:
+      { if (selected_AufEintrag )
+        {
+          std::string s = "kundendaten "+itos(selected_AufEintrag->getKdNr())+" &";
+          system(s.c_str());
+//          Kunde::UnCache(selected_AufEintrag->getKdNr());
+        }
+      }
+      break;
+    case M_Lieferungen:
+      { if (selected_AufEintrag )
+        { new lieferscheinliste(instanz,selected_AufEintrag->getKdNr(),selected_AufEintrag->Artikel());
+        }
+      }
+      break;
+  }
 }
 
 void auftrag_main::set_column_titles_of_simple_tree()
 {
  const int signif=1;
  std::vector<std::string> ct;
- if(instanz->ExterneBestellung())
-   ct.push_back("Lieferant");
- else
-   ct.push_back("Kunde");
+ ct=std::vector<std::string>(maintree_s->MaxColumns());
 
- int i=0;
+ if(instanz->ExterneBestellung())
+   ct[KUNDE]=_("Lieferant");
+ else
+   ct[KUNDE]=_("Kunde");
+
+ int artcol=0;
  try
  {
  cH_ExtBezSchema ebz(ExtBezSchema::default_id,offen_warengruppe->get_value());
  ExtBezSchema::const_sigiterator bezend=ebz->sigend(signif);
  for(ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(signif); 
-	bezit!=bezend; ++bezit,i++) 
-   ct.push_back(bezit->bezkomptext);
+	bezit!=bezend && (artcol<4); ++bezit,artcol++) 
+    ct[artcol+A1]=_(bezit->bezkomptext.c_str());
  }
  catch (SQLerror &e)
  {  if (e.Code()!=100) 
@@ -511,32 +534,35 @@ void auftrag_main::set_column_titles_of_simple_tree()
        throw;
     }
  }
- for(int j=i; j<4; j++) // auff¸llen bis 4
-   ct.push_back("");
+// for(int j=i; j<4; j++) // auff√ºllen bis 4
+//   ct.push_back("");
 
- ct.push_back("Lieferwoche");
+ ct[LIEFERDATUM]=_("Lieferwoche");
  if(instanz->ExterneBestellung())
-   ct.push_back("Bestellung");
+   ct[AUFTRAG]=_("Bestellung");
  else
-   ct.push_back("Auftrag");
+   ct[AUFTRAG]=_("Auftrag");
 
- ct.push_back("L.P.");
- ct.push_back("Ver.");
- ct.push_back("Letzte Lief.");
- ct.push_back("Abteilungen");
- ct.push_back("offene Menge (Rohware)");
- ct.push_back("offene Menge");
+ ct[LETZTEPLANINSTANZ]=_("L.P.");
+ ct[VERARBEITUNG]=_("Ver.");
+ ct[LETZTELIEFERUNG]=_("Letzte Lief.");
+ ct[INSTANZEN]=_("Abteilungen");
+ ct[METER]=_("offene Menge/Stk. (Rohware)");
+ ct[STUECK]=_("offene Menge/Stk.");
 #ifdef PETIG_EXTENSIONS
- // einige kleine Korrekturen (ich glaube nicht ganz, dass obiges irgendwo stimmt
- ct[METER]="offene Meter";
- ct[STUECK]="offene St¸ck";
+ // Petig verwendet andere Spalten ...
+ ct[METER]=_("offene Meter");
+ ct[STUECK]=_("offene St√ºck");
 #endif
- maintree_s->setTitles(ct);
- maintree_s->set_NewNode(&Data_Node::create);
- int cols=maintree_s->columns().size();
- maintree_s->set_column_justification(cols-1, GTK_JUSTIFY_RIGHT);
- maintree_s->set_column_justification(cols-2, GTK_JUSTIFY_RIGHT);
 
+ maintree_s->setTitles(ct);
+ maintree_s->setResizeable(true);
+ maintree_s->set_NewNode(&Data_Node::create);
+ int cols=maintree_s->MaxColumns();
+ std::vector<gfloat> al(cols);
+ al[cols-1]=1.0;
+ al[cols-2]=1.0;
+ maintree_s->setAlignment(al);
 }
 
 void auftrag_main::fill_simple_tree()
@@ -569,29 +595,28 @@ void auftrag_main::fill_simple_tree()
     maintree_s->setDataVec(datavec);
    }
 #ifndef MABELLA_EXTENSIONS
-   start_idle();
+//   start_idle();
 #endif
 }
 
 void auftrag_main::start_idle()
-{ // idle_iter=allaufids->aufidliste.begin();
-  idle_iter.clear();
-  idle_iter.push_back(maintree_s->begin());
-  idle_con=Gtk::Main::idle.connect(slot(this,&auftrag_main::idle_fill));
+{ idle_iter.clear();
+  idle_iter.push_back(maintree_s->get_model()->children().begin());
+  idle_con=Glib::signal_idle().connect(SigC::slot(*this,&auftrag_main::idle_fill));
 }
 
 void auftrag_main::stop_idle()
 { idle_con.disconnect();
 }
 
-// dies sollte in gtk2 viel !!! effizienter gehen?
-gint auftrag_main::idle_fill()
-{ if (!idle_iter.empty()) // allaufids->aufidliste.end())
-  {  //std::cerr << *idle_iter << '\n';
-     const TreeRow *tlr=reinterpret_cast<const TreeRow *>(idle_iter.back()->get_user_data());
-     if (tlr->Leaf() && maintree_s->ColumnVisible(INSTANZEN))
+bool auftrag_main::idle_fill()
+{ if (!idle_iter.empty())
+  {  // std::cerr << idle_iter.size() << '\n';
+//     const TreeRow *tlr=reinterpret_cast<const TreeRow *>(idle_iter.back()->get_user_data());
+     if (!guint((*idle_iter.back())[maintree_s->getStore()->m_columns.childrens_deep]) 
+             && maintree_s->ColumnVisible(INSTANZEN))
      {  Verfuegbarkeit::map_det_t res;
-        Handle<Data_auftrag> hda=tlr->LeafData()
+        Handle<Data_auftrag> hda=cH_RowDataBase((*idle_iter.back())[maintree_s->getStore()->m_columns.leafdata])
           .cast_dynamic<const Data_auftrag>()
           .cast_const<Data_auftrag>();
           
@@ -608,56 +633,62 @@ gint auftrag_main::idle_fill()
            maintree_s->redisplay(idle_iter.back(),INSTANZEN);
         }
      }
-     else if (idle_iter.back()->begin()!=idle_iter.back()->end())
-     { idle_iter.push_back(idle_iter.back()->begin());
-       return 1;
+     else if (idle_iter.back()->children().begin()!=idle_iter.back()->children().end())
+     { idle_iter.push_back(idle_iter.back()->children().begin());
+       return true;
      }
     reiterate:
      ++idle_iter.back();
      if (idle_iter.begin()+1==idle_iter.end()) // oberste Ebene
-     { if (idle_iter.back()==maintree_s->end())
+     { if (idle_iter.back()==maintree_s->get_model()->children().end())
        { idle_iter.clear();
-         return 0;
+         return false;
        }
-       return 1;
+       return true;
      }
      else
      { // Ende des Elter erreicht?
-       if (idle_iter.back()==(*(idle_iter.end()-2))->end())
+       if (idle_iter.back()==(*(idle_iter.end()-2))->children().end())
        { idle_iter.pop_back();
          goto reiterate;
        }
-       return 1;
+       return true;
      }
   }
-  return 0;
+  return false;
 }
 
-void auftrag_main::on_node_selected(const TreeRow &node)
+void auftrag_main::on_node_selected(Handle<const TreeRow> node)
 {
   Verfuegbarkeit::map_t map_allart;
-  getAufEintrag_fromNode(node.begin(),node.end(),map_allart);
+  Gtk::TreeModel::Path path=*(maintree_s->get_selection()->get_selected_rows().begin());
+  Gtk::TreeModel::iterator i=maintree_s->getStore()->get_iter(path);
+  getAufEintrag_fromNode(i->children().begin(),i->children().end(),map_allart);
   instanz_menge(map_allart);
-  // ‹berschriften setzen 
-  schema_select(cH_ArtikelBezeichnung(node.LeafData().cast_dynamic<const Data_auftrag>()->get_Artikel())
+  // √úberschriften setzen 
+  schema_select(cH_ArtikelBezeichnung(static_cast<cH_RowDataBase>
+      ((*i)[maintree_s->getStore()->m_columns.leafdata])
+      .cast_dynamic<const Data_auftrag>()->get_Artikel())
   	->getExtBezSchema());
 //  erfassen_button->set_sensitive(false);
 }
 
-void auftrag_main::getAufEintrag_fromNode(TCListRow_API::const_iterator b,
-         TCListRow_API::const_iterator e, Verfuegbarkeit::map_t& M)
+void auftrag_main::getAufEintrag_fromNode(Gtk::TreeModel::iterator b,
+         Gtk::TreeModel::iterator e, Verfuegbarkeit::map_t& M)
 {  
- for (TCListRow_API::const_iterator i=b;i!=e;++i)
-  {  const TreeRow *tlr=reinterpret_cast<const TreeRow *>((*i).get_user_data());
-     if(tlr->Leaf())
+ for (Gtk::TreeModel::iterator i=b;i!=e;++i)
+  {  if(!guint((*i)[maintree_s->getStore()->m_columns.childrens_deep]))
       {
-        const Data_auftrag *dt=dynamic_cast<const Data_auftrag*>(&*(tlr->LeafData()));
-        if(togglebutton_material->get_active()) 
+        Handle<const Data_auftrag> dt=cH_RowDataBase
+            ((*i)[maintree_s->getStore()->m_columns.leafdata])
+            .cast_dynamic<const Data_auftrag>();
+        if (togglebutton_material->get_active()) 
           Verfuegbarkeit::verfuegbar(dt->get_AufEintrag(),M);
         else if(togglebutton_auftraege->get_active())
           Verfuegbarkeit::wozu_benoetigt(dt->get_AufEintrag(),M);
       }
-    if ((*i).begin()!=(*i).end()) getAufEintrag_fromNode((*i).begin(),(*i).end(),M);
+    else if (i->children().begin()!=i->children().end()) 
+      getAufEintrag_fromNode(i->children().begin(),i->children().end(),M);
   }
 }
 
@@ -666,10 +697,29 @@ void auftrag_main::on_button_faerben_clicked()
 #ifdef PETIG_EXTENSIONS
   try{
       cH_Data_auftrag dt=maintree_s->getSelectedRowDataBase_as<cH_Data_auftrag>();
-      cH_ppsInstanz I(ppsInstanzID::Faerberei);
-      dt->get_AufEintrag().setLetztePlanungFuer(I);
+      AufEintragZu::list_t kinder=AufEintragZu(dt->get_AufEintrag())
+          .get_Referenz_listFull(AufEintragZu::list_kinder,false);
+      bool done=false;
+      for (AufEintragZu::list_t::reverse_iterator i=kinder.rbegin();
+                i!=kinder.rend();++i)
+      { if (i->AEB.Instanz()->Id()==ppsInstanzID::Faerberei
+            || i->AEB.Instanz()->Id()==ppsInstanzID::Druckerei)
+        { if (i->AEB.Id()!=Auftrag::ungeplante_id) continue;
+          AufEintrag ae(i->AEB);
+          if (!ae.getRestStk()) continue;
+          Auftrag a(make_value(Auftrag::PassenderPlanungsAuftrag(i->AEB.Instanz()->Id())));
+          ae.Planen(ae.getRestStk(),a,ae.getLieferdatum());
+          done=true;
+        }
+      }
+      if (!done)
+      {
+        cH_ppsInstanz I(ppsInstanzID::Kundenauftraege);
+        dt->get_AufEintrag().setLetztePlanungFuer(I);
+      }
+      dt->get_AufEintrag().reload();
       dt->redisplayLetzePlanInstanz(maintree_s);
-  } catch (TreeBase::SelectionError &e) {std::cerr << e.what()<<'\n';}
+  } catch (SimpleTree::SelectionError &e) {std::cerr << e.what()<<'\n';}
 #endif  
 }
 
@@ -682,10 +732,10 @@ void auftrag_main::on_leaf_selected(cH_RowDataBase d)
  selected_AufEintrag = &dt->get_AufEintrag();
 //cout << "SE="<< selected_AufEintrag<<'\t'<<selected_AufEintrag->Instanz()->Name()<<' '<<selected_AufEintrag->Id()<<' '<<selected_AufEintrag->ZNr()<<'\n';;
 //cout << dt->get_AufEintrag()<<'\t'<<dt->get_AufEintrag().editierbar()<<'\n';
- if(dt->get_AufEintrag().editierbar())
+// if(dt->get_AufEintrag().editierbar())
       erfassen_button->set_sensitive(true);
- else erfassen_button->set_sensitive(false);
-  // ‹berschriften setzen 
+// else erfassen_button->set_sensitive(false);
+  // √úberschriften setzen 
   schema_select(cH_ArtikelBezeichnung(dt->get_Artikel())->getExtBezSchema());
  show_something_for(*selected_AufEintrag);
  instanz_auftrag_anlegen(*selected_AufEintrag); 
@@ -702,7 +752,7 @@ void auftrag_main::show_something_for(AufEintrag& selAufEintrag)
 ;//YYY     instanz_leaf_auftrag(selAufEintrag);
  else
   {
- // Zum Anzeigen des benˆtigten Materials
+ // Zum Anzeigen des ben√∂tigten Materials
     Verfuegbarkeit::map_t map_allart;
     if(togglebutton_material->get_active()) 
        Verfuegbarkeit::verfuegbar(selAufEintrag,map_allart);
@@ -712,7 +762,7 @@ void auftrag_main::show_something_for(AufEintrag& selAufEintrag)
   }
 }
 
-void auftrag_main::on_unselect_row(gint row, gint column, GdkEvent *event)
+void auftrag_main::on_unselect_row()
 {
    erfassen_button->set_sensitive(true);
 //  show_frame_instanzen_material();
@@ -741,7 +791,7 @@ void auftrag_main::show_selected_line()
        on_leaf_selected(dt);
       } catch(std::exception &e) {}
     try{
-       TreeRow dt(maintree_s->getSelectedNode());
+       Handle<const TreeRow> dt(maintree_s->getSelectedNode());
        on_node_selected(dt);
       } catch(std::exception &e) {}
    }
@@ -762,13 +812,13 @@ void auftrag_main::instanz_menge(const Verfuegbarkeit::map_t& map_allart)
       ManuProC::Trace(trace_instanzen, __FILELINE__,i->first.inst,i->first.art,
       		i->second.vorraetig,i->second.geplant,i->second.ungeplant);
     }
-  // 2. Schritt ‹berschriften (Instanzen) in die Tabelle schreiben
-  //            UND Listen sortieren UND in Tabelle einf¸gen
+  // 2. Schritt √úberschriften (Instanzen) in die Tabelle schreiben
+  //            UND Listen sortieren UND in Tabelle einf√ºgen
   Gtk::Table *table_materialbedarf = manage(new Gtk::Table(0,0,false));
   table_materialbedarf->set_col_spacings(5);
   for(std::map<cH_ppsInstanz,std::list<artmeng> >::iterator i=LM.begin();i!=LM.end();++i)
     {
-      // ‹berschriften
+      // √úberschriften
       Gtk::Label *l=manage (new Gtk::Label(" "+i->first->get_Name()+" "));
       int col = i->first->Sortierung();
       std::string pat;
@@ -777,7 +827,7 @@ void auftrag_main::instanz_menge(const Verfuegbarkeit::map_t& map_allart)
       l->set_alignment(0, 0.5);
       l->set_padding(0, 0);
       l->show();
-      table_materialbedarf->attach(*l,col,col+1,0,1,0,0,0,0);
+      table_materialbedarf->attach(*l,col,col+1,0,1,Gtk::AttachOptions(),Gtk::AttachOptions(),0,0);
 
      // Spalten sortieren
      if(materialbedarf_sortiert_nach_artikel->get_active())
@@ -791,18 +841,19 @@ void auftrag_main::instanz_menge(const Verfuegbarkeit::map_t& map_allart)
       {
         ++row;
         {  
-          Gtk::Pixmap *pixmapG=manage(ManuProC::VerfuegbarPixmap(j->second));
-           tab->attach(*pixmapG,0,1,row,row+1,GTK_FILL,0,0,0);
+           Glib::RefPtr<Gdk::Pixbuf> pixbuf=ManuProC::VerfuegbarPixmap(j->second);
+           Gtk::Image *pixmapG=manage(new Gtk::Image(pixbuf));
+           tab->attach(*pixmapG,0,1,row,row+1,Gtk::FILL,Gtk::AttachOptions(),0,0);
            pixmapG->show();
         }
         int col2=1;
         if(/*auftraege_mit_kunden_bool &&*/ j->first.kunde!=Kunde::default_id)
          {
            Gtk::Label *lk=manage (new Gtk::Label(cH_Kunde(j->first.kunde)->sortname()+": "));
-          lk->set_justify(GTK_JUSTIFY_LEFT);
+          lk->set_justify(Gtk::JUSTIFY_LEFT);
           lk->set_alignment(1.0, 0.5);
           lk->set_padding(0, 0);
-          tab->attach(*lk,col2,col2+1,row,row+1,GTK_FILL,0,0,0);
+          tab->attach(*lk,col2,col2+1,row,row+1,Gtk::FILL,Gtk::AttachOptions(),0,0);
           lk->show();
          }
         ++col2;
@@ -812,23 +863,23 @@ void auftrag_main::instanz_menge(const Verfuegbarkeit::map_t& map_allart)
         std::string menge = Formatiere_short(j->second.summe());
         std::string einheit = E.MengenEinheit();
         Gtk::Label *lm=manage (new Gtk::Label(menge+einheit+" "));
-        la->set_justify(GTK_JUSTIFY_LEFT);
+        la->set_justify(Gtk::JUSTIFY_LEFT);
         la->set_alignment(0, 0.5);
         la->set_padding(0, 0);
-        lm->set_justify(GTK_JUSTIFY_RIGHT);
+        lm->set_justify(Gtk::JUSTIFY_RIGHT);
         lm->set_alignment(1.0, 0.5);
         lm->set_padding(0, 0);
         if(materialbedarf_sortiert_nach_artikel->get_active())
-          { tab->attach(*la,col2  ,col2+1,row,row+1,GTK_FILL,0,0,0);
-            tab->attach(*lm,col2+1,col2+2,row,row+1,GTK_FILL,0,0,0); }
+          { tab->attach(*la,col2  ,col2+1,row,row+1,Gtk::FILL,Gtk::AttachOptions(),0,0);
+            tab->attach(*lm,col2+1,col2+2,row,row+1,Gtk::FILL,Gtk::AttachOptions(),0,0); }
         else 
-          { tab->attach(*lm,col2  ,col2+1,row,row+1,GTK_FILL,0,0,0);
-            tab->attach(*la,col2+1,col2+2,row,row+1,GTK_FILL,0,0,0); }
+          { tab->attach(*lm,col2  ,col2+1,row,row+1,Gtk::FILL,Gtk::AttachOptions(),0,0);
+            tab->attach(*la,col2+1,col2+2,row,row+1,Gtk::FILL,Gtk::AttachOptions(),0,0); }
         lm->show();
         la->show();
         ++j;
       }
-     table_materialbedarf->attach(*tab,col,col+1,1,2,GTK_FILL,GTK_EXPAND|GTK_FILL,0,0);
+     table_materialbedarf->attach(*tab,col,col+1,1,2,Gtk::FILL,Gtk::EXPAND|Gtk::FILL,0,0);
      tab->show();
    }
  viewport_materialbedarf->remove();
@@ -847,15 +898,15 @@ void auftrag_main::on_button_auftrag_erledigt_clicked()
      dynamic_cast<const Data_auftrag*>(&*dt)->get_AufEintrag().setStatus(CLOSED,int(getuid()));
      dynamic_cast<Data_auftrag&>(const_cast<RowDataBase&>(*dt)).redisplayMenge(maintree_s);
   }catch(SQLerror &e) {meldung->Show(e);}
-  }catch(TreeBase::notLeafSelected &x) {std::cerr << x.what()<<'\n';}
-  }catch(TreeBase::noRowSelected &x) {std::cerr << x.what()<<'\n';}
+  }catch(SimpleTree::notLeafSelected &x) {std::cerr << x.what()<<'\n';}
+  }catch(SimpleTree::noRowSelected &x) {std::cerr << x.what()<<'\n';}
  selected_AufEintrag=0;
 }
 
 
 void auftrag_main::on_button_artikeleingabe_clicked()
 {
- if (selected_AufEintrag )//sonst geht das nur bei Kundenauftr‰gen->  && selected_AufEintrag->ArtId())
+ if (selected_AufEintrag )//sonst geht das nur bei Kundenauftr√§gen->  && selected_AufEintrag->ArtId())
   {
     std::string s = "artikeleingabe "+itos(selected_AufEintrag->Artikel().Id())+" &";
     system(s.c_str());
@@ -878,14 +929,15 @@ void auftrag_main::menu_instanz()
     Gtk::RadioMenuItem *rm = manage(new class Gtk::RadioMenuItem(_RadioMIGroup_,(*i)->Name()));
     instanz_menu->append(*rm);
     rm->show();    
-    rm->activate.connect(SigC::bind(SigC::slot(this,&auftrag_main::radio_instanz_selected),rm,*i));
+    rm->signal_activate().connect(SigC::bind(SigC::slot(*this,&auftrag_main::radio_instanz_selected),rm,*i));
   }
  main_menubar->append(*instanz);
  instanz->show();
  }catch(SQLerror &e) {meldung->Show(e);}
 }
 
-// Diese struct kann weg, wenn uns kein anderes Vergleichskriterium einf‰llt
+#if 0
+// Diese struct kann weg, wenn uns kein anderes Vergleichskriterium einf√§llt
 struct show_maching_compare
 {  
    AufEintrag AE;
@@ -902,12 +954,57 @@ bool operator==(cH_RowDataBase rdb, const show_maching_compare &comp)
    }catch(...){std::cerr << "Fehler\n";}
   return false;
 }
+#endif
 
 void auftrag_main::radio_instanz_selected(const Gtk::RadioMenuItem *rm,const cH_ppsInstanz _instanz)
-{ bool unbestaetigt=_instanz->KundenInstanz() || _instanz->ExterneBestellung();
+{ 
+  // do select action
+  if(rm==NULL) return;
+
+  if(rm->get_active()) instanz_selected(_instanz);
+}
+
+// cH_RowDataBase == AufEintragBase wird so oft verschieden verwendet, 
+// dass ich es lieber explizit mache !!!
+namespace { struct auftrag_main_compare : AufEintragBase {
+  auftrag_main_compare(AufEintragBase const& a) : AufEintragBase(a) {}
+};}
+
+bool operator==(cH_RowDataBase const& a,auftrag_main_compare const& aeb)
+{ Handle<const Data_auftrag> ah=a.cast_dynamic<const Data_auftrag>();
+//  if (ah->get_AufEintrag()==aeb) std::cout << "found\n";
+  return ah->get_AufEintrag()==aeb;
+}
+
+void auftrag_main::instanz_selected(const cH_ppsInstanz _instanz)
+{ AufEintragBase newselection;
+  if (selected_AufEintrag)
+  { cH_Data_auftrag dt=maintree_s->getSelectedRowDataBase_as<cH_Data_auftrag>();
+      AufEintragZu::list_t kinder=AufEintragZu(dt->get_AufEintrag())
+          .get_Referenz_listFull(AufEintragZu::list_kinder,false);
+      for (AufEintragZu::list_t::const_iterator i=kinder.begin();
+                i!=kinder.end();++i)
+      { if (i->AEB.Instanz()==_instanz)
+          if (!newselection || !(newselection<i->AEB)) 
+            newselection=i->AEB;
+      }
+    if (!newselection) // in andere Richtung suchen
+    { AufEintragZu::list_t eltern=AufEintragZu(dt->get_AufEintrag())
+          .get_Referenz_listFull(AufEintragZu::list_eltern,false);
+      for (AufEintragZu::list_t::const_iterator i=eltern.begin();
+                i!=eltern.end();++i)
+      { if (i->AEB.Instanz()==_instanz)
+          if (!newselection || !(newselection<i->AEB)) 
+            newselection=i->AEB;
+      }
+    }
+//if (!!newselection) std::cout << newselection << '\n';
+  }
+  bool unbestaetigt=_instanz->KundenInstanz() || _instanz->ExterneBestellung();
 
   unbestaetigte_auftraege->set_sensitive(!_instanz->LagerInstanz() && unbestaetigt);
   offene_auftraege->set_sensitive(!_instanz->LagerInstanz());
+  alle_auftraege->set_sensitive(!_instanz->LagerInstanz());
   stornierte_auftraege->set_sensitive(!_instanz->LagerInstanz());
   geschlossene_auftraege->set_sensitive(!_instanz->LagerInstanz());
 
@@ -916,17 +1013,9 @@ void auftrag_main::radio_instanz_selected(const Gtk::RadioMenuItem *rm,const cH_
   dispo_menge_menu->set_sensitive(_instanz->LagerInstanz());
   alle_lagermengen->set_sensitive(_instanz->LagerInstanz());
 
-  // do select action
-  if(rm==NULL) return;
-
-  if(rm->get_active()) instanz_selected(_instanz);
-  akt_instanz->set_value(_instanz);
-}
-
-void auftrag_main::instanz_selected(const cH_ppsInstanz _instanz)
-{
   instanz=_instanz;
   set_title(instanz->get_Name());
+  akt_instanz->set_value(_instanz);
   instanz_auftrag=0;
 
   block_callback=true;
@@ -934,39 +1023,46 @@ void auftrag_main::instanz_selected(const cH_ppsInstanz _instanz)
   togglebutton_auftraege->set_active(false);
   togglebutton_bestellen->set_active(false);
 
-  AufEintrag AEK;
-  if(selected_AufEintrag) AEK=selected_AufEintrag->getFirstKundenAuftrag();
-
-  if(AEK.Instanz()!=ppsInstanzID::None)
-   {
-     maintree_s->Expand_recursively();
-     maintree_s->selectFirstMatchingLine(show_maching_compare(AEK));
-     if(maintree_s->selection().begin()!=maintree_s->selection().end())
- {
-//cout << "Row: "<<maintree_s->selection().begin()->get_row_num()<<'\n';
-#warning Das move to funktioniert leider nicht MAT
-        maintree_s->moveto(maintree_s->selection().begin()->get_row_num(),0,0.5,0);
- }
-   }
-
   if(instanz->KundenInstanz())
        plan_menge_menu->set_active(true);
-  else ungeplante_menge_menu->set_active();
+  else if (!newselection || !newselection.Id())
+    ungeplante_menge_menu->set_active(true);
+  else
+    plan_menge_menu->set_active(true);
 
 
   frame_instanzen->hide() ;
+  // f√ºr sp√§tere Erweiterung (falls doch noch Planungsinstanzen verwendet werden)
+  info_label_instanzen->hide();
+  if (instanz->ExterneBestellung()) 
+  { togglebutton_bestellen->set_label(_("Bestellen"));
+    frame_instanzen->set_label(_("Bestellung"));
+  }
+  else 
+  { togglebutton_bestellen->set_label(_("Prod.planen"));
+    frame_instanzen->set_label(_("Produktionsauftrag")+std::string(" ")+instanz->get_Name());
+  }
+//  if (instanz->getTyp()=='?') OptMen_Instanz_Bestellen->show();
+//  else
+     OptMen_Instanz_Bestellen->hide();
+  searchcombo_auftragid->Instanz(instanz->Id());
   show_frame_instanzen_material();   
   show_main_menu();
   block_callback=false;
 
   set_column_titles_of_simple_tree();    
 
-  neuladen();
-
-//  guint psize=GTK_WIDGET(vpaned_an_mat->gtkobj())->allocation.height;
+  if (!newselection) neuladen();
+  else
+  { fill_simple_tree();
+    maintree_s->selectFirstMatchingLine(auftrag_main_compare(newselection));
+    maintree_s->ScrollToSelection();
+  }
+//  guint psize=Gtk::WIDGET(vpaned_an_mat->gobj())->allocation.height;
 //  vpaned_an_mat->set_position(5*psize);
 }
 
+// wird von instanz_selected aufgerufen
 void auftrag_main::show_frame_instanzen_material()
 {
  button_Kunden_erledigt->hide();  // noch nicht implementiert !
@@ -1013,11 +1109,11 @@ void auftrag_main::show_frame_instanzen_material()
    }
 
   if(instanz->ExterneBestellung() || instanz == ppsInstanzID::Kundenauftraege)  
-       { kunden_lieferant->show(); 
-         erfassen_button->show();
+       { kunden_lieferant->show();
+//         erfassen_button->show();
        }
   else { kunden_lieferant->hide(); 
-         erfassen_button->hide();
+//         erfassen_button->hide();
        }
 /*
   if((instanz->ExterneBestellung() &&  SelectedAuftragsId()==AuftragBase::plan_auftrag_id)
@@ -1026,7 +1122,7 @@ void auftrag_main::show_frame_instanzen_material()
   else {erfassen_button->hide();}
 */
 
-#if 0 // geht so nicht, da set_column_visibility zu clist gehˆrt !!!
+#if 0 // geht so nicht, da set_column_visibility zu clist geh√∂rt !!!
 // Spalten im Baum
  if (instanz->Id() == ppsInstanzID::Kundenauftraege)
    {
@@ -1043,9 +1139,9 @@ void auftrag_main::show_frame_instanzen_material()
 #endif
 
   // frame_materialbedarf
-  guint psize=GTK_WIDGET(vpaned_an_mat->gtkobj())->allocation.height;
-  if(  maintree_s->selection().size()==0 ||
-//&&     // keine Zeile gew‰hlt
+  guint psize=GTK_WIDGET(vpaned_an_mat->gobj())->allocation.height;
+  if(  maintree_s->get_selection()->count_selected_rows()==0 ||
+//&&     // keine Zeile gew√§hlt
 //        tree_lager_verplant->selection().size()==0) 
      (!togglebutton_material->get_active() &&  // oder
       !togglebutton_auftraege->get_active()))  // kein Button aktiv
@@ -1057,8 +1153,7 @@ void auftrag_main::show_frame_instanzen_material()
   else 
    {
      vpaned_an_mat->set_position((int)(2*psize/3.));
-     if(maintree_s->selection().size()!=0)
-        maintree_s->moveto(maintree_s->selection().begin()->get_row_num(),0);
+     maintree_s->ScrollToSelection();
 //     else if(tree_lager_verplant->selection().size()!=0)
 //        tree_lager_verplant->moveto(tree_lager_verplant->selection().begin()->get_row_num(),0);
    }
@@ -1087,21 +1182,14 @@ void auftrag_main::on_togglebutton_bestellen_toggled()
 {
   if(togglebutton_bestellen->get_active()) 
    { 
-     if(OptMen_Instanz_Bestellen->get_menu()->items().empty())
-          {OptMen_Instanz_Bestellen->hide();
-          kunden_lieferant->show();
-          }
-     else {OptMen_Instanz_Bestellen->show();
-     	   kunden_lieferant->hide();
-     	  }
      frame_instanzen->show() ;
-     maintree_s->set_selection_mode(GTK_SELECTION_MULTIPLE);
+     maintree_s->get_selection()->set_mode(Gtk::SELECTION_MULTIPLE);
    }
   else 
    { 
      frame_instanzen->hide() ;
-     maintree_s->set_selection_mode(GTK_SELECTION_SINGLE);
-     guint psize=GTK_WIDGET(vpaned_an_mat->gtkobj())->allocation.height;
+     maintree_s->get_selection()->set_mode(Gtk::SELECTION_SINGLE);
+     guint psize=GTK_WIDGET(vpaned_an_mat->gobj())->allocation.height;
      vpaned_an_mat->set_position(5*psize);
    }
 }
@@ -1109,31 +1197,34 @@ void auftrag_main::on_togglebutton_bestellen_toggled()
 void auftrag_main::on_togglebutton_material_toggled()
 {
   if(togglebutton_material->get_active()) handle_togglebutton('M');
+  else frame_materialbedarf->hide();
 }
 
 void auftrag_main::on_togglebutton_auftraege_toggled()
 {
   if(togglebutton_auftraege->get_active()) handle_togglebutton('A');
+  else frame_materialbedarf->hide();
 }
 
 void auftrag_main::handle_togglebutton(char c)
 {
   if(block_callback) return;
   block_callback=true;
+  frame_materialbedarf->show();
   switch (c)
    {
      case 'A': 
       {
         togglebutton_material->set_active(false);
         togglebutton_bestellen->set_active(false);
-        frame_materialbedarf->set_label("Auftragszusammensetzung");
+        frame_materialbedarf->set_label(_("Auftragszusammensetzung"));
         break;
       }
      case 'M': 
       {
         togglebutton_auftraege->set_active(false);
         togglebutton_bestellen->set_active(false);
-        frame_materialbedarf->set_label("Materialbedarf");
+        frame_materialbedarf->set_label(_("Materialbedarf"));
         break;
       }
 //     case 'B': 
@@ -1146,7 +1237,7 @@ void auftrag_main::handle_togglebutton(char c)
      default: assert(!"Falscher charakter\n");
    }
   if(!togglebutton_material->get_active() && !togglebutton_auftraege->get_active())
-      maintree_s->unselect_all();
+      maintree_s->get_selection()->unselect_all();
 //  if(instanz->LagerInstanz())  show_selected_line(true);
 //  else  
   show_selected_line();
@@ -1167,7 +1258,7 @@ std::string auftrag_main::FirstRow(gpointer user_data, int deep,
 {
  std::string ret;
 
- Data_auftrag *prd=(Data_auftrag*)user_data;
+ Handle<const Data_auftrag> prd=static_cast<const Data_auftrag*>(user_data);
 
  for(int i=0;i<deep;i++)
    ret+=prd->Value(seq[i],user_data)->getStrVal()+"&";
@@ -1183,9 +1274,9 @@ void auftrag_main::schema_select(const cH_ExtBezSchema &ebz)
 
  ExtBezSchema::const_sigiterator bezend=ebz->sigend(signif);
  for(ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(signif); 
-	bezit!=bezend; ++bezit,bezidx++) 
+	bezit!=bezend && bezidx<=A4; ++bezit,bezidx++) 
     maintree_s->setTitleAt(bezidx,bezit->bezkomptext);
- for(; bezidx<=A4; bezidx++) // auff¸llen bis 4
+ for(; bezidx<=A4; bezidx++) // auff√ºllen bis A4
 	maintree_s->setTitleAt(bezidx,"");
 }
 
@@ -1202,8 +1293,3 @@ void auftrag_main::on_offwarengrp_activate()
      for(int bezidx=A1; bezidx<=A4; bezidx++) maintree_s->setTitleAt(bezidx,"");
  }
 }
-
-
-
-
-

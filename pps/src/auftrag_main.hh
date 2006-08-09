@@ -26,7 +26,7 @@
 #include <Auftrag/AufEintrag.h>
 #include <Auftrag/AuftragFull.h>
 #include <Auftrag/AufEintragZu.h>
-#include<Auftrag/selFullAufEntry.h>
+#include <Auftrag/SelectedFullAufList.h>
 #include <Misc/Long.h>
 #include <Misc/UniqueValue.h>
 #include <Auftrag/Verfuegbarkeit.h>
@@ -82,7 +82,7 @@ private:
         
         friend class auftrag_main_glade;
         void loadEinstellungen();
-	gint on_delete_event(GdkEventAny*);
+	bool on_delete_event(GdkEventAny*);
         void on_beenden_activate();
         void save_WindowSize();
         void on_erfassen_activate();
@@ -100,23 +100,24 @@ private:
         void on_materialbedarf_sortiert();
         void on_kunden_anr_activate();
 
-        // Statusänderung
+        // StatusÃ¤nderung
         void on_offene_auftraege_activate();
         void on_closed_auftraege_activate();
         void on_storno_auftraege_activate();
         void on_unbest_auftraege_activate();
+        void on_alle_auftraege_activate();
         void statusaenderung();
         // AuftragsID
         void auftrags_id_aenderung();
 
         void on_auftraege_kunde_activate();
         void on_bestellplanung_activate();        
-        gint on_mainprint_button_clicked(GdkEventButton *ev);
+        void on_mainprint_button_clicked();
         void on_leaf_selected(cH_RowDataBase d);
-        void on_leaf_unselected(cH_RowDataBase d);
-        void on_node_selected(const TreeRow &node);
+        void on_leaf_unselected();
+        void on_node_selected(Handle<const TreeRow> node);
         void show_something_for(AufEintrag& selAufEintrag);
-        void on_unselect_row(gint row, gint column, GdkEvent *event);
+        void on_unselect_row();
         void on_togglebutton_bestellen_toggled();
         void on_togglebutton_material_toggled();
         void on_togglebutton_auftraege_toggled();
@@ -126,8 +127,8 @@ private:
         void instanz_menge(const Verfuegbarkeit::map_t& map_allart);
         void get_ArtikelZusammensetzung(const AufEintrag& AEB,Verfuegbarkeit::map_t& map_allart);
         void get_ArtikelHerkunft(const AufEintrag& AEB,Verfuegbarkeit::map_t& map_allart);
-        void getAufEintrag_fromNode(TCListRow_API::const_iterator b,
-            TCListRow_API::const_iterator e, Verfuegbarkeit::map_t& M);
+        void getAufEintrag_fromNode(Gtk::TreeModel::const_iterator b,
+            Gtk::TreeModel::const_iterator e, Verfuegbarkeit::map_t& M);
         void fillStamm(int *cont, GtkSCContext newsearch);
 
         void set_column_titles_of_simple_tree();
@@ -145,17 +146,16 @@ private:
 
 	static std::string FirstRow(gpointer user_data, int deep, std::deque<guint> seq);
 
-//	SelectedFullAufList::const_iterator idle_iter;
 // this tree traversal stuff is menacing
-        std::vector<TCListRow_API::iterator> idle_iter;
-	gint idle_fill();
+        std::vector<Gtk::TreeModel::iterator> idle_iter;
+	bool idle_fill();
 	SigC::Connection idle_con;
 	void start_idle();
 	void stop_idle();
 
 public:
   // Spaltenbezeichnungen
-   enum {KUNDE=0,A1,A2,A3,A4,LIEFERDATUM,AUFTRAG,LETZEPLANINSTANZ,
+   enum {KUNDE=0,A1,A2,A3,A4,LIEFERDATUM,AUFTRAG,LETZTEPLANINSTANZ,
          VERARBEITUNG,LETZTELIEFERUNG,INSTANZEN,METER,STUECK};
 
  cH_ppsInstanz Instanz() const {return instanz;}
@@ -169,7 +169,7 @@ public:
  auftrag_main();
 
 private:
-   // Ab hier für die Produktionsplanung ////////////////////////
+   // Ab hier fÃ¼r die Produktionsplanung ////////////////////////
    AuftragFull *instanz_auftrag;
 
    void show_frame_instanzen_material();
@@ -178,7 +178,7 @@ private:
    void on_searchcombo_auftragid_search(int *cont, GtkSCContext newsearch) throw(SQLerror);
    void on_button_neue_anr_clicked();
    void on_kunden_lieferant_activate();
-   gint on_button_instanz_print_clicked(GdkEventButton *ev);
+   void on_button_instanz_print_clicked();
    void instanz_tree_titel_setzen();
    void neuer_auftrag_tree_titel_setzen();
    void instanz_auftrag_anlegen(AufEintrag& AE);
@@ -194,7 +194,7 @@ private:
    void on_button_instanz_get_selection_clicked();
    void on_OptMenu_Instanz_Bestellen_activate();
 
-  // Ab hier fürs Lager
+  // Ab hier fÃ¼rs Lager
   void lager_zeigen();
   void lager_ueberschrift();
 //  SelectedFullAufList lager_auftraege();
@@ -209,6 +209,9 @@ private:
   void on_lager_unselect_row(gint row, gint column, GdkEvent *event);
 
   void schema_select(const cH_ExtBezSchema &ebz);
+  
+  enum menu_selection { M_Auftrag, M_Artikel, M_Kunde, M_Lieferungen };
+  void on_menu_selection(menu_selection m);
 };
 
 #endif

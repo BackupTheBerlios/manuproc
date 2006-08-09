@@ -1,6 +1,7 @@
-// $Id: auftrag_bearbeiten.hh,v 1.30 2005/02/17 10:48:10 jacek Exp $
+// $Id: auftrag_bearbeiten.hh,v 1.31 2006/08/09 15:36:51 christof Exp $
 /*  pps: ManuProC's production planning system
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, 
+ *  written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,12 +22,12 @@
 #  include "auftrag_bearbeiten_glade.hh"
 #  define _AUFTRAG_BEARBEITEN_HH
 
-#include "termsplidial.hh"
 #include <Auftrag/AuftragFull.h>
 #include "aktAufEintrag.h"
 #include <Misc/SQLerror.h>
 #include <Artikel/Prozess.h>
 #include <vector>
+#include <gtkmm/liststore.h>
 
 void ArtBestandData(const ArtikelBase::ID aid, int &off,
 	int &bestand, int &verfuegbar) throw(SQLerror);
@@ -40,15 +41,10 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
  gint aufentrystat_chid;
  gint aufstat_chid;
  int selectedentry;
-// cH_PreisListe artikel_preisliste;
  bool artikel_preisliste_geaendert;
 
  bool newauftrag;
 
-
- termsplidial *splitdialog;
-
-        friend class auftrag_bearbeiten_glade;
         void on_backtomain_button_clicked();
         void on_newauftrag_button_clicked();
         void auftragstatus_geaendert();
@@ -56,7 +52,7 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_youraufnrscombo_search(int *_continue, GtkSCContext newsearch)
 							throw(SQLerror);
         void on_button_preview_clicked();
-        gint on_button_drucken_clicked(GdkEventButton *ev);
+        void on_button_drucken_clicked();
         void on_checkbutton_ean_drucken_clicked();
         void on_rueckstand_clicked();
         void preisliste_reset();
@@ -67,7 +63,7 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_lieferdatum_activate();
         void on_showkal_button_clicked();
         void on_rabattentry_spinbutton_activate();
-        gint on_aufrabatt_spinbutton_focus_out_event(GdkEventFocus *ev);
+        bool on_aufrabatt_spinbutton_focus_out_event(GdkEventFocus *ev);
 	void on_aufrabatt_spinbutton_activate();
         void Rabatt_setzen(const cH_Kunde &kunde,AuftragFull *a=NULL);
         void Rabatt_setzen(const cH_PreisListe &liste);
@@ -76,8 +72,9 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_preisart_optionmenu_clicked();
         void on_offen_bei_lieferant_clicked();
         void on_preisautomatik_clicked();
-        void on_auftrag_clist_select_row(gint row, gint column, GdkEvent *event);
-        void on_auftrag_clist_unselect_row(gint row, gint column, GdkEvent *event);
+        void on_leaf_selected(cH_RowDataBase row);
+        void on_unselect();
+        void select_show(const AufEintragBase &aeb);
         void on_splitten();
         void on_ean_etiketten_activate();
         void on_clear_all();
@@ -85,8 +82,6 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_provisionierung_activate();
         void on_aufentry_abbruch_clicked();
         void on_aufentry_ok_clicked();
-//        void InstanzAuftraegeAnlegen(const Auftrag& altAuftrag,const int altZnr);
-//        void InstanzAuftraegeAnlegenR(const ArtikelBase& art,const long menge,const Auftrag& altAuftrag,const int altZnr);
         void on_auftrag_abbruch_clicked();
         void on_auftrag_ok_clicked();
         void on_aufbemerkung_activate();
@@ -96,11 +91,13 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_bestellplan_clicked();
         
    void on_activate_wpreis();
+   bool update_aufentry_preis();
    void on_preis_changed();
 
         void on_notiz_changed();
         void on_notiz_save_clicked();
 	void on_lager_bestand_clicked();
+        void on_datum_activate();
 
  void loadAuftrag(const AuftragBase& auftrag);
  void fillMask();
@@ -116,20 +113,17 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
  int get_active_index(Gtk::Menu *om); 
  void setAufEntries();
  
-//#ifdef MABELLA_EXTENSIONS Das geht so nicht, wiel das Signal in glade
-// an diese Methode konnektiert wird.
  void on_auftrag_preislisten_activate();
-//#endif;
 
  void showBestandData();
+ void lieferungen_zeigen();
 
 public:
  AuftragBase::ID new_aufid_from_copy;
  bool splitEntry();
- void split_dialog_destroyed() { splitdialog=0; }
+ cH_ppsInstanz Instanz() const { return instanz; }
+ AuftragFull *Auftrag() const { return auftrag; }
 
 auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEintragBase *auftragbase);
-//~auftrag_bearbeiten();
-
 };
 #endif

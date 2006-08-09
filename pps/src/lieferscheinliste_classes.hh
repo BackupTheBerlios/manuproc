@@ -11,13 +11,12 @@
 #include <Lieferschein/Lieferschein.h>
 #include <Lieferschein/Rechnung.h>
 #include <Artikel/ArtikelBezeichnung.h>
-#include <tclistnode.h>
 #include <Artikel/Einheiten.h>
 #include <typeinfo>
 #include <Misc/Ausgabe_neu.h>
 #include <Artikel/ArtikelMengeSumme.h>
 #include "datum_kumul.h"
-
+#include <SimpleTree.hh>
 
 class Data_LListe : public RowDataBase
 {
@@ -42,9 +41,13 @@ private:
    typedef enum {KUNDE,AUFTRAG,ARTIKEL,BREITE,FARBE,AUFMACHUNG,LIEFERNR,
          LIEFERDATUM,RECHNUNG,RECHNUNGSDATUM,ARTIKELTYP,SUM_MENGE,SUM_AMENGE} Spalten;
 
-   virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const;
-   const ArtikelMenge getArtikelMenge() const { return menge; }
+   virtual cH_EntryValue Value(guint seqnr,gpointer gp) const;
+   ArtikelMenge const& getArtikelMenge() const { return menge; }
    void setTimeCumulate(KumVal opt) { option_timecumulate=opt;}
+   
+   Rechnung const& getRechnung() const { return rechnung; }
+   LieferscheinEntry const& getLEntry() const { return entry; }
+   cH_Lieferschein const& getLieferschein() const { return liefer; }
 };
 
 
@@ -57,7 +60,12 @@ class Data_ListeNode : public TreeRow
        const ArtikelMenge &am=dynamic_cast<const Data_LListe &>(*rd).getArtikelMenge();
        sum.cumulate(am);
      }      
-   const cH_EntryValue Value(guint index,gpointer gp) const
+   virtual void deduct(const cH_RowDataBase &rd)
+     { 
+       const ArtikelMenge &am=dynamic_cast<const Data_LListe &>(*rd).getArtikelMenge();
+       sum.deduct(am);
+     }      
+   cH_EntryValue Value(guint index,gpointer gp) const
     {
       switch(index)
         {
@@ -68,16 +76,12 @@ class Data_ListeNode : public TreeRow
         }
       return cH_EntryValue();
     }
- Data_ListeNode::Data_ListeNode(guint deep,const cH_EntryValue &v, guint child_s_deep, 
- 	cH_RowDataBase child_s_data,bool expand, const TreeRow &suminit)
-   :TreeRow(deep,v,child_s_deep,child_s_data,expand) 
-   {   if (suminit.Leaf()) cumulate(child_s_data);
-       else sum=dynamic_cast<const Data_ListeNode&>(suminit).sum;
+ Data_ListeNode(const Handle<const TreeRow> &suminit)
+   { if (suminit) sum=suminit.cast_dynamic<const Data_ListeNode>()->sum;
    }
 
-  static TreeRow *create(guint col, const cH_EntryValue &v,guint child_s_deep,
-  	 cH_RowDataBase child_s_data, bool expand, const TreeRow &suminit)
-  {  return new Data_ListeNode(col,v,child_s_deep,child_s_data,expand,suminit);
+  static Handle<TreeRow> create(const Handle<const TreeRow> &suminit)
+  {  return new Data_ListeNode(suminit);
   }
 };
 

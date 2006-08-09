@@ -1,5 +1,6 @@
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2006 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -44,20 +45,20 @@ class auftrag_rechnung : public auftrag_rechnung_glade
         void on_clear_all();        
         void on_rng_save();
         void on_rng_preview();
-        gint on_rng_print(GdkEventButton *ev);
+        void on_rng_print();
         void rngzeile_delete();
         void on_rngdate_activate();
-        gint timeout();
+        bool timeout();
         void on_rngnr_activate();
         void on_rngnr_search(int *_continue, GtkSCContext newsearch);
         void on_lieferkunde_activate();
         void on_entsorgung_toggled();
 //        void on_selectrow_rechnung(int row, int col, GdkEvent* b);
-        void on_unselectrow_rtree(int row, int col, GdkEvent* b);
+        void on_unselectrow_rtree();
         void preis_activate();
         void lieferschein_uebernehmen();
 //        void on_selectrow_offlief(int row, int col, GdkEvent* b);
-        void on_unselectrow_rtree_offen(int row, int col, GdkEvent* b);        
+        void on_unselectrow_rtree_offen();        
         void Preis_setzen();
         void Preis_ergaenzen();
         void on_checkbutton_ean_drucken_clicked();
@@ -65,7 +66,7 @@ class auftrag_rechnung : public auftrag_rechnung_glade
         void waehrung_geaendert();
         void on_lieferkunde_reset();        
 	void rabatt_geaendert();
-        gint on_bezahlt_toggled(GdkEventButton *ev);
+        void on_bezahlt_toggled();
 	void on_radiobutton_preiseingabe_toggled();
         void on_zahlziel_activate();
 	void redisplay();
@@ -91,8 +92,9 @@ class auftrag_rechnung : public auftrag_rechnung_glade
 // TreeRow *selectedrow_rng;
 // cH_Kunde kunde;
 
+  void init();
 public:
- auftrag_rechnung(cH_ppsInstanz _instanz); 
-
+  auftrag_rechnung(cH_ppsInstanz _instanz); 
+  auftrag_rechnung(RechnungBase const& toload);
 };
 #endif

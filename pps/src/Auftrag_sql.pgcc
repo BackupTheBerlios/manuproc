@@ -40,7 +40,7 @@ void Auftrag::deleteAuftrag() throw(SQLerror)
  exec sql lock table auftrag in row exclusive mode;
  exec sql delete from auftragentry where auftragid= :AUFTRAGID;
  exec sql delete from auftrag where auftragid= :AUFTRAGID;    
- SQLerror::test(__FILELINE__"Löschen des Auftrags");
+ SQLerror::test(__FILELINE__"LÃ¶schen des Auftrags");
 
  tr.commit();
 }
@@ -98,7 +98,7 @@ void Auftrag::deleteEintrag(int zeilennr) throw(SQLerror)
  exec sql lock table auftragentry in share row exclusive mode;
  exec sql delete from auftragentry where zeilennr= :ZEILENNR
  		and auftragid= :AUFTRAGID;
- SQLerror::test(__FILELINE__"Auftragszeile löschen");
+ SQLerror::test(__FILELINE__"Auftragszeile lÃ¶schen");
 
  exec sql update auftragentry set zeilennr=zeilennr-1
  	where zeilennr> :ZEILENNR and auftragid= :AUFTRAGID;

@@ -41,7 +41,8 @@ class petig_we : public petig_we_glade
         void on_petig_we_cancel_clicked();  
  void identify_article() throw(SQLerror); 
 
- cH_Data_Lieferoffen getHandleForAufEntry(AuftragBase::ID abid, 
+ std::vector<cH_Data_Lieferoffen> const& getHandleForAufEntry(
+			 AuftragBase::ID abid, 
                          ArtikelBase::ID artid,
                          const std::string youraufnr);
 };

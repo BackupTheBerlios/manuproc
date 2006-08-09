@@ -1,26 +1,20 @@
 #include "auftrag_main.hh"
 #include <Misc/SQLerror.h>
 #include <Misc/Transaction.h>
-exec sql include sqlca;
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 
+#if 1
+// Sollte das nicht eigentlich in AuftragBase sein?
 int auftrag_main::get_next_entry_znr(AuftragBase& auftrag)
 {
- exec sql begin declare section;
-   int db_instanz;
-   int db_aufid;
-   int db_maxznr;
- exec sql end declare section;
- db_aufid=auftrag.Id();
- db_instanz=auftrag.InstanzID();
- exec sql SELECT coalesce(max(zeilennr),0) into :db_maxznr from auftragentry 
-   where auftragid=:db_aufid and instanz=:db_instanz;
- SQLerror::test(__FILELINE__,100);
- if (sqlca.sqlcode) db_maxznr=0; 
- return db_maxznr+1;
+ return (Query("SELECT max(zeilennr) from auftragentry "
+		"where (instanz,auftragid)=(?,?)")
+	<< auftrag
+	).FetchOneMap<int>(0)+1;
 }
+#endif
 
-
+#if 0
 void auftrag_main::on_searchcombo_auftragid_search(int *cont, GtkSCContext newsearch)
 throw(SQLerror)
 {
@@ -79,3 +73,4 @@ throw(SQLerror)
   }
 }
 
+#endif

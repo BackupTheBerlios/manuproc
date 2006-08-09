@@ -11,11 +11,13 @@
 #include <Kunde/Kunde.h>
 #include "MyMessage.h"
 #include "auftrag_lieferschein.hh"
-#include <Misc/FetchIStream.h>
+#include <Misc/Query.h>
 #include <ExtBezSchema/ExtBezSchema.h>
 #include <Lieferschein/Lieferschein.h>
 #include <Auftrag/AufEintrag.h>
 #include <Instanzen/ppsInstanz.h>
+#include <Misc/i18n.h>
+#include <Misc/ucompose.hpp>
 
 extern MyMessage *meldung;
 extern auftrag_lieferschein *auftraglieferschein;
@@ -35,7 +37,7 @@ void petig_we::on_petig_we_ok_clicked()
  
  if(weid<40000)
    {
-    meldung->Show("Die Liefrschein Nr. ist nicht korrekt");
+    meldung->Show(_("Die Lieferschein Nr. ist nicht korrekt"));
     return;
    } 
 
@@ -49,11 +51,21 @@ void petig_we::on_petig_we_ok_clicked()
     return;
    }
  catch(ManuProC::AuthError &a)
-  { meldung->Show(a.Msg()+": Anmeldung nicht möglich");
+  { meldung->Show(String::ucompose(_("%1: Anmeldung nicht mÃ¶glich"),a.Msg()));
     return;
   }
 
  ManuProC::dbdefault(c_to_p.Name());
+
+
+
+/****
+ cH_LieferscheinVoll we(ppsInstanzID::Kundenauftraege,weid);
+ ManuProC::dbdisconnect(c_to_p.Name());   
+ ManuProC::dbdefault(); // set to default
+
+***/
+
 
  Query q("select (case when zusatzinfo=false then a.youraufnr else '' end),"
        "artikelkomponente(artikelid,?,1,1), " 
@@ -68,20 +80,20 @@ void petig_we::on_petig_we_ok_clicked()
  Kunde::ID lid=auftraglieferschein->getKdNr();  
  q << lid << lid << lid << lid << weid;
  
- FetchIStream is=q.Fetch();
+ Query::Row is=q.Fetch();
  while(is.good())
    {
     struct we_entry ws;
     std::string bk;
     int lsid,znr,insid;
     
-    is >> FetchIStream::MapNull(ws.first_auf_ref,"");
+    is >> Query::Row::MapNull(ws.first_auf_ref,"");
     for(int i=0; i<4; i++)
-      {is >> FetchIStream::MapNull(bk,"");
+      {is >> Query::Row::MapNull(bk,"");
        ws.artbez.push_back(bk);
       }
-    is >> ws.stueck >> FetchIStream::MapNull(ws.menge,0)
-      >> FetchIStream::MapNull(ws.zi,false)
+    is >> ws.stueck >> Query::Row::MapNull(ws.menge,0)
+      >> Query::Row::MapNull(ws.zi,false)
       >> lsid >> znr >> insid;
     ws.lseb=LieferscheinEntryBase(LieferscheinBase(
            cH_ppsInstanz((ppsInstanz::ID)insid),lsid),znr);
@@ -99,7 +111,7 @@ void petig_we::on_petig_we_ok_clicked()
           " from lieferscheinentryzusatz z left join auftrag a on "
           " (a.auftragid=z.auftragid and  a.instanz=z.instanz)"
           " where (z.instanz,z.lfrsid,z.lfsznr)=(?,?,?) group by"
-          " a.youraufnr");
+          " a.youraufnr ");
         subq  << (*wee).lseb.Instanz()->Id()
           << (*wee).lseb.Id()
           << (*wee).lseb.Zeile();
@@ -108,7 +120,7 @@ void petig_we::on_petig_we_ok_clicked()
         while(is.good())
           {std::string refauf;
            int menge;
-           is >> FetchIStream::MapNull(refauf,"") >> menge;
+           is >> Query::Row::MapNull(refauf,"") >> menge;
            (*wee).auftrag_referenz[refauf]=menge;
            is=subq.Fetch();
           }
@@ -140,23 +152,46 @@ void petig_we::on_petig_we_ok_clicked()
 
       for(;refif!=(*wee).auftrag_referenz.end(); ++refif)
        {
-        cH_Data_Lieferoffen h_lo=getHandleForAufEntry(
+        std::vector<cH_Data_Lieferoffen> const &lo_vec=
+			getHandleForAufEntry(
                     (AuftragBase::ID)atoi((*refif).first.c_str()),
                      (*wee).artikel.Id(),(*refif).first);
-        if(h_lo->Valid())
+        std::vector<cH_Data_Lieferoffen>::const_iterator lo_it=lo_vec.begin();
+	int last_znr=0;
+	int stueck=(*refif).second;
+	for(;lo_it!=lo_vec.end() && stueck>0;++lo_it)
+        {
+         if((*lo_it)->Valid())
           {             
-           AufEintrag ae(h_lo->getAufEintrag());	 
-           l->push_back(ae,
+           AufEintrag ae((*lo_it)->getAufEintrag());	 
+	   int lief = ae.getRestStk().as_int();
+	   lief = lief >= stueck ? stueck : lief;
+           last_znr=l->push_back(ae,
                  (*wee).artikel,
-                 (*refif).second,
+                 lief,
                   e.hatMenge()?(*wee).menge:0.0,0);
-           h_lo->getAufEintrag().tmp_geliefert+=(*wee).stueck;
+           (*lo_it)->getAufEintrag().tmp_geliefert+=lief;
+	   stueck-=lief;
           }
-        else
-           l->push_back((*wee).artikel,
-                  (*refif).second,
+         else
+          {last_znr=l->push_back((*wee).artikel,stueck,
                   e.hatMenge()?(*wee).menge:0.0,0);
+	   stueck=0;
+	  }
        }
+       if(stueck>0 && last_znr>0) // Den Rest auf letzte LiefZeile verteilen
+	  {LieferscheinEntryBase leb(auftraglieferschein->getInstanz(),
+				l->Id(),last_znr);
+	   LieferscheinEntry le(leb);
+	   le.changeMenge(le.Stueck()+stueck,e.hatMenge()?(*wee).menge:0.0,false);
+	  }
+       else if(stueck>0) // Den Rest frei liefern
+	{last_znr=l->push_back((*wee).artikel,stueck,
+         e.hatMenge()?(*wee).menge:0.0,0);
+	 stueck=0;
+	}
+
+      }
      }  
    else  
      {
@@ -165,22 +200,38 @@ void petig_we::on_petig_we_ok_clicked()
                  (*wee).stueck,
                   e.hatMenge()?(*wee).menge:0.0,0);
       else             
-       {cH_Data_Lieferoffen h_lo=getHandleForAufEntry(
+       {
+        std::vector<cH_Data_Lieferoffen> const &lo_vec=getHandleForAufEntry(
                     (AuftragBase::ID)atoi((*wee).first_auf_ref.c_str()),
                      (*wee).artikel.Id(),(*wee).first_auf_ref);
-        if(h_lo->Valid())
+        std::vector<cH_Data_Lieferoffen>::const_iterator lo_it=lo_vec.begin();
+	int last_znr=0;
+	int stueck=(*wee).stueck;
+	for(;lo_it!=lo_vec.end() && stueck>0;++lo_it)
+        {
+        if((*lo_it)->Valid())
           {             
-           AufEintrag ae(h_lo->getAufEintrag());	 
-           l->push_back(ae,
+           AufEintrag ae((*lo_it)->getAufEintrag());	 
+	   int lief = ae.getRestStk().as_int();
+	   lief = lief >= stueck ? stueck : lief;
+           last_znr=l->push_back(ae,
                  (*wee).artikel,
-                 (*wee).stueck,
+                 lief,
                   e.hatMenge()?(*wee).menge:0.0,0);
-           h_lo->getAufEintrag().tmp_geliefert+=(*wee).stueck;
+           (*lo_it)->getAufEintrag().tmp_geliefert+=lief;
+	   stueck-=lief;
           }
         else
-           l->push_back((*wee).artikel,
-                 (*wee).stueck,
-                  e.hatMenge()?(*wee).menge:0.0,0);        
+           {last_znr=l->push_back((*wee).artikel,
+                 stueck,e.hatMenge()?(*wee).menge:0.0,0);        
+	    stueck=0;}
+	}
+	if(stueck>0 && last_znr>0) // Den Rest verteilen
+	  {LieferscheinEntryBase leb(auftraglieferschein->getInstanz(),
+				l->Id(),last_znr);
+	   LieferscheinEntry le(leb);
+	   le.changeMenge(le.Stueck()+stueck,e.hatMenge()?(*wee).menge:0.0,false);
+	  }
        }
      }
      
@@ -189,16 +240,20 @@ void petig_we::on_petig_we_ok_clicked()
  
  auftraglieferschein->set_tree_daten_content(l->Id());
  auftraglieferschein->set_tree_offen_content();  
+
 }
 
 
-cH_Data_Lieferoffen petig_we::getHandleForAufEntry(
+std::vector<cH_Data_Lieferoffen> const& petig_we::getHandleForAufEntry(
       AuftragBase::ID abid, ArtikelBase::ID artid,
       const std::string youraufnr)
 {
  typedef std::vector<cH_RowDataBase>::iterator DVI;
  std::vector<cH_RowDataBase> lo=auftraglieferschein->getLiefOff();
  DVI ai;
+ static std::vector<cH_Data_Lieferoffen> retvec;
+
+ retvec.erase(retvec.begin(),retvec.end());
 
  for(ai=lo.begin(); ai!=lo.end(); ++ai)
    {
@@ -206,14 +261,15 @@ cH_Data_Lieferoffen petig_we::getHandleForAufEntry(
                         (*ai).cast_dynamic<const Data_Lieferoffen>();
     if(h_lo->getArtikel().Id() == artid)
       {
-       if(h_lo->getAufEintrag().Id()==abid)
-         return cH_Data_Lieferoffen(&*h_lo);    
-       if(atoi(h_lo->getAufEintrag().getYourAufNr().c_str())==
-          atoi(youraufnr.c_str()))
-         return cH_Data_Lieferoffen(&*h_lo);           
+	// first check internal order id
+       if( (h_lo->getAufEintrag().Id()==abid && abid!=0) ||
+           (atoi(h_lo->getAufEintrag().getYourAufNr().c_str())
+	    ==atoi(youraufnr.c_str()) && atoi(youraufnr.c_str())!=0 ))
+          retvec.push_back(cH_Data_Lieferoffen(&*h_lo));
       }  
+    
    }
- return cH_Data_Lieferoffen(new Data_Lieferoffen());
+return retvec;           
 }          
 
 
@@ -257,7 +313,7 @@ void petig_we::identify_article() throw(SQLerror)
     Query query(q);
     SQLerror::test(__FILELINE__,100);
     if(query.Result()==100) continue;
-    FetchIStream fi=query.FetchOne();
+    Query::Row fi=query.FetchOne();
     fi >> (*i).artikel;
    }
  

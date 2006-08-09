@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <glademm-callbacks>
-  <class name="TreeBase" parent="GtkCList">
+  <class name="TreeBase" parent="GtkTreeView">
     <callback name="leaf_selected" args="cH_RowDataBase leaf"/>
-    <callback name="leaf_unselected" args="cH_RowDataBase leaf"/>
-    <callback name="node_selected" args="const TreeRow &amp;node"/>
+    <callback name="leaf_unselected"/>
+    <callback name="node_selected" args="Handle&lt;const TreeRow&gt; node"/>
   </class>
   <class name="ArtikelBox">
     <callback name="new_article_inserted" args="ArtikelBase::ID id"/>
@@ -14,10 +14,17 @@
     <callback name="add" args="cH_Telefon element"/>
     <callback name="remove" args="cH_Telefon element"/>
   </class>
+  <class name="ManuProC::DoubleButton" parent="GtkButton" include="DoubleButton.h">
+    <callback name="secondpressed" args="int mousebutton"/>
+  </class>
+  <class name="DoubleButton" parent="GtkButton">
+    <callback name="secondpressed" args="int mousebutton"/>
+  </class>
   <class name="SimpleTree" parent="TreeBase" include="SimpleTree.hh"/>
   <class name="SearchCombo">
-    <callback name="search" args="gboolean *cont,GtkSCContext context"/>
+    <callback name="search" args="gboolean *cont,GtkSCContext context" proxy="true"/>
   </class>
   <class name="SearchComboContent&lt;Kunde::ID&gt;" parent="SearchCombo"/>
   <class name="SearchComboContent&lt;int&gt;" parent="SearchCombo"/>
+  <class name="SearchComboContent&lt;unsigned&gt;" parent="SearchCombo"/>
 </glademm-callbacks>

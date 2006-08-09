@@ -13,6 +13,8 @@
 #include "MyMessage.h"  
 #include <Misc/Transaction.h>
 #include <memory>
+#include <Misc/i18n.h>
+#include <DynamicEnums/DynamicConfig.h>
 
 extern auftrag_bearbeiten *auftragbearbeiten;
 extern MyMessage *meldung;
@@ -30,7 +32,9 @@ auftrag_copy::auftrag_copy(AuftragFull *auftrag)
 
  std::string nuraktiv(" and coalesce(aktiv,true)=true");
  neu_aufkunde->Einschraenkung(nuraktiv,true);
- neu_aufkunde->EinschraenkenKdGr(KundengruppeID::Auftragsadresse);  
+#ifdef HAS_ADDR_GROUP_Auftragsadresse
+ neu_aufkunde->EinschraenkenKdGr(KundengruppeID::Auftragsadresse);
+#endif
  neu_aufkunde->setExpandStr2(true);
 }
 
@@ -65,7 +69,7 @@ void auftrag_copy::on_copy_ok_clicked()
 	if(stueck_uebernehmen->get_active())
 	  {
 	   if(!neu_stueck->get_value_as_int()>0)
-	    {meldung->Show("Stück muß größer als 0 sein");
+	    {meldung->Show(_("StÃ¼ck muÃŸ grÃ¶ÃŸer als 0 sein"));
     	     return;
     	    }
 	   stueck=neu_stueck->get_value_as_int();
@@ -76,7 +80,7 @@ void auftrag_copy::on_copy_ok_clicked()
 	if(liefdate_uebernehmen->get_active())
 	  {
 	   if(!neu_lieferdatum->get_value().valid())
-	     {meldung->Show("Ungültiges Lieferdatum");
+	     {meldung->Show(_("UngÃ¼ltiges Lieferdatum"));
     	      return;
     	     }	   
 	   ld=neu_lieferdatum->get_value();
@@ -100,7 +104,7 @@ void auftrag_copy::on_copy_ok_clicked()
         sql+="preismenge,instanz,preisliste,";
         if (!provsatz) sql+="provsatz ";
         else { sql+="? "; args << provsatz; }
-        sql+="from auftragentry where (auftragid,instanz)=(?,?) "
+        sql+="from auftragentry where (instanz,auftragid)=(?,?) "
             "and status!=(?))";
         args << AuftragBase(*alt_auftrag);
         args << (copy_storno->get_active() ? (AufStatVal)STORNO : 
@@ -133,7 +137,7 @@ void auftrag_copy::on_copy_ok_clicked()
  catch(SQLerror &e)
    {if(e.Code()!=100)
       meldung->Show(e);
-    else meldung->Show("keine Zeilen zum Kopieren gefunden");
+    else meldung->Show(_("keine Zeilen zum Kopieren gefunden"));
     auftragbearbeiten->new_aufid_from_copy=AuftragBase::none_id;
     return;
    }

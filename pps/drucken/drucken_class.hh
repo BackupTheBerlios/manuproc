@@ -24,7 +24,7 @@
 #include <Auftrag/AufEintragZu.h>
 #include <fstream>
 #include "lr_base.h"
-//#include <Artikel/Einheiten.h>
+#include <Artikel/Einheiten.h>
 #include <Kunde/PreisListe.h>
 #include <Artikel/Artikelpreis.h>
 #include <map>
@@ -101,7 +101,7 @@ public:
 
    const cH_PreisListe getPreisliste() const {
 	 if(Typ()==Auftrag) return u.a->getPreisliste();
-	 return cH_PreisListe();
+	 return cH_PreisListe(PreisListe::none_id);
 	}
 
    LieferscheinEntryBase Lfrs() const {
@@ -156,7 +156,7 @@ public:
 	   if((Typ()==Auftrag)||(Typ()==Extern)) return u.a->getLieferdatum(); 
 	   return ManuProC::Datum();}
    AufEintragBase getAEB() const {
-      if (Typ()==Intern) return *(u.a);
+      if (Typ()==Intern || Typ()==Extern) return *(u.a);
       abort();
       }
 /*
@@ -237,6 +237,7 @@ class LR_Abstraktion: public LR_Base
  bool palette_bool:1; // whether palette is used
  bool notice_column_bool:1; // whether there is space for inline 
  bool order_on_bill:1; // whether the order no should get printed on the bill
+ bool order_on_bill_fixed:1; // whether the order no col should have a fixed width
 
  cH_ppsInstanz instanz;
  
@@ -278,6 +279,9 @@ class LR_Abstraktion: public LR_Base
  std::string min_KWStr;
  std::string copies;
  
+ Preis::preismenge_t preismenge_mem;
+ Einheit einheit_mem; 
+
 public:
   typedef LR_Iterator const_iterator;
 
@@ -289,12 +293,13 @@ private:
 	stueck_bool(), menge_bool(), \
 	rabatt_bool(), preise_addieren(), ean_code(), \
 	palette_bool(), notice_column_bool(), \
-	order_on_bill(), \
+	order_on_bill(), order_on_bill_fixed(), \
 	instanz(ppsInstanz::default_id), \
 	zeilen_passen_noch(), page_counter(1), \
 	preisspalte(), \
 	spaltenzahl(), schema_mem(ExtBezSchema::default_ID), \
-	schema_own(ExtBezSchema::default_ID), copies("1,0,0")
+	schema_own(ExtBezSchema::default_ID), copies("1,0,0"), \
+	einheit_mem(Einheit::default_id)
 
 public:
 	
@@ -392,7 +397,8 @@ public:
 private:
    void drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
                         bool zusatzinfo,std::string linecolor,bool& erste_spalte,
-                        cH_ExtBezSchema s,AuftragBase::mengen_t menge=0);
+                        cH_ExtBezSchema s,AuftragBase::mengen_t menge=0,
+                        bool combine=false);
    void neue_spalte(bool& erste_spalte, std::ostream &os);
    void Zeile_Ausgeben(std::ostream &os,
         const Preis::preismenge_t &preismenge_mem,
@@ -411,7 +417,10 @@ private:
    void drucken_footer(std::ostream &os);
    void page_header(std::ostream &os);
    void lieferung_an(std::ostream &os, unsigned int lfrs_id, const ManuProC::Datum& datum,const std::string& sKunde);
-   
+   void check_page_break(std::ostream &os);
+   void Zeige_RohArtikel(std::ostream &os,int tiefe,ArtikelBaum &ab,
+				const cH_PreisListe pl);
+
 #ifdef MABELLA_EXTENSIONS
    void auftrag_von(std::ostream &os, const class Auftrag &a,bool only_braces=false);
 #endif

@@ -1,3 +1,42 @@
+2006-08-05  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (EXTRA_DIST): Add config.rpath, mkinstalldirs, m4/ChangeLog.
+	* configure.in (AC_OUTPUT): Add po/Makefile.in.
+
+2006-05-03  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (EXTRA_DIST): Add config.rpath, mkinstalldirs, m4/ChangeLog.
+	* configure.in (AC_OUTPUT): Add po/Makefile.in.
+
+2006-02-28  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (EXTRA_DIST): Add config.rpath, m4/ChangeLog.
+
+2006-01-02  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (EXTRA_DIST): Add config.rpath, mkinstalldirs, m4/ChangeLog.
+	* configure.in (AC_OUTPUT): Add po/Makefile.in.
+
+2005-11-17  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (EXTRA_DIST): Add config.rpath, mkinstalldirs, m4/ChangeLog.
+	* configure.in (AC_OUTPUT): Add po/Makefile.in.
+
+2005-11-16  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (EXTRA_DIST): Add config.rpath, mkinstalldirs, m4/ChangeLog.
+	* configure.in (AC_OUTPUT): Add po/Makefile.in.
+
+2005-11-15  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* configure.in (AC_OUTPUT): Add po/Makefile.in.
+
+2005-11-15  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (ACLOCAL_AMFLAGS): New variable.
+	(EXTRA_DIST): Add config.rpath, m4/ChangeLog.
+	* configure.in (AC_OUTPUT): Add po/Makefile.in.
+
 
 2001/4/10 9:58:58 MEST
 	update files from .glade file
@@ -2326,50 +2365,212 @@
 2005/8/30 16:56:51 CEST
 	update files from .glade file
 
-2005/9/8 12:48:08 CEST
+2005/9/7 14:29:07 CEST
 	update files from .glade file
 
-2005/9/8 13:15:36 CEST
+2005/9/7 17:26:05 CEST
 	update files from .glade file
 
-2005/9/8 13:20:52 CEST
+2005/9/12 12:03:34 CEST
 	update files from .glade file
 
-2005/9/8 13:27:21 CEST
+2005/9/12 13:08:23 CEST
 	update files from .glade file
 
-2005/9/8 13:28:54 CEST
+2005/9/12 13:13:15 CEST
 	update files from .glade file
 
-2005/9/12 10:10:48 CEST
+2005/9/14 15:07:58 CEST
 	update files from .glade file
 
-2005/9/12 10:13:11 CEST
+2005/9/14 15:12:17 CEST
 	update files from .glade file
 
-2005/9/12 10:43:23 CEST
+2005/9/14 16:29:46 CEST
 	update files from .glade file
 
-2005/9/12 10:48:05 CEST
+2005/9/23 17:20:56 CEST
 	update files from .glade file
 
-2005/9/12 11:16:19 CEST
+2005/9/23 17:23:31 CEST
 	update files from .glade file
 
-2005/9/12 11:36:36 CEST
+2005/9/23 18:01:48 CEST
 	update files from .glade file
 
-2005/9/12 11:40:06 CEST
+2005/9/27 13:01:37 CEST
 	update files from .glade file
 
-2005/9/12 11:40:20 CEST
+2005/9/27 14:29:00 CEST
 	update files from .glade file
 
-2005/9/12 11:40:47 CEST
+2005/10/14 18:53:42 CEST
 	update files from .glade file
 
-2005/9/12 12:18:32 CEST
+2005/10/28 9:07:34 CEST
 	update files from .glade file
 
-2005/9/12 12:40:07 CEST
+2005/10/29 0:05:54 CEST
+	update files from .glade file
+
+2005/10/29 2:44:39 CEST
+	update files from .glade file
+
+2005/10/29 2:46:14 CEST
+	update files from .glade file
+
+2005/10/29 10:02:16 CEST
+	update files from .glade file
+
+2005/10/29 10:26:31 CEST
+	update files from .glade file
+
+2005/10/29 10:58:44 CEST
+	update files from .glade file
+
+2005/10/29 15:10:50 CEST
+	update files from .glade file
+
+2005/10/29 22:58:25 CEST
+	update files from .glade file
+
+2005/11/2 11:40:42 CET
+	update files from .glade file
+
+2005/11/2 11:56:30 CET
+	update files from .glade file
+
+2005/11/2 16:09:07 CET
+	update files from .glade file
+
+2005/11/15 11:22:52 CET
+	update files from .glade file
+
+2005/11/15 17:35:37 CET
+	update files from .glade file
+
+2005/11/15 17:37:50 CET
+	update files from .glade file
+
+2005/11/15 18:00:06 CET
+	update files from .glade file
+
+2005/11/15 18:12:36 CET
+	update files from .glade file
+
+2005/11/17 9:29:02 CET
+	update files from .glade file
+
+2005/11/17 16:15:06 CET
+	update files from .glade file
+
+2005/11/17 16:19:09 CET
+	update files from .glade file
+
+2005/11/24 12:45:19 CET
+	update files from .glade file
+
+2005/12/26 14:58:33 CET
+	update files from .glade file
+
+2006/2/1 13:12:10 CET
+	update files from .glade file
+
+2006/2/1 14:48:08 CET
+	update files from .glade file
+
+2006/2/1 15:42:18 CET
+	update files from .glade file
+
+2006/2/1 17:46:03 CET
+	update files from .glade file
+
+2006/2/23 11:17:19 CET
+	update files from .glade file
+
+2006/2/23 11:24:15 CET
+	update files from .glade file
+
+2006/2/23 11:35:34 CET
+	update files from .glade file
+
+2006/2/23 11:51:50 CET
+	update files from .glade file
+
+2006/2/23 13:16:09 CET
+	update files from .glade file
+
+2006/2/23 14:52:10 CET
+	update files from .glade file
+
+2006/2/23 14:58:47 CET
+	update files from .glade file
+
+2006/2/23 15:01:27 CET
+	update files from .glade file
+
+2006/2/23 16:02:13 CET
+	update files from .glade file
+
+2006/2/23 16:03:24 CET
+	update files from .glade file
+
+2006/3/9 13:37:38 CET
+	update files from .glade file
+
+2006/3/9 16:22:19 CET
+	update files from .glade file
+
+2006/3/9 16:53:32 CET
+	update files from .glade file
+
+2006/3/15 13:26:08 CET
+	update files from .glade file
+
+2006/3/15 13:50:51 CET
+	update files from .glade file
+
+2006/3/24 15:51:15 CET
+	update files from .glade file
+
+2006/3/29 17:49:26 CEST
+	update files from .glade file
+
+2006/4/13 15:09:30 CEST
+	update files from .glade file
+
+2006/4/25 12:46:33 CEST
+	update files from .glade file
+
+2006/5/22 16:40:08 CEST
+	update files from .glade file
+
+2006/5/22 16:45:07 CEST
+	update files from .glade file
+
+2006/5/22 16:46:04 CEST
+	update files from .glade file
+
+2006/5/29 16:56:36 CEST
+	update files from .glade file
+
+2006/6/23 10:56:14 CEST
+	update files from .glade file
+
+2006/6/23 11:01:34 CEST
+	update files from .glade file
+
+2006/6/23 11:46:41 CEST
+	update files from .glade file
+
+2006/6/23 12:02:22 CEST
+	update files from .glade file
+
+2006/6/23 12:31:58 CEST
+	update files from .glade file
+
+2006/6/23 12:46:18 CEST
+	update files from .glade file
+
+2006/6/23 16:28:36 CEST
 	update files from .glade file

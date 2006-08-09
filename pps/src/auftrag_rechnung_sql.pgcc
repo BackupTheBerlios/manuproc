@@ -128,13 +128,16 @@ void auftrag_rechnung::set_rtree_offen_content(Kunde::ID kunde)
  exec sql close offliefcur;
  tr.close();
  rtree_offen->setDataVec(datavec);
- if(kunde==Rechnung::none_id)  
-   rtree_offen->set_tree_column_visibility(Data_RLieferoffen::KUNDE_SEQ,true);
+/* if(kunde==Kunde::none_id)  
+   rtree_offen->set_tree_column_visibility(
+	rtree_offen->getStore()->IndexFromColumn(Data_RLieferoffen::KUNDE_SEQ),true);
  else 
   {
-   rtree_offen->set_tree_column_visibility(Data_RLieferoffen::KUNDE_SEQ,false);
+   rtree_offen->set_tree_column_visibility(
+	rtree_offen->getStore()->IndexFromColumn(Data_RLieferoffen::KUNDE_SEQ),false);
    rtree_offen->Expand_recursively();
   }
+*/
 // vbox_n_b_lieferscheine->show();
 }
 

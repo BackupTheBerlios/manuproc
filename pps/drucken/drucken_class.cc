@@ -1,5 +1,5 @@
 /*  pps: ManuProC's ProductionPlanningSystem
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *  Copyright (C) 2001-2006 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
  */
 
 #include "drucken_class.hh"
-#include <Artikel/Einheiten.h>
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Kunde/Kunde.h>
 #include <Gtk2TeX.h>
@@ -40,9 +39,10 @@
 #define MWSTSATZ	0.16
 #define ENTSSATZ	0.002
 
-#define BEZEICHNUNG_SIGNIFIKANZ		3
+#define BEZEICHNUNG_SIGNIFIKANZ		-1
 #define EAN_SIGNIFIKANZ			2
 #define ROWS_FOR_TABLE_HEADER		6
+#define OHNE_BETREUUNG			99
 
 bool ents_flag=false;
 
@@ -116,10 +116,6 @@ void LR_Abstraktion::drucken_header(std::ostream &os)
  // kein footer angegeben ???
 
  float mygrayvalue=0.5;
-//#ifdef MABELLA_EXTENSIONS
-  // I did not change this (CP)
-// mygrayvalue=0.75;
-//#endif
  hf.preamble="\\newrgbcolor{mygray}{"+dtos(mygrayvalue)+" "+dtos(mygrayvalue)+" "+dtos(mygrayvalue)+"}\n"
 	"\\setlength{\\topsep}{0pt}\n"
 	"\\setlength{\\partopsep}{0pt}\n"
@@ -140,8 +136,11 @@ void LR_Abstraktion::drucken_header(std::ostream &os)
 			"{\\rule{0pt}{7pt}\\rule{\\paperwidth}{0pt}}}}}\n";
 #endif
 
- if(Configuration.toTeX || Configuration.batch)
+ if(Configuration.firmen_papier) os << "\\def\\kopie{1}\n";
+ else if(Configuration.toTeX || Configuration.batch)
   os << "\\def\\kopie{3}\n";
+
+
 
  Gtk2TeX::Header(os,hf);
 
@@ -164,7 +163,7 @@ void LR_Abstraktion::drucken_header(std::ostream &os)
 #if defined MABELLA_EXTENSIONS && defined PRINT_LOGO
 
    os << "\\ifthenelse{\\kopie>2}"
-           "{\\raisebox{0cm}[0pt][0pt]{\\makebox[0pt][l]{\\kern+140pt\\psfig{file=/usr/share/mabella/logo.eps}}}}"
+           "{\\raisebox{0cm}[0pt][0pt]{\\makebox[0pt][l]{\\kern+140pt\\psfig{file=/usr/local/share/mabella/logo}}}}"
            "{}\n";
 
    if(kunde_an->verein().size())
@@ -177,8 +176,10 @@ void LR_Abstraktion::drucken_header(std::ostream &os)
 
 #endif
 
+#ifdef HAS_ADDR_GROUP_Rechnungsadresse
  if(! kunde_an->isInGrp(KundengruppeID::Rechnungsadresse))
    kunde_an = cH_Kunde(kunde_an->Rngan());
+#endif
     
  mld=new MultiL_Dict(kunde_an->Sprache());
 
@@ -199,8 +200,10 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
   cH_Kunde kunde_an(KdNr());
   cH_Kunde kunde_von(Kunde::eigene_id);
 
+#ifdef HAS_ADDR_GROUP_Rechnungsadresse
   if(! kunde_an->isInGrp(KundengruppeID::Rechnungsadresse))
     kunde_an = cH_Kunde(kunde_an->Rngan());
+#endif
     
   if(((signed int)zeilen_passen_noch)<0) zeilen_passen_noch=0;
 
@@ -291,18 +294,9 @@ catch(SQLerror &e) { std::cout << e; return; }
 #else
 //     cH_Kunde kunde_von(Kunde::default_id);
 
-#ifdef PETIG_EXTENSIONS
-#warning // Ja ein Hack    
-     if (kunde_an->Id()==629)
-        os <<"\n\n\\footnotesize Stadtsparkasse Wuppertal, BLZ 330 500 00, Konto 406 728\\\\\n";
-     else
-#endif
-        os <<"\n\n\\footnotesize "<< kunde_von->getBank()<<"\\\\\n";
+     os <<"\n\n\\footnotesize "<< kunde_von->getBank()<<"\\\\\n";
 
      os << "Zahlung: "<< string2TeX(getZahlungsart()->Bezeichnung())<<"\\\\\n";
-     os <<"Die Lieferung erfolgt zu den Einheitsbedingungen der deutschen Textilindustrie.\\\\\n";
-     os <<"Gerichtsstand ist Wuppertal.\\\\\n";
-
 #endif
 
    }
@@ -348,7 +342,8 @@ catch(SQLerror &e) { std::cout << e; return; }
 //        {std::string name =  getpwuid(getuid())->pw_gecos;
 //	 os <<name<<"\\\\\n";
 //	}
-    os << "\\\\Wir bitten um Zusendung einer Auftragsbestätigung\\\\\n";
+    os << "~\\\\Wir bitten um Zusendung einer Auftragsbestätigung\\\\"
+      "Bitte geben Sie auch bei Ihren Lieferungen und Rechnungen unsere Auftragsnummern an.\n";
 
    }
  else if(Typ()==Lieferschein)
@@ -399,9 +394,19 @@ catch(SQLerror &e) { std::cout << e; return; }
 	os << "~" << string2TeX(Notiz(),sf)<<"~" << "\\\\\n";
 	}
 
- if(Typ()==Rechnung && !gutschrift() && !storniert())
- if(kunde_an->land()->Auslaender())
-   if(!kunde_an->land()->EU())
+#ifdef PETIG_EXTENSIONS
+ if (Typ()==Rechnung || Typ()==Auftrag || Typ()==Lieferschein)
+ {  // ohne das ~ wÃ¼rde no line here to end im Lieferschein erscheinen ...
+     os <<"~\\\\\nDie Lieferung erfolgt zu den Einheitsbedingungen der deutschen"
+       " Textilindustrie unter verlängertem Eigentumsvorbehalt. Gerichtsstand ist Wuppertal.\\\\\n";
+ }
+ if (Typ()==Auftrag)
+ {  os << "{\\footnotesize Minimale Farbabweichungen sind technisch bedingt und müssen wir uns vorbehalten}\\\\\n";
+ }
+#endif 
+ if(Typ()==Rechnung && !gutschrift() && !storniert()
+     && kunde_an->land()->Auslaender()
+     && !kunde_an->land()->EU())
         {os << "~\\\\";
 	if(kunde_an->land()->LKZ()=="IL")
 	  os << mld->MLT(MultiL_Dict::TXT_EU_WARE_ISRAEL);
@@ -434,6 +439,10 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
 #ifdef HAS_ADDR_GROUP_RechnungMitAuftrag
  if (Typ()==Rechnung && chk->isInGrp(KundengruppeID::RechnungMitAuftrag)) 
    order_on_bill=true;
+#  ifdef HAS_ADDR_GROUP_RechnungAuftragSchmal
+ if (Typ()==Rechnung && chk->isInGrp(KundengruppeID::RechnungAuftragSchmal)) 
+   order_on_bill_fixed=true;
+#  endif
 #endif
 #ifdef HAS_ADDR_GROUP_Kombiniert
  if (Typ()==Rechnung && chk->isInGrp(KundengruppeID::Kombiniert)) 
@@ -475,8 +484,8 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
 //	std::cout << "\nNo owner scheme; set to default scheme\n";
     }
 #endif    
-    Preis::preismenge_t preismenge_mem;
-    Einheit einheit_mem = Einheit(artikel); 
+    preismenge_mem;
+    einheit_mem = Einheit(artikel); 
 
 // falls Lieferschein sich geändert hat, neue Nummer unten ausgeben
 // merken welche Werte in der 1. Zeile stehen
@@ -485,7 +494,12 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
        cH_Kunde kunde_an(KdNr());
        zwischensumme_drucken=
 		((lfrsid_mem!=LieferscheinBase::none_id) && 
-		 (kunde_an->isInGrp(KundengruppeID::Zwischensumme))); 
+#ifdef HAS_ADDR_GROUP_Zwischensumme
+		 (kunde_an->isInGrp(KundengruppeID::Zwischensumme))
+#else
+                 false
+#endif
+		 ); 
        lfrsid_mem=(*i).Lfrs().Id();
     }
     
@@ -662,7 +676,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
     for (LR_Abstraktion::const_iterator k=i;k!=j;++k) // Zeilen ausgeben
       {
         AufEintragBase AEB;
-        if(Typ()==Intern) AEB=(*k).getAEB();
+        if(Typ()==Intern || Typ()==Extern) AEB=(*k).getAEB();
         std::string YourAuftrag;
         std::vector<LieferscheinEntry::st_AuftragMenge> auftragmenge=(*k).getAuftragsMenge();
         if (auftragmenge.size()==1)
@@ -676,7 +690,10 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
           std::vector<LieferscheinEntry::st_AuftragMenge> orderlist=lse.getAuftragsMenge();
           for (std::vector<LieferscheinEntry::st_AuftragMenge>::const_iterator l=orderlist.begin();
                 l!=orderlist.end();++l)
-          { if (!orders.empty()) orders+=",";
+          { if (!orders.empty()) 
+            { orders+=",";
+              if (order_on_bill_fixed) orders+=" ";
+            }
             if (!l->ab) orders+="*";
             else
             { class Auftrag auftr(l->ab);
@@ -700,6 +717,21 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
         }
         if(auftragmenge.size()>1) 
          { 
+#if 0 // nicer layout (?)
+           std::string auftraege;
+           for(std::vector<LieferscheinEntry::st_AuftragMenge>::const_iterator 
+           	l=auftragmenge.begin();l!=auftragmenge.end();++l)
+           { if (!auftraege.empty()) auftraege+=" und ";
+             auftraege+=FormatiereTeX_short(l->menge)+Einheit((*k).Artikel()).TeX(*mld);
+             auftraege+="~in ";
+             if (!l->ab) auftraege+="keinen Auftrag";
+             else auftraege+=string2TeX(Auftrag::getYourAufNr(l->ab));
+           }
+           os << "\\multicolumn{"<<(spaltenzahl)<<"}{r}"
+             "{\\begin{minipage}{16.5cm}\\begin{flushright}hiervon fallen "
+             << auftraege << "\\end{flushright}\\end{minipage}}\\\\\n";
+           zeilen_passen_noch-=auftraege.size()/60+1;
+#else         
            for(std::vector<LieferscheinEntry::st_AuftragMenge>::const_iterator 
            	l=auftragmenge.begin();l!=auftragmenge.end();++l)
             {
@@ -708,7 +740,8 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
                einheit_mem.hatMenge()?l->menge:0,Preis(),Preis(),
                0,ManuProC::Datum(),0,Auftrag::getYourAufNr(l->ab),
 		(*k).getPreisliste(), AEB,std::string(),std::string());
-            }           
+            }
+#endif
          }
       }
 
@@ -730,7 +763,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
 #endif	
 
   cH_Kunde kunde_rng(KdNr());
-#ifdef MABELLA_EXTENSIONS
+#if defined(MABELLA_EXTENSIONS) && defined(HAS_ADDR_GROUP_Rechnungsadresse)
   if(! kunde_rng->isInGrp(KundengruppeID::Rechnungsadresse))
     kunde_rng = cH_Kunde(kunde_rng->Rngan());
 #endif
@@ -743,7 +776,12 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
 #warning Schätzwert: Zeilen fuer Summe benötigt   
 
    if((Typ() == Rechnung) && 
-      (kunde_rng->isInGrp(KundengruppeID::Zwischensumme)))
+#ifdef HAS_ADDR_GROUP_Zwischensumme
+      (kunde_rng->isInGrp(KundengruppeID::Zwischensumme))
+#else
+      false
+#endif
+      )
      {fixedpoint<2> zwb=betrag - zwischensumme_betrag;
       drucken_betrag(os,mld->MLT(MultiL_Dict::TXT_ZWISCHENSUMME),
 					zwb,preisspalte-2);  
@@ -869,6 +907,32 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
   drucken_footer(os);
 }
 
+
+
+
+void LR_Abstraktion::check_page_break(std::ostream &os)
+{
+//---------------------- Seitenumbruch innerhalb einer Tabelle ----------      
+        if (zeilen_passen_noch<=1)
+          {
+            if (preise_addieren)
+            {  drucken_betrag(os,mld->MLT(MultiL_Dict::TXT_UEBERTRAG),betrag);
+            }
+   	    os << "\\end{tabularx}\n"
+            	 "\\newpage\n";
+            ++page_counter;
+            page_header(os);
+	    drucken_table_header(os,schema_mem,preismenge_mem,einheit_mem.TeX(*mld));
+            if (preise_addieren)
+            { os << "\\multicolumn{" << preisspalte-1 << 
+   			"}{r}{"<<mld->MLT(MultiL_Dict::TXT_VORTRAG)<<"} & "<< FormatiereTeX(betrag) <<"\\\\";
+//            os << zur_preisspalte << mld->MLT(MultiL_Dict::TXT_VORTRAG)<<" & "<< FormatiereTeX(betrag) <<"\\\\";
+               --zeilen_passen_noch;
+            }
+          }
+}
+
+
 // CP: TODO: Diese ganzen Argumente sind idiotisch, das sollte neu
 // ueberarbeitet werden!
 
@@ -889,24 +953,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
        if(Rueckstand() && rest==0) return;
 #endif
 
-//---------------------- Seitenumbruch innerhalb einer Tabelle ----------      
-        if (zeilen_passen_noch<=1)
-          {
-            if (preise_addieren)
-            {  drucken_betrag(os,mld->MLT(MultiL_Dict::TXT_UEBERTRAG),betrag);
-            }
-   	    os << "\\end{tabularx}\n"
-            	 "\\newpage\n";
-            ++page_counter;
-            page_header(os);
-	    drucken_table_header(os,schema_mem,preismenge_mem,einheit_mem.TeX(*mld));
-            if (preise_addieren)
-            { os << "\\multicolumn{" << preisspalte-1 << 
-   			"}{r}{"<<mld->MLT(MultiL_Dict::TXT_VORTRAG)<<"} & "<< FormatiereTeX(betrag) <<"\\\\";
-//            os << zur_preisspalte << mld->MLT(MultiL_Dict::TXT_VORTRAG)<<" & "<< FormatiereTeX(betrag) <<"\\\\";
-               --zeilen_passen_noch;
-            }
-          }
+check_page_break(os);
 
 //************************* eine Zeile ausgeben ***************************
      	 std::string linecolor;
@@ -916,8 +963,9 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 #ifdef MABELLA_EXTENSIONS
 	if(zeilen_passen_noch%2) os << "\\shaderow{}";
 #endif
+#ifndef PETIG_EXTENSIONS
          if (zusatzinfo) linecolor = "\\mygray{}";
-         
+#endif
          
          if (stueck_bool)
          {  neue_spalte(erste_spalte,os);
@@ -964,7 +1012,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 // NEW COLUMNS; ab hier irgendwo einfügen um Tabellenspalten auszugeben
 
          cH_ArtikelBezeichnung bez(artikelbase,schema_mem->Id());
-         drucken_artikel(os,bez,zusatzinfo,linecolor,erste_spalte,schema_mem);
+         drucken_artikel(os,bez,zusatzinfo,linecolor,erste_spalte,schema_mem,0,Typ()==Intern);
          
 #ifdef MABELLA_EXTENSIONS
 	if(schema_own->Id() != schema_mem->Id())
@@ -982,31 +1030,33 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
          
          if(Typ()==Intern)
            {  
-             std::list<AufEintragZu::st_reflist> L;
+             AufEintragZu::list_t L;
              for(int run=0;run<2;++run)
               {   
                //Rohware
-//               if(run==0)  L=AufEintragZu(AEB).get_Referenz_list_for_geplant(true); 
+               if(run==0)  L=AufEintragZu::get_Referenz_list(AEB,AufEintragZu::list_kinder,AufEintragZu::list_Artikel);
+               //_for_geplant(true); 
                //geplant für
-//               if(run==1) L =AufEintragZu(AEB).get_Referenz_list_for_geplant(false); 
+               if(run==1) L =AufEintragZu::get_Referenz_list(AEB,AufEintragZu::list_eltern,false); //AufEintragZu::list_Artikel);
+               //_for_geplant(false);
                neue_spalte(erste_spalte,os);
-//               if(L.size()>1) os << "$\\left\\{\\mbox{" ;
+               if(L.size()>1) os << "$\\left\\{\\mbox{" ;
                os << "\\begin{tabular}{ll}  ";
-/*
-               for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();)
+#ifdef PETIG_EXTENSIONS
+               for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();)
                 {
                    ArtikelBase artbase(AufEintrag(i->AEB).ArtId());
                   cH_ArtikelBezeichnung bez2(artbase);
                   bool btmp=true; // in dieser Tabelle ist es IMMER die 'erste_spalte'
                   AuftragBase::mengen_t menge=0;
                   if(run==1 && L.size()>1) menge=i->Menge;
-                  drucken_artikel(os,bez2,zusatzinfo,linecolor,btmp,schema_mem,menge);
+                  drucken_artikel(os,bez2,zusatzinfo,linecolor,btmp,schema_mem,menge,true);
                   ++i;
                   if(i!=L.end()) os << "\\\\ ";
                 }
+#endif
                os << "\\end{tabular}\n";
                if(L.size()>1) os << "}\\right\\}$" ;
-*/
               }
             }
            
@@ -1063,6 +1113,10 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 	    char jahr[3];
 	    snprintf(jahr,3,"%02d",kw.Jahr()%100);
 	    std::string kws = kw.valid() ? itos(kw.Woche())+"'"+jahr : "-";
+#ifdef HAS_ADDR_GROUP_Datum_im_Auftrag
+            if (cH_Kunde(KdNr())->isInGrp(KundengruppeID::Datum_im_Auftrag))
+              kws=lieferdatum.write_euro();
+#endif
 
 	    if(Typ()==Extern
 #ifdef PETIG_EXTENSIONS
@@ -1084,7 +1138,34 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 		 min_KWStr=kws;	
 		}
 	  }
-
+#ifdef HAS_ADDR_GROUP_Kundenauftrag_bei_Lieferanten
+        if (Typ()==Extern && cH_Kunde(KdNr())->isInGrp(KundengruppeID::Kundenauftrag_bei_Lieferanten))
+        { neue_spalte(erste_spalte,os);
+std::cerr << "AEB " << AEB << '\n';
+          AufEintragZu::list_t L=AufEintragZu(AEB).get_Referenz_listFull(AufEintragZu::list_eltern);
+          std::set<AufEintragBase> L2;
+          for (AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
+          { L2.insert(i->AEB);
+std::cerr << i->AEB << '\n';
+          }
+          std::set<std::string> auftraege;
+          for (std::set<AufEintragBase>::const_iterator i=L2.begin();i!=L2.end();++i)
+          { if (i->Id()>=AuftragBase::handplan_id)
+            { class Auftrag a=*i;
+              // intern
+              if (a.getKundennr()==Kunde::default_id) continue;
+              std::string text=cH_Kunde(a.getKundennr())->getSortName()+":"
+                  +a.getYourAufNr()+" ";
+              // AufEintrag ae(AEB);
+              AufEintrag ae2(*i);
+              text+=cH_ArtikelBezeichnung(ae2.Artikel())->Bezeichnung()+" ";
+              auftraege.insert(text);
+            }
+          }
+          for (std::set<std::string>::const_iterator i=auftraege.begin();i!=auftraege.end();++i)
+            os << (*i) << ' ';
+        }
+#endif
 
 #ifdef PETIG_EXTENSIONS
         if (Typ()==Lieferschein || Typ()==Wareneingang) 
@@ -1119,7 +1200,78 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 	  }
 #endif         
 
+if(Configuration.show_article_tree)
+  {ArtikelBaum ab(artikelbase,true);
+   ArtikelTyp at(artikelbase);
+   int tiefe=0;
+   if(!ab.empty())
+     if(at.Id() != ArtikelTyp::default_ID)
+       Zeige_RohArtikel(os,tiefe,ab,pl);
+  }
+
+
 //std::cout << "noch passende Zeilen" << zeilen_passen_noch <<"\n";
+}
+
+
+void LR_Abstraktion::Zeige_RohArtikel(std::ostream &os,int tiefe,
+ArtikelBaum &ab, const cH_PreisListe pl)
+{
+
+ ArtikelBaum::const_iterator i;
+ for(i=ab.begin(); i!=ab.end(); ++i)
+   {
+    ArtikelBaum chd((*i).rohartikel,true);
+    ArtikelTyp at(chd);
+    std::string gray="\\mygray{} ";
+    if(!chd.empty() && (at.Id() != ArtikelTyp::default_ID)) 
+      gray=" ";
+
+    check_page_break(os);
+
+    static int multi_col=3;
+
+    cH_ArtikelBezeichnung bez((*i).rohartikel,schema_mem->Id());
+
+    cH_ExtBezSchema chd_sch = bez->getExtBezSchema();
+
+    bool first_col=false;
+
+    std::string einheitsize = "\\scriptsize \\,";
+    os << gray << " \\small \\`{a} "<<(*i).menge<<"{\\scriptsize " <<
+	Einheit((*i).rohartikel).TeX(*mld) <<"}";
+    neue_spalte(first_col,os);
+    os << "\\multicolumn{"<<multi_col<<"}{l}{"<<gray<<" \\small "<<string2TeX(bez->Bezeichnung())<<"}";
+
+   neue_spalte(first_col,os);
+   os << "\\mbox{" << gray <<" {\\small ";
+#ifdef HAS_WG_ATTRIB_mit_ean
+   if(ArtikelTyp::hasAttribute(chd_sch->Typ(),ArtikelTypAttr::mit_ean))
+		os << bez->Bezeichnung(EAN_SIGNIFIKANZ)<<", ";
+#endif
+#ifdef HAS_WG_ATTRIB_mit_bezeichnung
+   if(ArtikelTyp::hasAttribute(chd_sch->Typ(),ArtikelTypAttr::mit_bezeichnung))
+	os << string2TeX(bez->Bezeichnung(BEZEICHNUNG_SIGNIFIKANZ));
+#endif
+   os << "}}";
+
+   neue_spalte(first_col,os);
+
+   if(pl->Id()!=PreisListe::none_id)
+     {Artikelpreis ap(pl,(*i).rohartikel,(*i).menge.as_int());
+      Preis::geldbetrag_out preis=ap.Wert();
+      os<<"\\mbox{"<<gray<<" \\small "<<FormatiereTeX(preis)<<"}";
+     }
+   else os << "&";
+
+   os << "&&&" << "\\\\\n";
+
+    --zeilen_passen_noch;
+
+    if(!chd.empty())
+      if(at.Id() != ArtikelTyp::default_ID)
+        Zeige_RohArtikel(os,++tiefe,chd,pl);
+   }
 }
 
 
@@ -1127,11 +1279,10 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 
 void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
             bool zusatzinfo,std::string linecolor,bool &erste_spalte,
-            cH_ExtBezSchema s,
-            AuftragBase::mengen_t menge)
+            cH_ExtBezSchema s, AuftragBase::mengen_t menge, bool combine)
 {
 
-   if (Configuration.combine)
+   if (combine || Configuration.combine)
    {  neue_spalte( erste_spalte, os);
       if (!zusatzinfo)
         os <<"{"<<linecolor<< Gtk2TeX::string2TeX(bez->Bezeichnung()) ;
@@ -1246,11 +1397,16 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
 #ifdef MABELLA_EXTENSIONS
   if(ean_code)
    {
-    for(ExtBezSchema::const_sigiterator j=schema_mem->sigbegin(EAN_SIGNIFIKANZ);
-  			j!=schema_mem->sigend(EAN_SIGNIFIKANZ);++j)
-      { tabcolumn += j->TeXtabformat ; ++spaltenzahl ; 
+    ExtBezSchema::const_sigiterator j=schema_mem->sigbegin(EAN_SIGNIFIKANZ);
+    if(j!=schema_mem->sigend(EAN_SIGNIFIKANZ))
+     {for(;j!=schema_mem->sigend(EAN_SIGNIFIKANZ);++j)
+       { tabcolumn += j->TeXtabformat ; ++spaltenzahl ; 
         ueberschriften += "&\\mbox{"+ug + j->bezkomptext+"}";
-      }
+       }}
+    else
+       { tabcolumn += "l" ; ++spaltenzahl ; 
+        ueberschriften += "&\\mbox{"+ug +"}";
+       }
    }
   for(ExtBezSchema::const_sigiterator j=schema_mem->sigbegin(BEZEICHNUNG_SIGNIFIKANZ);
   			j!=schema_mem->sigend(BEZEICHNUNG_SIGNIFIKANZ);++j)
@@ -1293,7 +1449,9 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
   }
 #endif
   if (order_on_bill)
-  { tabcolumn+="l"; spaltenzahl++; 
+  { if (!order_on_bill_fixed) tabcolumn+="l"; 
+    else tabcolumn+="p{4cm}";
+    spaltenzahl++; 
     ueberschriften += "&\\multicolumn{1}{l}{"+ug+"Auftrag}";
   }
 
@@ -1336,6 +1494,12 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
   { tabcolumn+="r"; spaltenzahl+=1; ueberschriften +=  "&{"+sg
 			+mld->MLT(MultiL_Dict::TXT_LIEFERKW)+"}"; }
 
+#ifdef HAS_ADDR_GROUP_Kundenauftrag_bei_Lieferanten
+   if (Typ()==Extern && cH_Kunde(KdNr())->isInGrp(KundengruppeID::Kundenauftrag_bei_Lieferanten))
+   { tabcolumn+="p{4cm}"; spaltenzahl++; 
+     ueberschriften += "&\\multicolumn{1}{c}{"+sg+"für Auftrag}";
+   }
+#endif
   
 //  os << "\\settowidth{\\breite}{"<<ug<<" "<<mld->MLT(MultiL_Dict::TXT_BEZEICHNUNG)<<"}%\n";
 #ifdef MABELLA_EXTENSIONS
@@ -1446,7 +1610,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
      TelArt telart=TEL_NONE;
 
 #ifdef PETIG_EXTENSIONS
-     if(Typ()==Lieferschein || Typ()==Auftrag ) 
+     if(Typ()==Lieferschein || Typ()==Auftrag || Typ()==Extern) 
          telart=TEL_FAX; // Im Moment werden alle Telefonnummern angezeigt
      os << kunde_an->LaTeX_an(Typ()==Lieferschein,telart)<<"\n\n";
 #elif MABELLA_EXTENSIONS
@@ -1569,19 +1733,24 @@ void LR_Abstraktion::page_header(std::ostream &os)
         	<< "E-Mail: "<<kunde_von->get_first_telefon(TEL_E_MAIL)<<"\\\\\n";
         }
 
-	if(kunde_an->VerkNr()!=Kunde::none_id && Typ()!=Extern)
+	if(kunde_an->VerkNr()!=Kunde::none_id && Typ()!=Extern &&
+	   kunde_an->VerkNr()!=OHNE_BETREUUNG
+	  )
 	  {
 	   std::string fullname;
 	   cH_Kunde verk(kunde_an->VerkNr());
 
-	   if(verk->Rngan()==verk->Id())
-	      fullname=verk->getFullName();
-	   else
-	    {cH_Kunde v(verk->Rngan());
-	     fullname=v->getFullName();
-	    }
-             os << "\\vspace*{2mm}\\bf "<<mld->MLT(MultiL_Dict::TXT_BESUCHTSIE)<<":\\rm \\\\\n"
-           	<< string2TeX(fullname) <<"~\\\\\n";
+	   if(verk->Aktiv())
+ 	     {
+               if(verk->Rngan()==verk->Id())
+                  fullname=verk->getFullName();
+               else
+                {cH_Kunde v(verk->Rngan());
+                 fullname=v->getFullName();
+                }
+                 os << "\\vspace*{2mm}\\bf "<<mld->MLT(MultiL_Dict::TXT_BESUCHTSIE)<<":\\rm \\\\\n"
+                    << string2TeX(fullname) <<"~\\\\\n";
+	     }
           }
           
         os << "\\end{flushleft}\\fussy\\normalsize\\end{minipage}}\\\\\n";          
@@ -1597,7 +1766,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
     {
 #if defined MABELLA_EXTENSIONS && defined PRINT_LOGO
    os << "\\ifthenelse{\\kopie>2}"
-        "{\\raisebox{0cm}[0pt][0pt]{\\makebox[0pt][l]{\\kern+140pt\\psfig{file=/usr/share/mabella/logo.eps}}}\\\\}"
+        "{\\raisebox{0cm}[0pt][0pt]{\\makebox[0pt][l]{\\kern+140pt\\psfig{file=/usr/local/share/mabella/logo}}}\\\\}"
            "{}\n";
 #endif
 
@@ -1616,9 +1785,11 @@ void LR_Abstraktion::page_header(std::ostream &os)
      zeilen_passen_noch=ZEILEN_SEITE_N;
     }
 #else
+#ifdef HAS_ADDR_GROUP_Rechnungsadresse
      if(!kunde_an->isInGrp(KundengruppeID::Rechnungsadresse) && Typ()==Rechnung)
        os <<"\n "<<mld->MLT(MultiL_Dict::TXT_FIRMA)<<" "<< string2TeX(kunde_rng->getName())<<"\\\\\\bigskip";
      else
+#endif
        os <<"\n "<<mld->MLT(MultiL_Dict::TXT_FIRMA)<<" "<< string2TeX(kunde_an->getName())<<"\\\\\\bigskip";
        
      zeilen_passen_noch=ZEILEN_SEITE_N;
@@ -1654,8 +1825,13 @@ void LR_Abstraktion::page_header(std::ostream &os)
    os.width(5);os.fill('0');
    os << kunde_an->Id();
    if(Typ()==Extern)
-     if(!kunde_an->UnsereKundenNr().empty())
+     {if(!kunde_an->UnsereKundenNr().empty())
 	os << ", Unsere Kundennummer: "<<kunde_an->UnsereKundenNr();
+     }
+   else if(Typ()==Auftrag || Typ()==Rechnung)
+     {if(!kunde_an->UnsereKundenNr().empty())
+	os << ", Unsere Lieferanten-Nr.: "<<kunde_an->UnsereKundenNr();
+     }
 
    os << "\\hfill "<<
    	(kunde_an->idnr().empty() ? "" : mld->MLT(MultiL_Dict::TXT_USTID)

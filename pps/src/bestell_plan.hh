@@ -1,13 +1,4 @@
-// generated 2005/1/27 10:54:39 CET by jacek@jaceksdell.(none)
-// using glademm V2.6.0_cvs
-//
-// newer (non customized) versions of this file go to bestell_plan.hh_new
-
-// you might replace
-//    class foo : public foo_glade { ... };
-// by
-//    typedef foo_glade foo;
-// if you didn't make any modifications to the widget
+// $Id: bestell_plan.hh,v 1.9 2006/08/09 15:36:51 christof Exp $
 
 #ifndef _BESTELL_PLAN_HH
 #  include "bestell_plan_glade.hh"
@@ -16,7 +7,6 @@
 #include <vector.h>
 #include <string.h>
 #include <Artikel/ArtikelBase.h>
-#include <tclistnode.h>
 #include <Misc/EntryValueIntString.h>
 #include <Misc/EntryValueDatum.h>
 #include <Misc/Datum.h>
@@ -63,7 +53,7 @@ public:
 
 
 
- virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
+ virtual cH_EntryValue Value(guint seqnr,gpointer gp) const
  {
  switch((Spalten)seqnr) 
    {
@@ -110,7 +100,7 @@ public:
  int getMenge() const { return menge; }
 };
 
-class Data_AbverkaufNode : public TCListNode
+class Data_AbverkaufNode : public TreeRow
 {
  int menge_sum;
 public:
@@ -118,8 +108,12 @@ public:
   {
    menge_sum+=dynamic_cast<const Data_Abverkauf &>(*rd).getMenge();
   }
+ virtual void deduct(const cH_RowDataBase &rd)
+  {
+   menge_sum-=dynamic_cast<const Data_Abverkauf &>(*rd).getMenge();
+  }
  
- virtual const cH_EntryValue Value(guint index, gpointer gp) const
+ virtual cH_EntryValue Value(guint index, gpointer gp) const
   {
    switch((Spalten)index)
      {
@@ -129,18 +123,14 @@ public:
    return cH_EntryValue();
   }
    
- Data_AbverkaufNode(guint col, const cH_EntryValue &v,
-              guint child_s_deep, cH_RowDataBase child_s_data,bool expand,
-              const TreeRow &suminit)  
-        : TreeRow(col,v,child_s_deep,child_s_data,expand),menge_sum(0)
+ Data_AbverkaufNode(const Handle<const TreeRow> &suminit)  
+        : menge_sum()
         {
-         if (suminit.Leaf()) cumulate(child_s_data);
-         else menge_sum=dynamic_cast<const Data_AbverkaufNode&>(suminit).menge_sum;
+           if (suminit) menge_sum=suminit.cast_dynamic<const Data_AbverkaufNode>()->menge_sum;
         }
 
- static TCListNode *create(guint col, const cH_EntryValue &v,guint child_s_deep,
-         cH_RowDataBase child_s_data, bool expand, const TreeRow &suminit)
-  {  return new Data_AbverkaufNode(col,v,child_s_deep,child_s_data,expand,suminit);
+ static Handle<TreeRow> create(const Handle<const TreeRow> &suminit)
+  {  return new Data_AbverkaufNode(suminit);
   }
 };
 

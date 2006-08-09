@@ -3,6 +3,8 @@
 AUTOMAKE_OPTIONS = 1.4
 
 
-SUBDIRS = macros src 
+SUBDIRS = po src drucken 
 
-EXTRA_DIST = AUTHORS TODO README configure 
+EXTRA_DIST = config.rpath m4/ChangeLog  AUTHORS TODO README configure 
+
+ACLOCAL_AMFLAGS = -I m4

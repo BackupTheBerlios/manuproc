@@ -7,13 +7,14 @@
 #include "MyMessage.h"
 //#include <Instanzen/Produziert.h>
 #include <Misc/relops.h>
+#include <Misc/i18n.h>
 
 extern MyMessage *meldung;
 
 
 void auftrag_main::on_OptMenu_Instanz_Bestellen_activate()
 {
-std::cout << OptMen_Instanz_Bestellen->get_value()->Id() << "\n";
+//std::cout << OptMen_Instanz_Bestellen->get_value()->Id() << "\n";
  akt_instanz->set_value(OptMen_Instanz_Bestellen->get_value());
 }
 
@@ -31,7 +32,7 @@ void auftrag_main::on_button_neue_anr_clicked()
     if(instanz->Lieferschein()) kid = kunden_lieferant->get_value() ;
     else                        kid = ManuProC::DefaultValues::EigeneKundenId ;
     if(kid==Kunde::none_id) 
-      { meldung->Show("Keine Lieferantennummer vergeben");
+      { meldung->Show(_("Keine Lieferantennummer vergeben"));
         return;}
     instanz_auftrag = new AuftragFull(Auftrag::Anlegen(instanz->Id()),kid);
     if(instanz->ExterneBestellung())
@@ -40,7 +41,7 @@ void auftrag_main::on_button_neue_anr_clicked()
       instanz_auftrag->setStatusAuftragFull(OPEN);
     AuftragBase ab(*instanz_auftrag);
     loadAuftragInstanz(ab);
-    searchcombo_auftragid->setContent(instanz_auftrag->getAuftragidToStr(),'0');
+    searchcombo_auftragid->setContent(instanz_auftrag->getAuftragidToStr(),instanz_auftrag->Id());
    } catch(SQLerror &e) 
       { std::cerr << e;
         instanz_auftrag=NULL;
@@ -59,7 +60,7 @@ void auftrag_main::loadAuftragInstanz(const AuftragBase& auftragbase)
       { std::cerr << "KW error\n"; } 
 //std::cout <<"SIZE = "<< instanz_auftrag->size()<<'\n';
  show_neuer_auftrag();
- searchcombo_auftragid->setContent(instanz_auftrag->getAuftragidToStr(),'0');
+ searchcombo_auftragid->setContent(instanz_auftrag->getAuftragidToStr(),instanz_auftrag->Id());
  kunden_lieferant->set_value(instanz_auftrag->getKundennr()) ;
 }
 
@@ -72,19 +73,20 @@ void auftrag_main::on_searchcombo_auftragid_activate()
 
 void auftrag_main::tree_neuer_auftrag_leaf_selected(cH_RowDataBase d)
 {
+#if 0
 //  tree_neuer_auftrag->clear();
   const Data_neuer_auftrag *dt=dynamic_cast<const Data_neuer_auftrag*>(&*d);
   Data_neuer_auftrag *Dna = const_cast<Data_neuer_auftrag*>(dt); 
   AufEintrag IA=Dna->get_AufEintrag();
 
-  // Referenzauftr‰ge m¸ssen gehohlt werden BEVOR der Auftrag gelˆscht wird!!!
+  // Referenzauftr√§ge m√ºssen geholt werden BEVOR der Auftrag gel√∂scht wird!!!
   std::list<AufEintragZu::st_reflist> ReferenzAufEintragK = AufEintragZu(IA).get_Referenz_listFull(false); // Entsprechenden Kundenauftrag (die 2er sind auch mit dabei) hohlen
   std::list<AufEintragZu::st_reflist> ReferenzAufEintragR = AufEintragZu(IA).get_Referenz_list(IA,false,false); // direkte Referenen hohlen
   try{
   Transaction tr;
   if(!IA.deleteAuftragEntry())  // Auftrag hat noch Kinder?
    {
-     meldung->Show("Auftrag kann nicht gelˆscht werden, es gibt noch Kindauftr‰ge"); 
+     meldung->Show(_("Auftrag kann nicht gel√∂scht werden, es gibt noch Kindauftr√§ge")); 
      return;
    }
   for (std::list<AufEintragZu::st_reflist>::iterator i=ReferenzAufEintragK.begin();i!=ReferenzAufEintragK.end();++i)
@@ -116,19 +118,20 @@ void auftrag_main::tree_neuer_auftrag_leaf_selected(cH_RowDataBase d)
   on_neuladen_activate();
   loadAuftragInstanz(Dna->get_AufEintrag());
  }catch(SQLerror &e) {meldung->Show(e);}
+#endif
 }
 
 void auftrag_main::on_button_instanz_get_selection_clicked()
 {
-  if(!instanz_auftrag) { meldung->Show("Keine Auftragsnummer vergeben");
+  if(!instanz_auftrag) { meldung->Show(_("Keine Auftragsnummer vergeben"));
                          return; }
   if(!Datum_instanz->get_value().valid()) 
-      { meldung->Show("Datum ist ung¸ltig");
+      { meldung->Show(_("Datum ist ung√ºltig"));
                          return; }
   try{ 
 
   std::vector<cH_RowDataBase> VAE=ausgewaehlte_artikel();
-  if(VAE.empty()) {meldung->Show("Nichts ausgew‰hlt"); return;}
+  if(VAE.empty()) {meldung->Show(_("Nichts ausgew√§hlt")); return;}
   if(!alle_ausgewaehlten_artikel_gleich(VAE))
    {
     for(std::vector<cH_RowDataBase>::iterator i=VAE.begin();i!=VAE.end();++i)
@@ -149,7 +152,7 @@ void auftrag_main::on_button_instanz_get_selection_clicked()
      AuftragBase::mengen_t spinmenge=spinbutton_geplante_menge->get_value_as_int();
      AuftragBase::mengen_t mindestmenge=restmengensumme_aller_ausgewaehlten_artikel(VAE);
      if(spinmenge<mindestmenge && VAE.size()>1)
-       {meldung->Show("Sind mehrere Zeilen gew‰hlt muﬂ die Bestellmenge mindestens so groﬂ sein wie die Summer der Restmengen.");
+       {meldung->Show(_("Sind mehrere Zeilen gew√§hlt mu√ü die Bestellmenge mindestens so gro√ü sein wie die Summer der Restmengen."));
         return; }
      for(std::vector<cH_RowDataBase>::iterator i=VAE.begin();i!=VAE.end();++i)
       {
@@ -175,10 +178,10 @@ void auftrag_main::on_button_instanz_get_selection_clicked()
      const Data_auftrag &dt=dynamic_cast<const Data_auftrag&>(**i);
      dt.redisplayMenge(maintree_s);
    }
-  maintree_s->unselect_all();
+  maintree_s->get_selection()->unselect_all();
 
-   }catch(TreeBase::notLeafSelected) 
-     {meldung->Show("Nichts gew‰hlt"); }
+   }catch(SimpleTree::notLeafSelected) 
+     {meldung->Show(_("Nichts gew√§hlt")); }
 }
 
 bool auftrag_main::alle_ausgewaehlten_artikel_gleich(std::vector<cH_RowDataBase> L)
@@ -213,8 +216,8 @@ std::vector<cH_RowDataBase> auftrag_main::ausgewaehlte_artikel()
 {
   std::vector<cH_RowDataBase> V;
   try{ V=maintree_s->getSelectedRowDataBase_vec();
-     }catch(TreeBase::notLeafSelected) 
-     {meldung->Show("Fehler: Keine Knoten anw‰hlen"); }
+     }catch(SimpleTree::notLeafSelected) 
+     {meldung->Show(_("Fehler: Keine Knoten anw√§hlen")); }
   return V;
 }
 
@@ -229,7 +232,7 @@ void auftrag_main::instanz_auftrag_anlegen(AufEintrag& AE)
       Datum_instanz->set_value(AE.getLieferdatum());
       frame_mengen_eingabe->show();
     }
-   else // mehrere Zeilen gew‰hlt
+   else // mehrere Zeilen gew√§hlt
     {
       if(alle_ausgewaehlten_artikel_gleich())       
        {
@@ -241,18 +244,19 @@ void auftrag_main::instanz_auftrag_anlegen(AufEintrag& AE)
       if(Datum_instanz->get_value()>AE.getLieferdatum())
          Datum_instanz->set_value(AE.getLieferdatum());
     }
-  }catch(TreeBase::multipleRowsSelected) {}
+  }catch(SimpleTree::multipleRowsSelected) {}
 }
 
-void auftrag_main::on_leaf_unselected(cH_RowDataBase d)
+void auftrag_main::on_leaf_unselected()
 { 
- try{
-   const Data_auftrag *dt=dynamic_cast<const Data_auftrag*>(&*d);
-   AufEintrag &AE=dt->get_AufEintrag();
-   spinbutton_geplante_menge->update();
-   int m=spinbutton_geplante_menge->get_value_as_int();
-   spinbutton_geplante_menge->set_value(m-AE.getRestStk().as_int());
-  }catch(std::exception &e) {std::cerr<<e.what();}
+#warning deselektierte Zeilen wieder abziehen ?
+// try{
+//   const Data_auftrag *dt=dynamic_cast<const Data_auftrag*>(&*d);
+//   AufEintrag &AE=dt->get_AufEintrag();
+//   spinbutton_geplante_menge->update();
+//   int m=spinbutton_geplante_menge->get_value_as_int();
+//   spinbutton_geplante_menge->set_value(m-AE.getRestStk().as_int());
+//  }catch(std::exception &e) {std::cerr<<e.what();}
 }
 
 
@@ -269,28 +273,20 @@ void auftrag_main::show_neuer_auftrag()
 void auftrag_main::neuer_auftrag_tree_titel_setzen()
 {
  std::vector<std::string> s;
- s.push_back("Kunde");
- s.push_back("Artikel");
- s.push_back("Menge");
- s.push_back("Datum");
+ s.push_back(_("Kunde"));
+ s.push_back(_("Artikel"));
+ s.push_back(_("Menge"));
+ s.push_back(_("Datum"));
  tree_neuer_auftrag->setTitles(s);
 }
 
-gint auftrag_main::on_button_instanz_print_clicked(GdkEventButton *ev)
+void auftrag_main::on_button_instanz_print_clicked()
 {
   std::string EI="Intern";
   if(instanz->ExterneBestellung()) EI="Extern";
-  if (ev->button==1)
-   {
-     std::string s="auftrag_drucken -Y0,0,1 -a"+EI+" -n"+searchcombo_auftragid->get_text()+" -i"+itos(instanz->Id());
-     system(s.c_str());
-   } 
-  if (ev->button==3); 
-   {
-     std::string s="auftrag_drucken -G -a"+EI+" -n"+searchcombo_auftragid->get_text()+" -i"+itos(instanz->Id());
-     system(s.c_str());
-   }
- return false;
+  std::string s="auftrag_drucken -Y0,0,1 -a"+EI
+    +" -n"+itos(searchcombo_auftragid->Content())+" -i"+itos(instanz->Id());
+  system(s.c_str());
 }
 
 /*

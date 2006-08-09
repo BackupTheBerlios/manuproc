@@ -1,5 +1,6 @@
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2006 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,8 +22,7 @@
 #include<Misc/Ausgabe_neu.h>
 #include<Misc/itos.h>
 #include <Artikel/Artikelpreis.h>
-#include <gtk--/menu.h>
-#include <tclistleaf.h>
+#include <gtkmm/menu.h>
 #include "auftrag_rechnung_classes.h"
 #include "MyMessage.h"
 #include <Misc/dbconnect.h>
@@ -33,26 +33,28 @@ extern MyMessage *meldung;
 extern DBCapability *dbcapability;
 //extern ManuProC::Connection *Conn;
 #include <Auftrag/AufEintrag.h>
-
+#include <expander_hook.h>
 #include <Lieferschein/RechnungVoll.h>
+#include <Misc/i18n.h>
+#include <Misc/ucompose.hpp>
 
 #define MAX_DRUCK_ANZAHL	5
 
 void auftrag_rechnung::on_rng_close()
 {   
    timeout_connection.disconnect();
-   destroy();
+   delete this;
 }
 
 void auftrag_rechnung::on_rng_neu()
 {   
- ja_nein_frage jnf("Wollen Sie wirklich jetzt eine neu Rechnung erstellen ?");
+ ja_nein_frage jnf(_("Wollen Sie jetzt wirklich eine neue Rechnung erstellen ?"));
 
  jnf.set_transient_for(*this);
 
  int ret=jnf.run();
 
- if(ret==0)
+ if(ret==Gtk::RESPONSE_YES)
   {
    if(lieferkunde->get_value()!=-1 && lieferkunde->get_value()!=0)
    {
@@ -98,39 +100,21 @@ void auftrag_rechnung::on_rng_preview()
 #define STD_MABELLA(x,y) (x)
 #endif
 
-gint auftrag_rechnung::on_rng_print(GdkEventButton *ev)
+void auftrag_rechnung::on_rng_print()
 {   
-   if (rngnr->get_text()=="") return false;
+   if (rngnr->get_text()=="") return;
 //   std::string com="auftrag_drucken  -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id()) ;
-   std::string optionen, opt_ean;
-   if (checkbutton_firmenpapier->get_active() && !checkbutton_kopie->get_active())
-     optionen+=" -Y1,0,0 ";
-   else if (checkbutton_firmenpapier->get_active())
-     optionen+=" -Y0,1,0 ";
-   else
-     optionen+=" -Y0,0,1 ";
+   std::string opt_ean;
    if(checkbutton_ean_drucken->get_active())  opt_ean +=" --ean ";
 
-   std::string com="auftrag_drucken  -aRechnung -n"
+   std::string com="auftrag_drucken -aRechnung -n"
          +rngnr->get_text()+" -i"+itos(instanz->Id())+opt_ean ;
 
-   if (ev->button==STD_MABELLA(1,3)) 
-      system((com+optionen).c_str());
-   if (ev->button==2)
-    {
-#ifdef MABELLA_EXTENSIONS
-     system((com+optionen).c_str());
-#else
-     system((com+" -Y1,0,1").c_str());
-#endif
-    }
-   if (ev->button==STD_MABELLA(3,1))
-    {
      cH_Kunde k(rechnung.KdNr());
      std::string opt=" -Y";
      if (k->anzahl_ausdruck_firmenpapier()>0)
      {
-#ifdef MABELLA_EXTENSIONS
+#ifdef MABELLA_EXTENSIONS // wirklich???
       opt+=itos(k->anzahl_ausdruck_firmenpapier())+",0,";
 #else
       opt+="1,"+itos(k->anzahl_ausdruck_firmenpapier()-1)+",";
@@ -139,8 +123,6 @@ gint auftrag_rechnung::on_rng_print(GdkEventButton *ev)
      else opt+="0,0,";
      opt+=itos(k->anzahl_ausdruck_weissespapier());
      system((com+opt).c_str());
-    }
- return false;
 }
 
 void auftrag_rechnung::rngzeile_delete()
@@ -167,11 +149,11 @@ void auftrag_rechnung::rngzeile_delete()
 void auftrag_rechnung::on_rngdate_activate()
 {   
  rechnung.setze_Datum(rngdatum->get_value());
- label_rechnung_ctl->set_text("Rechungsdatum geändert");
- timeout_connection = Gtk::Main::timeout.connect(slot(this,&auftrag_rechnung::timeout),1000);
+ label_rechnung_ctl->set_text(_("Rechungsdatum geÃ¤ndert"));
+ timeout_connection = Glib::signal_timeout().connect(SigC::slot(*this,&auftrag_rechnung::timeout),1000);
 }
 
-gint auftrag_rechnung::timeout()
+bool auftrag_rechnung::timeout()
 { 
    label_rechnung_ctl->set_text("");
    return 0; 
@@ -185,26 +167,26 @@ void auftrag_rechnung::redisplay()
  catch(SQLerror &e) {meldung->Show(e); return; }
  
  std::string gebucht;
- if(rechnung.getFiBuBuchid()>0) gebucht="gebucht in FiBu - ";
+ if(rechnung.getFiBuBuchid()>0) gebucht=_("gebucht in FiBu - ");
  if(rechnung.rngArt()==Rechnung::RART_GUT)
    {
-     frame_rechnung->set_label(gebucht+"Gutschrift");
-     frame_rechnungsdaten->set_label("Gutschriftsdaten");
-     set_title("Gutschrift");
+     frame_rechnung->set_label(gebucht+_("Gutschrift"));
+     frame_rechnungsdaten->set_label(_("Gutschriftsdaten"));
+     set_title(_("Gutschrift"));
      gutschrift->set_sensitive(false);
    }
  else if(rechnung.rngArt()==Rechnung::RART_RNG)
    {
-     frame_rechnung->set_label(gebucht+"Rechnung");
-     frame_rechnungsdaten->set_label("Rechnungsdaten");
-     set_title("Rechnung");
+     frame_rechnung->set_label(gebucht+_("Rechnung"));
+     frame_rechnungsdaten->set_label(_("Rechnungsdaten"));
+     set_title(_("Rechnung"));
      gutschrift->set_sensitive(true);     
    }
  else if(rechnung.rngArt()==Rechnung::RART_STORNO)
    {
-     frame_rechnung->set_label(gebucht+"Rechnung (Storniert)");
-     frame_rechnungsdaten->set_label("Rechnungsdaten");
-     set_title("Rechnung");
+     frame_rechnung->set_label(gebucht+_("Rechnung (Storniert)"));
+     frame_rechnungsdaten->set_label(_("Rechnungsdaten"));
+     set_title(_("Rechnung"));
      gutschrift->set_sensitive(true);     
    }
  else 
@@ -224,6 +206,7 @@ void auftrag_rechnung::clear_rng()
  zahlziel->set_value(ManuProC::Datum());
  optionmenu_zahlart->set_history(0);
  rtree_daten->clear();
+ bezahlt->set_active(false);
 }
 
 void auftrag_rechnung::on_rngnr_activate()
@@ -241,16 +224,15 @@ void auftrag_rechnung::on_rngnr_activate()
  zahlziel->set_value(rechnung.getZahlziel());
  optionmenu_zahlart->set_history(rechnung.getZahlungsart()->Id());
 
- gint pos=0; 
- rng_notiz->delete_text(0,-1);
+ rng_notiz->get_buffer()->set_text("");
  rng_notiz_save->set_sensitive(false);
- rng_notiz->insert_text(rechnung.Notiz().c_str(),rechnung.Notiz().size(),&pos);
+ rng_notiz->get_buffer()->set_text(rechnung.Notiz());
  rng_notiz_save->set_sensitive(false);
 
  bezahlt->set_active(rechnung.Bezahlt());
  storno->set_sensitive(!bezahlt->get_active() &&
-			rechnung.rngArt()==RechnungBase::RART_RNG &&
-			rechnung.getFiBuBuchid()==0);
+			rechnung.rngArt()==RechnungBase::RART_RNG);
+//			rechnung.getFiBuBuchid()==0);
  gutschrift->set_sensitive(!bezahlt->get_active() &&
                            rechnung.getFiBuBuchid()==0);
  rngdatum->set_sensitive(rechnung.getFiBuBuchid()==0);
@@ -276,9 +258,11 @@ void auftrag_rechnung::showBetraege()
  if(rechnung.Valid())
    {
     Preis::geldbetrag_out brutto(rechnung.Betrag(as_brutto));
+    if(brutto<0) brutto*=-1; // Gutschriften ohne Minus anzeigen
     rgbetrag_warenwert->set_value(brutto.as_float());
     as_brutto=false;
     Preis::geldbetrag_out netto(rechnung.Betrag(as_brutto));
+    if(netto<0) netto*=-1; // Gutschriften ohne Minus anzeigen
      rgbetrag_netto->set_value(netto.as_float());
 
      Preis::geldbetrag_out rabatt(brutto-netto);
@@ -286,6 +270,8 @@ void auftrag_rechnung::showBetraege()
      
      bool with_update_on_db=false;
      Preis::geldbetrag_out endnetto(rechnung.Endbetrag(with_update_on_db));
+    if(endnetto<0) endnetto*=-1; // Gutschriften ohne Minus anzeigen
+
      Preis::geldbetrag_out zuschl(endnetto-netto);
      rgbetrag_zusabs->set_value(zuschl.as_float());
      rgbetrag_zwsumme->set_value(endnetto.as_float());
@@ -355,8 +341,8 @@ bool auftrag_rechnung::checkVerkConsist(const cH_Lieferschein &chl)
 #ifdef MABELLA_EXTENSIONS
  if(rechnung.getVerknr()!=Kunde::none_id)
    {if(rechnung.getVerknr()!=chl->getVerknr())
-     { meldung->Show("Lieferscheine von verschiedenen Verkäufern dürfen nicht "
-		"auf eine Rechnung; Bitte getrennte Rechnungen erstellen");
+     { meldung->Show(_("Lieferscheine von verschiedenen VerkÃ¤ufern dÃ¼rfen nicht "
+		"auf eine Rechnung; Bitte getrennte Rechnungen erstellen"));
        return false;
      }
    }
@@ -370,7 +356,7 @@ bool auftrag_rechnung::checkVerkConsist(const cH_Lieferschein &chl)
 void auftrag_rechnung::lieferschein_uebernehmen()
 {   
  try{
- if(rtree_offen->selection().size())
+ if(rtree_offen->get_selection()->count_selected_rows())
    {if (rechnung.Id()<1) 
      {
       on_rng_neu();
@@ -385,11 +371,10 @@ void auftrag_rechnung::lieferschein_uebernehmen()
    	cH_Lieferschein chl(dt->get_Lieferschein()); 
       if(rechnung.Rabatt() != (chl->AufRabatt()) && 
          rechnung.Rabatt() != (Rechnung::rabatt_t)0)
-           {meldung->Show("Aufträge mit unterschiedlichen Rabatten\n"
-           	"(Rechnung "
-           	+Formatiere_short(rechnung.Rabatt())+"% Lieferschein/Auftrag "
-           	+Formatiere_short(chl->AufRabatt())+"%)\n"
-           	"dürfen nicht auf eine Rechnung");
+           {meldung->Show(String::ucompose(_("AuftrÃ¤ge mit unterschiedlichen Rabatten\n"
+           	"(Rechnung %1%% Lieferschein/Auftrag %2%%)\n"
+           	"dÃ¼rfen nicht auf eine Rechnung"),
+           	Formatiere_short(rechnung.Rabatt()),Formatiere_short(chl->AufRabatt())));
             return;
            }
        else
@@ -413,7 +398,7 @@ void auftrag_rechnung::lieferschein_uebernehmen()
             }
            
           // Wenn Zahlungsziel schon vergangen, dann auf Standard setzten
-	  // bzw. das Zahlungsziel löschen
+	  // bzw. das Zahlungsziel lÃ¶schen
             
           cH_Zahlungsart za(rechnung.getZahlungsart());
           if( ((zahlziel->get_value())<rechnung.getDatum())
@@ -495,7 +480,7 @@ try{
 
 }
 
-void auftrag_rechnung::on_unselectrow_rtree(int row, int col, GdkEvent* b)
+void auftrag_rechnung::on_unselectrow_rtree()
 {
  rngentry_del->set_sensitive(false); 
  button_pr->set_sensitive(false);
@@ -557,7 +542,7 @@ void auftrag_rechnung::on_selectrow_offlief(int row, int col, GdkEvent* b)
 }
 */
 
-void auftrag_rechnung::on_unselectrow_rtree_offen(int row, int col, GdkEvent* b)
+void auftrag_rechnung::on_unselectrow_rtree_offen()
 {
  lieferscheinnr->set_text("");
  lieferscheindatum->set_value(ManuProC::Datum::today());  
@@ -566,13 +551,13 @@ void auftrag_rechnung::on_unselectrow_rtree_offen(int row, int col, GdkEvent* b)
 
 void auftrag_rechnung::Preis_setzen()
 {  
- ja_nein_frage jnf("Wollen Sie wirklich den Preis ändern?");
+ ja_nein_frage jnf(_("Wollen Sie wirklich den Preis Ã¤ndern?"));
   
  jnf.set_transient_for(*this);
 
  int ret=jnf.run();
 
- if(ret==1) return;
+ if(ret==Gtk::RESPONSE_NO) return;
 
 
   cH_Kunde liefknd(lieferkunde->get_value());
@@ -592,7 +577,7 @@ void auftrag_rechnung::Preis_setzen()
   else if(radiobutton_preiseingabe->get_active())
    {
      spinbutton_preiseingabe->update();
-     fixedpoint<2> p=fixedpoint<2>(spinbutton_preiseingabe->get_value_as_float());
+     fixedpoint<2> p=fixedpoint<2>(spinbutton_preiseingabe->get_value());
      RE.setzePreis(Preis(p,rechnung.getWaehrung(),RE.getPreis().PreisMenge()));
    }  
   redisplay();
@@ -627,20 +612,18 @@ void auftrag_rechnung::rabatt_geaendert()
 {  
   if ( rechnung.Id()!=-1)
    {
-    gtk_spin_button_update(rabatt_wert->gtkobj());
-    int plus_minus=(rabatt_typ::enum_t((int)(rabatt_typ->get_menu()->get_active()->get_user_data())))==rabatt_typ::Rabatt?+1:-1;
-    rechnung.setze_Rabatt(rabatt_wert->get_value_as_float()*plus_minus);
+    rabatt_wert->update();
+    int plus_minus=(rabatt_typ::enum_t((long)(rabatt_typ->get_menu()->get_active()->get_data("user_data"))))==rabatt_typ::Rabatt?+1:-1;
+    rechnung.setze_Rabatt(rabatt_wert->get_value()*plus_minus);
    }
 }
 
-
-auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
-: instanz(_instanz)
+void auftrag_rechnung::init()
 {
+  gtk_expander_hook_size_to_parent(expander_ls->gobj());
+
 #ifdef MABELLA_EXTENSIONS
   preis_ergaenzen->hide();
- _tooltips.set_tip(*button27,"Linke Maustaste: N Orig. (Brief) + N Kopien (Weiß). "
-		"Mittlere Maustaste: 1 Kopie (Weiß oder Brief)","");
 //  std::string nuraktiv(" and coalesce(aktiv,true)=true");
 //  lieferkunde->Einschraenkung(nuraktiv,true);
   lieferkunde->EinschraenkenKdGr(KundengruppeID::Auftragsadresse);      
@@ -651,13 +634,12 @@ auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
 #endif
    set_tree_titles();
    fill_optionmenu_zahlungsart();
-   optionmenu_zahlart->get_menu()->deactivate.connect(SigC::slot(static_cast<class auftrag_rechnung*>(this), &auftrag_rechnung::optionmenu_zahlart_deactivate));
+   optionmenu_zahlart->get_menu()->signal_deactivate().connect(SigC::slot(*static_cast<class auftrag_rechnung*>(this), &auftrag_rechnung::optionmenu_zahlart_deactivate));
    rngdatum->setLabel("");
    zahlziel->setLabel("");
    zahlziel->set_value(ManuProC::Datum());
    lieferscheindatum->setLabel("");
    rtree_daten->hide();
-   on_button_allopen_clicked();
    storno->set_sensitive(false);   
    
 // set GUI for DBCapabilities
@@ -666,23 +648,36 @@ auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
  bezahlt->set_sensitive(dbcapability->isWhite(DBCapability::ColAct(wc,DBCapability::UPDATE)) );
 }
 
+auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
+: instanz(_instanz)
+{ init();
+  on_button_allopen_clicked();
+}
+
+auftrag_rechnung::auftrag_rechnung(RechnungBase const& toload)
+: instanz(ppsInstanzID::Kundenauftraege)
+{ init();
+  rngnr->set_value(itos(toload.Id()),toload.Id());
+  on_rngnr_activate();
+}
+
 void auftrag_rechnung::set_tree_titles()
 {
  std::vector<std::string> t1;
- t1.push_back("Zeile");
- t1.push_back("Lieferschein");
- t1.push_back("Artikel");   
- t1.push_back("Stueck");
- t1.push_back("Liefermenge");
- t1.push_back("E-Preis");
- t1.push_back("G-Preis");
+ t1.push_back(_("Zeile"));
+ t1.push_back(_("Lieferschein"));
+ t1.push_back(_("Artikel"));   
+ t1.push_back(_("Stueck"));
+ t1.push_back(_("Liefermenge"));
+ t1.push_back(_("E-Preis"));
+ t1.push_back(_("G-Preis"));
  rtree_daten->setTitles(t1);  
 
  std::vector<std::string> t2;
- t2.push_back("Kunde");
- t2.push_back("Lieferschein");
- t2.push_back("Liefersch.Datum");
- t2.push_back("Lieferung an");
+ t2.push_back(_("Kunde"));
+ t2.push_back(_("Lieferschein"));
+ t2.push_back(_("Liefersch.Datum"));
+ t2.push_back(_("Lieferung an"));
  rtree_offen->setTitles(t2);
 }
 
@@ -713,7 +708,7 @@ void auftrag_rechnung::set_rtree_daten_content(RechnungBase::ID rngid)
 
 void auftrag_rechnung::optionmenu_zahlart_deactivate()
 {
-  int z = int(optionmenu_zahlart->get_menu()->get_active()->get_user_data());
+  int z = long(optionmenu_zahlart->get_menu()->get_active()->get_data("user_data"));
   if (rechnung.Id()!=-1 && rechnung.Id()!=0)
      rechnung.setze_Zahlungsart(cH_Zahlungsart(z));
 }
@@ -721,7 +716,7 @@ void auftrag_rechnung::optionmenu_zahlart_deactivate()
 
 //void auftrag_rechnung::on_button_gutschrift_clicked()
 //{
-//  label_rechnung_ctl->set_text("Sicher? Diese Entscheidung kann nicht rückgängig gemacht werden.");
+//  label_rechnung_ctl->set_text("Sicher? Diese Entscheidung kann nicht rÃ¼ckgÃ¤ngig gemacht werden.");
 //  table_gutschrift_sicherheit->show();
 //}
 
@@ -767,6 +762,8 @@ void auftrag_rechnung::on_button_allopen_clicked()
   frame_rechnungsdaten->hide();
   rngnr->reset();
   set_rtree_offen_content(Rechnung::none_id);
+//  rtree_offen->set_tree_column_visibility(
+//	rtree_offen->getStore()->IndexFromColumn(Data_RLieferoffen::KUNDE_SEQ),true);
 }
 
 
@@ -788,13 +785,13 @@ void auftrag_rechnung::on_notiz_changed()
 void auftrag_rechnung::on_notiz_save_clicked()
 {   
   if(rechnung.Id()!=Rechnung::none_id) 
-     rechnung.Notiz(rng_notiz->get_chars(0,rng_notiz->get_length()));
+     rechnung.Notiz(rng_notiz->get_buffer()->get_text());
   rng_notiz_save->set_sensitive(false);
 }
 
-gint auftrag_rechnung::on_bezahlt_toggled(GdkEventButton *ev)
+void auftrag_rechnung::on_bezahlt_toggled()
 { 
-
+ if(!bezahlt->sensitive()) return;
 
  DBCapability::WhiteColumn wc("rechnung","bezahlt");
  if(dbcapability->isWhite(DBCapability::ColAct(wc,DBCapability::UPDATE)) )
@@ -810,13 +807,13 @@ gint auftrag_rechnung::on_bezahlt_toggled(GdkEventButton *ev)
       }
    }   
  else
-  {meldung->Show("keine Berechtigung");  
+  {meldung->Show(_("keine Berechtigung"));
    bezahlt->set_active(bezahlt->get_active());
   }
 
  if(rechnung.rngArt()==RechnungBase::RART_RNG)
    storno->set_sensitive(!bezahlt->get_active());   
- return false;
+
 }
 
 void auftrag_rechnung::on_radiobutton_preiseingabe_toggled()
@@ -827,18 +824,18 @@ void auftrag_rechnung::on_radiobutton_preiseingabe_toggled()
 
 void auftrag_rechnung::on_gutschrift_activate()
 {
- ja_nein_frage d("Wollen Sie wirklich eine Gutschrift erstellen ?");
+ ja_nein_frage d(_("Wollen Sie wirklich eine Gutschrift erstellen ?"));
  
  d.set_transient_for(*this);
  
  gint ret=d.run();
  
- if(ret==0)
+ if(ret==Gtk::RESPONSE_YES)
    {
     try{
     rechnung.setRngArt(Rechnung::RART_GUT);
 
-    ja_nein_frage lag("Soll die Ware dem Lager zugebucht werden ?");
+    ja_nein_frage lag(_("Soll die Ware dem Lager zugebucht werden ?"));
     lag.set_transient_for(*this);
     ret=lag.run();
 
@@ -858,20 +855,19 @@ void auftrag_rechnung::on_gutschrift_activate()
 void auftrag_rechnung::on_storno_activate()
 {
  if(rechnung.Bezahlt())
-   { meldung->Show("Die Rechnung ist bereits bezahlt und kann nicht"
-		" storniert werden; Bitte eine Gutschrift erstellen,");
+   { meldung->Show(_("Die Rechnung ist bereits bezahlt und kann nicht"
+		" storniert werden; Bitte eine Gutschrift erstellen,"));
     return;
    }
 
- ja_nein_frage jnf(std::string("Wollen Sie wirklich die Rechnung ")+
-		itos0pad(rechnung.Id(),6)+" stornieren ?");
+ ja_nein_frage jnf(String::ucompose(_("Wollen Sie wirklich die Rechnung %1 stornieren ?"),itos0pad(rechnung.Id(),6)));
 
  jnf.set_transient_for(*this);
 
  int ret=jnf.run();
 
  try {
- if(ret==0) 
+ if(ret==Gtk::RESPONSE_YES)
    {rechnung.setRngArt(RechnungBase::RART_STORNO);
     on_rngnr_activate();
     storno->set_sensitive(false);
@@ -892,11 +888,8 @@ void auftrag_rechnung::on_provisionierung_activate()
  RechnungVoll rv(rechnung.Id(),true);
  
  auftrag_provision ap(&rv);
- 
  ap.set_transient_for(*this);
- 
- gint ret;
- ret=ap.run();
+ ap.run();
 }
 
 

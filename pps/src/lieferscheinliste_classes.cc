@@ -4,7 +4,7 @@
 #include <Misc/EntryValueDatum.h>
 
 
-const cH_EntryValue Data_LListe::Value(guint seqnr,gpointer gp) const
+cH_EntryValue Data_LListe::Value(guint seqnr,gpointer gp) const
 {
 
  switch(seqnr) {
@@ -53,7 +53,3 @@ const cH_EntryValue Data_LListe::Value(guint seqnr,gpointer gp) const
   }
  return cH_EntryValue();
 }
-
-
-
-      

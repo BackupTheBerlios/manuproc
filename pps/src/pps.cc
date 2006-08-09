@@ -16,8 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <gnome--/main.h>
-
+#include <gtkmm/main.h>
 #include "auftrag_main.hh"
 #include "auftrag_bearbeiten.hh"
 #include "auftragbase.h"
@@ -27,7 +26,8 @@
 #include <Misc/Trace.h>
 #include <Misc/dbcapability.h>
 #include <Misc/Event.h>
-#include "noUTF8.h"
+#include <Misc/Query.h>
+#include <config.h>
 
 MyMessage *meldung;
 auftrag_main *auftragmain;
@@ -40,12 +40,12 @@ void RC_close(void);
 char **env;
 
 int main(int argc, char **argv, char **envp)
-{ noUTF8();
-  Conn = new ManuProC::Connection();
+{  
+ Conn = new ManuProC::Connection();
  int i;
-
  env=envp;
 
+#if 0 // disabled to use gle
  while ((i = getopt(argc, argv, "h:d:s")) != EOF)
  switch (i)
    {  case 'h':
@@ -59,12 +59,14 @@ int main(int argc, char **argv, char **envp)
 	 break;
       default : break;
    }
+#endif
 
 #if defined(ENABLE_NLS)
-   bindtextdomain (PACKAGE, PACKAGE_LOCALE_DIR);
-   textdomain (PACKAGE);
+   bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
+   bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+   textdomain (GETTEXT_PACKAGE);
 #endif ///* ENABLE_NLS*/
-   Gnome::Main m("auftrag", "0.0", 1, argv);
+   Gtk::Main m(argc, argv);
  ManuProC::PrintUncaughtExceptions();
 
 // ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
@@ -72,6 +74,7 @@ int main(int argc, char **argv, char **envp)
  meldung = new MyMessage();
  try{ 
  ManuProC::dbconnect(*Conn); 
+ Query ("set names 'utf-8'");
  dbcapability=new DBCapability();
  }
  catch(SQLerror &e)

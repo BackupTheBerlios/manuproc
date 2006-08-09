@@ -2,6 +2,7 @@
 #include <Lager/JumboLager.h>
 #include <Lager/RohwarenLager.h>
 #include "class_auftrag_lager.hh"
+#include <Misc/i18n.h>
 
 void auftrag_main::lager_zeigen()
 {
@@ -24,7 +25,7 @@ void auftrag_main::lager_zeigen()
 /*
 SelectedFullAufList auftrag_main::lager_auftraege()
 {
-  // holt geplante (id=1) und ungeplante (id=0) Aufträge
+  // holt geplante (id=1) und ungeplante (id=0) AuftrÃ¤ge
   SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Status(instanz->Id(),OPEN);
   return SelectedFullAufList(psel);
 }
@@ -51,9 +52,9 @@ void auftrag_main::on_lager_unselect_row(gint row, gint column, GdkEvent *event)
 void auftrag_main::lager_ueberschrift()
 {
  std::vector<std::string> ct;
- ct.push_back("Artikel");
- ct.push_back("Menge");
- ct.push_back("Datum");   
+ ct.push_back(_("Artikel"));
+ ct.push_back(_("Menge"));
+ ct.push_back(_("Datum"));
 
  tree_lager_frei->setTitles(ct);
  tree_lager_verplant->setTitles(ct);

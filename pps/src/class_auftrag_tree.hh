@@ -1,9 +1,13 @@
-#include <tclistnode.h>
+// $Id: class_auftrag_tree.hh,v 1.19 2006/08/09 15:36:51 christof Exp $
+
+#include <DynamicEnums/DynamicConfig.h>
 #include <Artikel/ArtikelMengeSumme.h>
 #include <Misc/EntryValueDatum.h>
 #include <Misc/EntryValueFixed.h>
 #include <Misc/EntryValueIntString.h>
 #include <Auftrag/AufEintragZu.h>
+// die Definition sollte wirklich in ein .cc file !
+#include <Misc/i18n.h>
 
 std::ostream &operator<<(std::ostream &o, const ArtikelMenge &am);
 std::ostream &operator<<(std::ostream &o, const ArtikelMengeSumme &ams);
@@ -18,12 +22,13 @@ public:
    int depth,max_depth;
 
 public:
-   Data_auftrag(const AufEintrag& ab, auftrag_main* am) :
+   Data_auftrag(const
+ AufEintrag& ab, auftrag_main* am) :
       AB(ab),AM(am),menge(AB.Artikel(),AB.getRestStk().as_int()),
       depth(),max_depth()
    {}
 
-    virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
+    virtual cH_EntryValue Value(guint seqnr,gpointer gp) const
  { 
     switch (seqnr) {
       case auftrag_main::KUNDE : {
@@ -41,7 +46,18 @@ public:
          else
 	   return cH_EntryValueIntString(kd->sortname()); 
         }
-       else return cH_EntryValue();
+       else
+#ifdef HAS_STAGE_Einkauf
+       if (AB.Instanz()->Id()==ppsInstanzID::Einkauf)
+       { ArtikelStamm ast(AB.Artikel());
+         ManuProcEntity<>::ID q=ast.Bezugsquelle();
+         if (q!=ManuProcEntity<>::none_id) 
+           return cH_EntryValueIntString(cH_Kunde(q)->sortname());
+         return cH_EntryValue();
+       }
+       else
+#endif
+         return cH_EntryValue();
        }
       case auftrag_main::A1 ... auftrag_main::A4 : {
       	 ExtBezSchema::ID schema=1;
@@ -59,6 +75,13 @@ public:
           return cH_EntryValueDatum(AB.LetzteLieferung());
        }
       case auftrag_main::AUFTRAG : {
+            if (AM->get_Instanz()->LagerInstanz())
+            { switch (AB.Id())
+              { case Auftrag::ungeplante_id: return cH_EntryValueIntString(_("fehlend"));
+                case Auftrag::plan_id: return cH_EntryValueIntString(_("reserviert"));
+                case Auftrag::dispo_id: return cH_EntryValueIntString(_("verfügbar"));
+              }
+            }
             std::string auftrag;
             if(AM->Kunden_anr_bool() && 
 	       AM->get_Instanz()->Id()==ppsInstanzID::Kundenauftraege)
@@ -74,8 +97,11 @@ public:
 #endif	      
                 auftrag = itos(AB.getAuftragid()) ;
 
+	    if(AB.getEntryStatus()==UNCOMMITED)
+	      auftrag = "("+auftrag+")";
             return cH_EntryValueIntString(auftrag);}
-      case auftrag_main::LETZEPLANINSTANZ :{
+
+      case auftrag_main::LETZTEPLANINSTANZ :{
             std::string s = cH_ppsInstanz(AB.LetztePlanInstanz())->shortName()+" ";
             if (AB.getProzDat().valid()) s+=AB.getProzDat().Short();
             return cH_EntryValueIntString(s);
@@ -95,7 +121,7 @@ public:
 	 }
 #ifdef ANZEIGE_VON_STUECK_UND_METER_IN_PPS	 
       case auftrag_main::METER : 
-         if (AM->Instanz()==ppsInstanzID::_Garn__Einkauf)
+         if (AM->Instanz()==ppsInstanzID::Einkauf)
             return cH_EntryValueIntString(menge.abgeleiteteMenge());
          else
          {ArtikelMenge::mengen_t m=menge.getMenge(EinheitID::m);
@@ -103,7 +129,7 @@ public:
           else return cH_EntryValueFixed<ManuProC::Precision::ArtikelMenge>(m);
          }
       case auftrag_main::STUECK : 
-         if (AM->Instanz()==ppsInstanzID::_Garn__Einkauf)
+         if (AM->Instanz()==ppsInstanzID::Einkauf)
             return cH_EntryValueIntString(menge.Menge());
          else
          {ArtikelMenge::mengen_t m=menge.getMenge(Einheit::Stueck);
@@ -129,16 +155,16 @@ public:
    ArtikelBase get_Artikel() const {return AB.Artikel();}
    ManuProC::Datum get_Lieferdatum() const {return AB.getLieferdatum();}
    std::string ProzessText() const {return AB.getProzess()->getTyp()+" "+AB.getProzess()->getText() ;}
-   // wieso ist das hier ver�nderbar?
+   // wieso ist das hier veränderbar?
    AufEintrag& get_AufEintrag() const {return const_cast<AufEintrag&>(AB);}
    const ArtikelMenge getArtikelMenge() const { return menge; }
-   void redisplayMenge(TreeBase *maintree_s) const
+   void redisplayMenge(SimpleTree *maintree_s) const
     {  menge=ArtikelMenge(AB.Artikel(),AB.getRestStk().as_int());
        maintree_s->redisplay(this,auftrag_main::METER);
        maintree_s->redisplay(this,auftrag_main::STUECK);
     }
-   void redisplayLetzePlanInstanz(TreeBase *maintree_s) const
-       {maintree_s->redisplay(this,auftrag_main::LETZEPLANINSTANZ);}
+   void redisplayLetzePlanInstanz(SimpleTree *maintree_s) const
+       {maintree_s->redisplay(this,auftrag_main::LETZTEPLANINSTANZ);}
 };
 
 struct cH_Data_auftrag : public Handle<const Data_auftrag>
@@ -152,10 +178,14 @@ class Data_Node : public TreeRow
 
 public:
  virtual void cumulate(const cH_RowDataBase &rd)
-   {  const ArtikelMenge &am=dynamic_cast<const Data_auftrag &>(*rd).getArtikelMenge();
+   {  const ArtikelMenge &am=rd.cast_dynamic<const Data_auftrag>()->getArtikelMenge();
       sum.cumulate(am);
    }
-  const cH_EntryValue Value(guint index,gpointer gp) const
+ virtual void deduct(const cH_RowDataBase &rd)
+   {  const ArtikelMenge &am=rd.cast_dynamic<const Data_auftrag>()->getArtikelMenge();
+      sum.deduct(am);
+   }
+  cH_EntryValue Value(guint index,gpointer gp) const
    {
     switch(index) 
       { 
@@ -177,15 +207,11 @@ public:
         default : return cH_EntryValue();
       }
    }
- Data_Node::Data_Node(guint deep,const cH_EntryValue &v, guint child_s_deep, 
- 	cH_RowDataBase child_s_data,bool expand, const TreeRow &suminit)
-   :TreeRow(deep,v,child_s_deep,child_s_data,expand) 
-   {  if (suminit.Leaf()) cumulate(child_s_data);
-      else sum=dynamic_cast<const Data_Node&>(suminit).sum;
+   Data_Node(const Handle<const TreeRow> &suminit)
+   { if (suminit) sum=suminit.cast_dynamic<const Data_Node>()->sum;
    }
- static TreeRow *create(guint col, const cH_EntryValue &v, guint child_s_deep,
- 	 cH_RowDataBase child_s_data,bool expand, const TreeRow &suminit)
-   {  return new Data_Node(col,v,child_s_deep,child_s_data,expand,suminit);
+ static Handle<TreeRow> create(const Handle<const TreeRow> &suminit)
+   {  return new Data_Node(suminit);
    }
 
 };

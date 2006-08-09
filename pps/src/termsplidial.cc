@@ -16,36 +16,33 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// generated 2000/12/5 22:26:59 MET by jacek@mimi.
-// using glademm V0.5.10
-//
-// newer (non customized) versions of this file go to termsplidial.cc_glade
-
-// This file is for your program, I won't touch it again!
-
 #include "termsplidial.hh"
 #include "auftrag_bearbeiten.hh"
+#include "Configuration.h"
 
 extern auftrag_bearbeiten *auftragbearbeiten;
 
 void termsplidial::on_okbutton_clicked()
 {
- if(auftragbearbeiten->splitEntry())
-   destroy();
+ //if(auftragbearbeiten->splitEntry()) delete this;
+ auftragbearbeiten->splitEntry();
 }
 
 void termsplidial::on_cancbutton_clicked()
 {
-// hide();
- destroy();    
+// delete this;
 }
 
 termsplidial::termsplidial(auftrag_bearbeiten *ab, const ManuProC::Datum &val)
 	: auftragbearbeiten(ab)
-{  termin_neu->select_month(val.Monat(),val.Jahr());
-   termin_neu->select_day(val.Tag());
+{  //termin_neu->select_month(val.Monat(),val.Jahr());
+   //termin_neu->select_day(val.Tag());
+#ifdef LIEFERDATUM_WOCHE_STANDARD
+   termin_neu->preferWeek();
+#endif
+   termin_neu->set_value(val);
 }
 
 termsplidial::~termsplidial()
-{  auftragbearbeiten->split_dialog_destroyed();
+{
 }

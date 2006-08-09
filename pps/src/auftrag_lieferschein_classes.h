@@ -3,20 +3,19 @@
 
 #ifndef LIEFERSCHEINTREEDATA
 #define LIEFERSCHEINTREEDATA
-#include<Misc/EntryValueIntString.h>
-#include<Misc/EntryValueEmptyInt.h>
-#include<Misc/EntryValueDatum.h>
-#include<Misc/Datum.h>
-#include<Misc/Ausgabe_neu.h>
-#include<Lieferschein/LieferscheinEntry.h>
-#include<Lieferschein/Lieferschein.h>
-#include<rowdata.h>
-#include<Artikel/ArtikelBezeichnung.h>
-#include<Artikel/Einheiten.h>
-#include<Auftrag/AufEintrag.h>
+#include <Misc/EntryValueIntString.h>
+#include <Misc/EntryValueEmptyInt.h>
+#include <Misc/EntryValueDatum.h>
+#include <Misc/Datum.h>
+#include <Misc/Ausgabe_neu.h>
+#include <Lieferschein/LieferscheinEntry.h>
+#include <Lieferschein/Lieferschein.h>
+#include <Artikel/ArtikelBezeichnung.h>
+#include <Artikel/Einheiten.h>
+#include <Auftrag/AufEintrag.h>
 #include <unistd.h>
 #include <Lager/Lager.h>
-#include<functional>
+#include <functional>
 
 #include "auftrag_main.hh"
 
@@ -47,7 +46,7 @@ class Data_Lieferdaten : public RowDataBase
    enum SeqNr {LIEFZEILE_SEQ,ARTIKEL_SEQ,AUFNR_SEQ,PALETTE_SEQ,
    		LIEFMNG_SEQ,PROZ_BEST,VOMLAGER_SEQ,TEXT};
 
-   virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
+   virtual cH_EntryValue Value(guint seqnr,gpointer gp) const
     {
      switch(seqnr)
       {
@@ -157,7 +156,7 @@ public:
       
    enum SeqNr {AUFNR_SEQ=0,ARTIKEL_SEQ,LIEFDAT_SEQ,OFFMNG_SEQ,
    		GELIEF_SEQ,IMLAGER_SEQ};
-   virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
+   virtual cH_EntryValue Value(guint seqnr,gpointer gp) const
     {
        switch(seqnr)
         {

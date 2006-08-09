@@ -1,9 +1,4 @@
-// generated 2003/6/3 11:30:07 MEST by jacek@ijacek.jacek.de
-// using glademm V1.1.3f_cvs
-//
-// newer (non customized) versions of this file go to auftrag_provision.cc_new
-
-// This file is for your program, I won't touch it again!
+// $Id: auftrag_provision.cc,v 1.17 2006/08/09 15:36:51 christof Exp $
 
 #include "config.h"
 #include <ManuProCConfig.h>
@@ -12,6 +7,8 @@
 #include "MyMessage.h"  
 #include <Kunde/Kunde.h>
 #include "ja_nein_frage.hh"
+#include <Misc/i18n.h>
+#include <Misc/ucompose.hpp>
 
 extern MyMessage *meldung;
 
@@ -35,6 +32,7 @@ void auftrag_provision::init_prov_dialog()
    {
     verkprov_frame->set_sensitive(false);
     prov_enable->set_active(false);
+    prov_verkaeufer->reset();
    }
  else
    {
@@ -43,9 +41,9 @@ void auftrag_provision::init_prov_dialog()
     try {prov_verkaeufer->set_value(getVerknr());
     }
     catch(SQLerror &e)
-    { if(e.Code()==100) meldung->Show(
-	std::string("Der Verk‰ufer mit der Nr.:")+
-	itos(getVerknr())+" nicht gefunden");
+    { if(e.Code()==100) 
+        meldung->Show(String::ucompose(_("Der Verk√§ufer mit der Nr. %1 wurde nicht gefunden")
+            ,getVerknr()));
     }
    }
 #endif
@@ -53,16 +51,29 @@ void auftrag_provision::init_prov_dialog()
 
 }
 
-
+void auftrag_provision::init()
+{
+ store=Gtk::ListStore::create(cols);
+ prov_aufentries->set_model(store);
+ prov_aufentries->append_column(_("Zeile"),cols.zeile);
+ prov_aufentries->append_column(_("St√ºck"),cols.stueck);
+ prov_aufentries->append_column(_("Artikel"),cols.artikel);
+ prov_aufentries->append_column(_("Einzel-\npreis"),cols.epreis);
+ prov_aufentries->append_column(_("Rabatt"),cols.rabatt);
+ prov_aufentries->append_column(_("Gesamt-\npreis"),cols.gpreis);
+ prov_aufentries->append_column(_("Provions-\nsatz"),cols.provsatz);
+ prov_aufentries->get_selection()->set_mode(Gtk::SELECTION_MULTIPLE);
+}
 
 auftrag_provision::auftrag_provision(RechnungVoll *rechnung) :
-aufp(NULL),rngp(rechnung)
+ aufp(),rngp(rechnung)
 {
- entry_frame->set_label("Rechnungspositionen");
- main_frame->set_label("Rechnung");
+ entry_frame->set_label(_("Rechnungspositionen"));
+ main_frame->set_label(_("Rechnung"));
  run_mode=RECHNUNG;
+ init();
  init_prov_dialog();
- 
+
  DBCapability::WhiteColumn wc("rechnung","verknr");
 
  verkprov_frame->set_sensitive(
@@ -71,13 +82,13 @@ aufp(NULL),rngp(rechnung)
 }
 
 auftrag_provision::auftrag_provision(AuftragFull *auftrag) :
-aufp(auftrag),rngp(NULL)
+aufp(auftrag),rngp()
 {
- entry_frame->set_label("Aftragspositionen");
- main_frame->set_label("Auftrag");
+ entry_frame->set_label(_("Auftragspositionen"));
+ main_frame->set_label(_("Auftrag"));
  run_mode=AUFTRAG;
+ init();
  init_prov_dialog();
- 
 
  DBCapability::WhiteColumn wc("auftrag","verknr");
 
@@ -89,7 +100,7 @@ aufp(auftrag),rngp(NULL)
 
 void auftrag_provision::fillProvEntryList()
 {
- prov_aufentries->clear();
+ store->clear();
 
  Gtk::OStream os(prov_aufentries);
  
@@ -119,40 +130,45 @@ void auftrag_provision::fillProvEntryList()
     os << (*i).GPreis().Wert().String() << "\t";
     os << (*i).ProvSatz().String() << "\n";
    } 
-
- for(guint i=0; i<prov_aufentries->columns().size(); i++)
-   prov_aufentries->set_column_auto_resize(i,true);
 }
 
 void auftrag_provision::on_prov_ok_clicked()
 {  
 }
 
+auftrag_provision::Columns::Columns()
+{ add(zeile); add(stueck); add(artikel); add(epreis); add(rabatt);
+  add(gpreis); add(provsatz);
+}
+
 
 void auftrag_provision::on_prov_apply_clicked()
 {  
- if(prov_aufentries->selection().empty()) 
+ if(!prov_aufentries->get_selection()->count_selected_rows()) 
    return;
 
- ja_nein_frage fr("Wollen Sie jetzt die Provisionss‰tze ‰ndern ?");
+ ja_nein_frage fr(_("Wollen Sie jetzt die Provisionss√§tze √§ndern ?"));
 
  fr.set_transient_for(*this);
  int ret=fr.run(); 
 
- if(ret!=0) return;
+ if(ret!=Gtk::RESPONSE_YES) return;
 
 #ifdef MABELLA_EXTENSIONS
+ if(!prov_aufentries->get_selection()->count_selected_rows()) 
+   return;
   assert(run_mode!=UNKNOWN);
+  Gtk::TreeSelection::ListHandle_Path lh=prov_aufentries->get_selection()->get_selected_rows();
   if(run_mode==AUFTRAG)
   {
-   for(Gtk::CList::SelectionList::iterator s=prov_aufentries->selection().begin();
-	s!=prov_aufentries->selection().end(); ++s)
+   for(Gtk::TreeSelection::ListHandle_Path::iterator s=lh.begin();s!=lh.end(); ++s)
     {
-     int znr(atoi((*s)->begin()->get_text().c_str()));
+     Gtk::TreeIter it=prov_aufentries->get_model()->get_iter(*s);
+     int znr(atoi(static_cast<Glib::ustring>((*it)[cols.zeile]).c_str()));
 
      Query("update auftragentry set provsatz=? where "
 	" (instanz,auftragid,zeilennr)=(?,?,?)")
-	<< prov_provsatz->get_value_as_float()
+	<< prov_provsatz->get_value()
 	<< aufp->InstanzID()
 	<< aufp->Id()
 	<< znr;
@@ -162,14 +178,14 @@ void auftrag_provision::on_prov_apply_clicked()
   else  
   if(run_mode==RECHNUNG)
   {
-   for(Gtk::CList::SelectionList::iterator s=prov_aufentries->selection().begin();
-	s!=prov_aufentries->selection().end(); ++s)
+   for(Gtk::TreeSelection::ListHandle_Path::iterator s=lh.begin();s!=lh.end(); ++s)
     {
-     int znr(atoi((*s)->begin()->get_text().c_str()));
+     Gtk::TreeIter it=prov_aufentries->get_model()->get_iter(*s);
+     int znr(atoi(static_cast<Glib::ustring>((*it)[cols.zeile]).c_str()));
 
      Query("update rechnungentry set provsatz=? where "
 	" (rngid,zeilennr)=(?,?)")
-	<< prov_provsatz->get_value_as_float()
+	<< prov_provsatz->get_value()
 	<< Id()
 	<< znr;
      SQLerror::test(__FILELINE__);
@@ -213,9 +229,9 @@ void auftrag_provision::on_prov_enable_toggled()
     try {prov_verkaeufer->set_value(getVerknr());
     }
     catch(SQLerror &e)
-    { if(e.Code()==100) meldung->Show(
-	std::string("Der Verk‰ufer mit der Nr.:")+
-	itos(getVerknr())+" nicht gefunden");
+    { if(e.Code()==100) 
+        meldung->Show(String::ucompose(_("Der Verk√§ufer mit der Nr. %1 "
+            "wurde nicht gefunden"),getVerknr()));
     }
    }
  else

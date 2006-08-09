@@ -1,0 +1,214 @@
+2006-08-05  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: New file, from gettext-0.14.5.
+	* Rules-quot: New file, from gettext-0.14.5.
+	* boldquot.sed: New file, from gettext-0.14.5.
+	* en@boldquot.header: New file, from gettext-0.14.5.
+	* en@quot.header: New file, from gettext-0.14.5.
+	* insert-header.sin: New file, from gettext-0.14.5.
+	* quot.sed: New file, from gettext-0.14.5.
+	* remove-potcdate.sin: New file, from gettext-0.14.5.
+
+2006-05-03  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: New file, from gettext-0.14.5.
+	* boldquot.sed: New file, from gettext-0.14.5.
+	* en@boldquot.header: New file, from gettext-0.14.5.
+	* en@quot.header: New file, from gettext-0.14.5.
+	* insert-header.sin: New file, from gettext-0.14.5.
+	* quot.sed: New file, from gettext-0.14.5.
+	* remove-potcdate.sin: New file, from gettext-0.14.5.
+	* Rules-quot: New file, from gettext-0.14.5.
+
+2006-02-28  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* boldquot.sed: New file, from gettext-0.14.5.
+	* en@boldquot.header: New file, from gettext-0.14.5.
+	* en@quot.header: New file, from gettext-0.14.5.
+	* insert-header.sin: New file, from gettext-0.14.5.
+	* quot.sed: New file, from gettext-0.14.5.
+	* remove-potcdate.sin: New file, from gettext-0.14.5.
+	* Rules-quot: New file, from gettext-0.14.5.
+
+2006-01-02  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: New file, from gettext-0.14.4.
+	* boldquot.sed: New file, from gettext-0.14.4.
+	* en@boldquot.header: New file, from gettext-0.14.4.
+	* en@quot.header: New file, from gettext-0.14.4.
+	* insert-header.sin: New file, from gettext-0.14.4.
+	* quot.sed: New file, from gettext-0.14.4.
+	* remove-potcdate.sin: New file, from gettext-0.14.4.
+	* Rules-quot: New file, from gettext-0.14.4.
+
+2005-11-21  gettextize  <bug-gnu-utils@gnu.org>
+
+	* Makefile.in.in: Upgrade to gettext-0.10.40.
+
+2005-11-17  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: New file, from gettext-0.14.5.
+	* boldquot.sed: New file, from gettext-0.14.5.
+	* en@boldquot.header: New file, from gettext-0.14.5.
+	* en@quot.header: New file, from gettext-0.14.5.
+	* insert-header.sin: New file, from gettext-0.14.5.
+	* quot.sed: New file, from gettext-0.14.5.
+	* remove-potcdate.sin: New file, from gettext-0.14.5.
+	* Rules-quot: New file, from gettext-0.14.5.
+
+2005-11-16  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: New file, from gettext-0.14.5.
+	* boldquot.sed: New file, from gettext-0.14.5.
+	* en@boldquot.header: New file, from gettext-0.14.5.
+	* en@quot.header: New file, from gettext-0.14.5.
+	* insert-header.sin: New file, from gettext-0.14.5.
+	* quot.sed: New file, from gettext-0.14.5.
+	* remove-potcdate.sin: New file, from gettext-0.14.5.
+	* Rules-quot: New file, from gettext-0.14.5.
+
+2005-11-15  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: New file, from gettext-0.14.5.
+
+2005-11-15  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: New file, from gettext-0.14.5.
+	* boldquot.sed: New file, from gettext-0.14.5.
+	* en@boldquot.header: New file, from gettext-0.14.5.
+	* en@quot.header: New file, from gettext-0.14.5.
+	* insert-header.sin: New file, from gettext-0.14.5.
+	* quot.sed: New file, from gettext-0.14.5.
+	* remove-potcdate.sin: New file, from gettext-0.14.5.
+	* Rules-quot: New file, from gettext-0.14.5.
+	* POTFILES.in: New file.
+
+
+2005/11/15 11:22:52 CET
+	update files from .glade file
+
+2005/11/15 17:35:37 CET
+	update files from .glade file
+
+2005/11/15 17:37:50 CET
+	update files from .glade file
+
+2005/11/15 18:00:06 CET
+	update files from .glade file
+
+2005/11/15 18:12:36 CET
+	update files from .glade file
+
+2005/11/17 9:29:02 CET
+	update files from .glade file
+
+2005/11/17 16:15:06 CET
+	update files from .glade file
+
+2005/11/17 16:19:09 CET
+	update files from .glade file
+
+2005/11/24 12:45:19 CET
+	update files from .glade file
+
+2005/12/26 14:58:33 CET
+	update files from .glade file
+
+2006/2/1 13:12:10 CET
+	update files from .glade file
+
+2006/2/1 14:48:08 CET
+	update files from .glade file
+
+2006/2/1 15:42:18 CET
+	update files from .glade file
+
+2006/2/1 17:46:03 CET
+	update files from .glade file
+
+2006/2/23 11:17:19 CET
+	update files from .glade file
+
+2006/2/23 11:24:15 CET
+	update files from .glade file
+
+2006/2/23 11:35:34 CET
+	update files from .glade file
+
+2006/2/23 11:51:50 CET
+	update files from .glade file
+
+2006/2/23 13:16:09 CET
+	update files from .glade file
+
+2006/2/23 14:52:10 CET
+	update files from .glade file
+
+2006/2/23 14:58:47 CET
+	update files from .glade file
+
+2006/2/23 15:01:27 CET
+	update files from .glade file
+
+2006/2/23 16:02:13 CET
+	update files from .glade file
+
+2006/2/23 16:03:24 CET
+	update files from .glade file
+
+2006/3/9 13:37:38 CET
+	update files from .glade file
+
+2006/3/9 16:22:19 CET
+	update files from .glade file
+
+2006/3/9 16:53:32 CET
+	update files from .glade file
+
+2006/3/15 13:26:08 CET
+	update files from .glade file
+
+2006/3/15 13:50:51 CET
+	update files from .glade file
+
+2006/3/24 15:51:15 CET
+	update files from .glade file
+
+2006/3/29 17:49:26 CEST
+	update files from .glade file
+
+2006/4/13 15:09:30 CEST
+	update files from .glade file
+
+2006/4/25 12:46:33 CEST
+	update files from .glade file
+
+2006/5/22 16:45:07 CEST
+	update files from .glade file
+
+2006/5/22 16:46:04 CEST
+	update files from .glade file
+
+2006/5/29 16:56:36 CEST
+	update files from .glade file
+
+2006/6/23 10:56:14 CEST
+	update files from .glade file
+
+2006/6/23 11:01:34 CEST
+	update files from .glade file
+
+2006/6/23 11:46:41 CEST
+	update files from .glade file
+
+2006/6/23 12:02:22 CEST
+	update files from .glade file
+
+2006/6/23 12:31:58 CEST
+	update files from .glade file
+
+2006/6/23 12:46:18 CEST
+	update files from .glade file
+
+2006/6/23 16:28:36 CEST
+	update files from .glade file

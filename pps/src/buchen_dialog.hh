@@ -26,7 +26,7 @@ public:
    
    text2->set_text("WARNUNG: 'nicht mehr fragen' markiert die ungebuchten\n"
 " Positionen als erledigt. Danach wird der Lieferschein nicht mehr"
-" zum Buchen vorgeschlagen. Es bleiben ggf. offene Positionen in Auftr‰gen.");
+" zum Buchen vorgeschlagen. Es bleiben ggf. offene Positionen in Auftr√§gen.");
    }
 };
 #endif

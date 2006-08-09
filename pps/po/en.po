@@ -1,0 +1,1546 @@
+# German translations for auftrag package
+# German messages for auftrag.
+# Copyright (C) 2005 Free Software Foundation, Inc.
+# This file is distributed under the same license as the auftrag package.
+# Christof Petig <christof@petig-baender.de>, 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: auftrag 0.0\n"
+"Report-Msgid-Bugs-To: manuproc-developer-de@berlios.de\n"
+"POT-Creation-Date: 2006-08-05 17:59+0200\n"
+"PO-Revision-Date: 2006-03-08 13:04+0100\n"
+"Last-Translator: Jacek Jakubowski, LinuxSolutions <jacek@telebel.de>\n"
+"Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/auftrag_bearbeiten.cc:171
+msgid "Auftragserfassung: %1"
+msgstr "Orderprocessing: %1"
+
+#: src/auftrag_bearbeiten.cc:178 src/auftrag_lieferschein_glade.cc:367
+#: src/auftrag_lieferschein_glade.cc:513 src/auftrag_provision.cc:58
+#: src/auftrag_rechnung.cc:667
+msgid "Zeile"
+msgstr "Line"
+
+#: src/auftrag_bearbeiten.cc:179
+msgid ""
+"bestellte\n"
+"Menge"
+msgstr "ordered quantity"
+
+#: src/auftrag_bearbeiten.cc:180 src/auftrag_lieferschein.cc:453
+#: src/auftrag_lieferschein.cc:467 src/auftrag_main.cc:154
+#: src/auftrag_main_instanz.cc:277 src/auftrag_main_lager.cc:55
+#: src/auftrag_main_glade.cc:414 src/auftrag_main_glade.cc:723
+#: src/auftrag_provision.cc:60 src/auftrag_rechnung.cc:669
+#: src/bestell_plan_glade.cc:87 src/lieferscheinliste.cc:233
+msgid "Artikel"
+msgstr "item"
+
+#: src/auftrag_bearbeiten.cc:181
+#, fuzzy
+msgid "Artikel Ext."
+msgstr "item"
+
+#: src/auftrag_bearbeiten.cc:182
+msgid ""
+"offene\n"
+"Menge"
+msgstr "open quantity"
+
+#: src/auftrag_bearbeiten.cc:183 src/auftrag_provision.cc:61
+msgid ""
+"Einzel-\n"
+"preis"
+msgstr "unit price"
+
+#: src/auftrag_bearbeiten.cc:184 src/auftrag_bearbeiten_glade.cc:329
+#: src/auftrag_provision.cc:62 src/auftrag_rechnung_glade.cc:697
+msgid "Rabatt"
+msgstr "Discount"
+
+#: src/auftrag_bearbeiten.cc:185 src/auftrag_provision.cc:63
+msgid ""
+"Gesamt-\n"
+"preis"
+msgstr "Total price"
+
+#: src/auftrag_bearbeiten.cc:186
+msgid "Termin"
+msgstr "shceduled for"
+
+#: src/auftrag_bearbeiten.cc:187
+msgid "Stand"
+msgstr "as of"
+
+#: src/auftrag_bearbeiten.cc:188
+msgid "Zustand"
+msgstr "as of"
+
+#: src/auftrag_bearbeiten.cc:251
+#, fuzzy
+msgid "Lieferungen anzeigen"
+msgstr "show deliveries"
+
+#: src/auftrag_bearbeiten.cc:560
+msgid ""
+"Das Lieferdatum in %1 Zeile(n) auf %2 setzen.\n"
+" Wollen Sie fortfahren ?"
+msgstr "Delivery date line %1 put on %2. Continue?"
+
+#: src/auftrag_bearbeiten.cc:600 src/auftrag_bearbeiten.cc:1201
+msgid "Bitte zuerst einen Auftrag auswählen oder einen neuen Auftrag erzeugen"
+msgstr "Select order first or create new order"
+
+#: src/auftrag_bearbeiten.cc:619 src/auftrag_bearbeiten.cc:1212
+msgid "Preis 0,00 ist nicht erlaubt"
+msgstr "Price 0,00 not possible"
+
+#: src/auftrag_bearbeiten.cc:628 src/auftrag_bearbeiten.cc:636
+msgid "Der Artikel ist in diesem Auftrag bereits erfasst"
+msgstr "This item is already on this order"
+
+#: src/auftrag_bearbeiten.cc:652
+msgid "Soll ein Zusammengesetzter Artikel eingegeben werden ?"
+msgstr "are you sure?"
+
+#: src/auftrag_bearbeiten.cc:699
+msgid "In dieser Produktionsebene können keine Aufträge geschrieben werden"
+msgstr "On this level it is not possible to create order"
+
+#: src/auftrag_bearbeiten.cc:931
+msgid "Der Kunde ist gesperrt"
+msgstr "Customer is closed"
+
+#: src/auftrag_bearbeiten.cc:975
+msgid ""
+"Wollen Sie die externe Auftragsnummer ändern?\n"
+"\n"
+"(Wenn Sie einen neuen Auftrag anlegen wollen,\n"
+"  drücken Sie bitte 'Neu'.)\n"
+msgstr ""
+
+#: src/auftrag_bearbeiten.cc:991
+msgid "Soll ein neuer Auftrag angelegt werden?"
+msgstr "Create new order. Are you sure?"
+
+#: src/auftrag_bearbeiten.cc:1041
+msgid "Menge nicht korrekt"
+msgstr "Quantity is not correct"
+
+#: src/auftrag_bearbeiten_glade.cc:250 src/auftrag_bearbeiten_glade.cc:436
+msgid "Zurück"
+msgstr "Back"
+
+#: src/auftrag_bearbeiten_glade.cc:254 src/auftrag_bearbeiten_glade.cc:444
+#: src/auftrag_copy_glade.cc:104
+msgid "neuer Auftrag"
+msgstr "New order"
+
+#: src/auftrag_bearbeiten_glade.cc:259 src/auftrag_bearbeiten_glade.cc:452
+#: src/auftrag_rechnung_glade.cc:207 src/auftrag_rechnung_glade.cc:465
+msgid "alles leeren"
+msgstr "clear all"
+
+#: src/auftrag_bearbeiten_glade.cc:266 src/auftrag_bearbeiten_glade.cc:465
+#: src/auftrag_lieferschein_glade.cc:209 src/auftrag_lieferschein_glade.cc:444
+#: src/auftrag_rechnung_glade.cc:211 src/auftrag_rechnung_glade.cc:473
+#: src/lieferscheinliste_glade.cc:81 src/lieferscheinliste_glade.cc:155
+msgid "Anzeigen"
+msgstr "show"
+
+#: src/auftrag_bearbeiten_glade.cc:270 src/auftrag_bearbeiten_glade.cc:473
+#: src/auftrag_lieferschein_glade.cc:213 src/auftrag_lieferschein_glade.cc:452
+#: src/auftrag_main_glade.cc:469 src/auftrag_rechnung_glade.cc:215
+#: src/auftrag_rechnung_glade.cc:481 src/lieferscheinliste_glade.cc:85
+#: src/lieferscheinliste_glade.cc:163
+msgid "Drucken"
+msgstr "print"
+
+#: src/auftrag_bearbeiten_glade.cc:272 src/auftrag_lieferschein_glade.cc:215
+#: src/auftrag_rechnung_glade.cc:217
+msgid "EAN"
+msgstr "Bar code"
+
+#: src/auftrag_bearbeiten_glade.cc:279 src/auftrag_bearbeiten_glade.cc:488
+msgid "Rückstand"
+msgstr "Backlog"
+
+#: src/auftrag_bearbeiten_glade.cc:283
+msgid "Rabatt %"
+msgstr "Discount %"
+
+#: src/auftrag_bearbeiten_glade.cc:284 src/auftrag_rechnung_glade.cc:655
+msgid "Zahlungsart"
+msgstr "Payment term"
+
+#: src/auftrag_bearbeiten_glade.cc:285
+msgid "Waehrung"
+msgstr "Currency"
+
+#: src/auftrag_bearbeiten_glade.cc:291 src/auftrag_rechnung_glade.cc:256
+msgid "Valuta"
+msgstr "Credit term"
+
+#: src/auftrag_bearbeiten_glade.cc:295
+msgid "Auftragsdatum"
+msgstr "Order date"
+
+#: src/auftrag_bearbeiten_glade.cc:296
+msgid "Auftragswert"
+msgstr "Order value"
+
+#: src/auftrag_bearbeiten_glade.cc:297
+msgid "Art des Auftrages"
+msgstr "Order type"
+
+#: src/auftrag_bearbeiten_glade.cc:298 src/auftrag_main_glade.cc:481
+msgid "Auftragsnummer"
+msgstr "order number"
+
+#: src/auftrag_bearbeiten_glade.cc:299
+msgid "Kunden Auf. Nr."
+msgstr "Customer's order no."
+
+#: src/auftrag_bearbeiten_glade.cc:300
+msgid "Auftragsstatus"
+msgstr "Order situation"
+
+#: src/auftrag_bearbeiten_glade.cc:301 src/auftrag_lieferschein.cc:459
+msgid "Bemerkung"
+msgstr "Remark"
+
+#: src/auftrag_bearbeiten_glade.cc:314 src/auftrag_bearbeiten_glade.cc:423
+#: src/auftrag_lieferschein.cc:454 src/auftrag_lieferschein.cc:466
+#: src/auftrag_lieferschein_glade.cc:377 src/auftrag_lieferschein_glade.cc:521
+#: src/auftrag_main.cc:541 src/auftrag_main_glade.cc:366
+#: src/auftrag_main_glade.cc:665 src/auftrag_provision.cc:88
+#: src/auftrag_provision_glade.cc:77 src/auftrag_rechnung_glade.cc:276
+msgid "Auftrag"
+msgstr "Order"
+
+#: src/auftrag_bearbeiten_glade.cc:320
+msgid "Eintragstatus"
+msgstr "Entry status"
+
+#: src/auftrag_bearbeiten_glade.cc:328 src/auftrag_main_instanz.cc:278
+#: src/auftrag_main_lager.cc:56 src/auftrag_main_glade.cc:486
+#: src/bestell_plan.cc:223 src/lieferscheinliste.cc:243
+msgid "Menge"
+msgstr "Quantity"
+
+#: src/auftrag_bearbeiten_glade.cc:330
+msgid "L:"
+msgstr "S:"
+
+#: src/auftrag_bearbeiten_glade.cc:332
+msgid "B:"
+msgstr "O:"
+
+#: src/auftrag_bearbeiten_glade.cc:333 src/auftrag_bearbeiten_glade.cc:336
+#: src/auftrag_bearbeiten_glade.cc:337
+msgid "0"
+msgstr "0"
+
+#: src/auftrag_bearbeiten_glade.cc:335
+msgid "V:"
+msgstr "A:"
+
+#: src/auftrag_bearbeiten_glade.cc:338
+msgid "(0)"
+msgstr "(0)"
+
+#: src/auftrag_bearbeiten_glade.cc:339
+msgid "L.B."
+msgstr "L.B."
+
+#: src/auftrag_bearbeiten_glade.cc:342 src/auftrag_provision_glade.cc:88
+msgid "%"
+msgstr "%"
+
+#: src/auftrag_bearbeiten_glade.cc:343
+msgid "kg"
+msgstr "kgs"
+
+#: src/auftrag_bearbeiten_glade.cc:348 src/auftrag_main.cc:539
+#: src/auftrag_main.cc:1036 src/auftrag_main_glade.cc:501
+msgid "Bestellung"
+msgstr "Purchase order"
+
+#: src/auftrag_bearbeiten_glade.cc:355
+msgid "Preisliste"
+msgstr "Price list"
+
+#: src/auftrag_bearbeiten_glade.cc:356
+msgid "Preisautomatik"
+msgstr "automatic pricing"
+
+#: src/auftrag_bearbeiten_glade.cc:361 src/auftrag_bearbeiten_glade.cc:426
+msgid "Auftragseinträge"
+msgstr "Order entries"
+
+#: src/auftrag_bearbeiten_glade.cc:374 src/auftrag_bearbeiten_glade.cc:496
+#: src/auftrag_lieferschein_glade.cc:313 src/auftrag_lieferschein_glade.cc:497
+#: src/auftrag_rechnung_glade.cc:353 src/auftrag_rechnung_glade.cc:519
+msgid "speichern"
+msgstr "save"
+
+#: src/auftrag_bearbeiten_glade.cc:379 src/auftrag_rechnung_glade.cc:358
+msgid "Notiz"
+msgstr "Note"
+
+#: src/auftrag_bearbeiten_glade.cc:396
+msgid "alles _leeren"
+msgstr "clear all"
+
+#: src/auftrag_bearbeiten_glade.cc:399 src/auftrag_lieferschein_glade.cc:406
+msgid "Masseneingabe"
+msgstr "mass input"
+
+#: src/auftrag_bearbeiten_glade.cc:402
+msgid "Kombinierte Artikel"
+msgstr "Combined item"
+
+#: src/auftrag_bearbeiten_glade.cc:405
+msgid "Kopieren"
+msgstr "cpy"
+
+#: src/auftrag_bearbeiten_glade.cc:411 src/auftrag_provision_glade.cc:100
+#: src/auftrag_provision_glade.cc:261 src/auftrag_rechnung_glade.cc:436
+msgid "Provisionierung"
+msgstr "commission"
+
+#: src/auftrag_bearbeiten_glade.cc:414
+msgid "_splitten"
+msgstr "splt"
+
+#: src/auftrag_bearbeiten_glade.cc:417
+msgid "EAN Etiketten zum Auftrag"
+msgstr "bar code label for order"
+
+#: src/auftrag_bearbeiten_glade.cc:420 src/auftrag_lieferschein_glade.cc:415
+#: src/auftrag_main_glade.cc:617 src/auftrag_rechnung_glade.cc:439
+msgid "_File"
+msgstr "_File"
+
+#: src/auftrag_bearbeiten_glade.cc:429
+msgid "Extras"
+msgstr "Extras"
+
+#: src/auftrag_bearbeiten_glade.cc:670
+msgid "Eingabe mit 'Enter' abschließen."
+msgstr "Finish entry with \"Enter\""
+
+#: src/auftrag_bearbeiten_glade.cc:758 src/bestell_plan_glade.cc:98
+msgid "Lagerbestand"
+msgstr "stock quantity"
+
+#: src/auftrag_bearbeiten_glade.cc:761
+msgid "Bestellt"
+msgstr "ordered"
+
+#: src/auftrag_bearbeiten_glade.cc:771 src/bestell_plan_glade.cc:89
+msgid "Verfügbar"
+msgstr "available"
+
+#: src/auftrag_bearbeiten_glade.cc:793
+msgid "Bestellt beim Lieferanten"
+msgstr "ordered at supplier"
+
+#: src/auftrag_bearbeiten_glade.cc:940
+msgid "Auftragserfassung"
+msgstr "Order processing"
+
+#: src/auftrag_copy.cc:69
+msgid "Stück muß größer als 0 sein"
+msgstr "must be more than 0"
+
+#: src/auftrag_copy.cc:80
+msgid "Ungültiges Lieferdatum"
+msgstr "delivery date not valid"
+
+#: src/auftrag_copy.cc:137
+msgid "keine Zeilen zum Kopieren gefunden"
+msgstr "no line to copy found"
+
+#: src/auftrag_copy_glade.cc:67 src/auftrag_provision_glade.cc:69
+msgid "Nummer"
+msgstr "number"
+
+#: src/auftrag_copy_glade.cc:71 src/auftrag_provision_glade.cc:73
+msgid "vom"
+msgstr "from"
+
+#: src/auftrag_copy_glade.cc:75 src/auftrag_copy_glade.cc:82
+#: src/auftrag_main.cc:517 src/auftrag_main_instanz.cc:276
+#: src/auftrag_provision_glade.cc:65 src/auftrag_rechnung.cc:677
+#: src/auftrag_rechnung_glade.cc:244 src/lieferscheinliste.cc:231
+msgid "Kunde"
+msgstr "customer"
+
+#: src/auftrag_copy_glade.cc:78
+msgid "Ursprungsauftrag"
+msgstr "original order"
+
+#: src/auftrag_copy_glade.cc:86 src/auftrag_lieferschein.cc:468
+#: src/lieferscheinliste.cc:238
+msgid "Lieferdatum"
+msgstr "delivery date"
+
+#: src/auftrag_copy_glade.cc:90
+msgid "Kunden Auftr.-Nr."
+msgstr "Customer's order no."
+
+#: src/auftrag_copy_glade.cc:95 src/auftrag_provision.cc:59
+msgid "Stück"
+msgstr "piece(s)"
+
+#: src/auftrag_copy_glade.cc:97 src/auftrag_copy_glade.cc:98
+msgid "überschreiben"
+msgstr "overwrite"
+
+#: src/auftrag_copy_glade.cc:100
+msgid "stornierte Zeilen nicht kopieren"
+msgstr "do not copy cancelled lines"
+
+#: src/auftrag_copy_glade.cc:224
+msgid "Vom Ursprungsauftrag übernehmen oder überscheiben"
+msgstr "Take from original or overwrite?"
+
+#: src/auftrag_copy_glade.cc:229
+msgid "Vom Urspringsauftrag übernehmen oder überschreiben"
+msgstr "Take over from original order or overwrite"
+
+#: src/auftrag_copy_glade.cc:268
+msgid "Auftrag kopieren"
+msgstr "copy order"
+
+#: src/auftrag_lieferschein.cc:141 src/auftrag_lieferschein.cc:840
+msgid "Notiz zum Lieferschein"
+msgstr "remark to delivey note"
+
+#: src/auftrag_lieferschein.cc:336
+msgid "Notiz zu Zeile %1"
+msgstr "remark to line %1"
+
+#: src/auftrag_lieferschein.cc:452
+msgid "Lief.Zeile"
+msgstr "dleivery line"
+
+#: src/auftrag_lieferschein.cc:455 src/auftrag_lieferschein_glade.cc:332
+msgid "Palette"
+msgstr "Pallet"
+
+#: src/auftrag_lieferschein.cc:456 src/auftrag_rechnung.cc:671
+msgid "Liefermenge"
+msgstr "delivered quantity"
+
+#: src/auftrag_lieferschein.cc:457
+msgid "% bestellt"
+msgstr "% ordered"
+
+#: src/auftrag_lieferschein.cc:458
+msgid "vom Lager"
+msgstr "from stock"
+
+#: src/auftrag_lieferschein.cc:469
+msgid "offen"
+msgstr "open"
+
+#: src/auftrag_lieferschein.cc:470
+msgid "geliefert"
+msgstr "delivered"
+
+#: src/auftrag_lieferschein.cc:471
+msgid "im Lager"
+msgstr "in stock"
+
+#: src/auftrag_lieferschein.cc:477
+msgid "Lieferschein: %1"
+msgstr "delivery note:%1"
+
+#: src/auftrag_lieferschein.cc:481
+msgid "Kundennr"
+msgstr "Customer's no."
+
+#: src/auftrag_lieferschein.cc:481
+msgid "Kundenname"
+msgstr "Customer's name"
+
+#: src/auftrag_lieferschein.cc:482 src/auftrag_lieferschein_glade.cc:328
+msgid "Kundenauftrag"
+msgstr "Customer's order"
+
+#: src/auftrag_lieferschein.cc:486 src/auftrag_main.cc:465
+msgid "Lieferantennr"
+msgstr "Supplier's no."
+
+#: src/auftrag_lieferschein.cc:486 src/auftrag_main.cc:465
+msgid "Lieferantenname"
+msgstr "Supplier's name"
+
+#: src/auftrag_lieferschein.cc:487
+msgid "Eigene Auftragsnummer"
+msgstr "own order no."
+
+#: src/auftrag_lieferschein.cc:546 src/auftrag_lieferschein.cc:940
+msgid "Berechnete Lieferscheine können nicht mehr geändert werden"
+msgstr "Invoiced delivery notes cannot be changed"
+
+#: src/auftrag_lieferschein.cc:556
+msgid "Anzahl darf nicht 0 sein"
+msgstr "quantity cannot be 0"
+
+#: src/auftrag_lieferschein.cc:645
+msgid ""
+"Aufträge von verschiedenen Verkäufern dürfen nicht auf einen Lieferschein; "
+"Bitte getrennte Lieferscheine erstellen"
+msgstr "orders of different agents cannot be put on the same delivery note"
+
+#: src/auftrag_lieferschein.cc:669
+msgid "Keine Zeile selektiert"
+msgstr "no line selected"
+
+#: src/auftrag_lieferschein.cc:1130
+msgid ""
+"Einige Zeilen konnten nicht vom Lager abgebucht werden, da der Lagerbestand "
+"nicht ausreicht"
+msgstr "some lines cannot be booked, aqs stock quantity is not sufficient"
+
+#: src/auftrag_lieferschein.cc:1174
+msgid "Bitte einen Lieferschein erstellen oder laden"
+msgstr "Create or load delivery note"
+
+#: src/auftrag_lieferschein.cc:1180
+msgid "Lieferschein ist fakturiert und darf nicht mehr gänder werden"
+msgstr "delivery note is invoiced and cannot be changed"
+
+#: src/auftrag_lieferschein_glade.cc:201 src/auftrag_lieferschein_glade.cc:428
+#: src/auftrag_rechnung_glade.cc:199 src/auftrag_rechnung_glade.cc:449
+#: src/bestell_plan_glade.cc:71 src/bestell_plan_glade.cc:145
+#: src/lieferscheinliste_glade.cc:77 src/lieferscheinliste_glade.cc:147
+msgid "Schließen"
+msgstr "close"
+
+#: src/auftrag_lieferschein_glade.cc:205 src/auftrag_lieferschein_glade.cc:436
+#: src/auftrag_rechnung_glade.cc:203 src/auftrag_rechnung_glade.cc:457
+msgid "Neu"
+msgstr "new"
+
+#: src/auftrag_lieferschein_glade.cc:222 src/auftrag_lieferschein_glade.cc:467
+msgid ""
+"Lief.Zeile\n"
+"löschen"
+msgstr "clear delivery line"
+
+#: src/auftrag_lieferschein_glade.cc:237 src/auftrag_lieferschein_glade.cc:481
+msgid "Liste"
+msgstr "List"
+
+#: src/auftrag_lieferschein_glade.cc:241 src/auftrag_lieferschein_glade.cc:489
+msgid "Lager buchen"
+msgstr "book from stock"
+
+#: src/auftrag_lieferschein_glade.cc:248
+msgid "Lief. Nr."
+msgstr "Del. No."
+
+#: src/auftrag_lieferschein_glade.cc:252
+msgid "Lief. Datum"
+msgstr "Del. date"
+
+#: src/auftrag_lieferschein_glade.cc:256
+msgid ""
+"RNG\n"
+"Fertig"
+msgstr ""
+"Invoice\n"
+"Ready"
+
+#: src/auftrag_lieferschein_glade.cc:259
+msgid "Rechnungsnr."
+msgstr "Invoice no"
+
+#: src/auftrag_lieferschein_glade.cc:264
+msgid "Netto (kg)"
+msgstr "net (kgs)"
+
+#: src/auftrag_lieferschein_glade.cc:269
+msgid "Brutto (kg)"
+msgstr "gross (kgs)"
+
+#: src/auftrag_lieferschein_glade.cc:274
+msgid "Pakete"
+msgstr "Parcels"
+
+#: src/auftrag_lieferschein_glade.cc:279
+msgid "Päckchen"
+msgstr "Packages"
+
+#: src/auftrag_lieferschein_glade.cc:283
+msgid ""
+"DPD\n"
+"Fertig"
+msgstr "DPD ready"
+
+#: src/auftrag_lieferschein_glade.cc:286
+msgid "DPD Nummer"
+msgstr "DPD No"
+
+#: src/auftrag_lieferschein_glade.cc:291 src/auftrag_rechnung.cc:668
+#: src/auftrag_rechnung.cc:678 src/lieferscheinliste.cc:237
+msgid "Lieferschein"
+msgstr "del. note"
+
+#: src/auftrag_lieferschein_glade.cc:302
+msgid "<small>Lieferscheinzeilen</small>"
+msgstr "<small>delivery note entries</small>"
+
+#: src/auftrag_lieferschein_glade.cc:318
+msgid "<small>Notiz</small>"
+msgstr "<small>Note</small>"
+
+#: src/auftrag_lieferschein_glade.cc:338 src/auftrag_lieferschein_glade.cc:505
+msgid "Übernehmen"
+msgstr "take over"
+
+#: src/auftrag_lieferschein_glade.cc:342
+msgid "St."
+msgstr "pcs."
+
+#: src/auftrag_lieferschein_glade.cc:344
+msgid "Anzahl"
+msgstr "Qty."
+
+#: src/auftrag_lieferschein_glade.cc:347
+msgid "m"
+msgstr "mtrs."
+
+#: src/auftrag_lieferschein_glade.cc:348
+msgid "à Menge"
+msgstr "à qty."
+
+#: src/auftrag_lieferschein_glade.cc:354
+msgid "<small>Eingabe</small>"
+msgstr "<small>Entry</small>"
+
+#: src/auftrag_lieferschein_glade.cc:386
+msgid "<small>Aufträge</small>"
+msgstr "<small>Orders</small>"
+
+#: src/auftrag_lieferschein_glade.cc:400
+msgid "anzeigen"
+msgstr "show"
+
+#: src/auftrag_lieferschein_glade.cc:403 src/auftrag_main_glade.cc:348
+#: src/auftrag_main_glade.cc:644
+msgid "drucken"
+msgstr "print"
+
+#: src/auftrag_lieferschein_glade.cc:409
+msgid "ungebuchte Lief."
+msgstr "unbooked del."
+
+#: src/auftrag_lieferschein_glade.cc:412
+msgid "WE von Petig"
+msgstr "goods incoming"
+
+#: src/auftrag_lieferschein_glade.cc:418
+msgid "_Lieferschein"
+msgstr "_delivery note"
+
+#: src/auftrag_lieferschein_glade.cc:421
+msgid "_Wareneingang"
+msgstr "_Incoming goods"
+
+#: src/auftrag_lieferschein_glade.cc:646
+msgid "Lieferschein wird nicht berechnet "
+msgstr "Delivery note will not be invoiced"
+
+#: src/auftrag_lieferschein_glade.cc:730
+msgid "Lieferschein wird nicht mehr für DPD vorgeschlagen"
+msgstr "Delivery note no more proposed for DPD"
+
+#: src/auftrag_lieferschein_glade.cc:873 src/auftrag_lieferschein_glade.cc:879
+msgid ""
+"Zeile modifiezieren, nachdem Anzahl, Menge und/oder Palette geändert worden "
+"sind."
+msgstr "Adjust line, after number, qty. and/or pallet has been changed"
+
+#: src/auftrag_lieferschein_glade.cc:958 src/auftrag_lieferschein_glade.cc:964
+msgid "Ausgewählte Zeile in Lieferschein übernehmen"
+msgstr "line to delivery note"
+
+#: src/auftrag_lieferschein_glade.cc:968 src/auftrag_lieferschein_glade.cc:974
+#: src/auftrag_rechnung_glade.cc:1100 src/auftrag_rechnung_glade.cc:1106
+msgid "Kompletten Auftrag in Lieferschein übernehmen"
+msgstr "order to delivery note"
+
+#: src/auftrag_lieferschein_glade.cc:1021 src/auftrag_main_glade.cc:521
+msgid "Lieferscheine"
+msgstr "delivery notes"
+
+#: src/auftrag_main.cc:148
+msgid "Verarbeitung"
+msgstr "production"
+
+#: src/auftrag_main.cc:155 src/lieferscheinliste.cc:234
+msgid "Breite"
+msgstr "width"
+
+#: src/auftrag_main.cc:156 src/lieferscheinliste.cc:235
+msgid "Farbe"
+msgstr "colour"
+
+#: src/auftrag_main.cc:157
+msgid "Meter"
+msgstr "mtrs."
+
+#: src/auftrag_main.cc:158
+msgid "Aufmachung"
+msgstr "put up"
+
+#: src/auftrag_main.cc:159 src/auftrag_main.cc:537
+msgid "Lieferwoche"
+msgstr "delivery week"
+
+#: src/auftrag_main.cc:160
+msgid "Letzte Lief"
+msgstr "last delivery note"
+
+#: src/auftrag_main.cc:161
+msgid "offene"
+msgstr "open"
+
+#: src/auftrag_main.cc:182
+msgid "offene Aufträge"
+msgstr "open orders"
+
+#: src/auftrag_main.cc:316 src/auftrag_main_glade.cc:602
+msgid "ungeplante / fehlende Menge"
+msgstr "not planned / missing qty."
+
+#: src/auftrag_main.cc:319 src/auftrag_main_glade.cc:605
+msgid "geplante / bestellte / reservierte Menge"
+msgstr "planned / ordered / blocked qty."
+
+#: src/auftrag_main.cc:322
+msgid "verfügbare Menge"
+msgstr "available"
+
+#: src/auftrag_main.cc:325 src/auftrag_main_glade.cc:611
+msgid "alle Lagermengen"
+msgstr "all stock qties."
+
+#: src/auftrag_main.cc:473
+msgid "Auftrag anzeigen"
+msgstr "show order"
+
+#: src/auftrag_main.cc:475
+msgid "Artikel bearbeiten"
+msgstr "process order"
+
+#: src/auftrag_main.cc:477
+msgid "Kunde bearbeiten"
+msgstr "process cusomer"
+
+#: src/auftrag_main.cc:479
+msgid "Lieferungen zeigen"
+msgstr "show deliveries"
+
+#: src/auftrag_main.cc:515
+msgid "Lieferant"
+msgstr "Supplier"
+
+#: src/auftrag_main.cc:543
+msgid "L.P."
+msgstr "L.P."
+
+#: src/auftrag_main.cc:544
+msgid "Ver."
+msgstr "Ver."
+
+#: src/auftrag_main.cc:545
+msgid "Letzte Lief."
+msgstr "latest delivery"
+
+#: src/auftrag_main.cc:546
+msgid "Abteilungen"
+msgstr "departments"
+
+#: src/auftrag_main.cc:547
+#, fuzzy
+msgid "offene Menge/Stk. (Rohware)"
+msgstr "open qty (raw material)"
+
+#: src/auftrag_main.cc:548
+#, fuzzy
+msgid "offene Menge/Stk."
+msgstr "open qty."
+
+#: src/auftrag_main.cc:551
+msgid "offene Meter"
+msgstr "open meters"
+
+#: src/auftrag_main.cc:552
+msgid "offene Stück"
+msgstr "open pieces"
+
+#: src/auftrag_main.cc:1035 src/auftrag_main_glade.cc:394
+#: src/auftrag_main_glade.cc:694
+msgid "Bestellen"
+msgstr "place order"
+
+#: src/auftrag_main.cc:1039
+msgid "Prod.planen"
+msgstr ""
+
+#: src/auftrag_main.cc:1040
+#, fuzzy
+msgid "Produktionsauftrag"
+msgstr "original order"
+
+#: src/auftrag_main.cc:1217
+msgid "Auftragszusammensetzung"
+msgstr "Order structure"
+
+#: src/auftrag_main.cc:1224 src/auftrag_main_glade.cc:451
+msgid "Materialbedarf"
+msgstr "material needed"
+
+#: src/auftrag_main_instanz.cc:35
+msgid "Keine Lieferantennummer vergeben"
+msgstr "No suppliers code given"
+
+#: src/auftrag_main_instanz.cc:89
+msgid "Auftrag kann nicht gelöscht werden, es gibt noch Kindaufträge"
+msgstr "Order cannot be deleted"
+
+#: src/auftrag_main_instanz.cc:126
+msgid "Keine Auftragsnummer vergeben"
+msgstr "No order number given"
+
+#: src/auftrag_main_instanz.cc:129
+msgid "Datum ist ungültig"
+msgstr "Unvalid date"
+
+#: src/auftrag_main_instanz.cc:134
+msgid "Nichts ausgewählt"
+msgstr "Nothing selected"
+
+#: src/auftrag_main_instanz.cc:155
+msgid ""
+"Sind mehrere Zeilen gewählt muß die Bestellmenge mindestens so groß sein wie "
+"die Summer der Restmengen."
+msgstr ""
+"In case various lines have been chosen, order qty has to be at least as big "
+"as the total of the remainig quantities"
+
+#: src/auftrag_main_instanz.cc:184
+msgid "Nichts gewählt"
+msgstr "Nothing selected"
+
+#: src/auftrag_main_instanz.cc:220
+msgid "Fehler: Keine Knoten anwählen"
+msgstr "FAULT: No knot been selected"
+
+#: src/auftrag_main_instanz.cc:279 src/auftrag_main_lager.cc:57
+#: src/auftrag_main_glade.cc:545 src/bestell_plan_glade.cc:376
+#: src/bestell_plan_glade.cc:417 src/lieferscheinliste_glade.cc:279
+msgid "Datum"
+msgstr "Date"
+
+#: src/auftrag_main_glade.cc:343 src/auftrag_main_glade.cc:636
+msgid "beenden"
+msgstr "finish"
+
+#: src/auftrag_main_glade.cc:353 src/auftrag_main_glade.cc:652
+msgid "neu laden"
+msgstr "re-load"
+
+#: src/auftrag_main_glade.cc:376 src/auftrag_main_glade.cc:673
+msgid "Liefersch."
+msgstr "Delivery note"
+
+#: src/auftrag_main_glade.cc:386 src/auftrag_main_glade.cc:681
+#: src/auftrag_provision.cc:72 src/auftrag_rechnung.cc:180
+#: src/auftrag_rechnung.cc:182 src/auftrag_rechnung.cc:189
+#: src/auftrag_rechnung_glade.cc:264 src/lieferscheinliste.cc:239
+msgid "Rechnung"
+msgstr "Invoice"
+
+#: src/auftrag_main_glade.cc:399 src/auftrag_main_glade.cc:702
+msgid "Material"
+msgstr "material"
+
+#: src/auftrag_main_glade.cc:406 src/auftrag_main_glade.cc:626
+#: src/auftrag_main_glade.cc:710
+msgid "Aufträge"
+msgstr "Orders"
+
+#: src/auftrag_main_glade.cc:421 src/auftrag_main_glade.cc:736
+msgid "erledigt"
+msgstr "done"
+
+#: src/auftrag_main_glade.cc:426 src/auftrag_main_glade.cc:744
+msgid "aufräumen"
+msgstr "organize"
+
+#: src/auftrag_main_glade.cc:431 src/auftrag_main_glade.cc:752
+msgid "Färben"
+msgstr "dyeing"
+
+#: src/auftrag_main_glade.cc:435
+msgid "aktuelle Instanz"
+msgstr "valid level"
+
+#: src/auftrag_main_glade.cc:438
+msgid "  für Warengruppe"
+msgstr "for material group"
+
+#: src/auftrag_main_glade.cc:446
+msgid "offene Mengen"
+msgstr "open quantities"
+
+#: src/auftrag_main_glade.cc:456
+msgid "geplante Verfügbarkeit"
+msgstr "planned availability"
+
+#: src/auftrag_main_glade.cc:461
+msgid ""
+"Selektierte(n)\n"
+"Auftr. planen"
+msgstr "plan selected order"
+
+#: src/auftrag_main_glade.cc:475
+msgid ""
+"Neuer\n"
+"Auftrag"
+msgstr "new order"
+
+#: src/auftrag_main_glade.cc:495
+msgid "info text (etwas länger)"
+msgstr "info text (bit longer)"
+
+#: src/auftrag_main_glade.cc:509
+msgid "Erfassen"
+msgstr "register"
+
+#: src/auftrag_main_glade.cc:512
+msgid "Neuladen"
+msgstr "reload"
+
+#: src/auftrag_main_glade.cc:524
+msgid "Kundenbezeichnung"
+msgstr "customer's description"
+
+#: src/auftrag_main_glade.cc:527
+msgid "Interne Bezeichnung"
+msgstr "internal description"
+
+#: src/auftrag_main_glade.cc:533
+msgid "Kundenauftragsnummer"
+msgstr "customer's order nummer"
+
+#: src/auftrag_main_glade.cc:536
+msgid "Interne Auftragsnummer"
+msgstr "internal order number"
+
+#: src/auftrag_main_glade.cc:542
+msgid "Kalenderwoche"
+msgstr "calendar week"
+
+#: src/auftrag_main_glade.cc:551
+msgid "Kunden Name"
+msgstr "customer name"
+
+#: src/auftrag_main_glade.cc:554
+msgid "Kunden Name & Ort"
+msgstr "customer name and place"
+
+#: src/auftrag_main_glade.cc:557
+msgid "Kunden Nr."
+msgstr "customer no."
+
+#: src/auftrag_main_glade.cc:563
+msgid "Materialbedarf sortiert nach Artikel"
+msgstr "material requirement sorted by item"
+
+#: src/auftrag_main_glade.cc:566
+msgid "Materialbedarf sortiert nach Menge"
+msgstr "material requirement sorted by qty."
+
+#: src/auftrag_main_glade.cc:572
+msgid "Aufträge ohne Kunde"
+msgstr "Orders without customer"
+
+#: src/auftrag_main_glade.cc:575
+msgid "Aufträge mit Kunde"
+msgstr "Orders with customer"
+
+#: src/auftrag_main_glade.cc:578
+msgid "Aufträge bei Programmstart laden"
+msgstr "load orders with programm start"
+
+#: src/auftrag_main_glade.cc:584
+#, fuzzy
+msgid "alle offenen Aufträge"
+msgstr "open orders"
+
+#: src/auftrag_main_glade.cc:587
+#, fuzzy
+msgid "nur unbestätigte Aufträge / Mengen"
+msgstr "unconfirmed orders / qties."
+
+#: src/auftrag_main_glade.cc:590
+#, fuzzy
+msgid "nur offene Aufträge / Mengen"
+msgstr "open orders / qties."
+
+#: src/auftrag_main_glade.cc:593
+msgid "stornierte Aufträge / Mengen"
+msgstr "cancelled orders / qties."
+
+#: src/auftrag_main_glade.cc:596
+msgid "geschlossene Aufträge / Mengen"
+msgstr "closed orders / qties."
+
+#: src/auftrag_main_glade.cc:608
+msgid "verfügbare Menge "
+msgstr "available qty."
+
+#: src/auftrag_main_glade.cc:614 src/auftrag_main_glade.cc:629
+#: src/bestell_plan_glade.cc:493
+msgid "Bestellplanung"
+msgstr "purchase planning"
+
+#: src/auftrag_main_glade.cc:620 src/auftrag_rechnung_glade.cc:442
+msgid "_Edit"
+msgstr "_Edit"
+
+#: src/auftrag_main_glade.cc:623
+msgid "_View"
+msgstr "_View"
+
+#: src/auftrag_main_glade.cc:902 src/auftrag_main_glade.cc:909
+msgid "Der gewählte Auftrag wird als 'erledigt' markiert"
+msgstr "Choosen order will be marked 'closed'"
+
+#: src/auftrag_main_glade.cc:913 src/auftrag_main_glade.cc:919
+msgid ""
+"Die zu erledigten Kundenaufträgen gehörenden Einträge dieser Instanz werden "
+"als 'erledigt' markiert."
+msgstr "Entries belonging to closed customer's orders will be marked 'closed'"
+
+#: src/auftrag_main_glade.cc:1111
+msgid "Auftragsbearbeitung"
+msgstr "order processing"
+
+#: src/auftrag_provision.cc:45 src/auftrag_provision.cc:233
+msgid "Der Verkäufer mit der Nr. %1 wurde nicht gefunden"
+msgstr "Sales person with number %1 not found"
+
+#: src/auftrag_provision.cc:64
+msgid ""
+"Provions-\n"
+"satz"
+msgstr "Commission rate"
+
+#: src/auftrag_provision.cc:71
+msgid "Rechnungspositionen"
+msgstr "Invoice positions"
+
+#: src/auftrag_provision.cc:87 src/auftrag_provision_glade.cc:95
+msgid "Auftragspositionen"
+msgstr "Order postions"
+
+#: src/auftrag_provision.cc:150
+msgid "Wollen Sie jetzt die Provisionssätze ändern ?"
+msgstr "Change commission rate?"
+
+#: src/auftrag_provision_glade.cc:79
+msgid "Provision gewähren"
+msgstr "Commission allowed"
+
+#: src/auftrag_provision_glade.cc:82
+msgid "Verkäufer"
+msgstr "Sales person"
+
+#: src/auftrag_provision_glade.cc:84
+msgid "Provision setzten auf "
+msgstr "Commission change to"
+
+#: src/auftrag_provision_glade.cc:103
+msgid "Verkäufer & Provision"
+msgstr "Sales person & commission"
+
+#: src/auftrag_rechnung.cc:51
+msgid "Wollen Sie jetzt wirklich eine neue Rechnung erstellen ?"
+msgstr "You really want to create a new invoice?"
+
+#: src/auftrag_rechnung.cc:152
+msgid "Rechungsdatum geändert"
+msgstr "invoice date changed"
+
+#: src/auftrag_rechnung.cc:170
+msgid "gebucht in FiBu - "
+msgstr "booked in bookkeeping"
+
+#: src/auftrag_rechnung.cc:173 src/auftrag_rechnung.cc:175
+#: src/auftrag_rechnung_glade.cc:424
+msgid "Gutschrift"
+msgstr "credit note"
+
+#: src/auftrag_rechnung.cc:174
+msgid "Gutschriftsdaten"
+msgstr "credit note data"
+
+#: src/auftrag_rechnung.cc:181 src/auftrag_rechnung.cc:188
+#: src/auftrag_rechnung_glade.cc:366
+msgid "Rechnungsdaten"
+msgstr "invoice data"
+
+#: src/auftrag_rechnung.cc:187
+msgid "Rechnung (Storniert)"
+msgstr "invoice (cancelled)"
+
+#: src/auftrag_rechnung.cc:344
+msgid ""
+"Lieferscheine von verschiedenen Verkäufern dürfen nicht auf eine Rechnung; "
+"Bitte getrennte Rechnungen erstellen"
+msgstr ""
+"Delivery notes of different sales persons are not allowed on one invoice. "
+"Please create separate invoice"
+
+#: src/auftrag_rechnung.cc:374
+msgid ""
+"Aufträge mit unterschiedlichen Rabatten\n"
+"(Rechnung %1%% Lieferschein/Auftrag %2%%)\n"
+"dürfen nicht auf eine Rechnung"
+msgstr "Orders with different discounts are not allowed on one invoice"
+
+#: src/auftrag_rechnung.cc:554
+msgid "Wollen Sie wirklich den Preis ändern?"
+msgstr "You really want to change the price?"
+
+#: src/auftrag_rechnung.cc:670
+msgid "Stueck"
+msgstr "pieces"
+
+#: src/auftrag_rechnung.cc:672
+msgid "E-Preis"
+msgstr "E-price"
+
+#: src/auftrag_rechnung.cc:673
+msgid "G-Preis"
+msgstr "G-price"
+
+#: src/auftrag_rechnung.cc:679
+msgid "Liefersch.Datum"
+msgstr "Delivery note date"
+
+#: src/auftrag_rechnung.cc:680
+msgid "Lieferung an"
+msgstr "delivery to"
+
+#: src/auftrag_rechnung.cc:810
+msgid "keine Berechtigung"
+msgstr "no rights"
+
+#: src/auftrag_rechnung.cc:827
+msgid "Wollen Sie wirklich eine Gutschrift erstellen ?"
+msgstr "You really want to create a credit note?"
+
+#: src/auftrag_rechnung.cc:838
+msgid "Soll die Ware dem Lager zugebucht werden ?"
+msgstr "Goods to be booked back to stock?"
+
+#: src/auftrag_rechnung.cc:858
+msgid ""
+"Die Rechnung ist bereits bezahlt und kann nicht storniert werden; Bitte eine "
+"Gutschrift erstellen,"
+msgstr "Invoice already paid and cannot be deleted. Please create credit note"
+
+#: src/auftrag_rechnung.cc:863
+msgid "Wollen Sie wirklich die Rechnung %1 stornieren ?"
+msgstr "You really want to delete invoice %1?"
+
+#: src/auftrag_rechnung_glade.cc:225 src/auftrag_rechnung_glade.cc:496
+msgid ""
+"Preise\n"
+"ergänzen"
+msgstr "Prices to add"
+
+#: src/auftrag_rechnung_glade.cc:234 src/auftrag_rechnung_glade.cc:510
+msgid ""
+"Liefersch.\n"
+"löschen"
+msgstr "Delete delivery note"
+
+#: src/auftrag_rechnung_glade.cc:239
+msgid "Währung"
+msgstr "currency"
+
+#: src/auftrag_rechnung_glade.cc:240
+msgid "Zahlung"
+msgstr "payment"
+
+#: src/auftrag_rechnung_glade.cc:245
+msgid "Rg. Nr."
+msgstr "Inv. no."
+
+#: src/auftrag_rechnung_glade.cc:246
+msgid "Rg. Datum"
+msgstr "Inv. date"
+
+#: src/auftrag_rechnung_glade.cc:247
+msgid "bezahlt"
+msgstr "paid"
+
+#: src/auftrag_rechnung_glade.cc:272
+msgid "Preislistenpreis"
+msgstr "list price"
+
+#: src/auftrag_rechnung_glade.cc:273 src/auftrag_rechnung_glade.cc:277
+msgid "0,00"
+msgstr "0,00"
+
+#: src/auftrag_rechnung_glade.cc:280
+msgid "Eingabe"
+msgstr "Entry"
+
+#: src/auftrag_rechnung_glade.cc:289
+msgid "Preis überschreiben mit ..."
+msgstr "Overwrite price with ..."
+
+#: src/auftrag_rechnung_glade.cc:299
+msgid "Warenwert"
+msgstr "Value of goods"
+
+#: src/auftrag_rechnung_glade.cc:300 src/auftrag_rechnung_glade.cc:301
+#: src/auftrag_rechnung_glade.cc:313 src/auftrag_rechnung_glade.cc:314
+#: src/auftrag_rechnung_glade.cc:327 src/auftrag_rechnung_glade.cc:328
+#: src/auftrag_rechnung_glade.cc:329
+msgid "-"
+msgstr "-"
+
+#: src/auftrag_rechnung_glade.cc:306
+msgid "Betrag"
+msgstr "Amount"
+
+#: src/auftrag_rechnung_glade.cc:310
+msgid "- Rabatt"
+msgstr "- Discount"
+
+#: src/auftrag_rechnung_glade.cc:311
+msgid "+ MwSt."
+msgstr "+ V A T"
+
+#: src/auftrag_rechnung_glade.cc:312
+msgid "Endbetrag"
+msgstr "Total Amount"
+
+#: src/auftrag_rechnung_glade.cc:325
+msgid "Zus./Abs."
+msgstr "Add/Deduct"
+
+#: src/auftrag_rechnung_glade.cc:326
+msgid "Summe"
+msgstr "Sum"
+
+#: src/auftrag_rechnung_glade.cc:336
+msgid "Ents.-Pausch."
+msgstr "ents.-Pausch."
+
+#: src/auftrag_rechnung_glade.cc:340
+msgid "Wert"
+msgstr "Value"
+
+#: src/auftrag_rechnung_glade.cc:374
+msgid "Liefer.Nr."
+msgstr "Delivery number"
+
+#: src/auftrag_rechnung_glade.cc:375
+msgid "Liefer. Datum"
+msgstr "Delivery date"
+
+#: src/auftrag_rechnung_glade.cc:384 src/auftrag_rechnung_glade.cc:527
+msgid "offene Liefer."
+msgstr "open deliveries"
+
+#: src/auftrag_rechnung_glade.cc:388 src/auftrag_rechnung_glade.cc:535
+msgid "leere Liefer. aufräumen"
+msgstr "organize empty delivery notes"
+
+#: src/auftrag_rechnung_glade.cc:399 src/auftrag_rechnung_glade.cc:543
+msgid "Liefersch. übernehmen"
+msgstr "take over delivery note"
+
+#: src/auftrag_rechnung_glade.cc:411
+msgid "nicht berechnete Lieferscheine"
+msgstr "delivery notes not invoiced"
+
+#: src/auftrag_rechnung_glade.cc:430
+msgid "Storno"
+msgstr "Cancel"
+
+#: src/auftrag_rechnung_glade.cc:692 src/auftrag_rechnung_glade.cc:716
+msgid "Rabatt/Zuschlag auf alle Rechnungsposten"
+msgstr "Discount/Add to all invoice positions"
+
+#: src/auftrag_rechnung_glade.cc:701
+msgid "Zuschlag"
+msgstr "Extra"
+
+#: src/auftrag_rechnung_glade.cc:1151
+msgid "Rechnungen"
+msgstr "Invoices"
+
+#: src/bestell_plan.cc:220
+msgid "Vergleichszeit 1"
+msgstr "comparison time 1"
+
+#: src/bestell_plan.cc:221
+msgid "Vergleichszeit 2"
+msgstr "comparison time 2"
+
+#: src/bestell_plan.cc:222
+msgid "Lieferzeit"
+msgstr "Delivery time"
+
+#: src/bestell_plan.cc:306 src/bestell_plan_glade.cc:102
+msgid "Lager 1"
+msgstr "stock 1"
+
+#: src/bestell_plan.cc:307 src/bestell_plan_glade.cc:101
+msgid "Lager 2"
+msgstr "stock 2"
+
+#: src/bestell_plan_glade.cc:76 src/bestell_plan_glade.cc:153
+msgid "vorh. Artikel"
+msgstr "last item"
+
+#: src/bestell_plan_glade.cc:81 src/bestell_plan_glade.cc:161
+msgid "nächst. Artikel"
+msgstr "next item"
+
+#: src/bestell_plan_glade.cc:90
+msgid "mind.Lagerbestand"
+msgstr "minimum stock qty."
+
+#: src/bestell_plan_glade.cc:91
+msgid "Bestellt (Kunden)"
+msgstr "ordere3d (customer)"
+
+#: src/bestell_plan_glade.cc:97
+msgid "Bestellt beim Lief."
+msgstr "purchase order placed"
+
+#: src/bestell_plan_glade.cc:104
+msgid "zur Info"
+msgstr "Information only"
+
+#: src/bestell_plan_glade.cc:108
+msgid "bestätigt (ab <b>...</b>)"
+msgstr ""
+
+#: src/bestell_plan_glade.cc:114
+msgid "unbestätigt"
+msgstr ""
+
+#: src/bestell_plan_glade.cc:116
+msgid "Rohware Bestellt beim Lief."
+msgstr "raw material order placed"
+
+#: src/bestell_plan_glade.cc:120
+msgid "Vergl. Zeitr. 1 kumulieren nach "
+msgstr "comparison time 1 accumulated by"
+
+#: src/bestell_plan_glade.cc:124
+msgid "Vergl. Zeitr. 2 kumulieren nach "
+msgstr "comparison time 2 accumulated by"
+
+#: src/bestell_plan_glade.cc:127
+msgid "Abverkauf 12 Mon."
+msgstr "Sales 12 months"
+
+#: src/bestell_plan_glade.cc:137
+msgid "Abverkauf"
+msgstr "Sales"
+
+#: src/bestell_plan_glade.cc:380 src/bestell_plan_glade.cc:421
+#: src/lieferscheinliste_glade.cc:283
+msgid "Woche"
+msgstr "week"
+
+#: src/bestell_plan_glade.cc:384 src/bestell_plan_glade.cc:425
+#: src/lieferscheinliste_glade.cc:287
+msgid "Monat"
+msgstr "month"
+
+#: src/bestell_plan_glade.cc:388 src/bestell_plan_glade.cc:429
+#: src/lieferscheinliste_glade.cc:291
+msgid "Quartal"
+msgstr "quarter"
+
+#: src/bestell_plan_glade.cc:392 src/bestell_plan_glade.cc:433
+#: src/lieferscheinliste_glade.cc:295
+msgid "Jahr"
+msgstr "year"
+
+#: src/buchen_dialog_glade.cc:69
+msgid "Nein, nicht mehr fragen"
+msgstr "no, do not ask anymore"
+
+#: src/buchen_dialog_glade.cc:75 src/buchen_dialog_glade.cc:79
+msgid "label"
+msgstr "label"
+
+#: src/info_dialog_glade.cc:62
+msgid "Bitte Schließen"
+msgstr "please close"
+
+#: src/ja_nein_frage_glade.cc:61
+msgid "Sind Sie sicher ?"
+msgstr "Are you sure ?"
+
+#: src/lieferscheinliste.cc:146
+#, fuzzy
+msgid "Aufträge anzeigen"
+msgstr "show order"
+
+#: src/lieferscheinliste.cc:148
+#, fuzzy
+msgid "Lieferschein anzeigen"
+msgstr "Create delivery note for incoming goods"
+
+#: src/lieferscheinliste.cc:150
+#, fuzzy
+msgid "Rechnung anzeigen"
+msgstr "Invoices"
+
+#: src/lieferscheinliste.cc:204
+msgid "Insgesamt %1 Einträge"
+msgstr "Total %1 entries"
+
+#: src/lieferscheinliste.cc:232
+msgid "Auftrag(ZNr)"
+msgstr "Order (line no)"
+
+#: src/lieferscheinliste.cc:236
+msgid "Aufm."
+msgstr "Put up"
+
+#: src/lieferscheinliste.cc:240
+msgid "Rng.Datum"
+msgstr "invoice date"
+
+#: src/lieferscheinliste.cc:241
+msgid "Art"
+msgstr "Type"
+
+#: src/lieferscheinliste.cc:242
+msgid "Einzelmenge"
+msgstr "single qty"
+
+#: src/lieferscheinliste_glade.cc:89
+msgid "alle"
+msgstr "all"
+
+#: src/lieferscheinliste_glade.cc:90
+msgid "einen"
+msgstr "one"
+
+#: src/lieferscheinliste_glade.cc:91
+msgid "Gruppe"
+msgstr "group"
+
+#: src/lieferscheinliste_glade.cc:99
+msgid "Kundenauswahl"
+msgstr "customer selection"
+
+#: src/lieferscheinliste_glade.cc:102
+msgid "Zeige alle Artikel"
+msgstr "Show all items"
+
+#: src/lieferscheinliste_glade.cc:103
+msgid "Zeige nur Artikel"
+msgstr "Show only items"
+
+#: src/lieferscheinliste_glade.cc:104
+msgid ""
+"nur Art.Nr. \n"
+"einschränken"
+msgstr "only item no. narrowed"
+
+#: src/lieferscheinliste_glade.cc:111
+msgid "Artikelauswahl"
+msgstr "item selection"
+
+#: src/lieferscheinliste_glade.cc:114
+msgid "Zeige vom Anfang"
+msgstr "Show from start"
+
+#: src/lieferscheinliste_glade.cc:115
+msgid "Zeige vom"
+msgstr "Show from"
+
+#: src/lieferscheinliste_glade.cc:120
+msgid "bis heute"
+msgstr "until today"
+
+#: src/lieferscheinliste_glade.cc:121
+msgid "bis zum"
+msgstr "until"
+
+#: src/lieferscheinliste_glade.cc:128
+msgid "Kumulieren"
+msgstr "accumulate"
+
+#: src/lieferscheinliste_glade.cc:131
+msgid "Zeitraumauswahl"
+msgstr "time frame selection"
+
+#: src/lieferscheinliste_glade.cc:136
+msgid "label81"
+msgstr "label81"
+
+#: src/lieferscheinliste_glade.cc:351
+msgid "Lieferscheinliste"
+msgstr "Delivery note list"
+
+#: src/petig_we.cc:40
+msgid "Die Lieferschein Nr. ist nicht korrekt"
+msgstr "Delivery note number is not correct"
+
+#: src/petig_we.cc:54
+msgid "%1: Anmeldung nicht möglich"
+msgstr "%1: Log in not possible"
+
+#: src/petig_we_glade.cc:64
+msgid "Bitte die Lieferschein Nr. des Lieferanten (Petig) eingeben."
+msgstr "Please indicate delivery note number of supplier"
+
+#: src/petig_we_glade.cc:93
+msgid "WE Lieferschein erzeugen"
+msgstr "Create delivery note for incoming goods"
+
+#: src/termsplidial_glade.cc:66
+msgid "neuer Termin"
+msgstr "new date"
+
+#: src/termsplidial_glade.cc:71
+msgid "Teilmenge"
+msgstr "part delivery"
+
+#: src/termsplidial_glade.cc:105
+msgid "Termin splitten"
+msgstr "split date"
+
+#~ msgid "Linker Knopf: Drucken, rechter Knopf: Vorschau"
+#~ msgstr "Left: print, right: preview"
