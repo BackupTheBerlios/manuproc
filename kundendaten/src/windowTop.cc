@@ -8,6 +8,16 @@
 #include <Kunde/Kundengruppe.h>
 #include "kundendaten_aux.hh"
 
+
+void windowTop::Model_Refresh(void *x)
+{
+ fixedpoint<2> t(2.3);
+
+ if(rabatt.matches(x))
+   std::cout << "Rabatt set to:" << rabatt.get_value() <<" "<<t<< "\n";
+
+}
+
 void windowTop::on_notebook1_switch_page(GtkNotebookPage* page,guint pagenr)
 {
   switch (enum_notebook(pagenr))
@@ -92,6 +102,12 @@ windowTop::windowTop(unsigned id)
        &windowTop::on_clistPersonenListe_selection_changed));
   if (id!=unsigned(Kunde::none_id))
     laden(id);
+
+
+ // initialize MVC components
+  rabatt=0;
+  ManuProC::Associationf2(*spinbutton_Rabatt).set_model(rabatt);
+  rabatt.signal_changed().connect(SigC::slot(*this,&windowTop::Model_Refresh));
 }
 
 void windowTop::saveAll()
@@ -125,6 +141,7 @@ bool windowTop::on_delete_event(GdkEventAny*)
 
 void windowTop::on_buttonBeenden_clicked()
 {   
+   kundenauswahl->grab_focus();
    saveAll();
    saveKundenKontakt();
 //   update_person(); passiert in saveAll, CP
@@ -164,7 +181,9 @@ void windowTop::clear_entrys()
    spinbutton_Flaeche->set_value(0);
    spinbutton_Kundenumsatz->set_value(0);
    spinbutton_Planumsatz->set_value(0);
-   spinbutton_Rabatt->set_value(0);
+//   spinbutton_Rabatt->set_value(0);
+   rabatt=0;
+
    spinbutton_Mitarbeiter->set_value(1);
    spinbutton_Umsatz->set_value(0);
    spinbutton_skontofrist1->set_value(0);

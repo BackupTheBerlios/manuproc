@@ -12,10 +12,19 @@
 #include <gtkmm/notebook.h>
 #include <gtkmm/liststore.h>
 #include "kundendaten_aux.hh"
+#include <Association.h>
+#include <BaseObjects/Model.h>
 
 class windowTop : public windowTop_glade
 {   
+ // Models for components in Kunde
+ Model<fixedpoint<2> > rabatt;
+
+ // Model callbacks
+ void Model_Refresh(void *x);
+
        H_Kunde kundendaten;
+
        std::vector<Kunde::st_ansprech> AnsprechPersonen;
        cH_Kunde person;
        

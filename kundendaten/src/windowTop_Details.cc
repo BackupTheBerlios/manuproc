@@ -25,7 +25,8 @@ void windowTop::show_details()
 	spinbutton_Planumsatz->set_value(kundendaten->planumsatz().as_float());
 	spinbutton_Umsatz->set_value(kundendaten->umsatz().as_float());
 	spinbutton_Kundenumsatz->set_value(kundendaten->kundenumsatz().as_float());
-	spinbutton_Rabatt->set_value(kundendaten->rabatt().as_float());
+//	spinbutton_Rabatt->set_value(kundendaten->rabatt().as_float());
+   rabatt=kundendaten->rabatt().as_float();
    spinbutton_firmenpapier->set_value(kundendaten->anzahl_ausdruck_firmenpapier());
    spinbutton_weissespapier->set_value(kundendaten->anzahl_ausdruck_weissespapier());
    entry_eigene_kundennr->set_text(kundendaten->UnsereKundenNr());

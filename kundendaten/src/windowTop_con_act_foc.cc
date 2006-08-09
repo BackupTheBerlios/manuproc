@@ -63,15 +63,15 @@ void windowTop::changedFktB(Kunde::UpdateBitsBank e)
      else if (e==Kunde::FBlz         ) ;//on_entry_blz_activate();
      else if (e==Kunde::FBankindex   ) kundendaten->set_bankindex(bankid);
 //     else if (e==Kunde::FBankeinzug  ) kundendaten->update_Bank_einzug(checkbuttonBankeinzug->get_active());
-     else if (e==Kunde::FRabatt      ) {spinbutton_Rabatt->update(); kundendaten->set_rabatt(spinbutton_Rabatt->get_value());}
+//     else if (e==Kunde::FRabatt      ) kundendaten->set_rabatt(spinbutton_Rabatt->get_value());
      else if (e==Kunde::FZeilenrabatt) kundendaten->set_zeilenrabatt(checkbutton_zeilenrabatt->get_active());
      else if (e==Kunde::FWaehrungid  ) kundendaten->setWaehrung(Waehrung->get_value());
 //     else if (e==Kunde::FEinzugrabatt) kundendaten->set_einzugrabatt(spinbutton_einzugRabatt->get_text());
 //     else if (e==Kunde::FSkontosatz  ) kundendaten->set_skontosatz(spinbutton_skontosatz->get_text());
      else if (e==Kunde::FZahlungsart ) { kundendaten->set_Zahlungsart(zahlungsartbox->get_value()); show_zahlungsziel();}
-     else if (e==Kunde::FLieferantenkonto ) { spinbutton_lieferantenkonto->update(); kundendaten->set_Lieferantenkonto(atoi(spinbutton_lieferantenkonto->get_text().c_str()));}
-     else if (e==Kunde::FGegenkonto  ) {spinbutton_gegenkonto->update(); kundendaten->set_Gegenkonto(atoi(spinbutton_gegenkonto->get_text().c_str()));}
-     else if (e==Kunde::FDebitorenkonto  )  {spinbutton_debitorenkonto->update(); kundendaten->set_Debitorenkonto(atoi(spinbutton_debitorenkonto->get_text().c_str()));}
+     else if (e==Kunde::FLieferantenkonto ) kundendaten->set_Lieferantenkonto(atoi(spinbutton_lieferantenkonto->get_text().c_str()));
+     else if (e==Kunde::FGegenkonto  )  kundendaten->set_Gegenkonto(atoi(spinbutton_gegenkonto->get_text().c_str()));
+     else if (e==Kunde::FDebitorenkonto  )  kundendaten->set_Debitorenkonto(atoi(spinbutton_debitorenkonto->get_text().c_str()));
      else std::cerr<< "Falsche Funktion konektiert\n";
 
   if(e==Kunde:: FWaehrungid || e==Kunde::FBankindex ||
@@ -95,8 +95,8 @@ void windowTop::changedFktS(Kunde::UpdateBitsSonst e)
 //     else if (e==Kunde::FKalkulation)
      else if (e==Kunde::FKP_Position) ;
      else if (e==Kunde::FKP_Notiz   ) ;
-     else if (e==Kunde::FAnzAusFirmenPapier) { spinbutton_firmenpapier->update(); kundendaten->set_anzahl_ausdruck_firmenpapier(spinbutton_firmenpapier->get_value_as_int());}
-     else if (e==Kunde::FAnzAusWeissesPapier){ spinbutton_weissespapier->update();kundendaten->set_anzahl_ausdruck_weissespapier(spinbutton_weissespapier->get_value_as_int());}
+     else if (e==Kunde::FAnzAusFirmenPapier) kundendaten->set_anzahl_ausdruck_firmenpapier(spinbutton_firmenpapier->get_value_as_int());
+     else if (e==Kunde::FAnzAusWeissesPapier) kundendaten->set_anzahl_ausdruck_weissespapier(spinbutton_weissespapier->get_value_as_int());
      else if (e==Kunde::FGebDatum	) kundendaten->setGebDatum(geburtstag->get_value());
      else std::cerr<< "Falsche Funktion konektiert\n";
 
@@ -326,9 +326,9 @@ void windowTop::connectFkt()
 //  spinbutton_einzugRabatt->signal_activate().connect(SigC::bind(SigC::slot(*this,&windowTop::activateFktB),Kunde::FEinzugrabatt),true);
 //  spinbutton_einzugRabatt->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktB),Kunde::FEinzugrabatt));
 
-  spinbutton_Rabatt->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktB),Kunde::FRabatt),true);
-  spinbutton_Rabatt->signal_activate().connect(SigC::bind(SigC::slot(*this,&windowTop::activateFktB),Kunde::FRabatt),true);
-  spinbutton_Rabatt->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktB),Kunde::FRabatt));
+//  spinbutton_Rabatt->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktB),Kunde::FRabatt),true);
+//  spinbutton_Rabatt->signal_activate().connect(SigC::bind(SigC::slot(*this,&windowTop::activateFktB),Kunde::FRabatt),true);
+//  spinbutton_Rabatt->signal_focus_out_event().connect(SigC::bind(SigC::slot(*this,&windowTop::focus_outFktB),Kunde::FRabatt));
 
 //  spinbutton_Skontofrist->signal_changed().connect(SigC::bind(SigC::slot(*this,&windowTop::changedFktB),Kunde::FSkontofrist));
 //  spinbutton_Skontofrist->signal_activate().connect(SigC::bind(SigC::slot(*this,&windowTop::activateFktB),Kunde::FSkontofrist),true);
