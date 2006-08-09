@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.79 2006/06/20 13:34:43 christof Exp $
+// $Id: Kunde.h,v 1.80 2006/08/09 11:11:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,6 +33,7 @@
 #include <Kunde/Anrede.h>
 #include <BaseObjects/ManuProcHandle.h>
 #include <DynamicEnums/DefaultValues.h>
+#include <DynamicEnums/DynamicConfig.h>
 #include <utility> // for pair
 #include <Kunde/Kundengruppe.h>
 #include <Kunde/Lieferart.h>
@@ -162,11 +163,15 @@ public:
 	static const ID default_id=ManuProC::DefaultValues::DefaultKundenId;
 	static const ID eigene_id=ManuProC::DefaultValues::EigeneKundenId;
 	Kunde(ID nr=default_id) throw(SQLerror);
-#ifdef MANUPROC_DYNAMICENUMS_CREATED	
 	static const cH_Kunde newKunde(const Kunde::ID kid, const std::string &firma,
 			const std::string &name2,
-			Kundengruppe::ID kgid=KundengruppeID::Kunden) throw(SQLerror);
-#endif			
+			Kundengruppe::ID kgid=
+#ifdef HAS_ADDR_GROUP_Kunden	
+			KundengruppeID::Kunden
+#else
+			KundengruppeID::None
+#endif
+			) throw(SQLerror);
         const std::string LaTeX_von() const;
         const std::string LaTeX_von_gross(const ID kid,
         			const std::string width="7cm") const;

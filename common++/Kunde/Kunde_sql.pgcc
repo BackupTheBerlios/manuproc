@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.78 2006/06/26 07:53:02 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.79 2006/08/09 11:11:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -154,41 +154,24 @@ Kunde::Kunde(ID _id) throw(SQLerror)
   ltrim(adresse.sortname);
 }
 
-#ifdef MANUPROC_DYNAMICENUMS_CREATED
 const cH_Kunde Kunde::newKunde(const Kunde::ID kid, const std::string &firma,
 	const std::string &name2,
 	Kundengruppe::ID kgrid) throw(SQLerror)
 {
- exec sql begin declare section;
-  int KID=kid;
-  char *FIRMA;
-  char *NAME2; int INAME2=0;
-  int WAEHRUNG;
-  int GRPNR=kgrid;
- exec sql end declare section;
- WAEHRUNG=WaehrungID::EUR;
  Transaction tr;
-
- FIRMA=(char*)firma.c_str();
- NAME2=(char*)name2.c_str();
-
- if(name2.empty()) INAME2=-1;
-
- exec sql insert into kunden (kundennr, firma, name2, waehrungid,rechnung_an,
-		lieferung_an,aktiv) 
-      values (:KID, :FIRMA, :NAME2:INAME2, :WAEHRUNG,:KID,:KID,true);
- SQLerror::test(__FILELINE__);
-// exec sql insert into ku_warenkorb (prlsnr,kundennr,suchfolge)
+ Query("insert into kunden (kundennr, firma,name2, waehrungid,rechnung_an,"
+		"lieferung_an,aktiv) values (?, ?,?, ?,?, ?,true)")
+      << kid << firma << Query::NullIf(name2) << WaehrungID::EUR
+      << kid << kid;
+// ex ec sql insert into ku_warenkorb (prlsnr,kundennr,suchfolge)
 //   values (1,:KID,1);
- exec sql insert into ku_gruppen_map (kundennr,grpnr)
-   values (:KID,:GRPNR);
- SQLerror::test(__FILELINE__);
+ if (kgrid!=KundengruppeID::None)
+   Query("insert into ku_gruppen_map (kundennr,grpnr) values (?,?)")
+     << kid << kgrid;
  tr.commit();
 
- return cH_Kunde(KID);
+ return cH_Kunde(kid);
 }
-
-#endif
 
 //void Kunde::delete_Kunde(const Kunde::ID kid) throw(SQLerror)
 //{
