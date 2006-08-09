@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.76 2006/08/03 11:27:12 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.77 2006/08/09 11:12:16 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -134,12 +134,17 @@ public:
 #endif
 };
 
+#define MPC_STSN_MAGIC 0x729512cb
+
 struct SimpleTreeStoreNode
 {	// Multimap wegen doppelter Zeilen (auf der untersten Ebene)
 	typedef std::multimap<cH_EntryValue,SimpleTreeStoreNode> map_t;
 	typedef map_t::const_iterator const_iterator;
 	typedef map_t::iterator iterator;
 
+#ifdef MPC_STSN_MAGIC
+	unsigned magic;
+#endif
 	map_t children;
 	Handle<TreeRow> row; // die Datenstruktur hinter nodes
 	cH_RowDataBase leafdata; // die Datenstruktur hinter leaves
@@ -158,8 +163,15 @@ struct SimpleTreeStoreNode
 	SimpleTreeStoreNode(guint _deep=0, SimpleTreeStoreNode *_parent=0, 
 			const cH_RowDataBase &v=cH_RowDataBase(),
 			unsigned c_deep=0) 
-	        : leafdata(v),  
-	          parent(_parent), deep(_deep), childrens_deep(c_deep) {}
+	        : 
+#ifdef MPC_STSN_MAGIC
+		  magic(MPC_STSN_MAGIC),
+#endif
+	          leafdata(v), parent(_parent), deep(_deep), 
+	          childrens_deep(c_deep) {}
+#ifdef MPC_STSN_MAGIC
+	~SimpleTreeStoreNode() { magic=0; }
+#endif
 		
 	void swap(SimpleTreeStoreNode &b);
 	void fix_pointer();

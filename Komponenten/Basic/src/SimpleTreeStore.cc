@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.118 2006/08/03 11:27:12 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.119 2006/08/09 11:12:16 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *  Copyright (C) 2006 Christof Petig
@@ -430,18 +430,28 @@ void SimpleTreeStore::fillSequence(sequence_t &seq,bool standard) const
    }
 }
 
+#ifdef MPC_STSN_MAGIC
+# define STSN_CHECK_MAGIC(x) assert(!(x) || (x)->magic==MPC_STSN_MAGIC)
+#else
+# define STSN_CHECK_MAGIC(x)
+#endif
+
 void SimpleTreeStore::resort(Node &parent, unsigned stop_at)
-{  ManuProC::Trace(trace_channel,__FUNCTION__,&parent,stop_at);
+{  STSN_CHECK_MAGIC(&parent);
+   ManuProC::Trace(trace_channel,__FUNCTION__,&parent,stop_at);
    SimpleTreeStoreNode::map_t swapmap;
    std::swap(swapmap,parent.children);
    for (SimpleTreeStoreNode::map_t::iterator i=swapmap.begin();i!=swapmap.end();++i)
-   {  cH_EntryValue x=i->first;
+   {  STSN_CHECK_MAGIC(&i->second);
+      STSN_CHECK_MAGIC(i->second.parent);
+      cH_EntryValue x=i->first;
       cH_EntryValue y,z;
       if (i->second.row) y=i->second.row->Value(sortierspalte,ValueData());
       else y=i->second.leafdata->Value(sortierspalte,ValueData());
       if (invert_order.at(sortierspalte)) z=cH_EntryValueReverseSort(y,x);
       else z=cH_EntryValueSort(y,x);
       Node &nd=parent.children.insert(parent.children.upper_bound(z),std::make_pair(z,Node()))->second;
+      STSN_CHECK_MAGIC(&nd);
       std::swap(i->second,nd);
       nd.parent=&parent;
       if (nd.childrens_deep<stop_at) resort(nd,stop_at);
@@ -487,7 +497,9 @@ void SimpleTreeStore::on_line_appended(cH_RowDataBase row)
 void SimpleTreeStore::insertLine(Node &parent,
             const cH_RowDataBase &v,  sequence_t::const_iterator seqit,
             guint deep, bool live)
-{if (seqit==currseq.end()) return;
+{STSN_CHECK_MAGIC(&parent);
+ STSN_CHECK_MAGIC(parent.parent);
+ if (seqit==currseq.end()) return;
 
  iterator current_iter=parent.children.begin();
  iterator apiend = parent.children.end();
@@ -509,7 +521,9 @@ void SimpleTreeStore::insertLine(Node &parent,
     current_iter=parent.children.lower_bound(ev);
  				
  if(current_iter!=apiend) // dann einfuegen
-   {//----------------- gleicher Wert ------------------
+   {STSN_CHECK_MAGIC(&current_iter->second);
+    STSN_CHECK_MAGIC(current_iter->second.parent);
+    //----------------- gleicher Wert ------------------
     if ((ev) == current_iter->first)
      { 
       if (seqit!=seqlast)
@@ -544,6 +558,8 @@ void SimpleTreeStore::insertLine(Node &parent,
 	 // (current_iter wandert nach unten rechts)
          // (man könnte dies auch aufbrechen nennen)
  	 current_iter= MoveTree (current_iter,deep,child_s_deep,*seqit,live);
+ 	 STSN_CHECK_MAGIC(&current_iter->second);
+ 	 STSN_CHECK_MAGIC(current_iter->second.parent);
          goto weiter_unten_einhaengen;
       }
       else // Blatt erreicht
@@ -556,6 +572,8 @@ void SimpleTreeStore::insertLine(Node &parent,
    // --------------- kleinerer Wert (davor Einfügen) ----------   
    //----------------- oder am Ende der Liste: anhängen ---------------------
    iterator newnode=parent.children.insert(current_iter,std::make_pair(ev,Node(deep,&parent,v)));
+   STSN_CHECK_MAGIC(&newnode->second);
+   STSN_CHECK_MAGIC(newnode->second.parent);
    if (live) row_inserted(getPath(newnode),getIter(newnode));
 }                                
 
@@ -572,7 +590,11 @@ SimpleTreeStore::iterator SimpleTreeStore::MoveTree(iterator current_iter,
 	guint deep,guint child_s_deep,guint value_index,bool live)
 {//  ManuProC::Trace(trace_channel,__FUNCTION__,deep,child_s_deep,value_index);
    Node &oldnode=current_iter->second;
+   STSN_CHECK_MAGIC(&oldnode);
+   STSN_CHECK_MAGIC(oldnode.parent);
    Node newnode(deep,oldnode.parent,oldnode.leafdata,child_s_deep);
+   STSN_CHECK_MAGIC(&newnode);
+   STSN_CHECK_MAGIC(newnode.parent);
 
 //   if (node_creation) 
    {  Handle<TreeRow> htr= create_node(oldnode.row);
@@ -588,6 +610,8 @@ SimpleTreeStore::iterator SimpleTreeStore::MoveTree(iterator current_iter,
    newnode.children.insert(std::make_pair(val,Node(deep,oldnode.parent)));
    // dieser Knoten wird als oldnode im Baum hängen
    Node &newchild=newnode.children.begin()->second;
+   STSN_CHECK_MAGIC(&newchild);
+   STSN_CHECK_MAGIC(newchild.parent);
 
    // newchild und oldnode vertauschen (Unterbaum ist dann außerhalb des Baumes
    //		unterhalb von newnode, newchild ist dann im Baum)
@@ -603,6 +627,8 @@ SimpleTreeStore::iterator SimpleTreeStore::MoveTree(iterator current_iter,
    // oldnode's address has changed to newchild ...
    for (iterator i=newchild.children.begin();i!=newchild.children.end();++i)
    {  i->second.parent=&newchild;
+      STSN_CHECK_MAGIC(&newchild);
+      STSN_CHECK_MAGIC(newchild.parent);
    }
    // row_has_child_toggled(newnode), row_changed(newnode)
    
@@ -615,6 +641,8 @@ SimpleTreeStore::iterator SimpleTreeStore::MoveTree(iterator current_iter,
      assert(child!=current_iter->second.children.end());
      row_inserted(getPath(child),getIter(child));
    }
+   STSN_CHECK_MAGIC(&current_iter->second);
+   STSN_CHECK_MAGIC(current_iter->second.parent);
    return current_iter;
 }
 
@@ -698,7 +726,10 @@ void SimpleTreeStore::on_line_removed(cH_RowDataBase r)
 // this is impossible, if a value has already changed ...
 
 bool SimpleTreeStore::find_row(Node &parent, const cH_RowDataBase &r,bool optimize,std::list<iterator> &result)
-{ ManuProC::Trace _t(trace_channel,__FUNCTION__,&parent,&*r);
+{
+  STSN_CHECK_MAGIC(&parent);
+  STSN_CHECK_MAGIC(parent.parent);
+  ManuProC::Trace _t(trace_channel,__FUNCTION__,&parent,&*r);
    if (optimize && parent.childrens_deep && sortierspalte==invisible_column)
    {  cH_EntryValue val=r->Value(currseq[parent.childrens_deep],ValueData());
       ManuProC::Trace(trace_channel,"",NV("depth",parent.childrens_deep),
@@ -711,10 +742,13 @@ bool SimpleTreeStore::find_row(Node &parent, const cH_RowDataBase &r,bool optimi
       if (!p.first->second.childrens_deep) // nodes
       {  ManuProC::Trace(trace_channel,"","leaves");
          for (iterator i=p.first;i!=p.second;++i) 
+         {  STSN_CHECK_MAGIC(&i->second);
+            STSN_CHECK_MAGIC(i->second.parent);
             if (&*i->second.leafdata==&*r)
             {  result.push_back(i);
                return true;
             }
+         }
       }
       else 
       {  ManuProC::Trace(trace_channel,"","nodes");
@@ -728,7 +762,9 @@ bool SimpleTreeStore::find_row(Node &parent, const cH_RowDataBase &r,bool optimi
    }
    
    for (iterator i= parent.children.begin(); i!=parent.children.end(); ++i)
-   {  if (i->second.children.empty())
+   {  STSN_CHECK_MAGIC(&i->second);
+      STSN_CHECK_MAGIC(i->second.parent);
+      if (i->second.children.empty())
       {  ManuProC::Trace(trace_channel,"",NV("found",&*i->second.leafdata));
          if (&*i->second.leafdata==&*r)
          {  result.push_back(i);
@@ -804,6 +840,8 @@ bool SimpleTreeStore::iter_valid(vfunc_constiter_t iter) const
 
 SimpleTreeStore::iterator &SimpleTreeStore::iterconv(vfunc_iter_t iter)
 {  assert(iter_valid(iter));
+   STSN_CHECK_MAGIC(&reinterpret_cast<SimpleTreeStore::iterator&>(iter.gobj()->user_data)->second);
+   STSN_CHECK_MAGIC(reinterpret_cast<SimpleTreeStore::iterator&>(iter.gobj()->user_data)->second.parent);
    return reinterpret_cast<SimpleTreeStore::iterator&>(iter.gobj()->user_data);
 }
 
@@ -813,12 +851,16 @@ const SimpleTreeStore::iterator &SimpleTreeStore::iterconv(vfunc_constiter_t ite
    	<< " user_data=" << iter.gobj()->user_data << '\n';
       abort();
    }
+   STSN_CHECK_MAGIC(&reinterpret_cast<const SimpleTreeStore::iterator&>(iter.gobj()->user_data)->second);
+   STSN_CHECK_MAGIC(reinterpret_cast<const SimpleTreeStore::iterator&>(iter.gobj()->user_data)->second.parent);
    return reinterpret_cast<const SimpleTreeStore::iterator&>(iter.gobj()->user_data);
 }
 
 void SimpleTreeStore::iterinit(vfunc_iter_t iter,const const_iterator &schema) const
 {  assert(3*sizeof(iter.gobj()->user_data)>=sizeof(SimpleTreeStore::const_iterator));
-    iter.set_stamp(stamp);
+   STSN_CHECK_MAGIC(&schema->second);
+   STSN_CHECK_MAGIC(schema->second.parent);
+   iter.set_stamp(stamp);
    reinterpret_cast<SimpleTreeStore::const_iterator&>(iter.gobj()->user_data)=schema;
    iter.set_model_gobject(const_cast<GtkTreeModel*>(Gtk::TreeModel::gobj()));
    ManuProC::Trace(trace_channel,__FUNCTION__,iter .get_stamp(),
@@ -853,6 +895,8 @@ void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter,
 		int column, Glib::ValueBase& value) const
 {  if (!iter_valid(iter )) return;
    Node &nd=iterconv(iter )->second;
+   STSN_CHECK_MAGIC(&nd);
+   STSN_CHECK_MAGIC(nd.parent);
    switch(e_spalten(column))
    {  case s_row: VALUE_INIT(row);
          return;
@@ -902,6 +946,8 @@ bool SimpleTreeStore::iter_next_vfunc(vfunc_constiter_t iter, vfunc_iter_t iter_
    if (!iter_valid(iter)) { iterclear(iter_next); return false; }
 
    iterator old=iterconv(iter),newit=old;
+   STSN_CHECK_MAGIC(&old->second);
+   STSN_CHECK_MAGIC(old->second.parent);
    iterclear(iter_next);
    if (!old->second.parent) return false;
    newit++;
@@ -916,6 +962,8 @@ bool SimpleTreeStore::iter_children_vfunc(vfunc_constiter_t parent, vfunc_iter_t
    iterclear(iter);
    if (!iter_valid(parent)) return false;
    iterator p=iterconv(parent);
+   STSN_CHECK_MAGIC(&p->second);
+   STSN_CHECK_MAGIC(p->second.parent);
    if (p->second.children.empty()) return false;
    iterinit(iter,p->second.children.begin());
    return true;
@@ -923,16 +971,21 @@ bool SimpleTreeStore::iter_children_vfunc(vfunc_constiter_t parent, vfunc_iter_t
 
 bool SimpleTreeStore::iter_has_child_vfunc(vfunc_constiter_t iter) const
 {  if (!iter_valid(iter)) return false;
+   STSN_CHECK_MAGIC(&iterconv(iter)->second);
+   STSN_CHECK_MAGIC(iterconv(iter)->second.parent);
    return !(iterconv(iter)->second.children.empty());
 }
 
 int SimpleTreeStore::iter_n_children_vfunc(vfunc_constiter_t iter) const
 {  if (!iter_valid(iter)) return 0;
+   STSN_CHECK_MAGIC(&iterconv(iter)->second);
+   STSN_CHECK_MAGIC(iterconv(iter)->second.parent);
    return iterconv(iter)->second.children.size();
 }
 
 int SimpleTreeStore::iter_n_root_children_vfunc() const
-{  return root.children.size();
+{  STSN_CHECK_MAGIC(&root);
+   return root.children.size();
 }
 
 bool SimpleTreeStore::iter_nth_child_vfunc(vfunc_constiter_t parent, int n, vfunc_iter_t iter) const
@@ -941,6 +994,8 @@ bool SimpleTreeStore::iter_nth_child_vfunc(vfunc_constiter_t parent, int n, vfun
    iterclear(iter);
    {  if (!iter_valid(parent)) return false;
       iterator p=iterconv(parent);
+      STSN_CHECK_MAGIC(&p->second);
+      STSN_CHECK_MAGIC(p->second.parent);
       res=p->second.children.begin();
       end=p->second.children.end();
    }
@@ -962,9 +1017,13 @@ bool SimpleTreeStore::iter_nth_root_child_vfunc(int n, vfunc_iter_t iter) const
 		   end=root.children.end();
    if (res==end) return false;
    for (;n>0;--n)
-   {  ++res;
+   {  STSN_CHECK_MAGIC(&res->second);
+      STSN_CHECK_MAGIC(res->second.parent);
+      ++res;
       if (res==end) return false;
    }
+   STSN_CHECK_MAGIC(&res->second);
+   STSN_CHECK_MAGIC(res->second.parent);
    iterinit(iter,res); 
    return true;
 }
@@ -974,6 +1033,8 @@ bool SimpleTreeStore::iter_parent_vfunc(vfunc_constiter_t child, vfunc_iter_t it
    iterclear(iter);
    if (!iter_valid(child)) return false;
    iterator c=iterconv(child);
+   STSN_CHECK_MAGIC(&c->second);
+   STSN_CHECK_MAGIC(c->second.parent);
    if (!c->second.parent || c->second.parent==&root) return false;  
    iterator p=iterbyNode(*c->second.parent);
    if (p==c->second.parent->parent->children.end()) return false;
@@ -998,9 +1059,13 @@ bool SimpleTreeStore::get_iter_vfunc(const Path& path, vfunc_iter_t iter) const
    for (Path::const_iterator piter=path.begin();piter!=path.end();)
    {  if (res==end) return false;
       for (unsigned i=*piter;i>0;--i) 
-      {  ++res;
+      {  STSN_CHECK_MAGIC(&res->second);
+         STSN_CHECK_MAGIC(res->second.parent);
+         ++res;
          if (res==end) return false;
       }
+      STSN_CHECK_MAGIC(&res->second);
+      STSN_CHECK_MAGIC(res->second.parent);
       ++piter;
       if (piter==path.end()) {  iterinit(iter,res); return true; }
       end=res->second.children.end();
@@ -1010,7 +1075,9 @@ bool SimpleTreeStore::get_iter_vfunc(const Path& path, vfunc_iter_t iter) const
 }
 
 SimpleTreeStore::iterator SimpleTreeStore::iterbyValue(Node &parent,const cH_EntryValue &val) const
-{  return parent.children.find(val);
+{ STSN_CHECK_MAGIC(&parent);
+  STSN_CHECK_MAGIC(parent.parent);
+  return parent.children.find(val);
 }
 
 std::ostream &operator<<(std::ostream &o,const SimpleTreeStore::iterator &i)
@@ -1019,20 +1086,28 @@ std::ostream &operator<<(std::ostream &o,const SimpleTreeStore::iterator &i)
 }
 
 SimpleTreeStore::iterator SimpleTreeStore::iterbyNode(Node &nd) const
-{  ManuProC::Trace _t(trace_channel, __FUNCTION__,&nd);
+{  STSN_CHECK_MAGIC(&nd);
+   STSN_CHECK_MAGIC(nd.parent);
+   ManuProC::Trace _t(trace_channel, __FUNCTION__,&nd);
    cH_EntryValue val=nd.leafdata->Value(currseq[nd.deep],ValueData());
    std::pair<iterator,iterator> p;
    if (sortierspalte==invisible_column) p=nd.parent->children.equal_range(val);
    else p=make_pair(nd.parent->children.begin(),nd.parent->children.end());
    for (iterator i=p.first;i!=p.second;++i) 
-   {  ManuProC::Trace(trace_channel,"i",&i->second);
+   {  STSN_CHECK_MAGIC(&i->second);
+      STSN_CHECK_MAGIC(i->second.parent);
+      ManuProC::Trace(trace_channel,"i",&i->second);
       if (&i->second==&nd) return i;
    }
    return nd.parent->children.end();
 }
 
 void SimpleTreeStoreNode::swap(SimpleTreeStoreNode &b)
-{  std::swap(children,b.children);
+{  STSN_CHECK_MAGIC(this);
+   STSN_CHECK_MAGIC(this->parent);
+   STSN_CHECK_MAGIC(&b);
+   STSN_CHECK_MAGIC(b.parent);
+   std::swap(children,b.children);
    std::swap(row,b.row);
    std::swap(leafdata,b.leafdata);
    std::swap(parent,b.parent);
@@ -1046,8 +1121,11 @@ void std::swap(SimpleTreeStoreNode &a,SimpleTreeStoreNode &b)
 
 void SimpleTreeStoreNode::fix_pointer()
 {  //ManuProC::Trace _t(SimpleTreeStore::trace_channel,__FUNCTION__);
+   STSN_CHECK_MAGIC(this);
+   STSN_CHECK_MAGIC(this->parent);
    for (iterator i=children.begin();i!=children.end();++i)
-   {  if (i->second.parent!=this)
+   {  STSN_CHECK_MAGIC(&i->second);
+      if (i->second.parent!=this)
       {  ManuProC::Trace(SimpleTreeStore::trace_channel,__FUNCTION__,i->second.parent,this);
          i->second.parent=this;
       }
@@ -1098,9 +1176,14 @@ Gtk::TreeModel::Path SimpleTreeStore::getPath(iterator it) const
 
 unsigned SimpleTreeStore::Node2nth_child(const Node &nd) const
 {  unsigned res=0;
+   STSN_CHECK_MAGIC(&nd);
+   STSN_CHECK_MAGIC(nd.parent);
    for (const_iterator i=nd.parent->children.begin();
    			i!=nd.parent->children.end();++i,++res)
+   {  STSN_CHECK_MAGIC(&i->second);
+      STSN_CHECK_MAGIC(i->second.parent);
       if (&i->second==&nd) return res;
+   }
    abort();
 }
 
