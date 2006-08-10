@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.30 2006/08/10 15:06:58 christof Exp $
+// $Id: Rechnung.cc,v 1.31 2006/08/10 15:07:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *  Copyright (C) 2006 Christof Petig
@@ -73,9 +73,8 @@ void Rechnung::setRngArt(const RngArt &art) throw(SQLerror)
 void Rechnung::convert_to_gutschrift(bool lager_buchung) throw(SQLerror)
 {
   Transaction tr;
-  Query("update rechnungentry set preis=preis*-1 where rngid=?")
-  	<< Id();     
-   SQLerror::test(__FILELINE__);
+  (Query("update rechnungentry set preis=preis*-1 where rngid=?")
+  	<< Id()).Check100();
 
 #ifdef MABELLA_EXTENSIONS
   if(lager_buchung)
