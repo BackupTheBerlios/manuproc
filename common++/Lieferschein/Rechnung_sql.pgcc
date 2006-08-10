@@ -20,11 +20,6 @@
 #include "Rechnung.h"
 #include <Misc/Transaction.h>
 #include <Misc/Query.h>
-#include <Misc/Trace.h>
-#include<math.h>
-#include <Lieferschein/LieferscheinVoll.h>
-#include <Artikel/Artikelpreis.h>
-#include <Artikel/ArtikelStamm.h>
 exec sql include sqlca;
 
 

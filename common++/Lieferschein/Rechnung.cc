@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.29 2006/08/10 15:06:53 christof Exp $
+// $Id: Rechnung.cc,v 1.30 2006/08/10 15:06:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *  Copyright (C) 2006 Christof Petig
@@ -24,6 +24,11 @@
 #include <Misc/itos.h>
 #include <Misc/Transaction.h>
 #include <Auftrag/auftrag_status.h>
+#include <Misc/Trace.h>
+#include <Lieferschein/LieferscheinVoll.h>
+#include <Artikel/Artikelpreis.h>
+#include <Artikel/ArtikelStamm.h>
+#include<math.h>
 
 RechnungBase::geldbetrag_t Rechnung::MwStProz=MWSTPROZ;
 
@@ -142,7 +147,7 @@ void Rechnung::setEntsorgung(bool ent) throw(SQLerror)
  entsorgung=ent;
 }
 
-unsigned push_back(ArtikelBase art,unsigned stk,mengen_t menge)
+unsigned Rechnung::push_back(ArtikelBase art,unsigned stk,mengen_t menge)
 { Transaction tr;
   unsigned lineno=0;
   Query("lock table rechnungentry in exclusive mode"); 
@@ -155,7 +160,7 @@ unsigned push_back(ArtikelBase art,unsigned stk,mengen_t menge)
 }
 
 // geht nur mit Zeilen ohne Lieferschein !
-void erase(unsigned lineno)
+void Rechnung::erase(unsigned lineno)
 {(Query("delete from rechnungentry where (rngid,zeile)=(?,?) and lfrsid is null")
  	<< Id() << lineno).Check100(); 
 }
