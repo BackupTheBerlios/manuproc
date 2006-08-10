@@ -75,6 +75,7 @@ void RechnungEntryBase::deleteEntry(const RechnungEntryBase &re) throw(SQLerror)
 
 void RechnungEntry::setzePreis(const Preis &p) throw (SQLerror)
 {  preis=p;
+   assert(p.Wert()>=0); // nicht zweimal negativ nehmen
    Query("update rechnungentry set preismenge=?, preis=? "
    	"where (rngid,zeilennr)=(?,?)")
    	<< p.BezugsMenge() << (RgArt()==RART_GUT?-p.Wert():p.Wert())
