@@ -1,7 +1,8 @@
-/* $Id: Rechnung.h,v 1.35 2005/09/08 11:45:14 jacek Exp $ */
+/* $Id: Rechnung.h,v 1.36 2006/08/10 15:06:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2000-2004 Adolf Petig GmbH & Co. KG
- *  written by Jacek Jakubowski
+ *  		written by Jacek Jakubowski
+ *  Copyright (C) 2006 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -94,6 +95,8 @@ public:
 
  void addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror);
  void deleteLieferschein(const LieferscheinBase &lfrs) throw(SQLerror);
+ unsigned push_back(ArtikelBase art,unsigned stk,mengen_t menge);
+ void erase(unsigned lineno);
 
  void setze_Rabatt(rabatt_t r) throw(SQLerror);
  const ManuProC::Datum getDatum() const { return rgdatum; }
@@ -113,17 +116,5 @@ public:
  
  static geldbetrag_t MwStProz;
 };
-
-/*
-class H_Rechnung : public Handle<Rechnung>
-{
- friend class std::map<int,H_Rechnung> ;
-protected:
-public:
- H_Rechnung(): Handle<Rechnung> (new Rechnung()) {}
- H_Rechnung(Rechnung *r) : Handle<Rechnung>(r){}
- H_Rechnung(Rechnung::ID i) : Handle<Rechnung>(new Rechnung(i)){}
-};
-*/
 
 #endif
