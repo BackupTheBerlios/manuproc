@@ -1,4 +1,4 @@
-// $Id: Query.h,v 1.26 2006/08/03 11:18:28 christof Exp $
+// $Id: Query.h,v 1.27 2006/08/10 15:07:06 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG, 
  *  		written by Christof Petig
@@ -285,6 +285,7 @@ class Query : public Query_types
 	void free(); // called by destructor and failed constructor
 public:
         typedef Query_Row Row;
+        typedef ArgumentList Args;
 	struct check100 { check100(){} };
 	typedef Row::check_eol check_eol;
 	typedef SQLerror Error;

@@ -1,6 +1,7 @@
-/* $Id: RechnungEntry.h,v 1.28 2005/04/13 14:44:07 jacek Exp $ */
+/* $Id: RechnungEntry.h,v 1.29 2006/08/10 15:07:06 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2006 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

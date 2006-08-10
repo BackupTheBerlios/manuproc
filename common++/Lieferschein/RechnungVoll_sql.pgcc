@@ -1,4 +1,4 @@
-/* $Id: RechnungVoll_sql.pgcc,v 1.22 2006/06/26 07:53:03 christof Exp $ */
+/* $Id: RechnungVoll_sql.pgcc,v 1.23 2006/08/10 15:07:06 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -39,25 +39,26 @@ void RechnungVoll::loadEntries(bool order_by_artikel) throw(SQLerror)
     sortstr=" zeilennr ";
 
  std::string qu("select ry.artikelid, ry.zeilennr");
+ Query::Args args;
 
- qu=qu+", coalesce(ry.stueck,0), coalesce(ry.menge,0), "
-   	"coalesce(ry.rabatt,0.0), ry.lfrsid, ry.lfrszeile," 
-        "coalesce(ry.preismenge,1), l.geliefertam, abs(ry.preis),"
-	"coalesce(refauftragid,"+itos(ManuProcEntity<>::none_id)+")"
-	"   from (rechnungentry ry "
-   	" left join lieferschein l on ("+itos(INSTANZ)+",ry.lfrsid) ="
-	"(l.instanz,l.lfrsid))"
-   	"left join lieferscheinentry e on (l.instanz,l.lfrsid,ry.lfrszeile)"
+ qu+=", ry.stueck, ry.menge, ry.rabatt, ry.lfrsid, ry.lfrszeile," 
+        "ry.preismenge, l.geliefertam, abs(ry.preis), refauftragid "
+	"from (rechnungentry ry "
+   	"left join lieferschein l on (?,ry.lfrsid) ="
+	"(l.instanz,l.lfrsid))";
+ args << INSTANZ;
+ qu+= "left join lieferscheinentry e on (l.instanz,l.lfrsid,ry.lfrszeile)"
 	"=(e.instanz,e.lfrsid,e.zeile) ";
 
- qu=qu+" where ry.rngid ="+itos(rngid);
+ qu+=" where ry.rngid=?";
+ args << rngid;
 
- qu+=std::string(" order by ") + sortstr;
+ qu+=" order by " + sortstr;
 
  Query query(qu);
+ query << args;
  
- Query::Row fi=query.Fetch();
- while(fi.good())
+ while((query >> fi).good())
    {
     int ARTIKELID, STUECK, ZEILE;
     int LFRSID,LIEFERZEILE;
@@ -65,68 +66,28 @@ void RechnungVoll::loadEntries(bool order_by_artikel) throw(SQLerror)
     float MENGE,RABATT,PREISMENGE,PREIS;
     ManuProC::Datum LIEFERDATUM;
 
-    fi >> ARTIKELID >> ZEILE >> STUECK >> MENGE >> RABATT >> LFRSID
-       >> LIEFERZEILE >> PREISMENGE 
-       >> Query::Row::MapNull(LIEFERDATUM,ManuProC::Datum()) 
-       >> PREIS >> AUFTRAGID;
+    fi >> ARTIKELID >> ZEILE 
+       >> Query::Row::MapNull(STUECK) >> Query::Row::MapNull(MENGE) 
+       >> Query::Row::MapNull(RABATT) 
+       >> Query::Row::MapNull(LFRSID,LieferscheinBase::invalid_id) 
+       >> Query::Row::MapNull(LIEFERZEILE)
+       >> Query::Row::MapNull(PREISMENGE,1)
+       >> LIEFERDATUM 
+       >> Query::Row::MapNull(PREIS) 
+       >> Query::Row::MapNull(AUFTRAGID,AuftragBase::invalid_id);
        
     Preis p(PREIS,getWaehrung(),PREISMENGE);       
     rentry.push_back(RechnungEntry(rngid,ZEILE,
          ARTIKELID,STUECK,MENGE,p,RABATT,LIEFERDATUM,
          LieferscheinEntryBase(ppsInstanz::ID(INSTANZ),LFRSID,LIEFERZEILE),
 	 AuftragBase(ppsInstanz::ID(INSTANZ),AUFTRAGID)));       
-       
-    fi = query.Fetch();
    }
-
-/*
-// QU=(char*)qu.c_str();
-
-// Transaction tr;
- exec sql prepare LQU from :QU;
- exec sql declare lein cursor for LQU;
- exec sql open lein;
- SQLerror::test(__FILELINE__);
- while (true)
-   {
-    exec sql fetch lein into
-         :ARTIKELID, :ZEILE, :STUECK, :MENGE, :RABATT, :LFRSID, :LIEFERZEILE,
-         :PREISMENGE, :LIEFERDATUM:ILIEFERDATUM, :PREIS,
-	 :AUFTRAGID;
-    if (sqlca.sqlcode) break;
-
-    Preis p(PREIS,getWaehrung(),PREISMENGE);
-    ManuProC::Datum ldatum;
-    if(!ILIEFERDATUM) ldatum.from_postgres(LIEFERDATUM);
-    rentry.push_back(RechnungEntry(rngid,ZEILE,
-         ARTIKELID,STUECK,MENGE,p,RABATT,ldatum,
-         LieferscheinEntryBase(ppsInstanz::ID(INSTANZ),LFRSID,LIEFERZEILE),
-	 AuftragBase(ppsInstanz::ID(INSTANZ),AUFTRAGID)));
-   }
- exec sql close lein;
-
-
-// tr.close();
-*/
-
 }
 
 RechnungVoll::RechnungVoll(int rid, bool order_by_artikel) throw(SQLerror)
 : Rechnung(rid)
 {
  if(rid==none_id) return;
- /*
- exec sql begin declare section;
-  int ARTIKELID, STUECK, ZEILE;
-  int LFRSID,LIEFERZEILE;
-  int AUFTRAGID;
-  float MENGE,RABATT,PREISMENGE,PREIS;
-  char LIEFERDATUM[11];
-  int ILIEFERDATUM,INSTANZ;
-  char *QU;
- exec sql end declare section;
- */
-
  loadEntries(order_by_artikel);
 }
 
@@ -134,23 +95,13 @@ RechnungVoll::RechnungVoll(int rid, bool order_by_artikel) throw(SQLerror)
 #ifdef DPD_LIEFERSCHEINE
 void RechnungVoll::setGewicht() const throw(SQLerror)
 {
- exec sql begin declare section;
- int RNGID = Id();
- float NETTO;
- float BRUTTO;
- int PAKETE;
- exec sql end declare section; 
- 
- exec sql select coalesce(sum(coalesce(netto_kg,0)),0),
-		coalesce(sum(coalesce(brutto_kg,0)),0),
-		coalesce(sum(coalesce(pakete,0)),0)
-	into :NETTO, :BRUTTO, :PAKETE from lieferschein l
-	where l.rngid= :RNGID;
- SQLerror::test(__FILELINE__);
-
- netto_gewicht = NETTO;
- brutto_gewicht = BRUTTO;
- pakete= PAKETE; 
+ Query("select sum(coalesce(netto_kg,0)), sum(coalesce(brutto_kg,0)),"
+		"sum(coalesce(pakete,0)) "
+	"from lieferschein l where l.rngid=?")
+	<< Id()
+	>> Query::Row::MapNull(netto_gewicht)
+	>> Query::Row::MapNull(brutto_gewicht)
+	>> Query::Row::MapNull(pakete);
 }
 
 #endif

@@ -21,51 +21,40 @@
 #include<Misc/Transaction.h>
 #include <Auftrag/AufEintrag.h>
 #include <Misc/Query.h>
-exec sql include sqlca;
 
 std::map<int,struct RechnungEntryBase::rng_payoff> RechnungEntryBase::rgdata;
 
 RechnungEntry::RechnungEntry(const RechnungEntryBase& rechnung)
 throw(SQLerror)	:RechnungEntryBase(rechnung),provsatz(-1)
 {
- exec sql begin declare section;
-   int ARTIKELID, STUECK, LFRSID, LFRSZN;
+   int LFRSID, LFRSZN;
    float PREISMENGE;
-   float MENGE;
    float PREIS;
    int AUFTRAGID;
-   char LIEFERDATUM[21];
-   int INSTANZ, RNGID=rechnung.Id(), ZEILENNR=rechnung.Zeile();
-   float RABATT;
-   int INVALID_REFAUFTRAGID;
- exec sql end declare section;
- INSTANZ=ppsInstanzID::Kundenauftraege;
- INVALID_REFAUFTRAGID=AuftragBase::invalid_id;
 
- exec sql select ry.artikelid, coalesce(ry.menge,0), coalesce(ry.preis,0),
-      coalesce(ry.stueck,0), coalesce(ry.preismenge,1), coalesce(ry.rabatt,0),
-      coalesce(li.geliefertam,li.datum,date('today')), 
-      coalesce(ry.lfrsid,0), coalesce(ry.lfrszeile,0),
-	coalesce(l.refauftragid,:INVALID_REFAUFTRAGID)
-   into :ARTIKELID, :MENGE, :PREIS, :STUECK, 
-         :PREISMENGE, :RABATT, :LIEFERDATUM, :LFRSID, :LFRSZN,
-	:AUFTRAGID
-   from rechnungentry ry 
-   left join lieferscheinentry l on 
-	(:INSTANZ,ry.lfrsid,ry.lfrszeile)=
-	(l.instanz,l.lfrsid,l.zeile)
-   join lieferschein li on (li.instanz,li.lfrsid)=(l.instanz,l.lfrsid)
-   where (ry.rngid,ry.zeilennr) = (:RNGID,:ZEILENNR);
- SQLerror::test(__FILELINE__);
+ Query("select ry.artikelid, ry.menge, ry.preis,"
+      "ry.stueck, ry.preismenge, ry.rabatt,"
+      "coalesce(li.geliefertam,li.datum,date('today')),"
+      "ry.lfrsid, ry.lfrszeile,l.refauftragid "
+   "from rechnungentry ry "
+   "left join lieferscheinentry l on "
+	"(?,ry.lfrsid,ry.lfrszeile)=(l.instanz,l.lfrsid,l.zeile) "
+   "left join lieferschein li on (li.instanz,li.lfrsid)=(?,ry.lfrsid) "
+   "where (ry.rngid,ry.zeilennr) = (?,?)")
+     << ppsInstanzID::Kundenauftraege << ppsInstanzID::Kundenauftraege 
+     << rechnung.Id() << rechnung.Zeile()
+   >> artikel >> Query::Row::MapNull(menge) >> Query::Row::MapNull(PREIS)
+   >> Query::Row::MapNull(stueck)
+   >> Query::Row::MapNull(PREISMENGE,1) >> Query::Row::MapNull(rabatt)
+   >> lieferdatum >> Query::Row::MapNull(LFRSID) >> Query::Row::MapNull(LFRSZN)
+   >> Query::Row::MapNull(AUFTRAGID,AuftragBase::invalid_id);
 
-    artikel=ArtikelBase(ARTIKELID);
-    stueck=STUECK;
-    menge=MENGE;
-    preis=Preis(PREIS,Rechnung(rechnung.Id()).getWaehrung(),PREISMENGE);
-    rabatt=RABATT;
-    lieferdatum.from_postgres(LIEFERDATUM);
-    lfrs=LieferscheinEntryBase(ppsInstanz::ID(INSTANZ),LFRSID,LFRSZN);
-	auftrag=AuftragBase(ppsInstanz::ID(INSTANZ),AUFTRAGID);
+  // dieser Konstruktor dauert !!!
+  preis=Preis(PREIS,Rechnung(rechnung.Id()).getWaehrung(),PREISMENGE);
+  if (LFRSID) 
+    lfrs=LieferscheinEntryBase(ppsInstanzID::Kundenauftraege,LFRSID,LFRSZN);
+  if (AUFTRAGID!=AuftragBase::invalid_id)
+    auftrag=AuftragBase(ppsInstanzID::Kundenauftraege,AUFTRAGID);
 }
 
 

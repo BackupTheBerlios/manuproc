@@ -88,13 +88,11 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
 	: RechnungBase(none_id), kunde(k),rabatt(0),
    zahlungsart(Zahlungsart::none_id),notiz_valid(false)
 {
- exec sql begin declare section;
  int RNGID;
  int KUNDENNR;
  int JAHR=jahr;
  int ZAHLUNGSART;
  int WAEHRUNG;
- exec sql end declare section;
  
  if (!JAHR) JAHR=AuftragBase::aktuellesJahr();
  JAHR%=100;
@@ -116,43 +114,33 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
 
  Transaction tr;
   
- exec sql lock table lieferschein in exclusive mode;
+ Query("lock table lieferschein in exclusive mode");
  
- exec sql select coalesce(max(rngid)+1,:JAHR*10000)
- 		into :RNGID
- 		from rechnung where rngid 
- 		between :JAHR*10000 and (:JAHR+1)*10000-1;
- SQLerror::test(__FILELINE__":Rechnung: select next rngid");
+ Query("select max(rngid)+1 from rechnung where rngid between ? and ?")
+      << (JAHR*10000) << ((JAHR+1)*10000-1)
+      >> Query::Row::MapNull(RNGID,JAHR*10000);
  
- exec sql insert into rechnung (rngid, kundennr,zahlart,waehrung)
- 	values (:RNGID, :KUNDENNR,:ZAHLUNGSART,:WAEHRUNG);
- SQLerror::test(__FILELINE__":Rechnung: insert into rechnung");	
+ Query("insert into rechnung (rngid, kundennr,zahlart,waehrung) "
+ 	"values (?,?,?,?)") 
+      << RNGID << KUNDENNR << ZAHLUNGSART << WAEHRUNG;
 
 #ifdef MABELLA_EXTENSIONS
- exec sql begin declare section;
  bool ENTSORGUNG=krng->entsorgung();
 // int VERKNR=k->VerkNr();
 // int IVERKNR=0;
- float KURS;
- exec sql end declare section;
 
- exec sql select 1/(coalesce(fkt,1)) into :KURS from waehrung where 
-	wid= :WAEHRUNG;
- SQLerror::test(__FILELINE__":Rechnung: select kurs from waehrung");	
-
- kurs=KURS;
+ Query("select 1/(coalesce(fkt,1)) from waehrung where wid=?")
+   << WAEHRUNG >> kurs;
 
 // if(VERKNR==Kunde::none_id) IVERKNR=-1;
- exec sql update rechnung set entsorgung=:ENTSORGUNG,
+ (Query("update rechnung set entsorgung=?, "
 /*	verknr=:VERKNR:IVERKNR,*/
-	kurs=:KURS
-	where
-	rngid=:RNGID;
- SQLerror::test(__FILELINE__":Rechnung: update rechnung");	
+	"kurs=? where rngid=?") 
+	<< ENTSORGUNG << kurs << RNGID).Check100();
 
- exec sql update rechnung set notiz=(select rng_notiz from kunden
-        where kundennr=:KUNDENNR) where rngid=:RNGID;
- SQLerror::test(__FILELINE__":Rechnung: update rechnung");
+ (Query("update rechnung set notiz=(select rng_notiz from kunden "
+        "where kundennr=?) where rngid=?") 
+        << KUNDENNR << RNGID).Check100();
  
  std::string tmp_notiz;
  if(k->Id()!=k->Rngan()) // Notiz der Rechnungsadresse besorgen
