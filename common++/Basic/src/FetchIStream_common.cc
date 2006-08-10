@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.44 2006/08/03 11:18:28 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.45 2006/08/10 15:09:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  		written by Christof Petig
@@ -58,7 +58,10 @@ Query::debug_environment::~debug_environment()
 }
 
 void Query::swap(Query &b)
-{ std::swap(descriptor,b.descriptor);
+{
+#ifdef MPC_POSTGRESQL
+  std::swap(descriptor,b.descriptor);
+#endif
   std::swap(eof,b.eof);
   std::swap(line,b.line);
   std::swap(result,b.result);
@@ -376,7 +379,7 @@ ArgumentList &ArgumentList::operator<<(char i)
    }
    else
 #ifdef MPC_SQLITE // there's no escaping here, hopefully we use parameters
-     return add_argument(std::string(1,i));
+     return add_argument(std::string(1,i),TEXTOID);
 #else   
    { x[0]='\\';
      x[1]='0'+((i>>6)&0x3);
