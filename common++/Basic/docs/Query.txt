@@ -1,0 +1,69 @@
+========= How does the Query class work? ============
+				   Christof Petig Aug 10th 2006
+
+The central include file is
+
+	#include <Misc/Query.h>
+
+Simple use:
+
+	Query("delete from foo");
+
+With arguments and results:
+
+	Query("select a from foo where b=?")
+		<< b
+		>> a;
+
+Mapping zero <-> NULL
+
+	Query("update foo set a=?") << Query::NullIf(a);
+
+	Query("select a from foo) >> Query::Row::MapNull(a);
+
+Mapping 1 <-> NULL
+
+	Query("update foo set a=?") << Query::NullIf(a,1);
+
+	Query("select a from foo) >> Query::Row::MapNull(a,1);
+
+Multiple results
+
+	std::vector<int> results;
+	Query("select a from foo").FetchArray(results);
+
+	Query q("select a,b from foo");
+	Query::Row r;
+	while ((q>>r).good())
+	{ int a;
+          r >> a;
+	  int b=r.Fetch<int>();
+	}
+
+Storing Arguments
+
+	Query::Args args;
+	args << 1 << "test" << Query_types::null<int>();
+	Query q("select ?,?,?");
+	q << args;
+
+Using Portals (use less memory by fetching parts of a result at a time)
+
+	Transaction tr;
+	Query q("portalname","select * from foo");
+	q.FetchArray(something);
+	tr.commit();
+
+Using prepared Queries (speed)
+
+	static PreparedQuery pq("select * from foo where b=?");
+	Query q(pq);
+	q << b;
+
+Using many different prepared Queries
+
+	std::string actualquery("select something");
+	static std::map<std::string,PreparedQuery> preparemap;
+	PreparedQuery &pq=preparemap[actualquery];
+	if (pq.Command().empty()) pq=PreparedQuery(actualquery);
+	Query q(pq);
