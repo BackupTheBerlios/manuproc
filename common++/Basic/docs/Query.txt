@@ -7,6 +7,8 @@ The central include file is
 
 Simple use:
 
+	Query::Execute("delete from foo");
+
 	Query("delete from foo");
 
 With arguments and results:
@@ -67,3 +69,52 @@ Using many different prepared Queries
 	PreparedQuery &pq=preparemap[actualquery];
 	if (pq.Command().empty()) pq=PreparedQuery(actualquery);
 	Query q(pq);
+
+Requesting information
+
+	Query q(...);
+	if (q.Result()==100) ...
+	if (!LinesAffected()) ...
+
+Error checks
+
+	Query q("update ...");
+	q.Check100(); // throws SQLerror if no Lines are Changed
+
+	Query::Row r;
+	q >> r;
+	int i;
+	r >> i >> Query::Row::check_eol(); // check for no extra columns
+
+	while (q.good()) ... // results available
+	while ((q>>r).good()) ...
+
+Strange things
+
+	Query::Row r(Query::Row::Fake("bla"));
+	assert (r.Fetch<std::string>()=="bla");
+
+	r.FetchMap<int>(-1);
+
+	q.FetchOne() >> x >> y; // returns intermediate Row
+
+	q.FetchOneMap<int>(-1);
+
+Indicator variables
+
+	int ind; int a;
+	Query::Row r;
+	r >> Query::Row::WithIndicator(a,ind);
+	
+	if (r.getIndicator()) ...
+
+(postgresql only)
+
+	Query::Row r;
+	std::cerr << r.getFieldName();
+
+Environment
+
+	SQLOPT=-E    // write all SQL commands to stderr
+	SQLOPT=-T    // time queries and output the ones which take long
+	SQLOPT=-C    // count distinct queries

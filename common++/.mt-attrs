@@ -30,3 +30,6 @@ execute "true"
 
    file "tests/AuftragsTest/where_are_the_tables"
 execute "true"
+
+   file "tests/sqlite/createdb"
+execute "true"

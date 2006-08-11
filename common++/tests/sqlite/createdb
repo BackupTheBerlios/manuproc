@@ -1,0 +1,11 @@
+#!/bin/sh
+rm template1
+sqlite3 template1 << EOF
+CREATE TABLE dummy (dummy text);
+insert into dummy values ('');
+
+create TABLE pg_class (relname text);
+insert into pg_class values('A');
+insert into pg_class values('abc');
+insert into pg_class values('blub');
+EOF

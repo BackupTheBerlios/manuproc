@@ -1,4 +1,4 @@
-// $Id: FetchIStream.cc,v 1.2 2006/06/26 07:53:03 christof Exp $
+// $Id: FetchIStream.cc,v 1.3 2006/08/11 09:33:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -60,7 +60,7 @@ int main()
   {int a,b,c,d; std::string x,y,z;
    std::string in="\"'\\";
    Query ("select ?,?,?,'?',?, ?,?")
-   	<< 1 << Query::null() << "test" << in 
+   	<< 1 << Query::null<int>() << "test" << in 
    		<< Query::NullIf(1,2) << Query::NullIf(2,2)
    	>> a >> Query::Row::MapNull(b,-1) >> x >> y >> z 
    		>> c >> Query::Row::MapNull(d,-1);
@@ -75,7 +75,7 @@ int main()
    SQLerror::test("should be no error");
    
    std::cout << (Query("select ? from pg_class limit 1")
-   	.add_argument("relname").FetchOne<std::string>()) << '\n';
+   	.add_argument("relname",0).FetchOne<std::string>()) << '\n';
    std::cout << "this should give a warning:\n";
    Query("select ?");
    SQLerror::print("should be -202");

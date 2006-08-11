@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.56 2006/06/26 07:53:01 christof Exp $
+// $Id: AufEintragBase.cc,v 1.57 2006/08/11 09:33:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -118,16 +118,15 @@ void AufEintragBase::setVerarbeitung(const cH_Prozess p) const throw(SQLerror)
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
  assert (Instanz()==ppsInstanzID::Kundenauftraege);
  
- Query("update auftrag_prozess set prozessid=?,datum=now() "
- 	"where (instanz,auftragid,zeilennr) = (?,?,?)")
-	<< p->getProzessID() << *this;
- if (SQLerror::SQLCode()==100)
- {  Query("insert into auftrag_prozess "
+ Query q("update auftrag_prozess set prozessid=?,datum=now() "
+ 	"where (instanz,auftragid,zeilennr) = (?,?,?)");
+ q << p->getProzessID() << *this;
+ if (q.Result()==100)
+ {  (Query("insert into auftrag_prozess "
         "(instanz,auftragid,zeilennr,prozessid)"
 	"values (?,?,?,?)")
-	<< *this << p->getProzessID();
+	<< *this << p->getProzessID()).Check100();
  }
- SQLerror::test("Prozessaktualisierung (Verarbeitung)");
 }
 
 
@@ -166,18 +165,17 @@ void AufEintragBase::setLetztePlanungFuer(cH_ppsInstanz planinstanz) const throw
 
  if(planinstanz->LagerInstanz()) return;
 
- Query("update auftrag_prozess set letzteplaninstanz=?,"
+ Query q("update auftrag_prozess set letzteplaninstanz=?,"
  	"maxPlanInstanz=NULL,datum=now() "
- 	"where (instanz,auftragid,zeilennr) = (?,?,?)")
-	<< planinstanz->Id() << *this;
- if (SQLerror::SQLCode()==100)
- {  Query("insert into auftrag_prozess "
+ 	"where (instanz,auftragid,zeilennr) = (?,?,?)");
+ q << planinstanz->Id() << *this;
+ if (q.Result()==100)
+ {  (Query("insert into auftrag_prozess "
         "(instanz,auftragid,zeilennr,prozessid,letztePlanInstanz) "
 	"values (?,?,?,?,?)")
 	<< *this << planinstanz->get_Prozess()->Id() 
-	<< planinstanz->Id();
+	<< planinstanz->Id()).Check100();
  }
- SQLerror::test("Prozessaktualisierung");
 }
 
 void AufEintragBase::setMaxPlanInstanz(int anzahl_maxplaninstanzen) const throw(SQLerror)

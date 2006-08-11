@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.41 2006/06/26 07:53:01 christof Exp $
+// $Id: AufEintragZu.cc,v 1.42 2006/08/11 09:33:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -365,20 +365,18 @@ bool AufEintragZu::remove(const AufEintragBase& alt,const AufEintragBase& neu,
   ManuProC::Trace _t(trace_channel, __FUNCTION__,alt,neu,ts);
 
   if (!ts.valid())
-     Query("delete from auftragsentryzuordnung where "
+     return (Query("delete from auftragsentryzuordnung where "
                  "(altinstanz,altauftragid,altzeilennr,"
                  "neuinstanz,neuauftragid,neuzeilennr)"
                  "=(?,?,?, ?,?,?)").lvalue()
-      << alt << neu;
+      << alt << neu).LinesAffected();
   else
-     Query("delete from auftragsentryzuordnung where "
+     return (Query("delete from auftragsentryzuordnung where "
                  "(altinstanz,altauftragid,altzeilennr,"
                  "neuinstanz,neuauftragid,neuzeilennr, "
                  "prioritaet)"
                  "=(?,?,?, ?,?,?, ?)")
-      << alt << neu << ts;
- SQLerror::test(__FILELINE__,100);
- return !SQLerror::SQLCode();
+      << alt << neu << ts).LinesAffected();
 }
 
 AufEintragZu::mengen_t AufEintragZu::Summe(const list_t &l,ID wovon)
