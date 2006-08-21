@@ -47,6 +47,8 @@ public:
  { return lsentry.end();}   
  size_t size() const
  { return lsentry.size();}
+ bool empty() const
+ { return lsentry.empty();}
  void changeStatusOnEntries(AufStatVal st) throw(SQLerror);
 };
 

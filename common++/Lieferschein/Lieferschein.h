@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.30 2006/06/26 07:52:50 christof Exp $ */
+/* $Id: Lieferschein.h,v 1.31 2006/08/21 09:43:13 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -90,10 +90,10 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  gewicht_t GewichtNetto() const {return netto_kg;}
  void setGewichtBrutto(const gewicht_t i) throw(SQLerror);
  void setGewichtNetto(const gewicht_t i) throw(SQLerror);
+#endif 
  const ManuProC::Datum getMaxZahlziel() const throw(SQLerror);
  Kunde::ID getVerknr() const { return verknr; }
  void setVerknr(const Kunde::ID vknr) throw(SQLerror);
-#endif 
  const Preis::rabatt_t AufRabatt() const throw(SQLerror);
  
  Kunde::ID KdNr() const {return kunde->Id();}		

@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.51 2006/08/09 11:11:11 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.52 2006/08/21 09:43:13 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -196,7 +196,6 @@ LieferscheinBase::mengen_t Lieferschein::StandardLaenge(const ArtikelBase artike
  }
 }
 
-#ifdef DPD_LIEFERSCHEINE
 const ManuProC::Datum Lieferschein::getMaxZahlziel() const throw(SQLerror)
 {
  ManuProC::Datum d;
@@ -210,7 +209,6 @@ const ManuProC::Datum Lieferschein::getMaxZahlziel() const throw(SQLerror)
 
  return d;
 }
-#endif
 
 const std::string Lieferschein::Notiz() const throw(SQLerror)
 {
