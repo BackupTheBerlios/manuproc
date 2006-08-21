@@ -1,4 +1,4 @@
-/* $Id: LieferscheinVoll.cc,v 1.24 2006/06/26 07:53:03 christof Exp $ */
+/* $Id: LieferscheinVoll.cc,v 1.25 2006/08/21 09:43:16 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -39,30 +39,38 @@ LieferscheinVoll::LieferscheinVoll(const cH_ppsInstanz& _instanz,int lid,bool au
 : Lieferschein(_instanz,lid)
 {
 
-// std::string tabelle="artbez_"+
-//       itos(ExtBezSchema::default_Typ)+"_"+
-//      itos(ExtBezSchema::default_id);
-
- cH_ExtBezSchema exbz(ExtBezSchema::default_id,ExtBezSchema::default_Typ);
  std::string sortstr=auforder ? "refauftragid":"zeile";
  sortstr+=",artikelbezeichnung(ly.artikelid)";
-
-// int signifikanz=1;
-// for(ExtBezSchema::const_sigiterator l=exbz->sigbegin(signifikanz);
-//				l!=exbz->sigend(signifikanz); ++l)
-//   sortstr+=std::string(",")+l->spaltenname;
- 
 
  std::string query("select lfrsid, zeile, artikelid, stueck, menge, palette,");
  query+=std::string("zusatzinfo, instanz, refauftragid, ")+
 	  " refzeilennr, lagerid, status, text"+
-	  " from lieferscheinentry ly "+ // "left join "+tabelle+" b "+
-//	  " on (b.id=ly.artikelid) "+
+	  " from lieferscheinentry ly "+
 	  " where (instanz,lfrsid) = (?,?) "+
 	  " and coalesce(status,0)<>? order by "+sortstr;
 
  Query q(query);
  q << Instanz()->Id() << Id() << (AufStatVal)STORNO;
+ q.FetchArray(lsentry);
+}
+
+
+LieferscheinVoll::LieferscheinVoll(LieferscheinBase const& l,bool auforder) throw(SQLerror)
+: Lieferschein(l)
+{
+
+ std::string sortstr=auforder ? "refauftragid":"zeile";
+ sortstr+=",artikelbezeichnung(ly.artikelid)";
+
+ std::string query("select lfrsid, zeile, artikelid, stueck, menge, palette,");
+ query+=std::string("zusatzinfo, instanz, refauftragid, ")+
+	  " refzeilennr, lagerid, status, text"+
+	  " from lieferscheinentry ly "+
+	  " where (instanz,lfrsid) = (?,?) "+
+	  " and coalesce(status,0)<>? order by "+sortstr;
+
+ Query q(query);
+ q << l.Instanz()->Id() << l.Id() << (AufStatVal)STORNO;
  q.FetchArray(lsentry);
 }
 

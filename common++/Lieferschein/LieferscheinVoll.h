@@ -37,6 +37,7 @@ public:
 
  	LieferscheinVoll() : Lieferschein() {};
  	LieferscheinVoll(const cH_ppsInstanz& _instanz,int lid, bool auforder=false) throw(SQLerror) ;
+ 	LieferscheinVoll(LieferscheinBase const& l, bool auforder=false) throw(SQLerror) ;
  	void deleteRow(LieferscheinEntry &le);
 
  const std::vector<LieferscheinEntry> &LsEntries() const { return lsentry; }
