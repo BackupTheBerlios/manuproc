@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.31 2006/08/10 15:07:01 christof Exp $
+// $Id: Rechnung.cc,v 1.32 2006/08/21 09:43:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *  Copyright (C) 2006 Christof Petig
@@ -204,10 +204,10 @@ void Rechnung::deleteLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
 	<< (AufStatVal)CLOSED;
 
  // ungebuchte wieder auf UNCOMMITED
- (Query("update lieferscheinentry set status=? where "
+ Query("update lieferscheinentry set status=? where "
 	" (lfrsid,instanz)=(?,?) and status=? and lagerid is null")
  	<< (AufStatVal)UNCOMMITED << lfrs.Id() << lfrs.Instanz()->Id()
-	<< (AufStatVal)CLOSED).Check100();
+	<< (AufStatVal)CLOSED;
  tr.commit();
  
 }
