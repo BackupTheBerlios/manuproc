@@ -65,9 +65,13 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
  #else
  exec sql select r.kundennr, date(r.datum), r.rngart, 
          coalesce(zahlart,-1), zahlziel, 
- 			coalesce(waehrung,1), coalesce(rabatt,0), bezahlt
+ 			coalesce(waehrung,1), coalesce(rabatt,0), bezahlt,
+			coalesce(kurs,1),
+			coalesce(fibu_buchid,0)::int,
+			steuersatz
 		into :KDNR, :DATUM, :RNGART, :ZAHLART, :ZAHLZIEL:IZAHLZIEL,
-		   :WAEHRUNG, :RABATT, :BEZAHLT
+		   :WAEHRUNG, :RABATT, :BEZAHLT, 
+		   :KURS, :FIBUBUCHID, :MWST_SATZ
  	from rechnung r where r.rngid = :RNGID ;
  #endif
  SQLerror::test(__FILELINE__);
