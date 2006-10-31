@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.68 2006/10/31 16:04:21 christof Exp $
+// $Id: Kunde.cc,v 1.69 2006/10/31 16:04:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -98,7 +98,7 @@ const std::string Kunde::LaTeX_von_gross(const ID kid, const std::string width) 
   std::string s=std::string("\\parbox[t]{")+width+"}{\\footnotesize\\raggedleft ";
   s+= string2TeX(getName())+"\\\\\n";
   s+= string2TeX(strasse()+" "+hausnr())+"\\\\\n";
-  s+= string2TeX(plz()+" "+ort())+"\\\\\n";
+  s+= string2TeX(plz()+" "+string2TeX(ort()))+"\\\\\n";
   s+= string2TeX("Tel. "+get_first_telefon(TEL_TEL))+"\\\\\n";
   s+= string2TeX("Fax. "+get_first_telefon(TEL_FAX))+"\\\\[1ex]\n";
   s+= "\\normalsize\n";

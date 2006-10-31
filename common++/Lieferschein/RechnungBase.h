@@ -1,4 +1,4 @@
-/* $Id: RechnungBase.h,v 1.18 2006/10/31 16:04:33 christof Exp $ */
+/* $Id: RechnungBase.h,v 1.19 2006/10/31 16:04:43 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -36,6 +36,8 @@ class RechnungBase // : ManuProcEntity
   	int rngid;	
 //	static const int _illegal=none_id;
 	mutable Kunde::ID verknr;
+
+        
  public:
  	typedef enum {RART_RNG='R',RART_GUT='G',RART_STORNO='S',RART_NONE=0} RngArt; 
  
@@ -64,7 +66,12 @@ class RechnungBase // : ManuProcEntity
 	void setVerknr(const Kunde::ID vid) const throw(SQLerror);	
 	virtual void setze_Zahlziel(ManuProC::Datum zziel) throw(SQLerror);
 	
-    static geldbetrag_t MwStProz;	
+protected:
+    static geldbetrag_t MwStProz;
+    
+public:
+    static fixedpoint<1> getMwStProz() throw(SQLerror);
+    
 };
 
 #endif

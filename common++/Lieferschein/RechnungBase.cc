@@ -1,4 +1,4 @@
-/* $Id: RechnungBase.cc,v 1.6 2006/10/31 16:04:33 christof Exp $ */
+/* $Id: RechnungBase.cc,v 1.7 2006/10/31 16:04:43 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,6 +30,17 @@ void RechnungBase::init()
 {
  if(MwStProz==0.0)
    MwStProz=atof(Global_Settings(int(0),"","MWST").get_Wert().c_str());
+}
+
+
+fixedpoint<1> RechnungBase::getMwStProz() throw(SQLerror)
+{
+ if(MwStProz==0.0)
+   MwStProz=atof(Global_Settings(int(0),"","MWST").get_Wert().c_str());
+
+ assert(MwStProz!=0);
+
+ return MwStProz;
 }
 
 
