@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.121 2006/06/26 07:53:01 christof Exp $
+// $Id: AufEintrag.cc,v 1.122 2006/10/31 16:06:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -381,7 +381,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld,bool planen) throw(SQL
  SQLerror::test("updateLieferdatum: lock table auftragentry");
 
  {delayed_reclaim dlr;
- if(getCombinedStatus()==OPEN) Verzeigern(-getStueck(),planen);
+ if(getCombinedStatus()==OPEN) Verzeigern(-getRestStk(),planen);
 
  Query("update auftragentry "
  	"set lieferdate=?, lasteditdate=now() "
@@ -392,7 +392,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld,bool planen) throw(SQL
  lieferdatum=ld;
  lasteditdate=ManuProC::Datum::today();
 
- if(getCombinedStatus()==OPEN) Verzeigern(getStueck(),planen);
+ if(getCombinedStatus()==OPEN) Verzeigern(getRestStk(),planen);
  }
 
  if(getCombinedStatus()==OPEN)// status->entrystatus
