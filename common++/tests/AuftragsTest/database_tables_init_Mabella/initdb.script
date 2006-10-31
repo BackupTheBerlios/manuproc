@@ -2,10 +2,11 @@
 
 export PGHOST=localhost
 export PGDATABASE=mabella_testdb
+
 P="database_tables_init_Mabella"
 
 dropdb $PGDATABASE
-createdb -E SQL_ASCII $PGDATABASE
+createdb -E LATIN1 $PGDATABASE
 
 (for i in \
    waehrung \
@@ -24,6 +25,7 @@ createdb -E SQL_ASCII $PGDATABASE
    artikelzusammensetzung \
    artbez_3_23001 \
    artbez_3_1 \
+   artbez_5_1 \
    artbez_12_1 \
    artbez_warengruppe \
    auftrag \
@@ -57,7 +59,7 @@ do
   cat $P/$i
 done ) | psql $PGDATABSE -q
 
-../../Programme/db_upgrade
+../../Programme/db_upgrade $PGDATABASE
 ../../Programme/Instanzen $PGDATABASE
 
 psql $PGDATABASE -c "vacuum analyze"

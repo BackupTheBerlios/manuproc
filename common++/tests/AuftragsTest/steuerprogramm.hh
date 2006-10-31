@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.49 2006/10/31 16:03:46 christof Exp $
+// $Id: steuerprogramm.hh,v 1.50 2006/10/31 16:06:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -21,7 +21,7 @@
 #define STEUERFILE_H
 
 //#define MANU_PROC_TEST
-//#define MABELLA_TEST
+#define MABELLA_TEST
 //#define PETIG_TEST
 
 // automatically guess the correct test set (comment all above out!)
@@ -101,10 +101,12 @@
 #define ARTIKEL_TRIO ArtikelBase(38389)
 #define ARTIKEL_ZWEI ArtikelBase(38391)
 #define ARTIKEL_MUSTER ArtikelBase(38393)
+#define ARTIKEL_TRAY ArtikelBase(38390)
 
 #define KUNDENINSTANZ (ppsInstanzID::Kundenauftraege)
 #define FERTIGWLAGER (ppsInstanzID::Fertigwarenlager)
 #define EINKAUF (ppsInstanzID::Einkauf)
+#define DISPLAY_AUFMACHUNG (ppsInstanzID::Display-Aufmachung)
 
 #define KUNDE 11302
 #define KUNDE2 20104

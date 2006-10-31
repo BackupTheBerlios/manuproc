@@ -41,15 +41,7 @@ COPY artbez_warengruppe (id, text, lagerartikel, mit_ean, null_preis_check, mit_
 3	aufgemachtes Band	t	t	t	t	f	\N	t
 7	Sonstiges	f	f	f	f	f	\N	t
 0	gewebtes Band	f	f	f	t	t	\N	t
-10	Etiketten	f	f	f	f	f	\N	f
-11	Garn per km	f	f	f	f	f	\N	f
-4	Garn per kg	f	f	f	f	f	\N	f
-8	Lohn	f	f	f	f	f	\N	f
-5	Spulen	f	f	f	f	f	\N	f
-6	Kartonagen	f	f	f	f	f	\N	f
-2	bedrucktes Band	f	f	f	f	f	\N	f
-1	gefärbtes Band	f	f	f	f	f	\N	f
-9	Farben & Pigmente	f	f	f	f	f	\N	f
+5	Trays	f	t	f	t	f	\N	f
 12	Musterkarten	f	f	f	f	f	\N	f
 \.
 
