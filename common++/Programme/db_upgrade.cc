@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.56 2006/10/31 16:05:31 christof Exp $
+// $Id: db_upgrade.cc,v 1.57 2006/10/31 16:05:33 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -138,6 +138,9 @@ int main(int argc,char *argv[])
     {Query_nt("alter table lieferschein alter lsart set default 'L'");
      Query_nt("update lieferschein set lsart ='L' where lsart is null");
     }
+  // time stamp for sending LS as PDF
+  check_column("lieferschein","sent_at","date");
+  check_column("lieferschein","sent_to","text");
   
   // Verkäuferspezifische Daten
 	// es gibt noch die alte Spalte verknr mit anderem Nummernkreis,

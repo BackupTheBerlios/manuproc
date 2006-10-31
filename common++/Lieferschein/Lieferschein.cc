@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.58 2006/10/31 16:04:21 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.59 2006/10/31 16:05:33 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -348,4 +348,35 @@ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("Kunde",
  rngid=ManuProcEntity<>::none_id;
  tr.commit();
 }
+
+const ManuProC::Datum Lieferschein::sent_at() const throw(SQLerror)
+{
+ ManuProC::Datum sent;
+ Query("select sent_at from lieferschein where (instanz,lfrsid)=(?,?)")
+	<< Instanz()->Id() << Id() >> sent;
+ return sent;
+}
+
+const std::string Lieferschein::sent_to() const throw(SQLerror)
+{
+ std::string sent;
+ Query("select sent_to from lieferschein where (instanz,lfrsid)=(?,?)") 
+	<< Instanz()->Id() << Id() >> sent;
+ return sent;
+}
+
+void Lieferschein::Set_sent_at() const throw(SQLerror)
+{
+ Query("update lieferschein set sent_at=now() where (instanz,lfrsid)=(?,?)") 
+		<< Instanz()->Id() << Id();
+}
+
+
+void Lieferschein::Set_sent_to(const std::string t) const throw(SQLerror)
+{
+ Query("update lieferschein set sent_to=? where (instanz,lfrsid)=(?,?)")  
+		<< t <<  Instanz()->Id() << Id();
+}
+
+
 

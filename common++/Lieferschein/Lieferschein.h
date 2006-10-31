@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.32 2006/10/31 16:03:12 christof Exp $ */
+/* $Id: Lieferschein.h,v 1.33 2006/10/31 16:05:33 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -128,6 +128,11 @@ class Lieferschein : public LieferscheinBase, public HandleContent
 
  const std::string Notiz() const throw(SQLerror);
  void Notiz(const std::string _notiz) throw(SQLerror);
+ const ManuProC::Datum sent_at() const throw(SQLerror);
+ const std::string sent_to() const throw(SQLerror);
+ void Set_sent_at() const throw(SQLerror);
+ void Set_sent_to(const std::string t) const throw(SQLerror);
+     
 };
 
 class cH_Lieferschein : public Handle<const Lieferschein>

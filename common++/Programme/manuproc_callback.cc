@@ -3,6 +3,7 @@
 #include <cassert>
 #include <iostream>
 #include <Lieferschein/Rechnung.h>
+#include <Lieferschein/Lieferschein.h>
 #include <Auftrag/Auftrag.h>
 #include <Aux/dbconnect.h>
 
@@ -19,7 +20,7 @@ int main(int argc, char **argv)
   std::cout << "prosessed: pages " << first << '-' << last << " of " << pages;
 
 
-
+// Rechnung
   FOR_EACH_CONST_TAG_OF(j,root,"mpc_rng_sent")
   {
    ManuProcEntity<>::ID rngid(j->getAttr<int>("document_id"));
@@ -60,6 +61,8 @@ int main(int argc, char **argv)
    }
   }
 
+
+//Auftrag
   FOR_EACH_CONST_TAG_OF(j,root,"mpc_ord_sent")
   {
    ManuProcEntity<>::ID abid(j->getAttr<int>("document_id"));
@@ -100,6 +103,47 @@ int main(int argc, char **argv)
     }
   }
 
+
+// Lieferschein
+FOR_EACH_CONST_TAG_OF(j,root,"mpc_deliv_sent")
+  {
+   ManuProcEntity<>::ID lsid(j->getAttr<int>("document_id"));
+   std::cout << " LSID:" << lsid << "\n";
+   std::string dest;
+   bool sent=false;
+
+   FOR_EACH_CONST_TAG_OF(j,root,"mail")
+     {dest = j->getAttr("address");
+      if(!(j->getAttr("cc_address")).empty())
+        {if(!dest.empty()) dest += ", "; 
+	 else dest+=j->getAttr("cc_address");
+	}
+      sent=!(dest.empty());
+     }
+   if(dest.empty())
+     FOR_EACH_CONST_TAG_OF(j,root,"fax")
+      {dest = j->getAttr("number");
+       sent=!(dest.empty());
+      }
+
+   if(sent)
+   {
+    try {
+      ManuProC::Connection conn;
+      conn.setDbase("");
+      conn.setHost("");
+      ManuProC::dbconnect(conn);
+    Lieferschein l(LieferscheinBase(ppsInstanzID::Kundenauftraege,lsid));
+    l.Set_sent_at();
+    l.Set_sent_to(dest);
+    ManuProC::dbdisconnect();
+    }
+    catch (SQLerror &e)
+     { std::cerr << e << '\n';
+       return 1;
+     }
+    }
+  }
 
   return 0;
 }
