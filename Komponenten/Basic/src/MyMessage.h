@@ -5,7 +5,7 @@
 #include<Misc/SQLerror.h>
 #include <Misc/compiler_ports.h>
 #include <Misc/itos.h>
-#include <Lager/Lager.h>
+#include <Lager/FertigWarenLager.h>
 #include <ArtikelBox.hh>
 
 #ifdef MABELLA_EXTENSIONS
