@@ -1,4 +1,4 @@
-// $Id: Optionmenu_Kundengruppe.cc,v 1.8 2006/10/31 16:10:32 christof Exp $
+// $Id: Optionmenu_Kundengruppe.cc,v 1.9 2006/10/31 16:10:34 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -44,7 +44,7 @@ void Optionmenu_Kundengruppe::reload()
 void Optionmenu_Kundengruppe::fuelle_menu(bool reload)
 {
   std::vector<cH_Kundengruppe> V;
-  Query("select grpnr,obergruppe,name,kommentar,owner from ku_gruppe order by grpnr").FetchArray(V);
+  Query("select grpnr,obergruppe,name,kommentar,owner,obergruppe_uniq from ku_gruppe order by grpnr").FetchArray(V);
   Gtk::OStream os(this);
   if(reload) os.flush();
 
