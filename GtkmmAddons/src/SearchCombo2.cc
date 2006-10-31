@@ -162,11 +162,14 @@ Glib::RefPtr<Gtk::SearchCombo2::Model> Gtk::SearchCombo2::Model::create(const Tr
 
 void Gtk::SearchCombo2::on_entry_changed()
 { mymodel->entry_changed();
+  popup();
 }
 
 // HACK !!!!
 #include <gtk/gtkcombobox.h>
 #include <gtk/gtktogglebutton.h>
+#include <gtk/gtkwindow.h>
+#include <gtkmm/window.h>
 
 struct _GtkComboBoxPrivate
 {
@@ -224,12 +227,21 @@ struct _GtkComboBoxPrivate
 };
 // ENDHACK
 
+bool Gtk::SearchCombo2::popup_key_pr(GdkEventKey* k)
+{ return on_key_press_event(k);
+}
+
+bool Gtk::SearchCombo2::popup_key_rel(GdkEventKey* k)
+{ return on_key_release_event(k);
+}
+
 Gtk::SearchCombo2::SearchCombo2(bool,bool)
 { mymodel=Model::create(m_text_columns,this);
   set_model(mymodel);
+  set_text_column(m_text_columns.m_column);
   get_entry()->signal_changed().connect(sigc::mem_fun(*this,&SearchCombo2::on_entry_changed));
   Gtk::CellRendererText *crt=Gtk::manage(new Gtk::CellRendererText());
-  pack_start(*crt,true);
+  pack_start(*crt);
 //  crt->property_foreground()="red";
   crt->property_xalign()=0;
 //  crt->set_xalign(0);
@@ -238,6 +250,7 @@ Gtk::SearchCombo2::SearchCombo2(bool,bool)
 //  ->priv->popup_window
 //  ->priv->button
   add_attribute(crt->property_text(), m_text_columns.m_column);
+  set_focus_on_click(false);
   // gtk+ 2.10
   // Glib::PropertyProxy<bool>(this,"popup-shown").signal_changed()
   //      .connect(sigc::mem_fun(*this,&SearchCombo2::popupdown));
@@ -246,13 +259,28 @@ Gtk::SearchCombo2::SearchCombo2(bool,bool)
   assert(GTK_IS_TOGGLE_BUTTON(GTK_COMBO_BOX(gobj())->priv->button));
   Glib::wrap(GTK_TOGGLE_BUTTON(GTK_COMBO_BOX(gobj())->priv->button))
     ->signal_toggled().connect(sigc::mem_fun(*this,&SearchCombo2::popupdown));
+#if 0    
+  Glib::wrap(GTK_WINDOW(GTK_COMBO_BOX(gobj())->priv->popup_window))->signal_key_press_event()
+    .connect(sigc::mem_fun(*this,&SearchCombo2::popup_key_pr));
+  Glib::wrap(GTK_WINDOW(GTK_COMBO_BOX(gobj())->priv->popup_window))->signal_key_release_event()
+    .connect(sigc::mem_fun(*this,&SearchCombo2::popup_key_rel));
+#endif
   // ENDHACK
 }
 
 void Gtk::SearchCombo2::popupdown()
 { if (Glib::wrap(GTK_TOGGLE_BUTTON(GTK_COMBO_BOX(gobj())->priv->button))
       ->get_active())
+  { Glib::wrap(GTK_COMBO_BOX(gobj())->priv->column)->set_alignment(0);
     mymodel->fill_list_if_necessary();
+//    get_entry()->grab_focus();
+#if 0    
+    Glib::wrap(GTK_WINDOW(GTK_COMBO_BOX(gobj())->priv->popup_window))->signal_key_press_event()
+      .connect(sigc::mem_fun(*this,&SearchCombo2::popup_key_pr));
+    Glib::wrap(GTK_WINDOW(GTK_COMBO_BOX(gobj())->priv->popup_window))->signal_key_release_event()
+      .connect(sigc::mem_fun(*this,&SearchCombo2::popup_key_rel));
+#endif
+  }
   else
     mymodel->stop_if_running();
 }
