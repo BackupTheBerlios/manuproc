@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.38 2006/10/31 16:04:33 christof Exp $
+// $Id: Rechnung.cc,v 1.39 2006/10/31 16:04:38 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *  Copyright (C) 2006 Christof Petig
@@ -184,7 +184,7 @@ unsigned Rechnung::push_back(ArtikelBase art,int stk,mengen_t menge)
 
 // geht nur mit Zeilen ohne Lieferschein !
 void Rechnung::erase(unsigned lineno)
-{(Query("delete from rechnungentry where (rngid,zeile)=(?,?) and lfrsid is null")
+{(Query("delete from rechnungentry where (rngid,zeilennr)=(?,?) and lfrsid is null")
  	<< Id() << lineno).Check100(); 
 }
 
