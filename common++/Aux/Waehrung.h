@@ -1,4 +1,4 @@
-// $Id: Waehrung.h,v 1.21 2005/10/12 08:59:38 christof Exp $
+// $Id: Waehrung.h,v 1.22 2006/10/31 16:06:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,7 +26,6 @@
 #include <Misc/Pointer.h>
 
 class Query_Row; 
-
 
 namespace WaehrungID = ManuProC::DynamicEnums::Waehrung;
 
@@ -68,7 +67,7 @@ public:
  bool operator!=(const Waehrung &b) const { return wid!=b.wid; }
 }; 
 
-
+extern Query_Row &operator>>(Query_Row &is, Waehrung::ID &wid);
 
 
 // Vorsicht !!! Dass dies ein cP ist, funktioniert nur wegen des Caches
