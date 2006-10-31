@@ -1,4 +1,4 @@
-// $Id: Optionmenu_OberKundengruppe.cc,v 1.1 2006/10/31 16:10:30 christof Exp $
+// $Id: Optionmenu_OberKundengruppe.cc,v 1.2 2006/10/31 16:10:32 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -34,12 +34,19 @@ Kundengruppe::ID Optionmenu_OberKundengruppe::get_value() const
   return (Kundengruppe::ID)i;
 }
 
-void Optionmenu_OberKundengruppe::fuelle_menu()
+void Optionmenu_OberKundengruppe::reload()
+{
+ fuelle_menu(true);
+}
+
+void Optionmenu_OberKundengruppe::fuelle_menu(bool reload)
 {
   Query q("select max(grpnr), obergruppe from ku_gruppe "
 	 " group by obergruppe order by obergruppe");
 
   Gtk::OStream os(this);
+  if(reload) os.flush();
+
   Kundengruppe::ID grpid;
   std::string obername;
   Query::Row fi=q.Fetch();
