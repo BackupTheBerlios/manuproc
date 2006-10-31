@@ -19,6 +19,7 @@ class Kundengruppe : public ManuProcHandle<KundengruppeID::enum_t>
  std::string grpname;
  std::string obergruppe;
  std::string kommentar;
+ bool obergruppe_uniq;
  int owner; // referenz auf kunden
   
 public:
@@ -31,13 +32,14 @@ public:
                   owner(none_id) {}
   
  Kundengruppe(ID kgid, const std::string _obg,const std::string _grpnm,
- 	const std::string komm="", int _owner=none_id);
+ 	const std::string komm="", int _owner=none_id,bool _obgrp_uniq=false);
  Kundengruppe(ID kgid) throw(SQLerror);
  Kundengruppe(int _owner, const std::string _obergrp) throw(SQLerror);
  ID Id() const {return ID(entityid); }
  std::string GrpName() const { return grpname;}
  std::string Obergruppe() const { return obergruppe; }
  std::string Kommentar() const { return kommentar; } 
+ bool ObergrpUniq() const { return obergruppe_uniq; }
  int Owner() const { return owner; }
  
  friend Query::Row &operator>>(Query::Row &is, Kundengruppe &kg);
@@ -56,7 +58,8 @@ public:
 	cH_Kundengruppe(ID id);
 	cH_Kundengruppe(ID nr, const std::string _obg,
 		const std::string grpname, const std::string komm,
-                int _owner=Kundengruppe::none_id);
+                int _owner=Kundengruppe::none_id,
+                bool _obgrp_uniq=false);
         cH_Kundengruppe(int kdnr, const std::string _obergrp) throw(SQLerror);
         bool operator==(const cH_Kundengruppe& b) const
                 {return (*this)->Id()==b->Id();} 

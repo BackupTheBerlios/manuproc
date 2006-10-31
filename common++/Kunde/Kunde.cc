@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.70 2006/10/31 16:05:21 christof Exp $
+// $Id: Kunde.cc,v 1.71 2006/10/31 16:05:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -251,8 +251,10 @@ bool Kunde::isInGrp(const Kundengruppe::ID gid) const
 void Kunde::putInGrp(const Kundengruppe::ID gid) 
 {
 #ifdef MANUPROC_DYNAMICENUMS_CREATED
-   Query("insert into ku_gruppen_map (kundennr,grpnr)"
-       " values (?,?)") << Id() << gid;
+   Query("insert into ku_gruppen_map (kundennr,grpnr,uniq_obergrp)"
+       " (select ?,?,case obergruppe_uniq when true then "
+	" obergruppe else null end from ku_gruppe where grpnr=?)") 
+	<< Id() << gid << gid;
 
   gruppen.push_back(gid); 
 #endif       
