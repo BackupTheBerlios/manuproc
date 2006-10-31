@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.39 2006/08/03 11:18:28 christof Exp $
+# $Id: configure.in,v 1.40 2006/10/31 16:08:26 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(ManuProC_Base,0.6.4, [manuproc-developer-de@berlios.de])
@@ -102,7 +102,7 @@ int main() {  ECPGdo(20, "test", "select true",ECPGt_EOIT, ECPGt_EORT); }
    AC_DEFINE_UNQUOTED(DEFAULT_DBHOST, "$DEFAULT_DBHOST" )
    AC_MSG_RESULT($DEFAULT_DB@$DEFAULT_DBHOST)
 
-   LIBS="$LIBS @ECPG_LIBS@"
+   LIBS="$LIBS $ECPG_LIBS"
    DATABASE_TYPE="_pg"
   fi
  fi
