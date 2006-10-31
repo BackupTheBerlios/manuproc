@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.45 2006/10/31 16:03:16 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.46 2006/10/31 16:03:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -411,10 +411,10 @@ void AufEintrag::AutoAuslagern(cH_ppsInstanz const& instanz,
 // Code stammt aus AufEintrag::ArtikelInternNachbestellen
 { ppsInstanz::ID next=instanz->NaechsteInstanz(ArtikelStamm(artikel));
   if (next!=ppsInstanzID::None)
-  { AufEintrag::AutoAuslagern2(next,menge,artikel,*this);
+  { AufEintrag::AutoAuslagern2(next,artikel,menge);
   }
-  else if (!Instanz()->ExterneBestellung())
-  { ArtikelBaum AB(Artikel());
+  else if (!instanz->ExterneBestellung())
+  { ArtikelBaum AB(artikel);
     for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
     { AutoAuslagern2(ppsInstanz::getBestellInstanz(i->rohartikel),
                                         i->rohartikel,i->menge*menge);
