@@ -1,4 +1,4 @@
-/* $Id: SearchCombo2.h,v 1.1 2006/10/31 16:14:02 christof Exp $ */
+/* $Id: SearchCombo2.h,v 1.2 2006/10/31 16:14:05 christof Exp $ */
 
 /* searchcombo.h
  * 
@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <gtkmm/combobox.h>
+#include <gtkmm/comboboxentry.h>
 
 typedef enum
 {
@@ -31,12 +31,13 @@ typedef enum
 
 namespace Gtk
 {
-class SearchCombo2 : public Gtk::ComboBox
+class SearchCombo2 : public Gtk::ComboBoxEntry
 { struct TextModelColumns : Gtk::TreeModel::ColumnRecord
   { TextModelColumns() { add(m_column); }
 
     Gtk::TreeModelColumn<Glib::ustring> m_column;
   };
+  TextModelColumns m_text_columns;
   struct Model;
   
   Glib::RefPtr<Model> mymodel;
@@ -59,11 +60,13 @@ class SearchCombo2 : public Gtk::ComboBox
 	bool search_finished:1;	/** search is finished, simply display */
 	bool value_selected:1;	/** a value has been selected, do not search without explicit request */
 	bool reopen:1;		/** next open should be reopen */
+
+//  sigc::signal0<void> activate;
 public:
   explicit SearchCombo2(bool always_fill=false, bool autoexpand=false);
   ~SearchCombo2();
   
-  sigc::signal0<void> &signal_activate();
+  Glib::SignalProxy0<void> signal_activate();
   sigc::signal2<void,gboolean *,GtkSCContext> &signal_search();
 
   /** Allow direct text entry
@@ -119,11 +122,6 @@ public:
   
   void set_start_on_idle(bool val);
     
-  //: please do not use this function in new programs - it's for compatibility
-  Entry* get_entry();
-  const Entry* get_entry() const;
-  
-  
   gint get_selected_index() const;
    
     bool empty() const {  return !get_size(); }
