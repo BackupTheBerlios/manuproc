@@ -28,6 +28,9 @@ execute "true"
    file "tests/AuftragsTest/resortmgdiff"
 execute "true"
 
+   file "tests/AuftragsTest/test_all.script"
+execute "true"
+
    file "tests/AuftragsTest/where_are_the_tables"
 execute "true"
 
