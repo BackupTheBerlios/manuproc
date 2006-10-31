@@ -1,4 +1,4 @@
-// $Id: Optionmenu_OberKundengruppe.cc,v 1.2 2006/10/31 16:10:32 christof Exp $
+// $Id: Optionmenu_OberKundengruppe.cc,v 1.3 2006/10/31 16:10:39 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -23,8 +23,9 @@
 #include <SelectMatching.h>
 #include <Misc/i18n.h>
 
-Optionmenu_OberKundengruppe::Optionmenu_OberKundengruppe()
-{ fuelle_menu();
+Optionmenu_OberKundengruppe::Optionmenu_OberKundengruppe(bool _uniqe_only)
+: unique_only(_uniqe_only)
+{ fuelle_menu(false);
   get_menu()->signal_deactivate().connect(activate.slot());
 }
 
@@ -41,20 +42,27 @@ void Optionmenu_OberKundengruppe::reload()
 
 void Optionmenu_OberKundengruppe::fuelle_menu(bool reload)
 {
-  Query q("select max(grpnr), obergruppe from ku_gruppe "
-	 " group by obergruppe order by obergruppe");
+  Query q("select max(grpnr), obergruppe, obergruppe_uniq from ku_gruppe "
+	 " group by obergruppe,obergruppe_uniq order by obergruppe");
 
   Gtk::OStream os(this);
   if(reload) os.flush();
 
   Kundengruppe::ID grpid;
   std::string obername;
+  bool obgrp_uniq;
   Query::Row fi=q.Fetch();
 
   while(q.good())
-   { fi >> grpid >> obername;
-     os << dbgettext(obername);
-     os.flush((void*)grpid);
+   { fi >> grpid >> obername >> obgrp_uniq;
+     if(unique_only)
+	{if(obgrp_uniq)
+          {os << dbgettext(obername);
+           os.flush((void*)grpid);}
+	}
+     else
+        {os << dbgettext(obername);
+         os.flush((void*)grpid);}
      fi=q.Fetch();
    }
 }
