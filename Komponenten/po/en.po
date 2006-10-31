@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ManuProC_Widgets 0.0\n"
 "Report-Msgid-Bugs-To: manuproc-developer-de@berlios.de\n"
-"POT-Creation-Date: 2006-08-05 17:58+0200\n"
+"POT-Creation-Date: 2006-08-30 18:54+0200\n"
 "PO-Revision-Date: 2006-03-22 22:19+0100\n"
 "Last-Translator: Jacek Jakubowski <jacek@telebel.de>\n"
 "Language-Team: english <en@li.org>\n"
@@ -37,7 +37,7 @@ msgstr ""
 msgid "Woche"
 msgstr ""
 
-#: src/datewin_popup_glade.cc:145
+#: src/datewin_popup_glade.cc:126
 msgid "Datumseigenschaften"
 msgstr ""
 
@@ -73,7 +73,7 @@ msgstr "City"
 msgid "LKZ"
 msgstr "country code"
 
-#: src/LandesBox.cc:34 src/WTelefon_glade.cc:65
+#: src/LandesBox.cc:34 src/WTelefon_glade.cc:67
 msgid "Land"
 msgstr "Country"
 
@@ -161,7 +161,7 @@ msgstr ""
 msgid " (privat)"
 msgstr " (private)"
 
-#: src/WTelefon.cc:148 src/WTelefon_glade.cc:73
+#: src/WTelefon.cc:148 src/WTelefon_glade.cc:75
 msgid "Nummer"
 msgstr "Number"
 
@@ -169,23 +169,23 @@ msgstr "Number"
 msgid "Art"
 msgstr "Type"
 
-#: src/WTelefon_glade.cc:59
+#: src/WTelefon_glade.cc:61
 msgid "Nummer löschen"
 msgstr "Delete Number"
 
-#: src/WTelefon_glade.cc:69
+#: src/WTelefon_glade.cc:71
 msgid "Vorwahl"
 msgstr "Area"
 
-#: src/WTelefon_glade.cc:77
+#: src/WTelefon_glade.cc:79
 msgid "Durchwahl"
 msgstr "Extension"
 
-#: src/WTelefon_glade.cc:84
+#: src/WTelefon_glade.cc:86
 msgid "Text"
 msgstr "text"
 
-#: src/WTelefon_glade.cc:89
+#: src/WTelefon_glade.cc:91
 msgid "Neue Nummer eingeben"
 msgstr "Enter new number"
 
