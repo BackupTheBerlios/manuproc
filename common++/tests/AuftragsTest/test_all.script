@@ -11,7 +11,7 @@ case $TABLES in
    	;;
    database_tables_init_Mabella)
    	BROKEN="ZK"
-   	ALLTESTS="fun LSR AM roll minMen minMenRep minMen_LS ZuA"
+   	ALLTESTS="fun LSR AM roll minMen minMenRep minMen_LS minMenR2 ZuA DAeA DAeA_Tl DAeE2 SplE ZuA LBR LBL AOL"
    	;;
    *) echo "Kann $TABLES nicht identifizieren"
    	exit 2
