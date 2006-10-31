@@ -1,0 +1,8 @@
+tests/AuftragsTest$ ./steuerprogramm LBL -O
+Initalisierung der Datenbank ......beendet
+database_tables_test_Mabella/auftragsentryzuordnung_LBL wurde neu erzeugt
+database_tables_test_Mabella/auftragentry_LBL wurde neu erzeugt
+terminate called after throwing an instance of 'LagerError'
+  what():  10LagerError
+Aborted (core dumped)
+
