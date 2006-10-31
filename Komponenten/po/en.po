@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ManuProC_Widgets 0.0\n"
 "Report-Msgid-Bugs-To: manuproc-developer-de@berlios.de\n"
-"POT-Creation-Date: 2006-05-12 12:33+0200\n"
+"POT-Creation-Date: 2006-08-05 17:58+0200\n"
 "PO-Revision-Date: 2006-03-22 22:19+0100\n"
 "Last-Translator: Jacek Jakubowski <jacek@telebel.de>\n"
 "Language-Team: english <en@li.org>\n"
@@ -37,7 +37,7 @@ msgstr ""
 msgid "Woche"
 msgstr ""
 
-#: src/datewin_popup_glade.cc:137
+#: src/datewin_popup_glade.cc:145
 msgid "Datumseigenschaften"
 msgstr ""
 
@@ -101,27 +101,27 @@ msgstr "No."
 msgid "Bezeichnung"
 msgstr "description"
 
-#: src/SimpleTree.cc:370
+#: src/SimpleTree.cc:378
 msgid "Zurücksetzen"
 msgstr "Reset"
 
-#: src/SimpleTree.cc:371
+#: src/SimpleTree.cc:379
 msgid "Abbrechen"
 msgstr "Cancel"
 
-#: src/SimpleTree.cc:372
+#: src/SimpleTree.cc:380
 msgid "Neuordnen"
 msgstr "Reorder"
 
-#: src/SimpleTree.cc:374
+#: src/SimpleTree.cc:382
 msgid "Sichtbare Spalten"
 msgstr "Visible columns"
 
-#: src/SimpleTree.cc:383
+#: src/SimpleTree.cc:391
 msgid "Optionen"
 msgstr "Options"
 
-#: src/SimpleTree.cc:386
+#: src/SimpleTree.cc:394
 msgid ""
 "Auffüllen mit Standardreihenfolge\n"
 "(statt der aktuellen)"
@@ -129,25 +129,33 @@ msgstr ""
 "Pad with standard order\n"
 "(instead of current order)"
 
-#: src/SimpleTree.cc:388
+#: src/SimpleTree.cc:396
 msgid "Ausgewählte Spalten aufklappen"
 msgstr "Expand selected columns"
 
-#: src/SimpleTree.cc:389
+#: src/SimpleTree.cc:397
 msgid "Tiefe farblich markieren"
 msgstr "Color code depth"
 
-#: src/SimpleTree.cc:390
+#: src/SimpleTree.cc:398
 msgid "Zeilen zählen"
 msgstr "count rows"
 
-#: src/SimpleTree.cc:393
+#: src/SimpleTree.cc:401
 msgid "Alles aufklappen"
 msgstr "Expand all"
 
-#: src/SimpleTree.cc:394
+#: src/SimpleTree.cc:402
 msgid "Alles zuklappen"
 msgstr "Close all"
+
+#: src/SimpleTree.cc:404
+msgid "Excel-Datei schreiben"
+msgstr ""
+
+#: src/SimpleTree.cc:651 src/SimpleTree.cc:670
+msgid "Tabelle"
+msgstr ""
 
 #: src/WTelefon.cc:50
 msgid " (privat)"
