@@ -17,6 +17,7 @@ CREATE TABLE "lieferschein" (
 	"paeckchen" integer,
 	"dpdliefnr" integer,
 	"geliefertam" date,
+	"notiz" text,
 	"instanz" integer DEFAULT 1 NOT NULL,
 	Constraint "lieferschein_pkey" Primary Key ("instanz", "lfrsid")
 );
