@@ -25,6 +25,13 @@ public:
  		Gtk::MessageDialog(s,mt)
  {
  }
+ 
+ static int show_and_wait(const std::string &s, Gtk::Window *parent=0, Gtk::MessageType mt=Gtk::MESSAGE_INFO)
+ { MyMessage m(s,mt);
+   if (parent) m.set_transient_for(parent);
+   m.show();
+   return m.run();
+ }
 
 public:
  __deprecated void set_Message(const std::string msg) 
