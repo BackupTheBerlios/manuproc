@@ -4,6 +4,7 @@
 #include <sstream>
 #include<Misc/SQLerror.h>
 #include <Misc/compiler_ports.h>
+#include <Misc/itos.h>
 
 #ifdef MABELLA_EXTENSIONS
 #include <Lager/FertigWarenLager.h>
