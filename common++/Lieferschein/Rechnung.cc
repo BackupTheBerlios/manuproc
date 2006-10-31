@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.34 2006/10/31 16:03:09 christof Exp $
+// $Id: Rechnung.cc,v 1.35 2006/10/31 16:03:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *  Copyright (C) 2006 Christof Petig
@@ -441,6 +441,77 @@ void Rechnung::Set_sent_to(const std::string t) const throw(SQLerror)
  Query("update rechnung set sent_to=? where rngid=?") << t << Id();
 }
 
+Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
+	: RechnungBase(none_id), kunde(k),rabatt(0),
+   zahlungsart(Zahlungsart::none_id),notiz_valid(false)
+{
+ int RNGID;
+ int KUNDENNR;
+ int JAHR=jahr;
+ int ZAHLUNGSART;
+ int WAEHRUNG;
+ 
+ if (!JAHR) JAHR=AuftragBase::aktuellesJahr();
+ JAHR%=100;
 
+ KUNDENNR=k->Id();
 
+ cH_Kunde krng(k->Rngan());
+
+ if(KUNDENNR != krng->Id())
+   {
+    ZAHLUNGSART=krng->zahlungsart()->Id();
+    WAEHRUNG=krng->getWaehrung()->Id();
+   }
+ else
+   {
+    ZAHLUNGSART=k->zahlungsart()->Id();
+    WAEHRUNG=k->getWaehrung()->Id();
+   }
+
+ Transaction tr;
+  
+ Query("lock table lieferschein in exclusive mode");
+ 
+ Query("select max(rngid)+1 from rechnung where rngid between ? and ?")
+      << (JAHR*AuftragBase::jahresmultiplikator) 
+      << ((JAHR+1)*AuftragBase::jahresmultiplikator-1)
+      >> Query::Row::MapNull(RNGID,JAHR*AuftragBase::jahresmultiplikator);
+ 
+ Query("insert into rechnung (rngid, kundennr,zahlart,waehrung) "
+ 	"values (?,?,?,?)") 
+      << RNGID << KUNDENNR << ZAHLUNGSART << WAEHRUNG;
+
+#ifdef MABELLA_EXTENSIONS
+ bool ENTSORGUNG=krng->entsorgung();
+// int VERKNR=k->VerkNr();
+// int IVERKNR=0;
+
+ Query("select 1/(coalesce(fkt,1)) from waehrung where wid=?")
+   << WAEHRUNG >> kurs;
+
+// if(VERKNR==Kunde::none_id) IVERKNR=-1;
+ (Query("update rechnung set entsorgung=?, "
+/*	verknr=:VERKNR:IVERKNR,*/
+	"kurs=? where rngid=?") 
+	<< ENTSORGUNG << kurs << RNGID).Check100();
+
+ (Query("update rechnung set notiz=(select rng_notiz from kunden "
+        "where kundennr=?) where rngid=?") 
+        << KUNDENNR << RNGID).Check100();
+ 
+ std::string tmp_notiz;
+ if(k->Id()!=k->Rngan()) // Notiz der Rechnungsadresse besorgen
+   {Query("select coalesce(rng_notiz,'') from kunden where"
+          " kundennr=?") << k->Rngan() >> tmp_notiz;
+    Query("update rechnung set notiz=notiz||? "
+          "where rngid=?") << tmp_notiz << RNGID;
+    }
+#endif
+
+ rngid=RNGID;
+ rgdatum=ManuProC::Datum::today();
+
+ tr.commit();
+}
 

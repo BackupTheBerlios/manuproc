@@ -142,8 +142,6 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  youraufnr_cache[*this]=youraufnr;
 }
 
-static const int yearfactor=10000;
-
 Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr,
               AufStatVal st) throw(SQLerror)
 	: AuftragBase(cH_ppsInstanz(_instanz),invalid_id),
@@ -159,8 +157,9 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr,
  int YEAR=AuftragBase::aktuellesJahr()%100;
  Query("select max(auftragid)+1 from auftrag "
  	"where auftragid between ? and ? and instanz=?")
-      << (YEAR*yearfactor) << ((YEAR+1)*yearfactor-1) << Instanz()
-      >> Query::Row::MapNull(auftragid,YEAR*yearfactor);
+      << (YEAR*AuftragBase::jahresmultiplikator) 
+      << ((YEAR+1)*AuftragBase::jahresmultiplikator-1) << Instanz()
+      >> Query::Row::MapNull(auftragid,YEAR*AuftragBase::jahresmultiplikator);
  		
  if (auftragid<handplan_auftrag_id) auftragid=handplan_auftrag_id;
  
@@ -241,7 +240,8 @@ Auftrag Auftrag::PassenderPlanungsAuftrag(ppsInstanz::ID id)
  	"where auftragid between ? and ? and instanz=? "
  	"and datum>now()-cast('1hour' as interval) "
  	"and kundennr=?")
-      << (YEAR*yearfactor) << ((YEAR+1)*yearfactor-1) << id
+      << (YEAR*AuftragBase::jahresmultiplikator) 
+      << ((YEAR+1)*AuftragBase::jahresmultiplikator-1) << id
       << Kunde::eigene_id
       >> Query::Row::MapNull(auftragid);
   if (auftragid) return Auftrag(make_value(AuftragBase(id,auftragid)));
