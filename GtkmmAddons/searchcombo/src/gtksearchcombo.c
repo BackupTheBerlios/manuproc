@@ -38,7 +38,7 @@
 #include <gtk/gtkframe.h>
 #include <gtk/gtkwidget.h>
 
-#if 0
+#if 1
 #define DEBUG(x) x
 #else
 #define DEBUG(x)
@@ -809,7 +809,10 @@ gtk_searchcombo_new_selection (GtkList       *list,
    g_return_if_fail (searchcombo != NULL);
    g_return_if_fail (GTK_IS_SEARCHCOMBO (searchcombo));
    DEBUG(printf("gtk_searchcombo_new_selection\n"));
-   if (!GTK_LIST(searchcombo->list)->selection) return;
+   if (!GTK_LIST(searchcombo->list)->selection) 
+   { DEBUG(printf("SCB ns: nothing selected\n"));
+     return;
+   }
    li=(GtkListItem*)(GTK_LIST(searchcombo->list)->selection->data);
    g_assert(GTK_IS_LIST_ITEM(li));
    label=(GtkLabel*)(gtk_container_children(GTK_CONTAINER(li))->data);
