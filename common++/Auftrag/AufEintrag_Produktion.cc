@@ -1,7 +1,8 @@
-// $Id: AufEintrag_Produktion.cc,v 1.44 2006/06/26 07:53:01 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.45 2006/10/31 16:03:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
+ *  Copyright (C) 2006 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -390,4 +391,33 @@ void AufEintrag::KinderProduzieren(mengen_t M, const AufEintragBase &neuerAEB,
       // gelieferte 1er nutzen, 0er abbestellen dann erst 1er abbestellen
       distribute_children_twice(*this,M,Artikel(),callback);
    }
+}
+
+void AufEintrag::AutoAuslagern2(cH_ppsInstanz const& wo,
+                              ArtikelBase const& artikel,mengen_t menge)
+// Code stammt aus AufEintrag::unbestellteMengeProduzieren
+{ if (wo==ppsInstanzID::None || wo==ppsInstanzID::Kundenauftraege)
+    return;
+  if (wo->ProduziertSelbst())
+    return;
+  if (wo->LagerInstanz())
+    unbestellteMengeProduzieren(wo,artikel,menge,true);
+  else
+    AutoAuslagern(wo,artikel,menge);
+}
+
+void AufEintrag::AutoAuslagern(cH_ppsInstanz const& instanz,
+                              ArtikelBase const& artikel,mengen_t menge)
+// Code stammt aus AufEintrag::ArtikelInternNachbestellen
+{ ppsInstanz::ID next=instanz->NaechsteInstanz(ArtikelStamm(artikel));
+  if (next!=ppsInstanzID::None)
+  { AufEintrag::AutoAuslagern2(next,menge,artikel,*this);
+  }
+  else if (!Instanz()->ExterneBestellung())
+  { ArtikelBaum AB(Artikel());
+    for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
+    { AutoAuslagern2(ppsInstanz::getBestellInstanz(i->rohartikel),
+                                        i->rohartikel,i->menge*menge);
+    }
+  }
 }

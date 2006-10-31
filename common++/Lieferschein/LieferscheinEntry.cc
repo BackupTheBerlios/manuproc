@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.84 2006/06/26 07:53:02 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.85 2006/10/31 16:03:16 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -194,6 +194,8 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
         for (list_t::reverse_iterator i=liste.rbegin();i!=liste.rend();++i)
         { if(i->aeb.valid()) 
              AufEintrag(i->aeb).ProduziertNG(i->abmenge,*this);
+          else // aus dem Lager auslagern ...
+             AufEintrag::AutoAuslagern(instanz,artikel,i->abmenge);
           if(!(i->menge + i->abmenge)) deleteZusatzEntry(i->aeb);
           else updateZusatzEntry(i->aeb,i->menge + i->abmenge);
         }

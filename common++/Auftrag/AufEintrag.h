@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.95 2006/06/26 07:53:01 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.96 2006/10/31 16:03:16 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *  Copyright (C) 2006 Christof Petig
@@ -347,8 +347,12 @@ private:
  		const ArtikelBase &artikel,mengen_t menge,bool rekursiv,
  		const AufEintragBase &elter,const ProductionContext2 &ctx,
  		ManuProC::Datum termin);
- // neuen (geschlossenen) 1er erzeugen (völlig unverzeigert ?)
+  static void AutoAuslagern2(cH_ppsInstanz const& instanz,
+                ArtikelBase const& artikel,mengen_t menge);
 public:
+  static void AutoAuslagern(cH_ppsInstanz const& instanz,
+                ArtikelBase const& artikel,mengen_t menge);
+ // neuen (geschlossenen) 1er erzeugen (völlig unverzeigert ?)
  static AufEintragBase unbestellteMengeProduzieren(cH_ppsInstanz instanz,
  		const ArtikelBase &artikel,
  		mengen_t menge,bool rekursiv=false,
