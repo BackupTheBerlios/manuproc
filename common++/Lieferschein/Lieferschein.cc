@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.53 2006/10/31 16:03:12 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.54 2006/10/31 16:03:21 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -259,3 +259,86 @@ void Lieferschein::setDatum(const ManuProC::Datum &d) throw(SQLerror)
 
 const UniqueValue::value_t LieferscheinBase::trace_channel=ManuProC::Tracer::channels.get();
 static ManuProC::Tracer::Environment trace_channel_e("DEBUG_LIEFERSCHEIN",LieferscheinBase::trace_channel);
+
+Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,int lid) throw(SQLerror)
+: LieferscheinBase(_instanz,lid),kunde(Kunde::default_id), notiz_valid(false)
+{
+
+ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("LieferscheinId",lid)); 
+
+ int KDNR;
+ char LSART;
+
+ std::string query="select coalesce(lsart,'L'), kundennr, date(datum), "
+		   " rngid, date(coalesce(geliefertam,datum)) ";
+
+#ifdef DPD_LIEFERSCHEINE
+ query += ",paeckchen,pakete,dpdliefnr,brutto_kg,netto_kg,verknr ";
+#endif
+
+ query+=" from lieferschein where (instanz,lfrsid) = (?,?)";
+
+ Query q(query);
+
+ q << Instanz()->Id() << Id();
+ SQLerror::test(__FILELINE__);
+
+ Query::Row fi=q.Fetch();
+
+ fi >> LSART >> KDNR
+    >> lsdatum 
+    >> Query::Row::MapNull(rngid,ManuProcEntity<>::none_id) 
+    >> geliefertam
+#ifdef DPD_LIEFERSCHEINE
+    >> Query::Row::MapNull(paeckchen,0) 
+    >> Query::Row::MapNull(pakete,0) 
+    >> Query::Row::MapNull(dpdliefnr,ManuProcEntity<>::none_id)
+    >> Query::Row::MapNull(brutto_kg,0)
+    >> Query::Row::MapNull(netto_kg,0)
+    >> Query::Row::MapNull(verknr,Kunde::none_id)
+#endif
+    ;
+
+ lsart=(LsArt)LSART;
+ kunde=cH_Kunde(KDNR);
+}
+
+Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,cH_Kunde k,
+			int jahr, LsArt la) throw(SQLerror)
+	: LieferscheinBase(_instanz,none_id), lsdatum(ManuProC::Datum::today()),
+	  lsart(la),
+          kunde(k),rngid(ManuProcEntity<>::none_id),
+#ifdef DPD_LIEFERSCHEINE
+ 	  dpdliefnr(-1) ,paeckchen(),pakete(),
+#endif
+         notiz_valid(),verknr(Kunde::none_id)
+{
+ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("Kunde",k),NV("Jahr",jahr)); 
+
+ if (!jahr) jahr=AuftragBase::aktuellesJahr();
+ jahr%=100;
+
+ Transaction tr;
+  
+ Query("lock table lieferschein in exclusive mode");
+ 
+ Query("select max(lfrsid)+1 from lieferschein where lfrsid between ? and ?")
+      << (jahr*10000) << ((jahr+1)*10000-1)
+      >> Query::Row::MapNull(lieferid,JAHR*10000);
+ 
+ Query("insert into lieferschein (instanz,lfrsid, kundennr) values (?,?,?)")
+     << instanz->Id() << lieferid << kunde->Id();
+
+ (Query("update lieferschein set notiz=(select lief_notiz from kunden
+        where kundennr=?) where (instanz,lfrsid)=(?,?)")
+        << kunde->Id() 
+        << lieferid).Check100();
+
+ if(la!=LART_NONE)
+ { (Query("update lieferschein set lsart=? where (instanz,lfrsid)=(?,?)")
+        << char(la) << instanz->Id() << lieferid).Check100();
+ }
+ rngid=ManuProcEntity<>::none_id;
+ tr.commit();
+}
+
