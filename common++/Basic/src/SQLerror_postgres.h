@@ -1,4 +1,4 @@
-/* $Id: SQLerror_postgres.h,v 1.8 2005/09/14 12:14:46 christof Exp $ */
+/* $Id: SQLerror_postgres.h,v 1.9 2006/10/31 16:05:16 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -41,7 +41,7 @@ class SQLerror_postgres : public std::exception
 
 public:
    ~SQLerror_postgres() throw() {}
-   SQLerror_postgres(const std::string &context, std::string const& detail=std::string()) throw();
+   explicit SQLerror_postgres(const std::string &context, std::string const& detail=std::string()) throw();
    SQLerror_postgres(const std::string &context,int code,const std::string &name) throw();
    
    virtual const char* what() const throw() { return "SQLerror"; }

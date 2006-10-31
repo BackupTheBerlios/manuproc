@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.54 2006/10/31 16:04:21 christof Exp $
+// $Id: db_upgrade.cc,v 1.55 2006/10/31 16:05:16 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -136,6 +136,7 @@ int main(int argc,char *argv[])
   // LsArt im Lieferschein
   if(check_column("lieferschein","lsart","char"))
     {Query_nt("alter table lieferschein alter lsart set default 'L'");
+     Query_nt("update lieferschein set lsart ='L' where lsart is null");
     }
   
   // Verkäuferspezifische Daten
