@@ -5,6 +5,12 @@
 #include<Misc/SQLerror.h>
 #include <Misc/compiler_ports.h>
 
+#ifdef MABELLA_EXTENSIONS
+#include <Lager/FertigWarenLager.h>
+#endif
+
+#include "ArtikelBox.hh"
+
 struct MyMessage : Gtk::MessageDialog
 {
   std::string stringify(const SQLerror &e)
@@ -37,7 +43,15 @@ struct MyMessage : Gtk::MessageDialog
   MyMessage(Glib::ustring const& s,Gtk::MessageType mt=Gtk::MESSAGE_INFO)
       : Gtk::MessageDialog(s,false,mt)
   { }
-
+  
+  MyMessage(const LagerError &e,Gtk::MessageType mt=Gtk::MESSAGE_ERROR)
+      : Gtk::MessageDialog(e.Text()+" ArtID:"+itos(e.ArtID()),false,mt)
+  { }
+  
+  MyMessage(const ArtikelBoxErr &e,Gtk::MessageType mt=Gtk::MESSAGE_ERROR)
+      : Gtk::MessageDialog(e.ErrMsg(),false,mt)
+  { }  
+  
   template <class T>
    static int show_and_wait(T const& s, Gtk::Window *parent, Gtk::MessageType mt)
   { MyMessage m(s,mt);
