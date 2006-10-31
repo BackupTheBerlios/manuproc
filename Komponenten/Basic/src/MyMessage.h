@@ -1,7 +1,7 @@
 
 #include<gtkmm/messagedialog.h>
 #include<Misc/Datum.h>
-#include <strstream>
+#include <sstream>
 #include<Misc/SQLerror.h>
 #include <Misc/compiler_ports.h>
 
@@ -19,7 +19,7 @@ struct MyMessage : Gtk::MessageDialog
     return _msg;
   }
   std::string stringify(const ManuProC::Datumsfehler &e)
-  { std::strstream ostr;
+  { std::stringstream ostr;
     ostr << e;  
     return ostr.str();
   }
