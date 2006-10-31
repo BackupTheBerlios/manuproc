@@ -1,4 +1,4 @@
-// $Id: WTelefon.cc,v 1.16 2006/10/31 16:10:14 christof Exp $
+// $Id: WTelefon.cc,v 1.17 2006/10/31 16:10:22 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig
@@ -238,11 +238,11 @@ void WTelefon::text_activate()
 
    if(ret!=0)
      {
-       MyMessage::show_and_wait(_("ERROR: Überprüfung der Emailadresse nicht möglich"));
+       MyMessage::show_and_wait(_("ERROR: Überprüfung der Emailadresse nicht möglich"),get_toplevel());
        std::cout << "ERROR: Überprüfung der Emailadresse nicht möglich\n";
      }
    if(regexec(re, newt->Text().c_str(),0, NULL, 0)==REG_NOMATCH)
-     {MyMessage::show_and_wait(_("Bitte die Emailadresse korrigieren"));
+     {MyMessage::show_and_wait(_("Bitte die Emailadresse korrigieren"),get_toplevel());
       std::cout << "Bitte die Emailaddresse korrigieren\n";
       return;
      } 
