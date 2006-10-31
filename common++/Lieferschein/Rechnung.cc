@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.40 2006/10/31 16:05:19 christof Exp $
+// $Id: Rechnung.cc,v 1.41 2006/10/31 16:05:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *  Copyright (C) 2006 Christof Petig
@@ -180,7 +180,13 @@ unsigned Rechnung::push_back(ArtikelBase art,int stk,mengen_t menge)
           << Id()
           >> Query::Row::MapNull(lineno);
   lineno++;
-  push_back(lineno,art,0,0,stk,menge,Preis(),0,0,Preis());
+
+  Preis ek_preis;
+  ArtikelTyp at(art);
+  ek_preis=Artikelpreis(at.EK_PL(),art,
+    		AuftragBase::Gesamtmenge(stk,menge).as_int());
+
+  push_back(lineno,art,0,0,stk,menge,Preis(),0,0,ek_preis);
   tr.commit();
 }
 
