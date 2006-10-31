@@ -46,7 +46,7 @@ COPY prod_instanz (insid, name, lager_fuer, sortierung, lieferschein, lagername,
 3	Einkauf	\N	3	t	\N	t	\N	2	f	P	t	\N	\N	\N
 2	Fertigwarenlager	3	2	f	rl_inhalt	f	\N	\N	t	L	\N	\N	\N	\N
 4	Musterung	\N	4	f	\N	t	\N	\N	f	P	t	\N	\N	\N
-5	Display_Aufmachung	\N	5	f	\N	t	\N	\N	f	P	t	\N	\N	\N
+5	Display_Aufmachung	\N	5	f	\N	t	\N	\N	f	P	f	\N	\N	\N
 \.
 
 

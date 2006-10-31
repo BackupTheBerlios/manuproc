@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.42 2006/10/31 16:05:26 christof Exp $
+// $Id: Rechnung.cc,v 1.43 2006/10/31 16:07:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *  Copyright (C) 2006 Christof Petig
@@ -172,7 +172,8 @@ void Rechnung::setEntsorgung(bool ent) throw(SQLerror)
  entsorgung=ent;
 }
 
-unsigned Rechnung::push_back(ArtikelBase art,int stk,mengen_t menge)
+unsigned Rechnung::push_back(ArtikelBase art,int stk,mengen_t menge,
+			fixedpoint<2> provsatz)
 { Transaction tr;
   unsigned lineno=0;
   Query("lock table rechnungentry in exclusive mode"); 
@@ -187,7 +188,7 @@ unsigned Rechnung::push_back(ArtikelBase art,int stk,mengen_t menge)
   Artikelpreis  ek_preis(self,art,
     		AuftragBase::Gesamtmenge(stk,menge).as_int());
 
-  push_back(lineno,art,0,0,stk,menge,Preis(),0,0,ek_preis);
+  push_back(lineno,art,0,0,stk,menge,Preis(),0,provsatz,ek_preis);
   tr.commit();
 }
 
