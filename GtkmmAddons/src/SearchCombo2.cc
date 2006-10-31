@@ -235,11 +235,14 @@ bool Gtk::SearchCombo2::popup_key_rel(GdkEventKey* k)
 { return on_key_release_event(k);
 }
 
-Gtk::SearchCombo2::SearchCombo2(bool,bool)
+void Gtk::SearchCombo2::init()
 { mymodel=Model::create(m_text_columns,this);
   set_model(mymodel);
   set_text_column(m_text_columns.m_column);
   get_entry()->signal_changed().connect(sigc::mem_fun(*this,&SearchCombo2::on_entry_changed));
+  signal_changed().connect(signal_activate().make_slot());
+  get_entry()->signal_activate().connect(signal_activate().make_slot());
+//  sigc::mem_fun(*this,&SearchCombo2::on_changed));
   Gtk::CellRendererText *crt=Gtk::manage(new Gtk::CellRendererText());
   pack_start(*crt);
 //  crt->property_foreground()="red";
@@ -268,6 +271,17 @@ Gtk::SearchCombo2::SearchCombo2(bool,bool)
   // ENDHACK
 }
 
+Gtk::SearchCombo2::SearchCombo2(bool always_fill, bool autoexpand)
+{ init();
+}
+
+#if 0
+Gtk::SearchCombo2::SearchCombo2(TextModelColumns const& col)
+  : m_text_columns(col)
+{ init();
+}
+#endif
+
 void Gtk::SearchCombo2::popupdown()
 { if (Glib::wrap(GTK_TOGGLE_BUTTON(GTK_COMBO_BOX(gobj())->priv->button))
       ->get_active())
@@ -289,8 +303,8 @@ Gtk::SearchCombo2::~SearchCombo2()
 {
 }
 
-Glib::SignalProxy0<void> Gtk::SearchCombo2::signal_activate()
-{ return get_entry()->signal_activate();
+sigc::signal0<void> &Gtk::SearchCombo2::signal_activate()
+{ return activate;
 }
 
 sigc::signal2<void,gboolean *,GtkSCContext> &Gtk::SearchCombo2::signal_search()

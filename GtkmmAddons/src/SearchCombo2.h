@@ -1,4 +1,4 @@
-/* $Id: SearchCombo2.h,v 1.5 2006/10/31 16:14:16 christof Exp $ */
+/* $Id: SearchCombo2.h,v 1.6 2006/10/31 16:14:22 christof Exp $ */
 
 /* searchcombo.h
  * 
@@ -57,12 +57,17 @@ class SearchCombo2 : public Gtk::ComboBoxEntry
   void popupdown();
   bool popup_key_pr(GdkEventKey* k);
   bool popup_key_rel(GdkEventKey* k);
-//  sigc::signal0<void> activate;
+  void init();
+//  void on_changed();
+  sigc::signal0<void> activate;
 public:
   explicit SearchCombo2(bool always_fill=false, bool autoexpand=false);
+  // for multi column Combos (you also have to add additional 
+  //  visible columns using pack_start)
+//  explicit SearchCombo2(TextModelColumns const& col);
   ~SearchCombo2();
   
-  Glib::SignalProxy0<void> signal_activate();
+  sigc::signal0<void> &signal_activate();
   sigc::signal2<void,gboolean *,GtkSCContext> &signal_search();
 
   /** Allow direct text entry
