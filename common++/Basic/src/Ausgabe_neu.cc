@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.cc,v 1.26 2006/10/31 16:04:40 christof Exp $ */
+/* $Id: Ausgabe_neu.cc,v 1.27 2006/10/31 16:05:19 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -187,6 +187,7 @@ std::string string2TeX(const std::string s, int flags) throw()
 	 case '_': in_line=true;
 	    ret+='\\'; ret+=s[i];
 	    break;
+	 case '§': ret+="\\S"; break;
 	 case '*':
 	 case '<':
 	 case '>':

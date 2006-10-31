@@ -129,7 +129,7 @@ public:
 	     } LangTXT;
 	     
  // id's >=  CUSTOMER_IDS werden nicht im Konstruktor, sondern on demand geladen
- // mann kann ab CUSTOMER_IDS die Texte in die Datenbank packen, ohne am h. file was
+ // man kann ab CUSTOMER_IDS die Texte in die Datenbank packen, ohne am h. file was
  // zu mssen. 
 	     
 
