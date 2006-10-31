@@ -1,4 +1,4 @@
-// $Id: Query.pgcc,v 1.22 2006/08/03 11:18:28 christof Exp $
+// $Id: Query.pgcc,v 1.23 2006/10/31 16:07:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2005 Adolf Petig GmbH & Co. KG
  *  		written by Christof Petig
@@ -270,7 +270,8 @@ sqlca.sqlcode=0;
 #ifdef HAVE_PQPREPARE  
   if (prepare)
   { if (!prepare->ready() || conn!=prepare->connection)
-    { static int serial;
+    {reprepare:
+      static int serial;
       std::string prepname="PrepQ"+itos(serial++);
       prepare->types=params.getTypes();
       std::string cmd=standardize_parameters(prepare->Command());
@@ -294,6 +295,11 @@ sqlca.sqlcode=0;
     }
     if (Query::debugging.on) std::cerr << "binding " << prepare->name << '\n';
     result=PQexecPrepared(conn,prepare->name.c_str(), numparams,values,length,binary,0);
+    if (result && PQresultStatus(result)==PGRES_FATAL_ERROR 
+    		&& std::string(PQresultErrorField(result, PG_DIAG_SQLSTATE))=="26000")
+    { // prepared query does not exist
+      goto reprepare;
+    }
   }
   else 
 #endif  
