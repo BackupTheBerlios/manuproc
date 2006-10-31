@@ -1,4 +1,4 @@
-/* $Id: SearchCombo2.h,v 1.2 2006/10/31 16:14:05 christof Exp $ */
+/* $Id: SearchCombo2.h,v 1.3 2006/10/31 16:14:07 christof Exp $ */
 
 /* searchcombo.h
  * 
@@ -49,18 +49,11 @@ class SearchCombo2 : public Gtk::ComboBoxEntry
 	bool enable_tab:1;	/** whether to recognize tab for completion */
 	bool autoexpand:1;	/** whether to automatically expand and activate once unique */
 	bool autoexpand_on_activate:1; /** whether to expand on pressing Return */
-	bool start_idle:1;	/** start search at idle time not in focus_in */
 	bool auto_narrow:1;  /** do not call search on key press but
 				instread try to shrink displayed list ourselves */
 	
-	/* internal state variables */
-	bool backspace:1;	/** last key was backspace -> do not autocomplete */
-	bool search_in_progress:1;	/** whether a search is in progress */
-	bool already_started:1;	/** if not true we have to start at idle time */
-	bool search_finished:1;	/** search is finished, simply display */
-	bool value_selected:1;	/** a value has been selected, do not search without explicit request */
-	bool reopen:1;		/** next open should be reopen */
 
+  void on_entry_changed();
 //  sigc::signal0<void> activate;
 public:
   explicit SearchCombo2(bool always_fill=false, bool autoexpand=false);
