@@ -1,4 +1,4 @@
-// $Id: WTelefon.cc,v 1.14 2006/05/17 08:15:45 christof Exp $
+// $Id: WTelefon.cc,v 1.15 2006/10/31 16:10:11 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig
@@ -33,6 +33,10 @@
 #include <sigc++/slot.h>
 #include <sigc++/compatibility.h>
 #include <gtk/gtksignal.h>
+
+#include "MyMessage.h"
+#include <sys/types.h> 
+#include <regex.h>
 
 class Data_Tel :  public RowDataBase
 {
@@ -220,7 +224,33 @@ void WTelefon::durchwahl_activate()
 void WTelefon::text_activate()
 { 
   try{
-  cH_Telefon ct=Telefon::create(get_value());
+  cH_Telefon newt(get_value());
+
+  if(newt->TelefonArt()==TEL_E_MAIL)
+    {
+     char *mail_regexp(
+"^([a-zA-Z0-9_\\.\\-])+@(([a-zA-Z0-9\\-])+\\.)+([a-zA-Z0-9]{2,4})+$"
+	);
+     regex_t *re=(regex_t *)malloc(sizeof(regex_t));
+   int ret=regcomp(re,mail_regexp,REG_ICASE|REG_EXTENDED);
+
+//   Gtk::Window *pw=this->get_parent()->get_window();
+
+   if(ret!=0)
+     {
+//     MyMessage::show_and_wait(_("ERROR: Überprüfung der Emailaddresse nicht mögllich"),
+//			this);
+       std::cout << "ERROR: Überprüfung der Emailaddresse nicht mögllich\n";
+     }
+   if(regexec(re, newt->Text().c_str(),0, NULL, 0)==REG_NOMATCH)
+     {//MyMessage::show_and_wait(_("Bitte die Emailaddresse korrigieren"),
+//			this);
+      std::cout << "Bitte die Emailaddresse korrigieren\n";
+      return;
+     } 
+    }
+
+  cH_Telefon ct=Telefon::create(newt);
   TelList.push_back(ct);
   showTel();
   _add(ct);  
