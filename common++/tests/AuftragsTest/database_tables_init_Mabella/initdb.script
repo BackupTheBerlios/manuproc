@@ -51,7 +51,8 @@ createdb -E SQL_ASCII $PGDATABASE
    artikelgruppen \
    ku_gruppe \
    lager \
-   muster_lager_buchung 
+   muster_lager_buchung \
+   last_inventur
 do
   cat $P/$i
 done ) | psql $PGDATABSE -q

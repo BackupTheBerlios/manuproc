@@ -32,6 +32,13 @@
 
 static bool LagerBuchungLieferschein()
 {  
+  FertigWaren fw(ARTIKEL_TRIO,FertigWaren::eInventur,100); 
+  FertigWarenLager fwl(fw,1);
+  fwl.Inventur();
+  FertigWaren fw2(ARTIKEL_ZWEI,FertigWaren::eInventur,100); 
+  FertigWarenLager fwl2(fw2,1);
+  fwl2.Inventur();
+
 
  Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE); 
  AufEintragBase AEB=auftrag.push_back(16,DATUM,ARTIKEL_TRIO,OPEN,true);
@@ -47,7 +54,10 @@ static bool LagerBuchungLieferschein()
    
    LieferscheinEntryBase lsb2(ls,ls.push_back(ARTIKEL_ZWEI,30,0,0));
    LieferscheinEntry le2(lsb2);
-   le2.setLagerid(FERTIGWLAGER);
+//hmmm,ich denke Du meinst hier die Lagerid und nicht die Instanz
+//   le2.setLagerid(FERTIGWLAGER);
+   le2.setLagerid(1);
+
 #if 0 // geht nicht ...   
    try
    { le2.changeStatus(OPEN,true);
