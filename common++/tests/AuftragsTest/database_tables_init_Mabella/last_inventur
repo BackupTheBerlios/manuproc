@@ -1,0 +1,38 @@
+--
+-- PostgreSQL database dump
+--
+
+SET client_encoding = 'LATIN1';
+SET check_function_bodies = false;
+
+SET search_path = public, pg_catalog;
+
+DROP INDEX public.last_inventur_idx;
+DROP TABLE public.last_inventur;
+--
+-- TOC entry 3 (OID 8577545)
+-- Name: last_inventur; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE last_inventur (
+    artikelid integer,
+    datum timestamp with time zone
+);
+
+
+--
+-- TOC entry 4 (OID 8577545)
+-- Name: last_inventur; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE last_inventur FROM PUBLIC;
+
+
+--
+-- TOC entry 5 (OID 10820207)
+-- Name: last_inventur_idx; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE INDEX last_inventur_idx ON last_inventur USING btree (artikelid);
+
+
