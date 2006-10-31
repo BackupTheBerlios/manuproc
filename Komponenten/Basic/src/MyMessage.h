@@ -52,6 +52,11 @@ struct MyMessage : Gtk::MessageDialog
     m.show();
     return m.run();
   }
+  template <class T>
+   static int show_and_wait(T const& s, Gtk::Container *toplevel)
+  { if (toplevel) show_and_wait(s,dynamic_cast<Gtk::Window*>(toplevel));
+    else show_and_wait(s);
+  }
 
  __deprecated void set_Message(const std::string msg) 
    { set_message(msg,true); 
