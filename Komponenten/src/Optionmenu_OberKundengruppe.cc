@@ -1,4 +1,4 @@
-// $Id: Optionmenu_OberKundengruppe.cc,v 1.3 2006/10/31 16:10:39 christof Exp $
+// $Id: Optionmenu_OberKundengruppe.cc,v 1.4 2006/10/31 16:10:41 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002-2005 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -65,6 +65,7 @@ void Optionmenu_OberKundengruppe::fuelle_menu(bool reload)
          os.flush((void*)grpid);}
      fi=q.Fetch();
    }
+  os << _("-- keine --"); os.flush((void*)(KundengruppeID::None));
 }
 
 void Optionmenu_OberKundengruppe::register_value(
