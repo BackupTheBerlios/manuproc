@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung_sql.pgcc,v 1.10 2006/06/26 07:53:03 christof Exp $ */
+/* $Id: ProvAbrechnung_sql.pgcc,v 1.11 2006/10/31 16:04:21 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -95,7 +95,8 @@ ProvAbrechnung* ProvAbrechnung::newProvAbrechnung(const Kunde::ID verkid,
 
 Query::Row &operator>>(Query::Row &is, ProvAbrechnung::FetchStruct &st)
 {
- return is >> st.rngid >> st.zeilennr >> st.provsatz >> st.rngrabatt;
+ return is >> st.rngid >> st.zeilennr >> st.provsatz >> 
+	st.rngrabatt >> st.aux_idx >> st.anteil;
 }
 
 
@@ -109,7 +110,7 @@ void ProvAbrechnung::loadEntries(std::string sql_order) throw(SQLerror)
  Kunde::ID obervk=vk->Rngan();
  std::string txt=
         "select p.rngid,p.zeilennr,coalesce(e.provsatz,0), "
-	" coalesce(r.rabatt,0) from prov_entry p"
+	" coalesce(r.rabatt,0),aux_idx,anteil from prov_entry p"
 	" join rechnung r using (rngid) "
 	" join rechnungentry e on (e.rngid=r.rngid and e.zeilennr=p.zeilennr";
  if(obervk==verkaeufer)
@@ -135,7 +136,10 @@ void ProvAbrechnung::loadEntries(std::string sql_order) throw(SQLerror)
  for(std::vector<FetchStruct>::const_iterator i=st.begin(); i!=st.end(); ++i)
    {
     entries.push_back(new ProvAbrechnungEntry(Id(),verkaeufer,(*i).rngid,
-    			(*i).zeilennr,(*i).provsatz,(*i).rngrabatt));
+    			(*i).zeilennr,(*i).provsatz,(*i).rngrabatt,
+			(*i).anteil,
+			(ProvAbrechnungEntry::EntryRang)(*i).aux_idx)
+			);
    }
  entries_valid=true;
  

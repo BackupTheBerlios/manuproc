@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.67 2006/06/26 07:53:03 christof Exp $
+// $Id: Check.cc,v 1.68 2006/10/31 16:04:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -198,6 +198,11 @@ void Check::dump(was_checken check, const std::string &zusatz)
   	"select position_ as pos,material,typ,kartons,kg_per_karton as a,"
   		" reste,rest_kg as kg,misc from rl_log order by zeit;"
   	    +"\" >"+resultdir+"rl_log_"+zusatz).c_str());
+  }
+  if(check & FertigwLager)
+  {  system((psql_cmd+" \""+
+  	"select artikelid,menge,aktion,bestand,lfrsid from fw_lager_buchung "
+  	"order by 1,datum\" >"+resultdir+"fw_lager_buchung_"+zusatz).c_str());
   }
 }
 

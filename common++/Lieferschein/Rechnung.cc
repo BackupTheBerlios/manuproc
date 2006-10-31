@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.35 2006/10/31 16:03:28 christof Exp $
+// $Id: Rechnung.cc,v 1.36 2006/10/31 16:04:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *  Copyright (C) 2006 Christof Petig
@@ -146,7 +146,7 @@ void Rechnung::setEntsorgung(bool ent) throw(SQLerror)
  entsorgung=ent;
 }
 
-unsigned Rechnung::push_back(ArtikelBase art,unsigned stk,mengen_t menge)
+unsigned Rechnung::push_back(ArtikelBase art,int stk,mengen_t menge)
 { Transaction tr;
   unsigned lineno=0;
   Query("lock table rechnungentry in exclusive mode"); 
@@ -220,7 +220,7 @@ void Rechnung::deleteLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
 //{ return a<b?a:b; }
 
 void Rechnung::push_back(unsigned &lineno,ArtikelBase art,
-		unsigned lfrsid,unsigned lfrsznr, unsigned stk,
+		unsigned lfrsid,unsigned lfrsznr, int stk,
 		mengen_t menge,const Preis &p, AufEintragBase::rabatt_t rabatt,
 		fixedpoint<2> provsatz, const Preis &ek_preis)
 { Query("insert into rechnungentry "
@@ -230,7 +230,7 @@ void Rechnung::push_back(unsigned &lineno,ArtikelBase art,
  		"?,?,?, ?,?)")
  		<< Id() << lineno << art 
  		<< Query::NullIf(lfrsid) << Query::NullIf(lfrsznr)
-	 	<< stk << Query::NullIf(menge)
+	 	<< abs(stk) << Query::NullIf(menge)
  		<< p.Wert(getWaehrung(),p.BezugsMenge()) 
 	 	<< rabatt << p.BezugsMenge() << provsatz 
 	 	<< ek_preis.Wert(Waehrung::default_id,p.BezugsMenge());

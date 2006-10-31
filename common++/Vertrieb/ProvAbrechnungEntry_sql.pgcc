@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnungEntry_sql.pgcc,v 1.13 2006/06/26 07:53:03 christof Exp $ */
+/* $Id: ProvAbrechnungEntry_sql.pgcc,v 1.14 2006/10/31 16:04:21 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -49,13 +49,15 @@
 ProvAbrechnungEntry::ProvAbrechnungEntry(const ManuProcEntity<>::ID _abrnr, 
  	const Kunde::ID _verknr, const RechnungEntry::ID _rngid,
 	int zeilennr, fixedpoint<2> _psatz,
-	float rng_rabattsatz) throw(SQLerror)
+	float rng_rabattsatz,
+	fixedpoint<2> _anteil,
+	EntryRang _er) throw(SQLerror)
 : ManuProcEntity<>(_abrnr), rngentry(RechnungEntryBase(_rngid,zeilennr)), 
-  verknr(_verknr), rng_rabatt(rng_rabattsatz)
+  anteil(_anteil), aux_idx(_er), verknr(_verknr), rng_rabatt(rng_rabattsatz)
 {
  umsatz=rngentry.Gesamtpreis();
- provsatz=_psatz;
- provision=umsatz * (_psatz.as_float()/100.0);
+ provsatz=_psatz*(anteil/100.00);
+ provision=umsatz * (provsatz.as_float()/100.0);
 }
 
 
@@ -65,22 +67,32 @@ ProvAbrechnungEntry::ProvAbrechnungEntry(const ManuProcEntity<>::ID _abrnr,
 *********************************************/
 void ProvAbrechnungEntry::newAbrechnungEntries(
  	const ManuProcEntity<>::ID _abrnr, 
- 	const Kunde::ID _verknr, const Rechnung &rng) throw(SQLerror)
+ 	const Kunde::ID _verknr, const Rechnung &rng,
+	EntryRang er) throw(SQLerror)
 {
  exec sql begin declare section;
  int ABRNR=_abrnr;
  int VERKNR=_verknr;
  int RNGID=rng.Id();
  int KUNDENNR;
+ float ANTEIL;
+ int AUX_IDX=er;
  exec sql end declare section;
+
+ if(AUX_IDX==MAIN_ENTRY) ANTEIL=100.0;
+ else if(AUX_IDX==SECOND_ENTRY) ANTEIL=50.0;
+ else if(AUX_IDX==MAIN_ENTRY_MIT_ANTEIL) 
+	{ANTEIL=50.0; AUX_IDX=MAIN_ENTRY;}
+ else ANTEIL=0.0;
 
  Transaction tr;
 
  KUNDENNR=rng.KdNr();
 
 
- exec sql insert into prov_entry (provnr,verknr,rngid,zeilennr)
-	(select :ABRNR,:VERKNR,rngid,zeilennr
+ exec sql insert into prov_entry
+	(provnr,verknr,rngid,zeilennr,aux_idx,anteil)
+	(select :ABRNR,:VERKNR,rngid,zeilennr,:AUX_IDX,:ANTEIL
  	 from rechnungentry where rngid=:RNGID);
  SQLerror::test(__FILELINE__,100);
 

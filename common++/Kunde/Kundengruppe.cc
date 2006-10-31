@@ -1,4 +1,4 @@
-// $Id: Kundengruppe.cc,v 1.12 2006/06/26 07:53:02 christof Exp $
+// $Id: Kundengruppe.cc,v 1.13 2006/10/31 16:04:21 christof Exp $
 #include "Kundengruppe.h"
 #include <BaseObjects/ManuProcEntity_FetchIStream.h>
 
@@ -20,9 +20,9 @@ cH_Kundengruppe::cH_Kundengruppe(ID id)
 const Kundengruppe::ID Kundengruppe::default_ID=ManuProC::DefaultValues::Kunden;
 
 Kundengruppe::Kundengruppe(ID kgid, const std::string _obg, 
-	const std::string _grpnm, const std::string _komm) 
+	const std::string _grpnm, const std::string _komm, int _owner) 
 : ManuProcHandle<ID>(kgid), grpname(_grpnm), obergruppe(_obg),
-	kommentar(_komm) 
+	kommentar(_komm),owner(_owner) 
 {}
 
 Kundengruppe::Kundengruppe(ID kgid) throw(SQLerror)
@@ -31,11 +31,12 @@ Kundengruppe::Kundengruppe(ID kgid) throw(SQLerror)
  if(kgid==Kundengruppe::none_id) return;
 
  Query("select coalesce(obergruppe,''),name,"
-	"coalesce(kommentar,'') from"
+	"coalesce(kommentar,''),owner from"
 	" ku_gruppe where grpnr=?") << kgid
 	>> obergruppe
 	>> grpname
-	>> kommentar;
+	>> kommentar
+	>> Query::Row::MapNull(owner,none_id);
 }
 
 
@@ -43,7 +44,8 @@ Query::Row &operator>>(Query::Row &is,Kundengruppe &kg)
  {  return is >> (int&)kg.entityid 
 	>> Query::Row::MapNull(kg.obergruppe,std::string()) 
  	>> kg.grpname 
- 	>> Query::Row::MapNull(kg.kommentar,std::string());
+ 	>> Query::Row::MapNull(kg.kommentar,std::string())
+	>> Query::Row::MapNull(kg.owner,Kundengruppe::none_id);
  } 
  
 Query::Row &operator>>(Query::Row &is,Kundengruppe::ID &kgid)
@@ -53,9 +55,10 @@ Query::Row &operator>>(Query::Row &is,Kundengruppe::ID &kgid)
 cH_Kundengruppe::cH_Kundengruppe(Kundengruppe::ID _id,
 	const std::string _obg,
 	const std::string _grpnm, 
-	const std::string _komm)
+	const std::string _komm,
+	const int _owner)
 {  
-    *this=cH_Kundengruppe(new Kundengruppe(_id,_obg,_grpnm,_komm));
+    *this=cH_Kundengruppe(new Kundengruppe(_id,_obg,_grpnm,_komm,_owner));
 }
 
 cH_Kundengruppe::cH_Kundengruppe()
@@ -69,14 +72,32 @@ Query::Row &operator>>(Query::Row &is,cH_Kundengruppe &kg)
    std::string _obg;
    std::string _bez;
    std::string _komm;
+   int _owner;
    is >> _id 
    >> Query::Row::MapNull(_obg,std::string()) 
    >> _bez 
-   >> Query::Row::MapNull(_komm,std::string());  
-   cH_Kundengruppe ch_kg((Kundengruppe::ID)_id,_obg,_bez,_komm);
+   >> Query::Row::MapNull(_komm,std::string())
+   >> Query::Row::MapNull(_owner,Kundengruppe::none_id);
+   cH_Kundengruppe ch_kg((Kundengruppe::ID)_id,_obg,_bez,_komm,_owner);
    kg=ch_kg;
    return is;
  } 
+
+
+cH_Kundengruppe::cH_Kundengruppe(int _owner, const std::string _obergrp) 
+throw(SQLerror) 
+{
+ if(_owner==Kundengruppe::none_id) return;
+ Kundengruppe::ID gid;
+
+ Query("select grpnr from"
+	" ku_gruppe where obergruppe=? and owner=?") 
+	<< _obergrp << _owner
+	>> gid;
+
+ *this=cH_Kundengruppe(new Kundengruppe(gid));
+}
+
 
 #if !defined(__GNUC__) || __GNUC__ > 2
 template <>

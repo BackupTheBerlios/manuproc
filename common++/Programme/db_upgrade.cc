@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.53 2006/10/31 16:03:12 christof Exp $
+// $Id: db_upgrade.cc,v 1.54 2006/10/31 16:04:21 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -265,6 +265,14 @@ int main(int argc,char *argv[])
   // artbez_warengruppe, attributes for article types  
   check_column("artbez_warengruppe","statistik","boolean");
 
+  // Tablle mit hinterlegte freien EAN Bereichen
+  check_table("ean_bereich",
+          "id integer primary key,"
+          "von numeric(3),"
+          "bis numeric(2),"
+          "fixed char(9)");
+
+ 
 // optional
   if (argc>1)
     check_column("lieferscheinentry","reforder_free","text");
@@ -279,12 +287,27 @@ int main(int argc,char *argv[])
 
   // für Vertrieb-Modul, Provisionen, etc.
   check_column("prov_verkaeufer","rabatt","numeric(5,2)");
+
+  // für Verteilte Provisionierung
+  if(check_column("prov_entry","aux_idx","integer"))
+  if(check_column("prov_entry","anteil","numeric(5,2)"))
+    {
+     Query_nt("drop index prov_entry_idx");
+     Query_nt("create unique index prov_entry_idx "
+                "on prov_entry (rngid, zeilennr, aux_idx)");
+    }
   
   // eigentlich nur für shindo?
   check_column("kunden","debitorenkonto","integer");
   
   // genauere Lagerkontrolle
   check_column("artikelstamm","lagern_in","integer");
+
+  // Kundengruppen
+  if(  check_column("ku_gruppe","owner","numeric(5)"))
+    {Query_nt("create unique index ku_gruppe_uniqkd "
+                "on ku_gruppe (obergruppe,owner)");
+    }
 
   ManuProC::dbdisconnect();
   return 0;

@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.37 2006/10/31 16:03:03 christof Exp $ */
+/* $Id: Rechnung.h,v 1.38 2006/10/31 16:04:21 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2000-2004 Adolf Petig GmbH & Co. KG
  *  		written by Jacek Jakubowski
@@ -57,7 +57,7 @@ private:
  int fibu_buchid;
   
  void push_back(unsigned &lineno,ArtikelBase art,
-		unsigned lfrsid,unsigned lfrsznr, unsigned stk,
+		unsigned lfrsid,unsigned lfrsznr, int stk,
 		mengen_t menge,const Preis &p, AufEintragBase::rabatt_t rabatt,
 		fixedpoint<2> provsatz, const Preis &ek_preis);
 public:
@@ -95,7 +95,7 @@ public:
 
  void addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror);
  void deleteLieferschein(const LieferscheinBase &lfrs) throw(SQLerror);
- unsigned push_back(ArtikelBase art,unsigned stk,mengen_t menge);
+ unsigned push_back(ArtikelBase art,int stk,mengen_t menge);
  void erase(unsigned lineno);
 
  void setze_Rabatt(rabatt_t r) throw(SQLerror);

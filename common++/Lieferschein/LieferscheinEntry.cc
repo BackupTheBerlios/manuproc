@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.86 2006/10/31 16:03:36 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.87 2006/10/31 16:04:21 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -126,7 +126,13 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
     AuftragBase::mengen_t abmenge=Abschreibmenge(_stueck,_menge);
     ManuProC::Trace(trace_channel,"",NV("abmenge",abmenge));
 
-    if (ein_auftrag && VZusatz[0].aeb.valid())
+    if (_stueck<0) // Rücknahmeschein
+    { assert(NurEinKind(VZusatz));
+      assert(!VZusatz[0].aeb.valid());
+      AufEintrag::AutoAuslagern(Instanz(),Artikel(),abmenge,*this);
+      change_status(new_status);
+    }
+    else if (ein_auftrag && VZusatz[0].aeb.valid())
     {  assert(NurEinKind(VZusatz));
        AufEintrag AE(VZusatz[0].aeb);
        // verhindern dass negative Menge auftreten

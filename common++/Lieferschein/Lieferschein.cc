@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.57 2006/10/31 16:03:31 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.58 2006/10/31 16:04:21 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -59,6 +59,8 @@ int Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
    LieferscheinEntry LE=LieferscheinEntry::create(*this, artikel,0,0,palette);
    // damit der Code nicht 2x erscheint
    LE.lagerid=lagerid;
+   assert(anzahl>=0 || lsart==LART_RUECK);
+   assert(anzahl<=0 || lsart!=LART_RUECK);
    LE.changeMenge(anzahl,mengeneinheit,false);
    tr.commit();
    return LE.ZNr();
@@ -74,6 +76,8 @@ int Lieferschein::push_back(const AuftragBase &restrict,
            NV("artikel",artikel),
            NV("Anzahl",anzahl),NV("Menge",menge),NV("Palette",palette));                     
  Transaction tr;          
+   assert(anzahl>=0 || lsart==LART_RUECK);
+   assert(anzahl<=0 || lsart!=LART_RUECK);
  LieferscheinEntry LE=LieferscheinEntry::create(*this, artikel, 0,0,palette);
  LE.lagerid=lagerid;
  LE.changeMenge(anzahl,menge,false,restrict);
@@ -90,6 +94,8 @@ int Lieferschein::push_back(AufEintrag &aufeintrag,
  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("AufEintrag",aufeintrag),
            NV("artikel",artikel),
            NV("Anzahl",anzahl),NV("Menge",menge),NV("Palette",palette));                     
+   assert(anzahl>=0 || lsart==LART_RUECK);
+   assert(anzahl<=0 || lsart!=LART_RUECK);
  Transaction tr;          
  LieferscheinEntry LE=LieferscheinEntry::create(*this, aufeintrag ,artikel, 0,0,palette);
  LE.lagerid=lagerid;
@@ -313,7 +319,7 @@ Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,cH_Kunde k,
 #endif
          notiz_valid(),verknr(Kunde::none_id)
 {
-ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("Kunde",k),NV("Jahr",jahr)); 
+ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("Kunde",k),NV("Jahr",jahr),NV("Art",la)); 
 
  if (!jahr) jahr=AuftragBase::aktuellesJahr();
  jahr%=100;

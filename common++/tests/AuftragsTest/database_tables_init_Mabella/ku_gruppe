@@ -15,7 +15,8 @@ CREATE TABLE ku_gruppe (
     grpnr numeric(4,0) NOT NULL,
     name text NOT NULL,
     obergruppe text,
-    kommentar text
+    kommentar text,
+    owner numeric(5)
 );
 
 

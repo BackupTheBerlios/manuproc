@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.67 2006/06/26 07:53:02 christof Exp $
+// $Id: Kunde.cc,v 1.68 2006/10/31 16:04:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -202,6 +202,28 @@ const PreisListe::ID Kunde::preisliste() const
  return preislisten.empty() ? PreisListe::none_id : preislisten.front().second;
 }
 
+Kundengruppe::ID Kunde::ownsAGrp(const std::string obergruppe) const 
+throw(SQLerror)
+{
+#ifdef MANUPROC_DYNAMICENUMS_CREATED
+ 
+ int ret=Kundengruppe::none_id;
+
+ Query q("select grpnr from ku_gruppe where obergruppe=?"
+	" and owner=?");
+ q << obergruppe << Id();
+
+ Query::Row fi=q.Fetch();
+
+ if(fi.good())
+   fi >> ret;
+
+ return (Kundengruppe::ID)ret;
+#else
+ return Kundengruppe::none_id;
+#endif
+}
+
 
 bool Kunde::isInGrp(const Kundengruppe::ID gid) const 
 {
@@ -223,6 +245,8 @@ bool Kunde::isInGrp(const Kundengruppe::ID gid) const
  return false;
 #endif
 }
+
+
 
 void Kunde::putInGrp(const Kundengruppe::ID gid) 
 {

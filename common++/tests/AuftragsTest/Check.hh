@@ -1,4 +1,4 @@
-// $Id: Check.hh,v 1.34 2004/10/21 13:21:39 christof Exp $
+// $Id: Check.hh,v 1.35 2006/10/31 16:04:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, 
  *  written by Malte Thoma + Christof Petig
@@ -34,13 +34,15 @@ struct vergleichstream
 
 class Check
 {
-   enum was_checken_p { b_Jumbo, b_Lieferschein, b_Menge, b_RohLager };
+   enum was_checken_p { b_Jumbo, b_Lieferschein, b_Menge, b_RohLager, 
+                        b_FertigwLager };
  public:
    enum was_checken { Nix,
    		Jumbo=1<<b_Jumbo,
    		Lieferschein=1<<b_Lieferschein,
    		Menge=1<<b_Menge,
-   		RohLager=1<<b_RohLager };
+   		RohLager=1<<b_RohLager,
+   		FertigwLager=1<<b_FertigwLager };
    		
    enum e_check {Jumbo_richtig,Jumbo_falsch,Jumbo_doppelt};
  private:

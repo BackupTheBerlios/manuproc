@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnungEntry.h,v 1.10 2005/01/12 14:52:09 jacek Exp $ */
+/* $Id: ProvAbrechnungEntry.h,v 1.11 2006/10/31 16:04:21 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,10 +31,17 @@
 
 class ProvAbrechnungEntry : public ManuProcEntity<>
 {
+public:
+ typedef enum {MAIN_ENTRY=1, SECOND_ENTRY=2, MAIN_ENTRY_MIT_ANTEIL=3} EntryRang;
+ 
+private: 
+
  RechnungEntry rngentry;
  Preis::geldbetrag_t umsatz;
  fixedpoint<2> provsatz;
  Preis::geldbetrag_t provision;
+ fixedpoint<2> anteil; // anteil in %
+ EntryRang aux_idx; // aux_idx in prov_entry
  const Kunde::ID verknr;
  float rng_rabatt; 	// Gesamtrabattsatz auf der Rechnung
 
@@ -43,9 +50,14 @@ public:
  const fixedpoint<2> ProvSatz() const { return provsatz; }
  const Preis::geldbetrag_t Provision() const { return provision; } 
  const Preis::geldbetrag_t Umsatz() const { return umsatz; } 
+ const fixedpoint<2> Anteil() const { return anteil; } 
+ const EntryRang Rang() const { return aux_idx; }
 
  ProvAbrechnungEntry() : rngentry(RechnungEntryBase()),
- 	provsatz(0.0), provision(0.0),verknr(Kunde::none_id),
+ 	provsatz(0.0), provision(0.0),
+ 	anteil(100.0),
+ 	aux_idx(MAIN_ENTRY),
+ 	verknr(Kunde::none_id),
  	rng_rabatt(0.0) {}
  	
 // ProvAbrechnungEntry(const ManuProcEntity<>::ID _abrnr, 
@@ -55,7 +67,9 @@ public:
  ProvAbrechnungEntry(const ManuProcEntity<>::ID _abrnr, 
  	const Kunde::ID _verknr, const RechnungEntry::ID _rngid,
 	int zeilennr, fixedpoint<2> _psatz,
-	float rng_rabattsatz) throw(SQLerror); 		
+	float rng_rabattsatz,
+	const fixedpoint<2> _ateil,
+	EntryRang _er) throw(SQLerror); 		
 
  virtual ~ProvAbrechnungEntry() {};
 
@@ -66,9 +80,11 @@ public:
  ManuProcEntity<>::ID Id() const { return entityid;} 		     
  static void newAbrechnungEntries(
  	const ManuProcEntity<>::ID _abrnr, 
- 	const Kunde::ID _verknr, const Rechnung &rng) throw(SQLerror);
+ 	const Kunde::ID _verknr, const Rechnung &rng,
+ 	const EntryRang _er) throw(SQLerror);
  int RgZeilennr() const { return rngentry.Zeile(); }
  RechnungBase::ID RgId() const { return rngentry.Id(); }
+ Kunde::ID VerkNr() const { return verknr; }
 };
 
 #endif

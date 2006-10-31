@@ -1,4 +1,4 @@
-// $Id: EAN_sql.pgcc,v 1.20 2006/06/26 07:53:01 christof Exp $
+// $Id: EAN_sql.pgcc,v 1.21 2006/10/31 16:04:21 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -23,10 +23,28 @@
 #include <Misc/itos.h>
 #include <ExtBezSchema/ExtBezSchemaHandle.h>
 #include <Misc/Query.h>
+#include <Misc/FetchIStream.h>
 
 //std::string EAN::next_value(const ArtikelTyp at)
 std::string EAN::next_value()
 {
+ Transaction tr;
+ Query("lock table ean_bereich in ACCESS EXCLUSIVE mode");
+
+ int rid=EAN_Range::NextRangeID();
+ unsigned long long next_ean=0;
+
+ if(rid>0)
+ {
+  EAN_Range range(rid);
+  next_ean=range.ReserveNext();
+  tr.commit();
+ }
+ else
+   tr.rollback();
+
+ if(next_ean!=0) return EAN::add_Pruefsumme(ulltos(next_ean));
+
  std::vector<int> ids;
 
  Query q("SELECT id from artbez_warengruppe where mit_ean=true");
@@ -58,6 +76,48 @@ std::string EAN::next_value()
 }    
 
 
+EAN_Range::EAN_Range(int _id) throw(SQLerror)
+: id(_id)
+{
+ Query("select fixed,von,bis from ean_bereich where id=?")
+ << _id >> fixed >> von >> bis;
+}
+
+
+// range id or 0 at error
+int EAN_Range::NextRangeID() throw(SQLerror)
+{
+ int ret=0;
+ Query q("SELECT id from ean_bereich where von<=bis "
+	 " order by bis-von,fixed limit 1");
+
+ FetchIStream fi=q.Fetch();
+ if(fi.good())
+    fi >> ret;
+
+ return ret;
+}
+
+
+
+unsigned long long EAN_Range::ReserveNext() throw(SQLerror)
+{
+ unsigned long long next=0;
+ int old_von=von;
+
+ if(von<=bis)
+   {
+    if(von==bis) bis=-1;
+    else von++;
+   }
+ else return 0;
+
+ Query("update ean_bereich set von=?,bis=? where id=?")
+	<< von << bis << id;
+
+ next=(((unsigned long long)(fixed))*1000)+old_von; 
+ return next;    
+}
 
 
 

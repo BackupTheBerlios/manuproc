@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.46 2006/10/31 16:03:23 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.47 2006/10/31 16:04:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -394,30 +394,32 @@ void AufEintrag::KinderProduzieren(mengen_t M, const AufEintragBase &neuerAEB,
 }
 
 void AufEintrag::AutoAuslagern2(cH_ppsInstanz const& wo,
-                              ArtikelBase const& artikel,mengen_t menge)
+                              ArtikelBase const& artikel,mengen_t menge,
+                              ProductionContext2 const& ctx)
 // Code stammt aus AufEintrag::unbestellteMengeProduzieren
 { if (wo==ppsInstanzID::None || wo==ppsInstanzID::Kundenauftraege)
     return;
   if (wo->ProduziertSelbst())
     return;
   if (wo->LagerInstanz())
-    unbestellteMengeProduzieren(wo,artikel,menge,true);
+    unbestellteMengeProduzieren(wo,artikel,menge,true,AufEintragBase(),ctx);
   else
-    AutoAuslagern(wo,artikel,menge);
+    AutoAuslagern(wo,artikel,menge,ctx);
 }
 
 void AufEintrag::AutoAuslagern(cH_ppsInstanz const& instanz,
-                              ArtikelBase const& artikel,mengen_t menge)
+                              ArtikelBase const& artikel,mengen_t menge,
+                              ProductionContext2 const& ctx)
 // Code stammt aus AufEintrag::ArtikelInternNachbestellen
 { ppsInstanz::ID next=instanz->NaechsteInstanz(ArtikelStamm(artikel));
   if (next!=ppsInstanzID::None)
-  { AufEintrag::AutoAuslagern2(next,artikel,menge);
+  { AufEintrag::AutoAuslagern2(next,artikel,menge,ctx);
   }
   else if (!instanz->ExterneBestellung())
   { ArtikelBaum AB(artikel);
     for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
     { AutoAuslagern2(ppsInstanz::getBestellInstanz(i->rohartikel),
-                                        i->rohartikel,i->menge*menge);
+                                        i->rohartikel,i->menge*menge,ctx);
     }
   }
 }

@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.h,v 1.16 2006/06/26 07:53:03 christof Exp $ */
+/* $Id: ProvAbrechnung.h,v 1.17 2006/10/31 16:04:21 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -99,6 +99,8 @@ private:
 	 int zeilennr;
 	 float provsatz;
 	 float rngrabatt;
+	 fixedpoint<2> anteil;
+	 int aux_idx;
 	} FetchStruct;
 	
  friend Query::Row &operator>>(Query::Row &is, FetchStruct &st);

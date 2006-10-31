@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.83 2006/10/31 16:03:12 christof Exp $
+// $Id: Kunde.h,v 1.84 2006/10/31 16:04:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -248,6 +248,8 @@ public:
        bool isInGrp(const std::string groupname) const throw(SQLerror); 
         void putInGrp(const Kundengruppe::ID gid); 
         void pullFromGrp(const Kundengruppe::ID gid);
+        Kundengruppe::ID ownsAGrp(const std::string obergruppe) const throw(SQLerror);
+        
         ID Rngan() const { return rngan; }
         ID Lfran() const { return lfran; }        
         bool entsorgung() const { return entsorg; }
