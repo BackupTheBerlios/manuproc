@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.56 2006/10/31 16:03:28 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.57 2006/10/31 16:03:31 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -333,7 +333,7 @@ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("Kunde",
  (Query("update lieferschein set notiz=(select lief_notiz from kunden "
         "where kundennr=?) where (instanz,lfrsid)=(?,?)")
         << kunde->Id() 
-        << lieferid).Check100();
+        << instanz->Id() << lieferid).Check100();
 
  if(la!=LART_NONE)
  { (Query("update lieferschein set lsart=? where (instanz,lfrsid)=(?,?)")
