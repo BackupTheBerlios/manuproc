@@ -1,4 +1,4 @@
-/* $Id: RechnungEntry.h,v 1.29 2006/08/10 15:07:06 christof Exp $ */
+/* $Id: RechnungEntry.h,v 1.30 2006/10/31 16:04:35 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *  Copyright (C) 2006 Christof Petig
@@ -52,8 +52,11 @@ protected:
  	bool bezahlt;
  	cH_Kunde kunde;
  	RngArt rngart;
- 	rng_payoff(const ManuProC::Datum d, bool b, cH_Kunde k,RngArt a)
- 		:valid(true),rgdatum(d),bezahlt(b),kunde(k),rngart(a) {}
+ 	fixedpoint<1> mwst_satz;
+ 	rng_payoff(const ManuProC::Datum d, bool b, cH_Kunde k,RngArt a,
+ 	            float(_mwst))
+ 		:valid(true),rgdatum(d),bezahlt(b),kunde(k),rngart(a),
+                 mwst_satz(_mwst) {}
  	rng_payoff():valid(false),bezahlt(false),kunde(Kunde::none_id),
  			rngart(RART_NONE){}
  	};
@@ -129,6 +132,7 @@ public:
  const ManuProC::Datum RgDatum() const throw(SQLerror);
  const bool Bezahlt() const throw(SQLerror);
  cH_Kunde Kunde() const;  
+ fixedpoint<1> MwStSatz() const;
  const RngArt RgArt() const throw(SQLerror);
  const int AuftragId() const { return auftrag.Id();}
  const Preis GPreis() const { 

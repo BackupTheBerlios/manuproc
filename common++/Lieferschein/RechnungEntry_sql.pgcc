@@ -92,12 +92,14 @@ void RechnungEntryBase::setRgPayOff(int _rngid) throw(SQLerror)
  bool BEZAHLT;
  int KUNDENNR;
  char RNGART;
+ float MWSTSATZ;
 
- Query("select datum,coalesce(bezahlt,false),kundennr,rngart "
+ Query("select datum,coalesce(bezahlt,false),kundennr,rngart,"
+	"coalesce(steuersatz,0) "
  	"from rechnung where rngid=?")
  	<< _rngid
- 	>> DATUM >> BEZAHLT >> KUNDENNR >> RNGART;
- rgdata[_rngid]=rng_payoff(DATUM,BEZAHLT,KUNDENNR,(RngArt)RNGART);
+ 	>> DATUM >> BEZAHLT >> KUNDENNR >> RNGART >> MWSTSATZ;
+ rgdata[_rngid]=rng_payoff(DATUM,BEZAHLT,KUNDENNR,(RngArt)RNGART,MWSTSATZ);
 }
 
 const ManuProC::Datum RechnungEntry::RgDatum() const throw(SQLerror)
@@ -128,6 +130,13 @@ cH_Kunde RechnungEntry::Kunde() const
  if(rgdata[rngid].valid==true) return rgdata[rngid].kunde;
  setRgPayOff(rngid);
  return rgdata[rngid].kunde;
+}
+
+fixedpoint<1> RechnungEntry::MwStSatz() const
+{
+ if(rgdata[rngid].valid==true) return rgdata[rngid].mwst_satz;
+ setRgPayOff(rngid);
+ return rgdata[rngid].mwst_satz;
 }
 
 
