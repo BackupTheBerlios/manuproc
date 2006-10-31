@@ -26,7 +26,9 @@ int main(int argc, char **argv)
    std::cout << " RNGID:" << rngid << "\n";
    std::string dest;
    FOR_EACH_CONST_TAG_OF(j,root,"mail")
-     {dest = j->getAttr("address");}
+     {dest = j->getAttr("address");
+      dest += ", "; dest+=j->getAttr("cc_address");
+     }
    if(dest.empty())
      FOR_EACH_CONST_TAG_OF(j,root,"fax")
       {dest = j->getAttr("number");}
@@ -52,7 +54,9 @@ int main(int argc, char **argv)
    std::cout << " ABID:" << abid << "\n";
    std::string dest;
    FOR_EACH_CONST_TAG_OF(j,root,"mail")
-     {dest = j->getAttr("address");}
+     {dest = j->getAttr("address");
+      dest += ", "; dest+=j->getAttr("cc_address");
+     }
    if(dest.empty())
      FOR_EACH_CONST_TAG_OF(j,root,"fax")
       {dest = j->getAttr("number");}
