@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.80 2006/08/09 11:11:07 christof Exp $
+// $Id: Kunde.h,v 1.81 2006/10/31 16:03:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -387,7 +387,7 @@ public:
         void set_schema(ID s) throw(SQLerror);
 
         void set_planumsatz(const fixedpoint<2> s){kundendaten.planumsatz = s; }
-        void set_rabatt(const fixedpoint<2> s){kundendaten.rabatt = s; }
+        void set_rabatt(const fixedpoint<2> s) throw(SQLerror);//        {kundendaten.rabatt = s; }
         void set_zeilenrabatt(const bool s){kundendaten.zeilenrabatt = s; }
         void set_flaeche(const int s) {kundendaten.flaeche = s; }
         void set_mitarbeiter(const int s){kundendaten.mitarbeiter = s; }

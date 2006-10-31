@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.79 2006/08/09 11:11:07 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.80 2006/10/31 16:03:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -940,6 +940,24 @@ void Kunde::set_schema(ID s) throw(SQLerror)
 
  schema = s; 
 } 
+
+
+void Kunde::set_rabatt(const fixedpoint<2> s) throw(SQLerror)
+{
+ try{
+ Query("update kunden set rabatt=? where kundennr=?")
+	<< s << Id();
+ }
+
+ catch(SQLerror &e)
+ { SQLerror::test(__FILELINE__,100);
+   return; 
+ }
+
+ kundendaten.rabatt = s;
+}
+
+
 
 
 bool Kunde::isInGrp(const std::string groupname) const throw(SQLerror)
