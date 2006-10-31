@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.71 2006/10/31 16:05:29 christof Exp $
+// $Id: Kunde.cc,v 1.72 2006/10/31 16:06:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,7 @@
 #include <Misc/Transaction.h>
 #include <Kunde/Telefon.h>
 #include <DynamicEnums/DynamicEnums.h>
+#include <DynamicEnums/DynamicConfig.h>
 #include <algorithm> // find on 2.95
 #include <Artikel/ArtikelStamm.h>
 
@@ -497,7 +498,7 @@ char Kunde::getKlasse() const
 {
  if(kundendaten.klasse!=' ') return kundendaten.klasse;
 
-#ifdef MANUPROC_DYNAMICENUMS_CREATED 
+#if defined(HAS_ADDR_GROUP_A_Kunden) && defined(HAS_ADDR_GROUP_C_Kunden)
  if(isInGrp(KundengruppeID::A_Kunden)) kundendaten.klasse='A';
  else if(isInGrp(KundengruppeID::B_Kunden)) kundendaten.klasse='B';
  else if(isInGrp(KundengruppeID::C_Kunden)) kundendaten.klasse='C';
