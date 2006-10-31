@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.85 2006/10/31 16:03:16 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.86 2006/10/31 16:03:36 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -138,13 +138,13 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
      {
        AuftragBase::mengen_t abmenge2=abmenge;
        if(abmenge>0) 
-       {if (status==UNCOMMITED) // erstmaliges Anpassen an Auftr‰ge
+       {if (status==UNCOMMITED) // erstmaliges Anpassen an Auftr√§ge
         {  assert(abmenge==AuftragBase::Gesamtmenge(_stueck,_menge));
            VZusatz.clear();
         }
         // lock auftragentry, so that the data does not change under us
         Query("lock table auftragentry in exclusive mode");
-        // was ist mit 0ern im Einkauf, diese werden auch bei ‹berproduktion nicht
+        // was ist mit 0ern im Einkauf, diese werden auch bei √úberproduktion nicht
         // direkt erledigt - allerdings beim Einlagern ??? CP
         SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Artikel_Planung_id
         			(instanz->Id(),KdID(),artikel,AuftragBase::handplan_auftrag_id));
@@ -175,7 +175,7 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
        {//showZusatzInfos();
         zusaetze_t VZ=getZusatzInfos();
   // in dieser Reihenfolge Menge ermitteln aber umgekehrt abschreiben,
-  //	damit der Erste eventuelle Lagerbest‰nde reservieren kann!
+  //	damit der Erste eventuelle Lagerbest√§nde reservieren kann!
   	typedef std::vector<stornoliste> list_t;
   	list_t liste;
         for(LieferscheinEntry::zusaetze_t::reverse_iterator i=VZ.rbegin();i!=VZ.rend();++i)
@@ -200,7 +200,7 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
           else updateZusatzEntry(i->aeb,i->menge + i->abmenge);
         }
        }
-     // change status realy now
+     // change status really now
      change_status(new_status);
      }
    } 
