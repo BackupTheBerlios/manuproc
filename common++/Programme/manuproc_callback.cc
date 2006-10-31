@@ -25,26 +25,38 @@ int main(int argc, char **argv)
    ManuProcEntity<>::ID rngid(j->getAttr<int>("document_id"));
    std::cout << " RNGID:" << rngid << "\n";
    std::string dest;
+   bool sent=false;
+
    FOR_EACH_CONST_TAG_OF(j,root,"mail")
      {dest = j->getAttr("address");
-      dest += ", "; dest+=j->getAttr("cc_address");
+      if(!(j->getAttr("cc_address")).empty())
+        {if(!dest.empty()) dest += ", "; 
+	 else dest+=j->getAttr("cc_address");
+	}
+      sent=!(dest.empty());
      }
    if(dest.empty())
      FOR_EACH_CONST_TAG_OF(j,root,"fax")
-      {dest = j->getAttr("number");}
-   try {
+      {dest = j->getAttr("number");
+       sent=!(dest.empty());
+      }
+
+   if(sent)
+   {
+    try {
       ManuProC::Connection conn;
       conn.setDbase("");
       conn.setHost("");
       ManuProC::dbconnect(conn);
-   Rechnung r(rngid);
-   r.Set_sent_at();
-   r.Set_sent_to(dest);
-   ManuProC::dbdisconnect();
-   }
-   catch (SQLerror &e)
-   {  std::cerr << e << '\n';
+    Rechnung r(rngid);
+    r.Set_sent_at();
+    r.Set_sent_to(dest);
+    ManuProC::dbdisconnect();
+    }
+    catch (SQLerror &e)
+     {  std::cerr << e << '\n';
       return 1;
+     }
    }
   }
 
@@ -53,56 +65,41 @@ int main(int argc, char **argv)
    ManuProcEntity<>::ID abid(j->getAttr<int>("document_id"));
    std::cout << " ABID:" << abid << "\n";
    std::string dest;
+   bool sent=false;
+
    FOR_EACH_CONST_TAG_OF(j,root,"mail")
      {dest = j->getAttr("address");
-      dest += ", "; dest+=j->getAttr("cc_address");
+      if(!(j->getAttr("cc_address")).empty())
+        {if(!dest.empty()) dest += ", "; 
+	 else dest+=j->getAttr("cc_address");
+	}
+      sent=!(dest.empty());
      }
    if(dest.empty())
      FOR_EACH_CONST_TAG_OF(j,root,"fax")
-      {dest = j->getAttr("number");}
-   try {
+      {dest = j->getAttr("number");
+       sent=!(dest.empty());
+      }
+
+   if(sent)
+   {
+    try {
       ManuProC::Connection conn;
       conn.setDbase("");
       conn.setHost("");
       ManuProC::dbconnect(conn);
-   Auftrag a(AuftragBase(ppsInstanzID::Kundenauftraege,abid));
-   a.Set_sent_at();
-   a.Set_sent_to(dest);
-   ManuProC::dbdisconnect();
-   }
-   catch (SQLerror &e)
-   {  std::cerr << e << '\n';
-      return 1;
-   }
-  }
-
-/*
-  FOR_EACH_CONST_TAG_OF(j,root,"printer")
-  { FOR_EACH_CONST_TAG_OF(i,*j,"print")
-    { std::cout << ' ' << i->getAttr<int>("copies") << " copies to printer "
-        << i->getAttr("name");
+    Auftrag a(AuftragBase(ppsInstanzID::Kundenauftraege,abid));
+    a.Set_sent_at();
+    a.Set_sent_to(dest);
+    ManuProC::dbdisconnect();
+    }
+    catch (SQLerror &e)
+     { std::cerr << e << '\n';
+       return 1;
+     }
     }
   }
-  FOR_EACH_CONST_TAG_OF(i,root,"save")
-  { std::cout << " saved to file "
-      << i->getAttr("file");
-  }
-  FOR_EACH_CONST_TAG_OF(i,root,"fax")
-  { std::cout << " faxed to number "
-      << i->getAttr("number");
-  }
-  FOR_EACH_CONST_TAG_OF(i,root,"mail")
-  { std::cout << " mailed to " << i->getAttr("address") << " with subject "
-      << i->getAttr("subject");
-  }
-  std::cout << '\n';
-  // arguments/integer bool string 
-  FOR_EACH_CONST_TAG_OF(i,root,"arguments")
-  { std::cout << "args: integer " << i->getAttr<int>("integer")
-      << " bool " << i->getAttr<bool>("bool")
-      << " string " << i->getAttr("string") << '\n';
-  }
-*/
+
 
   return 0;
 }
