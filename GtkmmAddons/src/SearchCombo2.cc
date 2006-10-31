@@ -2,6 +2,7 @@
 #include <gtkmm/liststore.h>
 #include <cassert>
 #include <gtk/gtkmain.h>
+#include <gtk/gtkmenu.h>
 
 #include <iostream>
 
