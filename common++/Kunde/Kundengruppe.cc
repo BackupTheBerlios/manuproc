@@ -1,4 +1,4 @@
-// $Id: Kundengruppe.cc,v 1.13 2006/10/31 16:04:21 christof Exp $
+// $Id: Kundengruppe.cc,v 1.14 2006/10/31 16:04:25 christof Exp $
 #include "Kundengruppe.h"
 #include <BaseObjects/ManuProcEntity_FetchIStream.h>
 
@@ -88,12 +88,15 @@ cH_Kundengruppe::cH_Kundengruppe(int _owner, const std::string _obergrp)
 throw(SQLerror) 
 {
  if(_owner==Kundengruppe::none_id) return;
- Kundengruppe::ID gid;
+ Kundengruppe::ID gid=Kundengruppe::none_id;
 
- Query("select grpnr from"
-	" ku_gruppe where obergruppe=? and owner=?") 
-	<< _obergrp << _owner
-	>> gid;
+ Query q("select grpnr from"
+	" ku_gruppe where obergruppe=? and owner=?");
+ q << _obergrp << _owner;
+
+ Query::Row fi=q.Fetch();
+ if(fi.good())
+   fi >> gid;
 
  *this=cH_Kundengruppe(new Kundengruppe(gid));
 }
