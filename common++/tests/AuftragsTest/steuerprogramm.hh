@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.48 2004/10/20 13:50:33 jacek Exp $
+// $Id: steuerprogramm.hh,v 1.49 2006/10/31 16:03:46 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -97,6 +97,7 @@
 
 #elif defined MABELLA_TEST
 
+#define ARTIKEL_ONE  ArtikelBase(38392)
 #define ARTIKEL_TRIO ArtikelBase(38389)
 #define ARTIKEL_ZWEI ArtikelBase(38391)
 #define ARTIKEL_MUSTER ArtikelBase(38393)

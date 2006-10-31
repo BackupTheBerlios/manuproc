@@ -77,6 +77,17 @@ static bool LagerBuchungLieferschein()
    LieferscheinEntry::deleteEntry(le);
    LieferscheinEntry::deleteEntry(le2);
    vergleichen(Check::Menge,"LBL_d","Zurücknehmen","d");
+
+
+// Freie EIntrag mit negativer Menge, Ruecknahmeschein
+   Lieferschein rs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
+   LieferscheinEntryBase rsb(rs,rs.push_back(ARTIKEL_ONE,-5,0,0));
+   LieferscheinEntry re(rsb);
+   re.setLagerid(1);
+   re.changeStatus(OPEN,true);
+
+
+
    return true;
 }
 
