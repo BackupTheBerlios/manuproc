@@ -1,4 +1,4 @@
-// $Id: Auftrag.cc,v 1.26 2006/06/26 07:53:01 christof Exp $
+// $Id: Auftrag.cc,v 1.27 2006/10/31 16:03:06 christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -266,5 +266,35 @@ Auftrag::ID Auftrag::getIdFromYourAufId(const char *youraufid) throw(SQLerror)
 { return getIdFromYourAufId(Instanz(),youraufid);
 }
 
+
+
+const ManuProC::Datum Auftrag::sent_at() const throw(SQLerror)
+{
+ ManuProC::Datum sent;
+ Query("select sent_at from auftrag where (instanz,auftragid)=(?,?)")
+	<< *this >> sent;
+ return sent;
+}
+
+const std::string Auftrag::sent_to() const throw(SQLerror)
+{
+ std::string sent;
+ Query("select sent_to from auftrag where (instanz,auftragid)=(?,?)") 
+	<< *this >> sent;
+ return sent;
+}
+
+void Auftrag::Set_sent_at() const throw(SQLerror)
+{
+ Query("update auftrag set sent_at=now() where (instanz,auftragid)=(?,?)") 
+	<< *this;
+}
+
+
+void Auftrag::Set_sent_to(const std::string t) const throw(SQLerror)
+{
+ Query("update auftrag set sent_to=? where (instanz,auftragid)=(?,?)") 
+	<< t << *this;
+}
 
 

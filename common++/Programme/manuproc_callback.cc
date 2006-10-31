@@ -3,6 +3,7 @@
 #include <cassert>
 #include <iostream>
 #include <Lieferschein/Rechnung.h>
+#include <Auftrag/Auftrag.h>
 #include <Aux/dbconnect.h>
 
 
@@ -37,6 +38,32 @@ int main(int argc, char **argv)
    Rechnung r(rngid);
    r.Set_sent_at();
    r.Set_sent_to(dest);
+   ManuProC::dbdisconnect();
+   }
+   catch (SQLerror &e)
+   {  std::cerr << e << '\n';
+      return 1;
+   }
+  }
+
+  FOR_EACH_CONST_TAG_OF(j,root,"mpc_ord_sent")
+  {
+   ManuProcEntity<>::ID abid(j->getAttr<int>("document_id"));
+   std::cout << " ABID:" << abid << "\n";
+   std::string dest;
+   FOR_EACH_CONST_TAG_OF(j,root,"mail")
+     {dest = j->getAttr("address");}
+   if(dest.empty())
+     FOR_EACH_CONST_TAG_OF(j,root,"fax")
+      {dest = j->getAttr("number");}
+   try {
+      ManuProC::Connection conn;
+      conn.setDbase("");
+      conn.setHost("");
+      ManuProC::dbconnect(conn);
+   Auftrag a(AuftragBase(ppsInstanzID::Kundenauftraege,abid));
+   a.Set_sent_at();
+   a.Set_sent_to(dest);
    ManuProC::dbdisconnect();
    }
    catch (SQLerror &e)

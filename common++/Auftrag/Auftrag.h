@@ -1,4 +1,4 @@
-/* $Id: Auftrag.h,v 1.35 2006/06/26 07:53:14 christof Exp $ */
+/* $Id: Auftrag.h,v 1.36 2006/10/31 16:03:06 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *  Copyright (C) 2006 Christof Petig
@@ -144,7 +144,13 @@ public:
                 const cH_PreisListe &preisliste=PreisListe::none_id) const throw(SQLerror);
 
 	// wenn möglich aus dem Cache ...
-	static std::string getYourAufNr(const AuftragBase &ab);
+   static std::string getYourAufNr(const AuftragBase &ab);
+   
+   const ManuProC::Datum sent_at() const throw(SQLerror);
+   const std::string sent_to() const throw(SQLerror);
+   void Set_sent_at() const throw(SQLerror);
+   void Set_sent_to(const std::string t) const throw(SQLerror);
+   
 };        
 
 #endif

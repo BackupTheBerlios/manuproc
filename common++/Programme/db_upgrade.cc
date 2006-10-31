@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.51 2006/10/31 16:03:03 christof Exp $
+// $Id: db_upgrade.cc,v 1.52 2006/10/31 16:03:06 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -122,6 +122,10 @@ int main(int argc,char *argv[])
   // Provisionsdaten in Auftrag
   check_column("auftrag","verknr","numeric(5)");
   check_column("auftragentry","provsatz","numeric(4,2)");
+  //Datenexport in Auftrag
+  check_column("auftrag","sent_at","date");
+  check_column("auftrag","sent_to","text");
+
 
   // Verkaeufer in Lieferschein
   check_column("lieferschein","verknr","numeric(5)");
