@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.h,v 1.20 2005/10/12 08:59:38 christof Exp $ */
+/* $Id: Ausgabe_neu.h,v 1.21 2006/10/31 16:04:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -56,6 +56,7 @@ namespace Ausgabe_neu {
 extern bool TeX_uses_UTF8;
 }
 std::string string2TeX(const std::string s, int flags=0) throw();
+std::string string2Pg(const std::string s) throw();
 
 template <int decimals,class Ftype,class Itype>
  const std::string FormatiereTeX(const fixedpoint<decimals,Ftype,Itype> &Zahl)

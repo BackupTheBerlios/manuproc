@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.80 2006/10/31 16:03:00 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.81 2006/10/31 16:04:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,7 @@
 #include <Misc/Transaction.h>
 #include <Kunde/Telefon.h>
 #include <Misc/Query.h>
+#include <Misc/Ausgabe_neu.h>
 exec sql include sqlca;
 
 void Kunde::setVerkNr(Kunde::ID v) throw(SQLerror)
@@ -388,19 +389,19 @@ void Kunde::update_e(UpdateBitsAdresse e)
      if(!(e&(1<<i))) continue;
 //     if      (i==B_Gruppennr  ) query += "gruppennr = '"+itos(GruppenId())+"',";
 //     else 
-     if (i==B_Sortname   ) query += "sortname = nullif('"+sortname()+"',''),";
+     if (i==B_Sortname   ) query += "sortname = nullif('"+string2Pg(sortname())+"',''),";
      else if (i==B_Idnr       ) query += "idnr = '"+idnr()+"',";
-     else if (i==B_Firma      ) query += "firma  = '"+firma()+"',";
-     else if (i==B_Name2      ) query += "name2  = '"+name2()+"',";
+     else if (i==B_Firma      ) query += "firma  = '"+string2Pg(firma())+"',";
+     else if (i==B_Name2      ) query += "name2  = '"+string2Pg(name2())+"',";
      else if (i==B_BrAnrede   ) query += "branr  = '"+itos(Anrede()->Id())+"',";
      else if (i==B_Postanwvor ) query += "postanwvor  = '"+postanwvor()+"',";
-     else if (i==B_Strasse    ) query += "strasse  = '"+strasse()+"',";
-     else if (i==B_Postanwnach) query += "postanwnach  = '"+postanwnach()+"',";
-     else if (i==B_Hsnr       ) query += "hsnr  = '"+hausnr()+"',";
-     else if (i==B_Plz        ) query += "plz  = '"+plz()+"',";
+     else if (i==B_Strasse    ) query += "strasse  = '"+string2Pg(strasse())+"',";
+     else if (i==B_Postanwnach) query += "postanwnach  = '"+string2Pg(postanwnach())+"',";
+     else if (i==B_Hsnr       ) query += "hsnr  = '"+string2Pg(hausnr())+"',";
+     else if (i==B_Plz        ) query += "plz  = '"+string2Pg(plz())+"',";
      else if (i==B_Postfach   ) query += "postfach  = '"+postfach()+"',";
      else if (i==B_Postfachplz) query += "postfplz  = '"+postfachplz()+"',";
-     else if (i==B_Ort        ) query += "ort  = '"+ort()+"',";
+     else if (i==B_Ort        ) query += "ort  = '"+string2Pg(ort())+"',";
      else if (i==B_Lkz           ) query += "landid  = '"+itos(land()->Id())+"',";
 //     else if (i==B_Lieferadresse  ) query += "lieferadresse  = "+btos(isLieferadresse())+",";
 //     else if (i==B_Rechnungadresse) query += "rechnungsadresse  = "+btos(isRechnungsadresse())+",";
