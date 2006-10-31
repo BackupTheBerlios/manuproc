@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.32 2006/08/21 09:43:18 christof Exp $
+// $Id: Rechnung.cc,v 1.33 2006/10/31 16:03:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *  Copyright (C) 2006 Christof Petig
@@ -413,4 +413,34 @@ void Rechnung::setFiBuBuchid(int fid) throw(SQLerror)
  #endif
  fibu_buchid=fid;  
 }
+
+
+const ManuProC::Datum Rechnung::sent_at() const throw(SQLerror)
+{
+ ManuProC::Datum sent;
+ Query("select sent_at from rechnung where rngid=?")
+	<< Id() >> sent;
+ return sent;
+}
+
+const std::string Rechnung::sent_to() const throw(SQLerror)
+{
+ std::string sent;
+ Query("select sent_to from rechnung where rngid=?") << Id() >> sent;
+ return sent;
+}
+
+void Rechnung::Set_sent_at() const throw(SQLerror)
+{
+ Query("update rechnung set sent_at=now() where rngid=?") << Id();
+}
+
+
+void Rechnung::Set_sent_to(const std::string t) const throw(SQLerror)
+{
+ Query("update rechnung set sent_to=? where rngid=?") << t << Id();
+}
+
+
+
 

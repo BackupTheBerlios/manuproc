@@ -2,6 +2,9 @@
 #include <unistd.h>
 #include <cassert>
 #include <iostream>
+#include <Lieferschein/Rechnung.h>
+#include <Aux/dbconnect.h>
+
 
 int main(int argc, char **argv)
 { assert(argc==2);
@@ -14,9 +17,32 @@ int main(int argc, char **argv)
   int pages=root.getAttr<int>("pages");
   std::cout << "prosessed: pages " << first << '-' << last << " of " << pages;
 
+
+
   FOR_EACH_CONST_TAG_OF(j,root,"mpc_rng_sent")
   {
-std::cout << " RNGID:" << j->getAttr<int>("rngid");
+   ManuProcEntity<>::ID rngid(j->getAttr<int>("document_id"));
+   std::cout << " RNGID:" << rngid << "\n";
+   std::string dest;
+   FOR_EACH_CONST_TAG_OF(j,root,"mail")
+     {dest = j->getAttr("address");}
+   if(dest.empty())
+     FOR_EACH_CONST_TAG_OF(j,root,"fax")
+      {dest = j->getAttr("number");}
+   try {
+      ManuProC::Connection conn;
+      conn.setDbase("");
+      conn.setHost("");
+      ManuProC::dbconnect(conn);
+   Rechnung r(rngid);
+   r.Set_sent_at();
+   r.Set_sent_to(dest);
+   ManuProC::dbdisconnect();
+   }
+   catch (SQLerror &e)
+   {  std::cerr << e << '\n';
+      return 1;
+   }
   }
 
 /*

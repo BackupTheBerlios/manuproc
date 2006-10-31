@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.36 2006/08/10 15:06:53 christof Exp $ */
+/* $Id: Rechnung.h,v 1.37 2006/10/31 16:03:03 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2000-2004 Adolf Petig GmbH & Co. KG
  *  		written by Jacek Jakubowski
@@ -113,6 +113,10 @@ public:
  int getFiBuBuchid() const { return fibu_buchid; } 
  void setFiBuBuchid(int fid) throw(SQLerror);
  int size() const throw(SQLerror);
+ const ManuProC::Datum sent_at() const throw(SQLerror);
+ const std::string sent_to() const throw(SQLerror);
+ void Set_sent_at() const throw(SQLerror);
+ void Set_sent_to(const std::string t) const throw(SQLerror);
  
  static geldbetrag_t MwStProz;
 };

@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.50 2006/06/26 07:53:03 christof Exp $
+// $Id: db_upgrade.cc,v 1.51 2006/10/31 16:03:03 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -108,14 +108,16 @@ int main(int argc,char *argv[])
   // Auftragsbestätigung an andere Adresse
   check_column("kunden","ab_an_rngadresse","bool");
   
-  // Provisionsaten in Rechnung
+  // Provisionsdaten in Rechnung
   check_column("rechnung","verknr","numeric(5)");
   check_column("rechnungentry","provsatz","numeric(4,2)");
   check_column("rechnung","an_fibu_am","date");
   if(check_column("rechnung","fibu_buchid","integer"))
     Query_nt("ALTER TABLE rechnung add foreign key (fibu_buchid)"
 	" references buchung (buchungid)");
-  
+  //Datenexport in Rechnung
+  check_column("rechnung","sent_at","date");
+  check_column("rechnung","sent_to","text");
 
   // Provisionsdaten in Auftrag
   check_column("auftrag","verknr","numeric(5)");
