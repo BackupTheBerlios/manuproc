@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.37 2006/10/31 16:04:30 christof Exp $
+// $Id: Rechnung.cc,v 1.38 2006/10/31 16:04:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *  Copyright (C) 2006 Christof Petig
@@ -30,7 +30,8 @@
 #include <Artikel/ArtikelStamm.h>
 #include<math.h>
 
-RechnungBase::geldbetrag_t Rechnung::MwStProz=MWSTPROZ;
+
+
 
 void Rechnung::setRngArt(const RngArt &art) throw(SQLerror)
 {
@@ -70,6 +71,7 @@ void Rechnung::setRngArt(const RngArt &art) throw(SQLerror)
  tr.commit();
 }
 
+/*
 void Rechnung::convert_to_gutschrift(bool lager_buchung) throw(SQLerror)
 {
   Transaction tr;
@@ -88,13 +90,17 @@ void Rechnung::convert_to_gutschrift(bool lager_buchung) throw(SQLerror)
 #endif
   tr.commit();
 }
+*/
+
 
 // zu Zahlender Betrag, inkl Zuschl., etc.
 Rechnung::geldbetrag_t Rechnung::Endbetrag(bool with_update_on_db=false) 
 const throw(SQLerror)
 {
+
+
  bool brutto=false;
- float stsatz=0.0;
+ fixedpoint<1> stsatz(0.0);
 
  Preis::geldbetrag_out betrag=Betrag(brutto);
  
@@ -124,6 +130,24 @@ const throw(SQLerror)
  return betrag;
 }
 
+
+void Rechnung::setMwSt(const fixedpoint<1> _mwst) const throw(SQLerror)
+{
+ if(fibu_buchid!=0) return; // darf nicht mehr ändern
+
+ fixedpoint<1> stsatz(0.0);
+
+ if(_mwst==-1)
+   {if(kunde->MwSt(Id()))
+     stsatz=Rechnung::MwStProz;}
+ else
+  stsatz=_mwst;
+
+ Query("update rechnung set steuersatz = ? where rngid = ?") 
+	<< stsatz << Id();
+ SQLerror::test(__FILELINE__);
+ mwst_satz=stsatz;
+}
 
 void Rechnung::setBezahlt(bool _bezahlt) throw(SQLerror)
 {
@@ -451,6 +475,8 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
  int ZAHLUNGSART;
  int WAEHRUNG;
  
+ assert(Rechnung::MwStProz>0.0);
+
  if (!JAHR) JAHR=AuftragBase::aktuellesJahr();
  JAHR%=100;
 
@@ -478,8 +504,8 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
       << ((JAHR+1)*AuftragBase::jahresmultiplikator-1)
       >> Query::Row::MapNull(RNGID,JAHR*AuftragBase::jahresmultiplikator);
  
- float STSATZ=0.0;
- if(k->MwSt(RNGID))
+ fixedpoint<1> STSATZ(0.0);
+ if(k->MwSt())
    STSATZ=Rechnung::MwStProz;
 
  Query("insert into rechnung (rngid, kundennr,zahlart,waehrung,steuersatz) "

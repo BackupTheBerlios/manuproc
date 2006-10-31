@@ -44,6 +44,7 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
    bool ENTSORGUNG=false;
    int EINZUG_REFNR=0;
    int FIBUBUCHID=0;
+   float MWST_SATZ=0.0;
  exec sql end declare section;
 
  Transaction tr;
@@ -55,10 +56,11 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
 			coalesce(entsorgung,false),
 			coalesce(kurs,1),
 			coalesce(einzug_refnr,0)::int,
-			coalesce(fibu_buchid,0)::int			
+			coalesce(fibu_buchid,0)::int,
+			steuersatz
 		into :KDNR, :DATUM, :RNGART, :ZAHLART, :ZAHLZIEL:IZAHLZIEL,
 		   :WAEHRUNG, :RABATT, :BEZAHLT, :ENTSORGUNG,
-		   :KURS, :EINZUG_REFNR, :FIBUBUCHID
+		   :KURS, :EINZUG_REFNR, :FIBUBUCHID, :MWST_SATZ
  	from rechnung r where r.rngid = :RNGID ;
  #else
  exec sql select r.kundennr, date(r.datum), r.rngart, 
@@ -82,5 +84,7 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
  entsorgung=ENTSORGUNG;
  einzug_refnr=EINZUG_REFNR;
  fibu_buchid=FIBUBUCHID;
+ mwst_satz=MWST_SATZ;
+
 }
 

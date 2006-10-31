@@ -1,4 +1,4 @@
-/* $Id: RechnungBase.h,v 1.17 2006/05/03 07:21:31 christof Exp $ */
+/* $Id: RechnungBase.h,v 1.18 2006/10/31 16:04:33 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -46,9 +46,10 @@ class RechnungBase // : ManuProcEntity
 	typedef LieferscheinBase::mengen_t mengen_t;
 	static const UniqueValue::value_t trace_channel;
 	
-	RechnungBase() : rngid(none_id),verknr(Kunde::none_id) {}
-	RechnungBase(ID rid) : rngid(rid),verknr(Kunde::none_id) {}
+	RechnungBase() : rngid(none_id),verknr(Kunde::none_id) {init();}
+	RechnungBase(ID rid) : rngid(rid),verknr(Kunde::none_id) {init();}
 	virtual ~RechnungBase() {}
+	void init();
 
 	ID Id() const {return rngid;}
 	std::string getRngidToStr() const
@@ -62,7 +63,8 @@ class RechnungBase // : ManuProcEntity
 	Kunde::ID getVerknr() const throw(SQLerror);
 	void setVerknr(const Kunde::ID vid) const throw(SQLerror);	
 	virtual void setze_Zahlziel(ManuProC::Datum zziel) throw(SQLerror);
-
+	
+    static geldbetrag_t MwStProz;	
 };
 
 #endif

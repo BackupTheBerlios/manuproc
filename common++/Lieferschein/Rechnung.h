@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.38 2006/10/31 16:04:21 christof Exp $ */
+/* $Id: Rechnung.h,v 1.39 2006/10/31 16:04:33 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2000-2004 Adolf Petig GmbH & Co. KG
  *  		written by Jacek Jakubowski
@@ -34,7 +34,7 @@
 #include <Auftrag/AufEintragBase.h>
 
 #define ENTSSATZ	0.002
-#define MWSTPROZ	16
+//#define MWSTPROZ	16 // kommt aus global_settings
 
 class Preis;
 
@@ -55,6 +55,7 @@ private:
  fixedpoint<5> kurs;  
  int einzug_refnr;
  int fibu_buchid;
+ mutable fixedpoint<1> mwst_satz;
   
  void push_back(unsigned &lineno,ArtikelBase art,
 		unsigned lfrsid,unsigned lfrsznr, int stk,
@@ -81,7 +82,7 @@ public:
 // std::string RngArt() const {return rngart; } 
  const RngArt rngArt() const {return rngart; } 
  void setRngArt(const RngArt &art) throw(SQLerror);
- void convert_to_gutschrift(bool lager_buchung=false) throw(SQLerror);
+// void convert_to_gutschrift(bool lager_buchung=false) throw(SQLerror);
  rabatt_t Rabatt() const { return rabatt; }
 
 // don't know where is using this and i assume a bug in it. 
@@ -92,6 +93,8 @@ public:
  ExtBezSchema::ID getSchema() { return kunde->getSchemaId(); }
  bool Bezahlt() const { return bezahlt; }
  void setBezahlt(bool _bezahlt) throw(SQLerror);
+ void setMwSt(const fixedpoint<1> _mwst=-1) const throw(SQLerror);
+ fixedpoint<1> MwStSatz() const { return mwst_satz; }
 
  void addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror);
  void deleteLieferschein(const LieferscheinBase &lfrs) throw(SQLerror);
@@ -118,7 +121,7 @@ public:
  void Set_sent_at() const throw(SQLerror);
  void Set_sent_to(const std::string t) const throw(SQLerror);
  
- static geldbetrag_t MwStProz;
+
 };
 
 #endif

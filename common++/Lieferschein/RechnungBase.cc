@@ -1,4 +1,4 @@
-/* $Id: RechnungBase.cc,v 1.5 2006/06/26 07:53:03 christof Exp $ */
+/* $Id: RechnungBase.cc,v 1.6 2006/10/31 16:04:33 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,6 +20,18 @@
 
 #include"RechnungBase.h"
 #include <Misc/Trace.h>
+#include <Misc/Global_Settings.h>
+
+// must be set on class init. Should be stored in global_settings under MWST
+// When not set properly (==0.0) the relevant method will be stop with in an assert 
+RechnungBase::geldbetrag_t RechnungBase::MwStProz=0.0;
+
+void RechnungBase::init()
+{
+ if(MwStProz==0.0)
+   MwStProz=atof(Global_Settings(int(0),"","MWST").get_Wert().c_str());
+}
+
 
 Kunde::ID RechnungBase::getVerknr() const throw(SQLerror)
 {
