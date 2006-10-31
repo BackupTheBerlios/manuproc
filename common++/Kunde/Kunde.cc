@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.69 2006/10/31 16:04:43 christof Exp $
+// $Id: Kunde.cc,v 1.70 2006/10/31 16:05:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -482,3 +482,38 @@ Kunde::ID Kunde::Suchen(std::string const& name, std::string const& ort) throw(S
   Query("select kundennr from kunden where firma=?") << name >> result;
   return result;
 }
+
+
+char Kunde::getUmsatzKlasse(const fixedpoint<2> umsatz) const
+{
+ if(umsatz>=10000) return 'A';
+ if(umsatz>=1500 && umsatz<10000) return 'B';
+ if(umsatz<1500) return 'C';
+}
+
+char Kunde::getKlasse() const
+{
+ if(kundendaten.klasse!=' ') return kundendaten.klasse;
+
+#ifdef MANUPROC_DYNAMICENUMS_CREATED 
+ if(isInGrp(KundengruppeID::A_Kunden)) kundendaten.klasse='A';
+ else if(isInGrp(KundengruppeID::B_Kunden)) kundendaten.klasse='B';
+ else if(isInGrp(KundengruppeID::C_Kunden)) kundendaten.klasse='C';
+
+ if(kundendaten.klasse!=' ') return kundendaten.klasse;
+#endif
+ 
+ char akt_klasse=getUmsatzKlasse(jahresumsatz());
+ char vj_klasse=getUmsatzKlasse(vorjahresumsatz());
+ ManuProC::Datum today(ManuProC::Datum::today());
+ ManuProC::Datum stichtag(30,6,today.Jahr());
+
+ if(akt_klasse=='A' && vj_klasse!=akt_klasse) kundendaten.klasse=akt_klasse;
+ else if(akt_klasse=='B' && vj_klasse=='C') kundendaten.klasse=akt_klasse;
+ else if(today<stichtag) kundendaten.klasse=vj_klasse;
+ else kundendaten.klasse=akt_klasse;
+ 
+ return kundendaten.klasse;
+}
+
+

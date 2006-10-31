@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.84 2006/10/31 16:04:21 christof Exp $
+// $Id: Kunde.h,v 1.85 2006/10/31 16:05:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -99,9 +99,13 @@ public:
  struct st_kddata
    {int flaeche;
     int mitarbeiter; 
-    fixedpoint<2> planumsatz;
-    fixedpoint<2> umsatz; 
-    fixedpoint<2> kundenumsatz; 
+//    fixedpoint<2> planumsatz;    
+    fixedpoint<2> vorjahresumsatz;
+//    fixedpoint<2> umsatz; 
+    fixedpoint<2> jahresumsatz; 
+//    fixedpoint<2> kundenumsatz; 
+    fixedpoint<2> gesamtumsatz; 
+    mutable char klasse;
     int kalkulation;
     fixedpoint<2> rabatt;
     bool zeilenrabatt:1;
@@ -114,8 +118,9 @@ public:
     int anzahl_ausdruck_firmenpapier;
     int anzahl_ausdruck_weissespapier;
     st_kddata()
-    	:flaeche(),mitarbeiter(),planumsatz(),umsatz(),kundenumsatz(),
-    	 kalkulation(),rabatt(),zeilenrabatt(),
+    	:flaeche(),mitarbeiter(),vorjahresumsatz(),jahresumsatz(),
+    		gesamtumsatz(),
+    	 klasse(' '),kalkulation(),rabatt(),zeilenrabatt(),
     	 anzahl_ausdruck_firmenpapier(1),anzahl_ausdruck_weissespapier(1) {}
    };
  typedef struct st_kddata Kundendaten;
@@ -210,9 +215,18 @@ public:
 
         const long int flaeche() const { return kundendaten.flaeche; }
         const long int mitarbeiter() const { return kundendaten.mitarbeiter; }
-        const fixedpoint<2> kundenumsatz() const { return kundendaten.kundenumsatz; }
-        const fixedpoint<2> planumsatz() const { return kundendaten.planumsatz; }
-        const fixedpoint<2> umsatz() const { return kundendaten.umsatz; }
+        //const fixedpoint<2> planumsatz() const { return kundendaten.planumsatz; }
+        // was renamed in
+        const fixedpoint<2> vorjahresumsatz() const { return kundendaten.vorjahresumsatz; }        
+
+        //const fixedpoint<2> kundenumsatz() const { return kundendaten.kundenumsatz; }
+        // was renamed in
+        const fixedpoint<2> gesamtumsatz() const { return kundendaten.gesamtumsatz; }
+        
+        //const fixedpoint<2> umsatz() const { return kundendaten.umsatz; }
+        // was renamed in
+        const fixedpoint<2> jahresumsatz() const { return kundendaten.jahresumsatz; }
+        
         const fixedpoint<2> rabatt() const { return kundendaten.rabatt; }
         const bool zeilenrabatt() const { return kundendaten.zeilenrabatt; }
         const int anzahl_ausdruck_firmenpapier() const {return kundendaten.anzahl_ausdruck_firmenpapier;}
@@ -234,8 +248,12 @@ public:
         ID Id() const {  return entityid; }
 //        ID GruppenId() const {  return KundenGruppennr; }
         const std::string idnr() const { return IDnr; } 
+        char getKlasse() const;
+
 private:        
+        char getUmsatzKlasse(const fixedpoint<2> umsatz) const;
         bool idnr_valid() const;
+
 public:
         ID getNummer() const {  return entityid; }
         cH_ExtBezSchema getSchema(class ArtikelTyp t) const
@@ -390,13 +408,13 @@ public:
         void set_UnsereKundenNr(const std::string& s){adresse.unsere_kundennr = s; } 
         void set_schema(ID s) throw(SQLerror);
 
-        void set_planumsatz(const fixedpoint<2> s){kundendaten.planumsatz = s; }
+//        void set_planumsatz(const fixedpoint<2> s){kundendaten.planumsatz = s; }
         void set_rabatt(const fixedpoint<2> s) throw(SQLerror);//        {kundendaten.rabatt = s; }
         void set_zeilenrabatt(const bool s){kundendaten.zeilenrabatt = s; }
         void set_flaeche(const int s) {kundendaten.flaeche = s; }
         void set_mitarbeiter(const int s){kundendaten.mitarbeiter = s; }
-        void set_kundenumsatz(const fixedpoint<2> s){kundendaten.kundenumsatz = s; }
-        void set_umsatz(const fixedpoint<2> s){kundendaten.umsatz = s; }
+//        void set_kundenumsatz(const fixedpoint<2> s){kundendaten.kundenumsatz = s; }
+//        void set_umsatz(const fixedpoint<2> s){kundendaten.umsatz = s; }
         void set_verein(const std::string& s){kundendaten.verein = s; }
         void set_anzahl_ausdruck_firmenpapier(const int i){kundendaten.anzahl_ausdruck_firmenpapier=i; }        
         void set_anzahl_ausdruck_weissespapier(const int i){kundendaten.anzahl_ausdruck_weissespapier=i; }        

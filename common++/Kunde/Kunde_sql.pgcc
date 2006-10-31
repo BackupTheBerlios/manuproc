@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.81 2006/10/31 16:04:40 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.82 2006/10/31 16:05:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -113,9 +113,9 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    r >> Query::Row::MapNull(b); ab_an_rngadresse=b;
    r >> Query::Row::MapNull(kundendaten.flaeche)
      >> Query::Row::MapNull(kundendaten.mitarbeiter)
-     >> Query::Row::MapNull(kundendaten.kundenumsatz)
-     >> Query::Row::MapNull(kundendaten.planumsatz)
-     >> Query::Row::MapNull(kundendaten.umsatz)
+     >> Query::Row::MapNull(kundendaten.gesamtumsatz)
+     >> Query::Row::MapNull(kundendaten.vorjahresumsatz)
+     >> Query::Row::MapNull(kundendaten.jahresumsatz)
      >> Query::Row::MapNull(kundendaten.rabatt)
      >> Query::Row::MapNull(b); kundendaten.zeilenrabatt=b;
    r >> Query::Row::MapNull(ZAHLUNGSART,Zahlungsart::none_id)
@@ -419,10 +419,10 @@ void Kunde::update_e(UpdateBitsFirma e)
   for(B_UPDATE_BITS_FIRMA i=B_UPDATE_BITS_FIRMA(0);i<B_MaxAnzF;++i)
    {
      if(!(e&(1<<i))) continue;
-     if      (i==B_Planumsatz    ) query += "planumsatz  = "+planumsatz().String()+",";
-     else if (i==B_Umsatz        ) query += "umsatz  = "+umsatz().String()+",";
-     else if (i==B_Mitarbeiter   ) query += "mitarbeiter  = "+itos(mitarbeiter())+",";
-     else if (i==B_Kundenumsatz  ) query += "kundenumsatz  = "+kundenumsatz().String()+",";
+//     if      (i==B_Planumsatz    ) query += "planumsatz  = "+planumsatz().String()+",";
+//     else if (i==B_Umsatz        ) query += "umsatz  = "+jahresumsatz().String()+",";
+     if (i==B_Mitarbeiter   ) query += "mitarbeiter  = "+itos(mitarbeiter())+",";
+//     else if (i==B_Kundenumsatz  ) query += "kundenumsatz  = "+gesamtumsatz().String()+",";
      else if (i==B_Flaeche       ) query += "flaeche  = "+itos(flaeche())+",";
      else if (i==B_UnsereKundenNr) query += "unsere_kundennr  = '"+UnsereKundenNr()+"',";
      else if (i==B_Verein     ) query += "verein = '"+verein()+"',";
