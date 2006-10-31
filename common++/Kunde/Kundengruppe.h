@@ -47,6 +47,9 @@ public:
 
 };
 
+extern Query::Row &operator>>(Query::Row &is, Kundengruppe &kg);
+extern Query::Row &operator>>(Query::Row &is, Kundengruppe::ID &kgid); 
+
 class cH_Kundengruppe : public Handle<const Kundengruppe>
 {	
         typedef CacheStatic<Kundengruppe::ID,cH_Kundengruppe> cache_t;
