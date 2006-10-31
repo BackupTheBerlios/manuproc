@@ -267,4 +267,26 @@ static bool EinkaufDatum2()
 
 static TestReihe EinfaufDatum2_(&EinkaufDatum2,"Datumsänderung im Einkauf (bugcheck)","DAeE2");
 
+
+
+// Dieser Test testet einen Datumswechsel im Einkauf nach erfolgter Teillieferung
+static bool EinkaufDatum3()
+{  vergleichen(Check::Menge,"DAeA_Tl","Ausgangspunkt","a");
+
+   Auftrag auftrag3=Auftrag(Auftrag::Anlegen(EINKAUF),LIEFERANT);
+   AufEintragBase AEB3=auftrag3.push_back(30,ManuProC::Datum::today(),ARTIKEL_TRIO,OPEN,true);
+   Lieferschein ls(EINKAUF,cH_Kunde(LIEFERANT));
+   AufEintrag AE3(AEB3);
+   LieferscheinEntryBase lsb(ls,ls.push_back(AE3,ARTIKEL_TRIO,20,0,0));
+   LieferscheinEntry le(lsb);
+   le.setLagerid(1); // offenbar nicht ppsInstanzID::Fertigwarenlager);
+   le.changeStatus(OPEN,true);
+   vergleichen(Check::Menge,"DAeA_Tl_l","Lieferung","l");   
+   AE3.updateLieferdatum(DATUM+5);
+   vergleichen(Check::Menge,"DAeA_Tl_t","Terminänderung","t");   
+   return true;
+}
+
+static TestReihe EinfaufDatum3_(&EinkaufDatum3,"Datumsänderung im Einkauf nach Teillieferung (bugcheck)","DAeA_Tl");
+
 #endif
