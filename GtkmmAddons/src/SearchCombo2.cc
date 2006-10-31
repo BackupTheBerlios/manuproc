@@ -2,6 +2,13 @@
 #include <gtkmm/liststore.h>
 #include <cassert>
 
+#if 1
+#include <stdio.h>
+#define DEBUG(x) x
+#else
+#define DEBUG(x)
+#endif
+
 struct Gtk::SearchCombo2::Model : Gtk::ListStore
 //virtual Glib::Object, Gtk::TreeModel
 { 
@@ -11,9 +18,9 @@ private:
 //  std::vector<std::string> results;
 
   bool fill_idle();
-  void fill_list();
   bool close_search();
   void clear_list();
+  void fill_list();
 public:
   sigc::signal2<void,gboolean *,GtkSCContext> search;
   
@@ -21,6 +28,7 @@ public:
   
   void entry_changed();
   void stop_if_running();
+  void fill_list_if_necessary();
 
   bool start_idle:1;	/** start search at idle time not in focus_in */
 
@@ -73,9 +81,14 @@ Gtk::SearchCombo2::Model::Model(const TreeModelColumnRecord& columns, Gtk::Combo
 void Gtk::SearchCombo2::Model::clear_list()
 { stop_if_running();
   Gtk::ListStore::clear();
-  combo->popdown();
+//  combo->popdown();
   search_finished=false;
   value_selected=false;
+}
+
+void Gtk::SearchCombo2::Model::fill_list_if_necessary()
+{ if (!search_in_progress && !search_finished)
+    fill_list();
 }
 
 void Gtk::SearchCombo2::Model::fill_list()
@@ -86,20 +99,24 @@ void Gtk::SearchCombo2::Model::fill_list()
   search_in_progress=true;
   already_started=false;
   value_selected=false;
+  DEBUG(printf("SCB fl: value_selected=%d si=%d\n",value_selected,start_idle));
+   
 /*  if (!start_idle)
   {
   } else */
     continue_=true;
   if (continue_)
   { idle_conn=Glib::signal_idle().connect(sigc::mem_fun(*this,&Model::fill_idle));
+    DEBUG(printf("SCB fl: idle_handler @%p\n",this));
   }
   else close_search();
-  combo->popup();
+//  combo->popup();
 }
 
 void Gtk::SearchCombo2::Model::entry_changed()
 { // narrow optimization (gtksearchcombo.c:712)
   fill_list();
+//  combo->get_entry()->grab_focus();
 }
 
 bool Gtk::SearchCombo2::Model::close_search()
@@ -115,14 +132,18 @@ bool Gtk::SearchCombo2::Model::close_search()
 
 bool Gtk::SearchCombo2::Model::fill_idle()
 { gboolean continue_=false;
+  DEBUG(printf("SCB: fill_idle\n"));
   // THREADS_ENTER?
   assert(search_in_progress && !search_finished);
+  DEBUG(printf("fill idle: already_started=%d\n",already_started));
   search(&continue_, already_started?GTK_SEARCH_FETCH:
     (reopen?GTK_SEARCH_REOPEN:GTK_SEARCH_OPEN));
   already_started=true;
   if (!continue_)
-  { close_search();
+  { DEBUG(printf("SCB fi: idle stopped\n"));
+    close_search();
   }
+  DEBUG(printf("SCB: fill_idle ended\n"));
   return continue_;
 }
 
@@ -143,9 +164,97 @@ void Gtk::SearchCombo2::on_entry_changed()
 { mymodel->entry_changed();
 }
 
+// HACK !!!!
+#include <gtk/gtkcombobox.h>
+#include <gtk/gtktogglebutton.h>
+
+struct _GtkComboBoxPrivate
+{
+  GtkTreeModel *model;
+
+  gint col_column;
+  gint row_column;
+
+  gint wrap_width;
+
+  GtkTreeRowReference *active_row;
+
+  GtkWidget *tree_view;
+  GtkTreeViewColumn *column;
+
+  GtkWidget *cell_view;
+  GtkWidget *cell_view_frame;
+
+  GtkWidget *button;
+  GtkWidget *box;
+  GtkWidget *arrow;
+  GtkWidget *separator;
+
+  GtkWidget *popup_widget;
+  GtkWidget *popup_window;
+  GtkWidget *popup_frame;
+  GtkWidget *scrolled_window;
+
+  guint inserted_id;
+  guint deleted_id;
+  guint reordered_id;
+  guint changed_id;
+  guint popup_idle_id;
+  guint scroll_timer;
+  guint resize_idle_id;
+
+  gint width;
+  gint height;
+  GSList *cells;
+
+  guint popup_in_progress : 1;
+  guint popup_shown : 1;
+  guint add_tearoffs : 1;
+  guint has_frame : 1;
+  guint is_cell_renderer : 1;
+  guint editing_canceled : 1;
+  guint auto_scroll : 1;
+  guint focus_on_click : 1;
+
+  GtkTreeViewRowSeparatorFunc row_separator_func;
+  gpointer                    row_separator_data;
+  GtkDestroyNotify            row_separator_destroy;
+
+  gchar *tearoff_title;
+};
+// ENDHACK
+
 Gtk::SearchCombo2::SearchCombo2(bool,bool)
 { mymodel=Model::create(m_text_columns,this);
+  set_model(mymodel);
   get_entry()->signal_changed().connect(sigc::mem_fun(*this,&SearchCombo2::on_entry_changed));
+  Gtk::CellRendererText *crt=Gtk::manage(new Gtk::CellRendererText());
+  pack_start(*crt,true);
+//  crt->property_foreground()="red";
+  crt->property_xalign()=0;
+//  crt->set_xalign(0);
+  crt->property_alignment()=Pango::ALIGN_LEFT;
+//  ->priv->column
+//  ->priv->popup_window
+//  ->priv->button
+  add_attribute(crt->property_text(), m_text_columns.m_column);
+  // gtk+ 2.10
+  // Glib::PropertyProxy<bool>(this,"popup-shown").signal_changed()
+  //      .connect(sigc::mem_fun(*this,&SearchCombo2::popupdown));
+  // HACK
+  Glib::wrap(GTK_COMBO_BOX(gobj())->priv->column)->set_alignment(0);
+  assert(GTK_IS_TOGGLE_BUTTON(GTK_COMBO_BOX(gobj())->priv->button));
+  Glib::wrap(GTK_TOGGLE_BUTTON(GTK_COMBO_BOX(gobj())->priv->button))
+    ->signal_toggled().connect(sigc::mem_fun(*this,&SearchCombo2::popupdown));
+  // ENDHACK
+}
+
+void Gtk::SearchCombo2::popupdown()
+{ if (Glib::wrap(GTK_TOGGLE_BUTTON(GTK_COMBO_BOX(gobj())->priv->button))
+      ->get_active())
+    mymodel->fill_list_if_necessary();
+  else
+    mymodel->stop_if_running();
 }
 
 Gtk::SearchCombo2::~SearchCombo2()
@@ -161,10 +270,14 @@ sigc::signal2<void,gboolean *,GtkSCContext> &Gtk::SearchCombo2::signal_search()
 }
 
 Glib::ustring Gtk::SearchCombo2::get_text() const
-{ return get_entry()->get_text();
+{ Glib::ustring res=get_entry()->get_text();
+  DEBUG(printf("get_text(%s)\n",res.c_str()));
+  return res;
 }
 
-void Gtk::SearchCombo2::add_item(const Glib::ustring &text)
-{ Gtk::TreeModel::iterator i=mymodel->append();
+Gtk::TreeModel::iterator Gtk::SearchCombo2::add_item(const Glib::ustring &text)
+{ TreeModel::iterator i=mymodel->append();
   (*i)[m_text_columns.m_column]=text;
+  DEBUG(printf("'%s' added\n",text.c_str()));
+  return i;
 }

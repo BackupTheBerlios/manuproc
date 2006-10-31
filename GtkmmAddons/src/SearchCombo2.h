@@ -1,4 +1,4 @@
-/* $Id: SearchCombo2.h,v 1.3 2006/10/31 16:14:07 christof Exp $ */
+/* $Id: SearchCombo2.h,v 1.4 2006/10/31 16:14:14 christof Exp $ */
 
 /* searchcombo.h
  * 
@@ -54,6 +54,7 @@ class SearchCombo2 : public Gtk::ComboBoxEntry
 	
 
   void on_entry_changed();
+  void popupdown();
 //  sigc::signal0<void> activate;
 public:
   explicit SearchCombo2(bool always_fill=false, bool autoexpand=false);
@@ -80,7 +81,7 @@ public:
 
   //: Append an item.
   
-  void add_item(const Glib::ustring &text);
+  Gtk::TreeModel::iterator add_item(const Glib::ustring &text);
   
   //: clear entry+list, mark for research
   
@@ -90,15 +91,11 @@ public:
   
   void set_text(const Glib::ustring &text);
   
-  
   Glib::ustring get_text() const;
 //  const Glib::ustring get_text() const;
   
-  
   void set_always_fill(bool val);
-  
   void set_enable_tab(bool val);
-  
   guint get_size() const;
 
   //: set sensitivity
@@ -109,9 +106,7 @@ public:
   
   void set_autoexpand(bool val);
     
-  
   void trigger_search();
-
   
   void set_start_on_idle(bool val);
     
