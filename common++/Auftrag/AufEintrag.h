@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.97 2006/10/31 16:04:21 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.98 2006/10/31 16:07:24 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *  Copyright (C) 2006 Christof Petig
@@ -115,6 +115,7 @@ private:
  ppsInstanz::ID letztePlanInstanz;
  int maxPlanInstanz;
  ManuProC::Datum prozdate;
+ ManuProC::Datum datum; // Datum des ganzen Auftrages
 
  Preis preis;
  rabatt_t rabatt;
@@ -233,6 +234,7 @@ public:
  std::string getYourAufNr() const { return youraufnr;}
  int getDispoENr() const { return dispoentrynr;}
  const ManuProC::Datum getLieferdatum() const { return lieferdatum;}
+ const ManuProC::Datum getDatum() const { return datum;}
  Kunde::ID getKdNr() const { return kdnr;}
  const ManuProC::Datum getProzDat() const { return prozdate;} 
  cH_Prozess getProzess() const { return prozess;}

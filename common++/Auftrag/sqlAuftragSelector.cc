@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.52 2006/06/26 07:53:12 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.53 2006/10/31 16:07:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2005 Adolf Petig GmbH & Co. KG, 
  *  written by Jacek Jakubowski
@@ -34,6 +34,7 @@
 	"e.artikelid, " \
 	"e.lieferdate, geliefert, " \
 	"a.stat, " \
+	"date(a.datum), "\
 	"a.kundennr,youraufnr, "
 #define PROZESS_BASE "p.prozessid,p.letzteplaninstanz," \
    	"p.maxplaninstanz,p.datum, " 

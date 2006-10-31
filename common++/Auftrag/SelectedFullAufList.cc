@@ -1,4 +1,4 @@
-// $Id: SelectedFullAufList.cc,v 1.8 2005/11/03 21:09:06 christof Exp $
+// $Id: SelectedFullAufList.cc,v 1.9 2006/10/31 16:07:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -44,6 +44,7 @@ Query::Row &operator>>(Query::Row &is, AufEintrag &ae)
    	>> ae.lieferdatum
    	>> ae.geliefert
 	>> ae.auftragstatus 
+	>> ae.datum
    	>> ae.kdnr 
    	>> Query::Row::MapNull(ae.youraufnr,std::string())
    	>> Query::Row::MapNull(prozid,ProzessID::None)
