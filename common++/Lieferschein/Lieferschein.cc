@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.54 2006/10/31 16:03:21 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.55 2006/10/31 16:03:26 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -324,13 +324,13 @@ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("Kunde",
  
  Query("select max(lfrsid)+1 from lieferschein where lfrsid between ? and ?")
       << (jahr*10000) << ((jahr+1)*10000-1)
-      >> Query::Row::MapNull(lieferid,JAHR*10000);
+      >> Query::Row::MapNull(lieferid,jahr*10000);
  
  Query("insert into lieferschein (instanz,lfrsid, kundennr) values (?,?,?)")
      << instanz->Id() << lieferid << kunde->Id();
 
- (Query("update lieferschein set notiz=(select lief_notiz from kunden
-        where kundennr=?) where (instanz,lfrsid)=(?,?)")
+ (Query("update lieferschein set notiz=(select lief_notiz from kunden "
+        "where kundennr=?) where (instanz,lfrsid)=(?,?)")
         << kunde->Id() 
         << lieferid).Check100();
 
