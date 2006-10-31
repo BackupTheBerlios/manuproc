@@ -1,4 +1,4 @@
-// $Id: LandesListe_sql.pgcc,v 1.8 2006/06/26 07:53:02 christof Exp $
+// $Id: LandesListe_sql.pgcc,v 1.9 2006/10/31 16:03:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,8 +25,9 @@
 
 exec sql include sqlca;
 
-LandesListe cH_LandesListe::default_object; 
-bool cH_LandesListe::default_object_ref=cH_LandesListe::default_object.is_static(true);
+//LandesListe cH_LandesListe::default_object; 
+//bool cH_LandesListe::default_object_ref=cH_LandesListe::default_object.is_static(true);
+
 cH_LandesListe::cache_t cH_LandesListe::cache;
 
 cH_LandesListe::cH_LandesListe(LandesListe::ID id)

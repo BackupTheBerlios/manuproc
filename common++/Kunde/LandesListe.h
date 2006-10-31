@@ -1,4 +1,4 @@
-// $Id: LandesListe.h,v 1.9 2006/06/26 07:53:02 christof Exp $
+// $Id: LandesListe.h,v 1.10 2006/10/31 16:03:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -34,6 +34,7 @@ private:
  bool eu;
 
 public:
+  const static ID default_id=1;
   LandesListe(ID id) throw(SQLerror);
   LandesListe() : eu(false) {}
   ID Id() const { return entityid; } 
@@ -47,14 +48,18 @@ public:
 
 class cH_LandesListe : public Handle<const LandesListe>
 {	
-  typedef CacheStatic<int,cH_LandesListe> cache_t;
+  typedef CacheStatic<LandesListe::ID,cH_LandesListe> cache_t;
   static cache_t cache;
-  friend class std::map<int,cH_LandesListe>;
-  static LandesListe default_object;
-  static bool default_object_ref;
-public:
-  cH_LandesListe() : Handle<const LandesListe>(&default_object) {}
+  friend class std::map<LandesListe::ID,cH_LandesListe>;
+//  static LandesListe default_object;
+//  static bool default_object_ref;
+
+  // moved to private JJ
   cH_LandesListe(const LandesListe *p) : Handle<const LandesListe>(p) {}
+  cH_LandesListe() {}
+public:
+//  cH_LandesListe() : Handle<const LandesListe>(&default_object) {}
+  
   cH_LandesListe(LandesListe::ID id);
 };
 

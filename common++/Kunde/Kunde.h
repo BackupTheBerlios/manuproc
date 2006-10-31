@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.81 2006/10/31 16:03:00 christof Exp $
+// $Id: Kunde.h,v 1.82 2006/10/31 16:03:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -64,6 +64,7 @@ public:
    std::string ort;
    cH_LandesListe land;
    std::string unsere_kundennr;
+   st_adresse() : land(LandesListe::default_id) {}
   };
  typedef struct st_adresse Adresse;  
  
