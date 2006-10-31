@@ -30,13 +30,16 @@ throw(SQLerror)	:RechnungEntryBase(rechnung),provsatz(-1)
    int LFRSID, LFRSZN;
    float PREISMENGE;
    float PREIS;
+   float EKPREIS;
    int AUFTRAGID;
+   Waehrung::ID WID;
 
  Query("select ry.artikelid, ry.menge, ry.preis,"
       "ry.stueck, ry.preismenge, ry.rabatt,"
       "coalesce(li.geliefertam,li.datum,date('today')),"
-      "ry.lfrsid, ry.lfrszeile,l.refauftragid "
-   "from rechnungentry ry "
+      "ry.lfrsid, ry.lfrszeile,l.refauftragid, "
+      "ry.ek_preis,rg.waehrung "
+   "from rechnungentry ry join rechnung rg using (rngid)"
    "left join lieferscheinentry l on "
 	"(?,ry.lfrsid,ry.lfrszeile)=(l.instanz,l.lfrsid,l.zeile) "
    "left join lieferschein li on (li.instanz,li.lfrsid)=(?,ry.lfrsid) "
@@ -47,10 +50,17 @@ throw(SQLerror)	:RechnungEntryBase(rechnung),provsatz(-1)
    >> Query::Row::MapNull(stueck)
    >> Query::Row::MapNull(PREISMENGE,1) >> Query::Row::MapNull(rabatt)
    >> lieferdatum >> Query::Row::MapNull(LFRSID) >> Query::Row::MapNull(LFRSZN)
-   >> Query::Row::MapNull(AUFTRAGID,AuftragBase::invalid_id);
+   >> Query::Row::MapNull(AUFTRAGID,AuftragBase::invalid_id)
+   >> Query::Row::MapNull(EKPREIS)
+   >> Query::Row::MapNull(WID,Waehrung::default_id);
 
   // dieser Konstruktor dauert !!!
-  preis=Preis(PREIS,Rechnung(rechnung.Id()).getWaehrung(),PREISMENGE);
+//  preis=Preis(PREIS,Rechnung(rechnung.Id()).getWaehrung(),PREISMENGE);
+  // also kürzer...
+  cH_Waehrung waehrung(WID);
+  preis=Preis(PREIS,waehrung,PREISMENGE);
+  ek_preis=Preis(EKPREIS,Waehrung::default_id,PREISMENGE);
+
   if (LFRSID) 
     lfrs=LieferscheinEntryBase(ppsInstanzID::Kundenauftraege,LFRSID,LFRSZN);
   if (AUFTRAGID!=AuftragBase::invalid_id)

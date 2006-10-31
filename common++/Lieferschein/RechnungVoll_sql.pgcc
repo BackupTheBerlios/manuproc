@@ -1,4 +1,4 @@
-/* $Id: RechnungVoll_sql.pgcc,v 1.24 2006/08/10 15:08:00 christof Exp $ */
+/* $Id: RechnungVoll_sql.pgcc,v 1.25 2006/10/31 16:05:26 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -42,7 +42,8 @@ void RechnungVoll::loadEntries(bool order_by_artikel) throw(SQLerror)
  Query::Args args;
 
  qu+=", ry.stueck, ry.menge, ry.rabatt, ry.lfrsid, ry.lfrszeile," 
-        "ry.preismenge, l.geliefertam, abs(ry.preis), refauftragid "
+        "ry.preismenge, l.geliefertam, abs(ry.preis), refauftragid, "
+	"ry.ek_preis "
 	"from (rechnungentry ry "
    	"left join lieferschein l on (?,ry.lfrsid) ="
 	"(l.instanz,l.lfrsid))";
@@ -64,7 +65,7 @@ void RechnungVoll::loadEntries(bool order_by_artikel) throw(SQLerror)
     int ARTIKELID, STUECK, ZEILE;
     int LFRSID,LIEFERZEILE;
     int AUFTRAGID;
-    float MENGE,RABATT,PREISMENGE,PREIS;
+    float MENGE,RABATT,PREISMENGE,PREIS,EKPREIS;
     ManuProC::Datum LIEFERDATUM;
 
     fi >> ARTIKELID >> ZEILE 
@@ -75,13 +76,15 @@ void RechnungVoll::loadEntries(bool order_by_artikel) throw(SQLerror)
        >> Query::Row::MapNull(PREISMENGE,1)
        >> LIEFERDATUM 
        >> Query::Row::MapNull(PREIS) 
-       >> Query::Row::MapNull(AUFTRAGID,AuftragBase::invalid_id);
+       >> Query::Row::MapNull(AUFTRAGID,AuftragBase::invalid_id)
+       >> Query::Row::MapNull(EKPREIS);
        
     Preis p(PREIS,getWaehrung(),PREISMENGE);       
+    Preis ek_p(EKPREIS,Waehrung::default_id,PREISMENGE);       
     rentry.push_back(RechnungEntry(rngid,ZEILE,
          ARTIKELID,STUECK,MENGE,p,RABATT,LIEFERDATUM,
          LieferscheinEntryBase(ppsInstanz::ID(INSTANZ),LFRSID,LIEFERZEILE),
-	 AuftragBase(ppsInstanz::ID(INSTANZ),AUFTRAGID)));       
+	 AuftragBase(ppsInstanz::ID(INSTANZ),AUFTRAGID),ek_p));       
    }
 }
 

@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.41 2006/10/31 16:05:24 christof Exp $
+// $Id: Rechnung.cc,v 1.42 2006/10/31 16:05:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *  Copyright (C) 2006 Christof Petig
@@ -181,9 +181,10 @@ unsigned Rechnung::push_back(ArtikelBase art,int stk,mengen_t menge)
           >> Query::Row::MapNull(lineno);
   lineno++;
 
-  Preis ek_preis;
-  ArtikelTyp at(art);
-  ek_preis=Artikelpreis(at.EK_PL(),art,
+//  Preis ek_preis;
+//  ArtikelTyp at(art);
+  cH_Kunde self(Kunde::eigene_id);
+  Artikelpreis  ek_preis(self,art,
     		AuftragBase::Gesamtmenge(stk,menge).as_int());
 
   push_back(lineno,art,0,0,stk,menge,Preis(),0,0,ek_preis);
@@ -309,8 +310,10 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
  LieferscheinVoll lv(lfrs.Instanz(),lfrs.Id());
  
  unsigned lineno=MAXZNR;
+ cH_Kunde self(Kunde::eigene_id);
+
  for (LieferscheinVoll::const_iterator i=lv.begin();i!=lv.end();++i)
- {  Preis p,ek_preis;
+ {  Preis p;
     AufEintragBase::rabatt_t rabatt;
     fixedpoint<2> provsatz=0;
 
@@ -326,12 +329,13 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
        provsatz=lv.getKunde()->getProvSatz_Artikel(
 				ArtikelBase(i->Artikel()),rabatt);
 
-    ArtikelTyp at(i->Artikel());
-    ek_preis=Artikelpreis(at.EK_PL(),i->Artikel(),
+//    ArtikelTyp at(i->Artikel());
+    Artikelpreis ek_art_preis(self,i->Artikel(),
     		AuftragBase::Gesamtmenge(i->Stueck(),i->Menge()).as_int());
 
+//    Preis EK_Preis(ek_art_preis.In(
     push_back(lineno,i->Artikel(),lfrs.Id(),i->ZNr(),i->Stueck(),i->Menge(),
-		p,rabatt,provsatz,ek_preis);
+		p,rabatt,provsatz,ek_art_preis);
  }
 
 
