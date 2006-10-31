@@ -1,4 +1,4 @@
-// $Id: Anrede_sql.pgcc,v 1.9 2006/06/26 07:53:02 christof Exp $
+// $Id: Anrede_sql.pgcc,v 1.10 2006/10/31 16:03:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,8 +25,9 @@
    we need to mark our default_object as static 
    so it doesn't get freed when the last handle to it is destroyed, 
    this is not a memory leak, the object is destroyed on program exit */
-Anrede cH_Anrede::default_object; 
-bool cH_Anrede::default_object_ref=cH_Anrede::default_object.is_static(true);
+//Anrede cH_Anrede::default_object; 
+//bool cH_Anrede::default_object_ref=cH_Anrede::default_object.is_static(true);
+
 cH_Anrede::cache_t cH_Anrede::cache;
 
 cH_Anrede::cH_Anrede(Anrede::ID id)

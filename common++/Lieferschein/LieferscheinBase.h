@@ -1,4 +1,4 @@
-/* $Id: LieferscheinBase.h,v 1.17 2004/02/20 08:19:44 jacek Exp $ */
+/* $Id: LieferscheinBase.h,v 1.18 2006/10/31 16:03:12 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -34,6 +34,8 @@ class LieferscheinBase
 	static const int _illegal=-1;
 	
 public:	
+ 	typedef enum {LART_LS='L',LART_RUECK='R',LART_NONE=0} LsArt; 
+ 	
 	static const UniqueValue::value_t trace_channel;
 
  	typedef fixedpoint<ManuProC::Precision::LieferscheinMenge> mengen_t;

@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.41 2006/06/26 07:53:03 christof Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.42 2006/10/31 16:03:12 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,8 +31,9 @@ Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,int lid) throw(SQLerror
 ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("LieferscheinId",lid)); 
 
  int KDNR;
+ char LSART;
 
- std::string query="select kundennr, date(datum), "
+ std::string query="select coalesce(lsart,'L'), kundennr, date(datum), "
 		   " rngid, date(coalesce(geliefertam,datum)) ";
 
 #ifdef DPD_LIEFERSCHEINE
@@ -48,7 +49,7 @@ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("Liefers
 
  Query::Row fi=q.Fetch();
 
- fi >> KDNR
+ fi >> LSART >> KDNR
     >> lsdatum 
     >> Query::Row::MapNull(rngid,ManuProcEntity<>::none_id) 
     >> geliefertam
@@ -62,10 +63,12 @@ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("Liefers
 #endif
     ;
 
+ lsart=(LsArt)LSART;
  kunde=cH_Kunde(KDNR);
 }
 
-Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,cH_Kunde k,int jahr) throw(SQLerror)
+Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,cH_Kunde k,
+			int jahr, LsArt la) throw(SQLerror)
 	: LieferscheinBase(_instanz,none_id), lsdatum(ManuProC::Datum::today()),
       kunde(k),rngid(ManuProcEntity<>::none_id)
 #ifdef DPD_LIEFERSCHEINE
@@ -79,10 +82,13 @@ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("Kunde",
  exec sql begin declare section;
   int INSTANZ=_instanz->Id();
   int LFRSID;
+  char LSART[1];
   int KUNDENNR;
   int JAHR=jahr;
  exec sql end declare section;
 
+ LSART[0]=la;
+ 
  if (!JAHR) JAHR=AuftragBase::aktuellesJahr();
  JAHR%=100;
 
@@ -103,12 +109,20 @@ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("Kunde",
 
 #ifdef MABELLA_EXTENSIONS
  exec sql update lieferschein set notiz=(select lief_notiz from kunden
-        where kundennr=:KUNDENNR) where lfrsid=:LFRSID;
+        where kundennr=:KUNDENNR) where lfrsid=:LFRSID and instanz=:INSTANZ;
  SQLerror::test(__FILELINE__":Lieferschein: update lieferschein");
 #endif
 
+ if(la!=LART_NONE)
+   {
+    exec sql update lieferschein set lsart=:LSART
+        where lfrsid=:LFRSID and instanz=:INSTANZ;
+    SQLerror::test(__FILELINE__":Lieferschein: update lieferschein set lsart");
+   }
+
  lieferid=LFRSID; 
  instanz=_instanz; 
+ lsart=la;
 
  rngid=ManuProcEntity<>::none_id;
 

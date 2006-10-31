@@ -1,4 +1,4 @@
-// $Id: Person.h,v 1.16 2003/04/24 13:44:37 jacek Exp $
+// $Id: Person.h,v 1.17 2006/10/31 16:03:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -51,7 +51,7 @@ private:
 
 public:
  ID Id() const { return entityid; } 
- Person()  {}
+ Person() : anrede(Anrede::default_id) {}
  Person(const ID pid) throw(SQLerror);
  static int createPerson(std::string s="");
 

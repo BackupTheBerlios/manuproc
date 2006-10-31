@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.52 2006/08/21 09:43:13 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.53 2006/10/31 16:03:12 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,8 +33,9 @@
 
 Lieferschein::Lieferschein(const LieferscheinBase &lsbase, const ManuProC::Datum &_lsdatum,
 int _kdnr,int _rngid, int _paeckchen, int _pakete, const ManuProC::Datum &_geliefertam,
-int _dpdlnr)
-: LieferscheinBase(lsbase), lsdatum(_lsdatum), kunde(_kdnr), rngid(_rngid)
+int _dpdlnr, LsArt la)
+: LieferscheinBase(lsbase), lsdatum(_lsdatum), 
+lsart(la), kunde(_kdnr), rngid(_rngid)
 , geliefertam(_geliefertam)
 #ifdef DPD_LIEFERSCHEINE
 ,dpdliefnr(_dpdlnr),paeckchen(_paeckchen),pakete(_pakete)

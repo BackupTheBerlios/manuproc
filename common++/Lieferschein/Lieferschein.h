@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.31 2006/08/21 09:43:13 christof Exp $ */
+/* $Id: Lieferschein.h,v 1.32 2006/10/31 16:03:12 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -35,6 +35,7 @@
 class Lieferschein : public LieferscheinBase, public HandleContent
 {
  ManuProC::Datum lsdatum;
+ LsArt lsart;
  cH_Kunde kunde;
  int rngid;
  ManuProC::Datum geliefertam;
@@ -51,12 +52,15 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  public:
         
  	Lieferschein(const LieferscheinBase &source)
- 		: LieferscheinBase(source), kunde(Kunde::none_id),
+ 		: LieferscheinBase(source), 
+ 		        lsart(LART_NONE),
+ 		        kunde(Kunde::none_id),
  			notiz_valid(false),verknr(Kunde::none_id)  
  			{}
  		
  	Lieferschein() : LieferscheinBase(),
  			lsdatum(ManuProC::Datum::today()),
+                        lsart(LART_NONE),
  			kunde(Kunde::none_id),rngid(ManuProcEntity<>::none_id),
  			geliefertam(ManuProC::Datum::today())
 #ifdef DPD_LIEFERSCHEINE
@@ -72,9 +76,11 @@ class Lieferschein : public LieferscheinBase, public HandleContent
 	Lieferschein(const LieferscheinBase &lsbase,
 			const ManuProC::Datum &_lsdatum,
 			int _kdnr, int _rngid, int _paeckchen, int _pakete,
-			const ManuProC::Datum &_geliefertam,int _dpdlnr); 
+			const ManuProC::Datum &_geliefertam,int _dpdlnr,
+			LsArt la=LART_LS); 
 			
- Lieferschein(const cH_ppsInstanz& instanz,cH_Kunde k,int jahr=0) throw(SQLerror);
+ Lieferschein(const cH_ppsInstanz& instanz,cH_Kunde k,
+             int jahr=0,LsArt la=LART_NONE) throw(SQLerror);
  void setDPDDatum() const throw(SQLerror);
  
 #ifdef DPD_LIEFERSCHEINE
@@ -93,6 +99,7 @@ class Lieferschein : public LieferscheinBase, public HandleContent
 #endif 
  const ManuProC::Datum getMaxZahlziel() const throw(SQLerror);
  Kunde::ID getVerknr() const { return verknr; }
+ const LsArt lsArt() const {return lsart; } 
  void setVerknr(const Kunde::ID vknr) throw(SQLerror);
  const Preis::rabatt_t AufRabatt() const throw(SQLerror);
  

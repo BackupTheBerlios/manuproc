@@ -1,4 +1,4 @@
-// $Id: Anrede.h,v 1.11 2006/06/26 07:53:02 christof Exp $
+// $Id: Anrede.h,v 1.12 2006/10/31 16:03:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,6 +34,7 @@ private:
  std::string branrede;
 
 public:
+ const static ID default_id=0;
  Anrede(ID id) throw(SQLerror);
  Anrede() : ManuProcHandle<Anrede::ID>(none_id) {}
  ID Id() const { return entityid; } 
@@ -70,11 +71,12 @@ class cH_Anrede : public Handle<const Anrede>
   typedef CacheStatic<int,cH_Anrede> cache_t;
   static cache_t cache;
   friend class std::map<int,cH_Anrede>;
-  static Anrede default_object;
-  static bool default_object_ref;
-public:
-  cH_Anrede() : Handle<const Anrede>(&default_object) {}
+//  static Anrede default_object;
+//  static bool default_object_ref;
   cH_Anrede(const Anrede *p) : Handle<const Anrede>(p) {}
+  cH_Anrede() {}
+public:
+//  cH_Anrede() : Handle<const Anrede>(&default_object) {}
   cH_Anrede(Anrede::ID id);
 };
 
