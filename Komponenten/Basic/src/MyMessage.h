@@ -28,7 +28,7 @@ public:
  
  static int show_and_wait(const std::string &s, Gtk::Window *parent=0, Gtk::MessageType mt=Gtk::MESSAGE_INFO)
  { MyMessage m(s,mt);
-   if (parent) m.set_transient_for(parent);
+   if (parent) m.set_transient_for(*parent);
    m.show();
    return m.run();
  }
