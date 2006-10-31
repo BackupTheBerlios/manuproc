@@ -1,6 +1,9 @@
 #include "SearchCombo2.h"
 #include <gtkmm/liststore.h>
 #include <cassert>
+#include <gtk/gtkmain.h>
+
+#include <iostream>
 
 #if 1
 #include <stdio.h>
@@ -8,6 +11,9 @@
 #else
 #define DEBUG(x)
 #endif
+
+#define MAYBE(x) 
+// x
 
 struct Gtk::SearchCombo2::Model : Gtk::ListStore
 //virtual Glib::Object, Gtk::TreeModel
@@ -160,11 +166,6 @@ Glib::RefPtr<Gtk::SearchCombo2::Model> Gtk::SearchCombo2::Model::create(const Tr
 { return Glib::RefPtr<Model>(new Model(columns,e));
 }
 
-void Gtk::SearchCombo2::on_entry_changed()
-{ mymodel->entry_changed();
-  popup();
-}
-
 // HACK !!!!
 #include <gtk/gtkcombobox.h>
 #include <gtk/gtktogglebutton.h>
@@ -227,6 +228,26 @@ struct _GtkComboBoxPrivate
 };
 // ENDHACK
 
+void Gtk::SearchCombo2::on_entry_changed()
+{ mymodel->entry_changed();
+  // popup();
+  Glib::wrap(GTK_TOGGLE_BUTTON(GTK_COMBO_BOX(gobj())->priv->button))
+    ->set_active(true);
+  // reget the focus ...
+  if (GTK_IS_MENU (GTK_COMBO_BOX(gobj())->priv->popup_widget))
+    {
+      gtk_menu_popdown (GTK_MENU (GTK_COMBO_BOX(gobj())->priv->popup_widget));
+      return;
+    }
+  if (GTK_COMBO_BOX(gobj())->priv->popup_idle_id > 0)
+    {
+      g_source_remove (GTK_COMBO_BOX(gobj())->priv->popup_idle_id);
+      GTK_COMBO_BOX(gobj())->priv->popup_idle_id = 0;
+    }
+  gtk_grab_remove(GTK_COMBO_BOX(gobj())->priv->popup_window);
+  get_entry()->grab_focus();
+}
+
 bool Gtk::SearchCombo2::popup_key_pr(GdkEventKey* k)
 { return on_key_press_event(k);
 }
@@ -246,22 +267,24 @@ void Gtk::SearchCombo2::init()
   Gtk::CellRendererText *crt=Gtk::manage(new Gtk::CellRendererText());
   pack_start(*crt);
 //  crt->property_foreground()="red";
-  crt->property_xalign()=0;
+  MAYBE(crt->property_xalign()=0);
 //  crt->set_xalign(0);
-  crt->property_alignment()=Pango::ALIGN_LEFT;
+  MAYBE(crt->property_alignment()=Pango::ALIGN_LEFT);
 //  ->priv->column
 //  ->priv->popup_window
 //  ->priv->button
-  add_attribute(crt->property_text(), m_text_columns.m_column);
+  MAYBE(add_attribute(crt->property_text(), m_text_columns.m_column));
   set_focus_on_click(false);
   // gtk+ 2.10
   // Glib::PropertyProxy<bool>(this,"popup-shown").signal_changed()
   //      .connect(sigc::mem_fun(*this,&SearchCombo2::popupdown));
   // HACK
-  Glib::wrap(GTK_COMBO_BOX(gobj())->priv->column)->set_alignment(0);
+  MAYBE(Glib::wrap(GTK_COMBO_BOX(gobj())->priv->column)->set_alignment(0));
   assert(GTK_IS_TOGGLE_BUTTON(GTK_COMBO_BOX(gobj())->priv->button));
   Glib::wrap(GTK_TOGGLE_BUTTON(GTK_COMBO_BOX(gobj())->priv->button))
     ->signal_toggled().connect(sigc::mem_fun(*this,&SearchCombo2::popupdown));
+//  Glib::PropertyProxy<bool>(this,"appears-as-list").set_value(true);
+//  std::cerr << "appears-as-list " << Glib::PropertyProxy<bool>(this,"appears-as-list").get_value() << '\n';
 #if 0    
   Glib::wrap(GTK_WINDOW(GTK_COMBO_BOX(gobj())->priv->popup_window))->signal_key_press_event()
     .connect(sigc::mem_fun(*this,&SearchCombo2::popup_key_pr));
@@ -285,7 +308,7 @@ Gtk::SearchCombo2::SearchCombo2(TextModelColumns const& col)
 void Gtk::SearchCombo2::popupdown()
 { if (Glib::wrap(GTK_TOGGLE_BUTTON(GTK_COMBO_BOX(gobj())->priv->button))
       ->get_active())
-  { Glib::wrap(GTK_COMBO_BOX(gobj())->priv->column)->set_alignment(0);
+  { MAYBE(Glib::wrap(GTK_COMBO_BOX(gobj())->priv->column)->set_alignment(0));
     mymodel->fill_list_if_necessary();
 //    get_entry()->grab_focus();
 #if 0    

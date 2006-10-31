@@ -38,7 +38,7 @@
 #include <gtk/gtkframe.h>
 #include <gtk/gtkwidget.h>
 
-#if 1
+#if 0
 #define DEBUG(x) x
 #else
 #define DEBUG(x)
