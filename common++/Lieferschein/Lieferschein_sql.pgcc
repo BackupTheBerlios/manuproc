@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.42 2006/10/31 16:03:12 christof Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.43 2006/10/31 16:03:18 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,7 +19,6 @@
 
 #include"Lieferschein.h"
 #include<Misc/Transaction.h>
-exec sql include sqlca;
 #include <Misc/TraceNV.h>
 #include <Misc/Query.h>
 #include <Lager/FertigWarenLager.h>
@@ -70,62 +69,39 @@ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("Liefers
 Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,cH_Kunde k,
 			int jahr, LsArt la) throw(SQLerror)
 	: LieferscheinBase(_instanz,none_id), lsdatum(ManuProC::Datum::today()),
-      kunde(k),rngid(ManuProcEntity<>::none_id)
+	  lsart(la),
+          kunde(k),rngid(ManuProcEntity<>::none_id),
 #ifdef DPD_LIEFERSCHEINE
- 	,dpdliefnr(-1) ,paeckchen(0),pakete(0)
+ 	  dpdliefnr(-1) ,paeckchen(),pakete(),
 #endif
- ,notiz_valid(false)
-,verknr(Kunde::none_id)
+         notiz_valid(),verknr(Kunde::none_id)
 {
 ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("Kunde",k),NV("Jahr",jahr)); 
 
- exec sql begin declare section;
-  int INSTANZ=_instanz->Id();
-  int LFRSID;
-  char LSART[1];
-  int KUNDENNR;
-  int JAHR=jahr;
- exec sql end declare section;
+ if (!jahr) jahr=AuftragBase::aktuellesJahr();
+ jahr%=100;
 
- LSART[0]=la;
- 
- if (!JAHR) JAHR=AuftragBase::aktuellesJahr();
- JAHR%=100;
-
- KUNDENNR=k->Id();
  Transaction tr;
   
- exec sql lock table lieferschein in exclusive mode;
+ Query("lock table lieferschein in exclusive mode");
  
- exec sql select coalesce(max(lfrsid)+1,:JAHR*10000)
- 		into :LFRSID
- 		from lieferschein where instanz=:INSTANZ and lfrsid 
- 		between :JAHR*10000 and (:JAHR+1)*10000-1;
- SQLerror::test(__FILELINE__":Lieferschein: select next lfrsid");
+ Query("select max(lfrsid)+1 from lieferschein where lfrsid between ? and ?")
+      << (jahr*10000) << ((jahr+1)*10000-1)
+      >> Query::Row::MapNull(lieferid,JAHR*10000);
  
- exec sql insert into lieferschein (instanz,lfrsid, kundennr)
- 	values (:INSTANZ,:LFRSID, :KUNDENNR);
- SQLerror::test(__FILELINE__":Lieferschein: insert into lieferschein");	
+ Query("insert into lieferschein (instanz,lfrsid, kundennr) values (?,?,?)")
+     << instanz->Id() << lieferid << kunde->Id();
 
-#ifdef MABELLA_EXTENSIONS
- exec sql update lieferschein set notiz=(select lief_notiz from kunden
-        where kundennr=:KUNDENNR) where lfrsid=:LFRSID and instanz=:INSTANZ;
- SQLerror::test(__FILELINE__":Lieferschein: update lieferschein");
-#endif
+ (Query("update lieferschein set notiz=(select lief_notiz from kunden
+        where kundennr=?) where (instanz,lfrsid)=(?,?)")
+        << kunde->Id() 
+        << lieferid).Check100();
 
  if(la!=LART_NONE)
-   {
-    exec sql update lieferschein set lsart=:LSART
-        where lfrsid=:LFRSID and instanz=:INSTANZ;
-    SQLerror::test(__FILELINE__":Lieferschein: update lieferschein set lsart");
-   }
-
- lieferid=LFRSID; 
- instanz=_instanz; 
- lsart=la;
-
+ { (Query("update lieferschein set lsart=? where (instanz,lfrsid)=(?,?)")
+        << char(la) << instanz->Id() << lieferid).Check100();
+ }
  rngid=ManuProcEntity<>::none_id;
-
  tr.commit();
 }
 
