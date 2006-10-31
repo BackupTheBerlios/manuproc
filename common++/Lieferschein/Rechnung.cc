@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.36 2006/10/31 16:04:21 christof Exp $
+// $Id: Rechnung.cc,v 1.37 2006/10/31 16:04:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *  Copyright (C) 2006 Christof Petig
@@ -94,7 +94,7 @@ Rechnung::geldbetrag_t Rechnung::Endbetrag(bool with_update_on_db=false)
 const throw(SQLerror)
 {
  bool brutto=false;
- int stsatz=0;
+ float stsatz=0.0;
 
  Preis::geldbetrag_out betrag=Betrag(brutto);
  
@@ -104,7 +104,7 @@ const throw(SQLerror)
 // if(kunde->Id()==kunde->Rngan())
 //   {
     if(kunde->MwSt(Id()))
-      stsatz=MWSTPROZ;
+      stsatz=Rechnung::MwStProz;
 //   }
 // else
 //  {
@@ -478,9 +478,13 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
       << ((JAHR+1)*AuftragBase::jahresmultiplikator-1)
       >> Query::Row::MapNull(RNGID,JAHR*AuftragBase::jahresmultiplikator);
  
- Query("insert into rechnung (rngid, kundennr,zahlart,waehrung) "
- 	"values (?,?,?,?)") 
-      << RNGID << KUNDENNR << ZAHLUNGSART << WAEHRUNG;
+ float STSATZ=0.0;
+ if(k->MwSt(RNGID))
+   STSATZ=Rechnung::MwStProz;
+
+ Query("insert into rechnung (rngid, kundennr,zahlart,waehrung,steuersatz) "
+ 	"values (?,?,?,?,?)") 
+      << RNGID << KUNDENNR << ZAHLUNGSART << WAEHRUNG << STSATZ;
 
 #ifdef MABELLA_EXTENSIONS
  bool ENTSORGUNG=krng->entsorgung();
