@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.85 2006/10/31 16:05:21 christof Exp $
+// $Id: Kunde.h,v 1.86 2006/11/16 15:31:38 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -169,7 +169,7 @@ public:
 
 	static const ID default_id=ManuProC::DefaultValues::DefaultKundenId;
 	static const ID eigene_id=ManuProC::DefaultValues::EigeneKundenId;
-	Kunde(ID nr=default_id) throw(SQLerror);
+	explicit Kunde(ID nr=default_id) throw(SQLerror);
 	static const cH_Kunde newKunde(const Kunde::ID kid, const std::string &firma,
 			const std::string &name2,
 			Kundengruppe::ID kgid=
@@ -496,7 +496,8 @@ class cH_Kunde : public Handle<const Kunde>
 public:
 	typedef Kunde::ID ID;
 	static const ID default_id=Kunde::default_id;
-	cH_Kunde(ID nr);
+	explicit cH_Kunde(ID nr);
+	cH_Kunde(Handle<const Kunde> const& h) : Handle<const Kunde>(h) {}
         bool operator==(const cH_Kunde& b) const
                 {return (*this)->Id()==b->Id();} 
         bool operator<(const cH_Kunde& b) const

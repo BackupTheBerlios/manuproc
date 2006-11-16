@@ -109,7 +109,7 @@ void RechnungEntryBase::setRgPayOff(int _rngid) throw(SQLerror)
  	"from rechnung where rngid=?")
  	<< _rngid
  	>> DATUM >> BEZAHLT >> KUNDENNR >> RNGART >> MWSTSATZ;
- rgdata[_rngid]=rng_payoff(DATUM,BEZAHLT,KUNDENNR,(RngArt)RNGART,MWSTSATZ);
+ rgdata[_rngid]=rng_payoff(DATUM,BEZAHLT,cH_Kunde(KUNDENNR),(RngArt)RNGART,MWSTSATZ);
 }
 
 const ManuProC::Datum RechnungEntry::RgDatum() const throw(SQLerror)

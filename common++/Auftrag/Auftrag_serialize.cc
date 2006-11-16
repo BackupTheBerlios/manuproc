@@ -1,4 +1,4 @@
-// $Id: Auftrag_serialize.cc,v 1.8 2006/08/03 11:17:44 christof Exp $
+// $Id: Auftrag_serialize.cc,v 1.9 2006/11/16 15:31:38 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) Christof Petig
  *
@@ -21,7 +21,7 @@
 #include <AuftragFull.h>
 #include <Artikel/Einheiten.h>
 
-void serialize(Tag &where, cH_Kunde const& k,bool nest=true)
+void serialize(Tag &where, cH_Kunde const& k, cH_Kunde const& other, bool nest=true)
 { where.setAttr<int>("Nummer",k->Id());
   if (!k->idnr().empty()) 
     where.setAttr("ID_Nummer",k->idnr());
@@ -44,15 +44,15 @@ void serialize(Tag &where, cH_Kunde const& k,bool nest=true)
   { Adresse.push_back("Postfach",k->postfach())
       .setAttr("PLZ",k->postfachplz());
   }
-  if (k->Id()!=Kunde::eigene_id && !k->UnsereKundenNr().empty())
-    where.setAttr("UnsereNummerBeiIhnen",k->UnsereKundenNr());
+  if (k->Id()==Kunde::eigene_id && !!other && !other->UnsereKundenNr().empty())
+    where.setAttr("UnsereNummerBeiIhnen",other->UnsereKundenNr());
   // Kontakte (Telnr, Fax, E-Mail)
   // Betreuer (Name, Kontakt)
   if (nest && k->Rngan()>0 && k->Rngan()!=k->Id())
-  { serialize(where.push_back("Rechnungsempfänger"),cH_Kunde(k->Rngan()),false);
+  { serialize(where.push_back("Rechnungsempfänger"),cH_Kunde(k->Rngan()),cH_Kunde(Handle<const Kunde>()), false);
   }
   if (nest && k->Lfran()>0 && k->Lfran()!=k->Id())
-  { serialize(where.push_back("LieferungAn"),cH_Kunde(k->Lfran()),false);
+  { serialize(where.push_back("LieferungAn"),cH_Kunde(k->Lfran()),cH_Kunde(Handle<const Kunde>()), false);
   }
 }
 
@@ -80,9 +80,11 @@ void serialize(Tag &dest,AuftragFull const& a, bool bestaetigung)
 { dest.Type(bestaetigung?"Auftragsbestätigung":"Auftragserteilung");
   Tag &Auftraggeber=dest.push_back("Auftraggeber");
   cH_Kunde kunde(a.getKundennr());
-  serialize(Auftraggeber,bestaetigung?kunde:cH_Kunde(Kunde::eigene_id));
+  serialize(Auftraggeber,bestaetigung?kunde:cH_Kunde(Kunde::eigene_id),
+        bestaetigung?cH_Kunde(Kunde::eigene_id):kunde);
   Tag &Lieferant=dest.push_back("Lieferant");
-  serialize(Lieferant,bestaetigung?cH_Kunde(Kunde::eigene_id):kunde);
+  serialize(Lieferant,bestaetigung?cH_Kunde(Kunde::eigene_id):kunde,
+        bestaetigung?kunde:cH_Kunde(Kunde::eigene_id));
   dest.setAttr("unsereNummer",a.getAuftragidToStr());
   if (bestaetigung) 
   { dest.setAttr("IhreNummer",a.getYourAufNr());
