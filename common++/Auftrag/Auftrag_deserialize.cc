@@ -1,4 +1,4 @@
-// $Id: Auftrag_deserialize.cc,v 1.1 2006/11/16 15:31:38 christof Exp $
+// $Id: Auftrag_deserialize.cc,v 1.2 2006/11/16 15:31:58 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) Christof Petig
  *
@@ -20,6 +20,7 @@
 #include <Misc/Tag.h>
 #include <AuftragFull.h>
 #include <Artikel/Einheiten.h>
+#include <Misc/compose.hpp>
 
 ArtikelBase deserialize_Artikel(std::string& log, Tag const& a, bool anlegen=false)
 {
@@ -30,13 +31,24 @@ cP_Waehrung deserialize_waehrung(std::string& log, Tag const& k)
 }
 
 cH_Kunde deserialize_kunde(std::string& log, Tag const& k, bool anlegen=false)
-{ if (k.hasAttr("unsereNummer"))
-  { if (create(k.getAttr<int>("unsereNummer"))!=k.getAttr<std::string>("unsereNummer"))
-    { log+=String::Compose(_("Merkwürdige Formatierung der Kundennummer '%1'\n"),k.getAttr<std::string>("unsereNummer"));
+{ if (k.hasAttr("UnsereNummerBeiIhnen"))
+  { int kdid=k.getAttr<int>("UnsereNummerBeiIhnen");
+    if (create(kdid)!=k.getAttr<std::string>("UnsereNummerBeiIhnen"))
+    { log+=String::Compose(_("Merkwürdige Formatierung der Kundennummer '%1'\n"),k.getAttr<std::string>("UnsereNummerBeiIhnen"));
       return cH_Kunde(Handle<const Kunde>());
     }
-    cH_Kunde res=cH_Kunde(k.getAttr<int>("unsereNummer"));
-    if (res->
+    cH_Kunde res=cH_Kunde(kdid);
+    Tag::const_iterator adresse=k.find(k.begin(),"Adresse");
+    if (adresse!=k.end())
+    { if (res->getName()!=adresse->getAttr<std::string>("Name"))
+        log+=String::compose(_("Kundenname stimmt nicht überein: '%1' vs. '%2'\n"),
+            res->getName(),adresse->getAttr<std::string>("Name"));
+      Tag::const_iterator ort=adresse->find(adresse->begin(),"Ort");
+      if (ort!=adresse->end() && res->ort()!=ort->Value())
+        log+=String::compose(_("Kundenort stimmt nicht überein: '%1' vs. '%2'\n"),
+            res->ort(),ort->Value());
+      // usw ...
+    }
     return res;
   }
   assert (!anlegen); // noch nicht fertig
