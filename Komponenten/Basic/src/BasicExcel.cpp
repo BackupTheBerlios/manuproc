@@ -2642,7 +2642,8 @@ size_t LargeString::Read(const char* data)
 	name_.clear();
 	wname_.clear();
 	size_t bytesRead = 2;
-	bytesRead += ContinueRead(data+2, stringSize);
+	if (stringSize>0) bytesRead += ContinueRead(data+2, stringSize);
+	else bytesRead = 3;	
 	return bytesRead;
 }
 size_t LargeString::ContinueRead(const char* data, size_t size)
@@ -5146,7 +5147,8 @@ void BasicExcel::UpdateWorksheets()
 			for (size_t c=0; c<maxCols; ++c)
 			{
 				BasicExcelCell* cell = yesheets_[s].Cell(r,c);
-				if (cell->Type() != BasicExcelCell::UNDEFINED)	// Current cell contains some data
+				int cellType = cell->Type();
+				if (cellType != BasicExcelCell::UNDEFINED)	// Current cell contains some data
 				{		
 					if (worksheets_[s].index_.firstUsedRowIndex_ == 100000) 
 					{
@@ -5181,7 +5183,7 @@ void BasicExcel::UpdateWorksheets()
 					pCell = &(pCellBlocks->back());
 
 					// Store cell.
-					switch(cell->Type())
+					switch(cellType)
 					{
 						case BasicExcelCell::INT:
 						{
@@ -5601,7 +5603,7 @@ void BasicExcelWorksheet::UpdateCells()
 				case CODE::BOOLERR:
 					if (rCellBlocks[j].boolerr_.error_ == 0)
 					{
-						cells_[row][col].Set(rCellBlocks[j].boolerr_.code_);
+						cells_[row][col].Set(rCellBlocks[j].boolerr_.value_);
 					}
 					break;
 					
@@ -5681,7 +5683,7 @@ BasicExcelCell::BasicExcelCell() : type_(UNDEFINED) {};
 int BasicExcelCell::Type() const {return type_;}
 
 // Get an integer value.
-// Returns false if cell does not contain an integer.
+// Returns false if cell does not contain an integer or a double.
 bool BasicExcelCell::Get(int& val) const 
 {
 	if (type_ == INT)
@@ -5689,17 +5691,27 @@ bool BasicExcelCell::Get(int& val) const
 		val = ival_;
 		return true;
 	}
+	else if (type_ == DOUBLE)
+	{
+		val = (int)dval_;
+		return true;
+	}
 	else return false;
 }
 
 // Get a double value.
-// Returns false if cell does not contain a double.
+// Returns false if cell does not contain a double or an integer.
 bool BasicExcelCell::Get(double& val) const 
 {
 	if (type_ == DOUBLE)
 	{
 		val = dval_;
 		return true;
+	}
+	else if (type_ == INT)
+	{
+			val = (double)ival_;
+			return true;
 	}
 	else return false;
 }
@@ -5710,7 +5722,8 @@ bool BasicExcelCell::Get(char* str) const
 {
 	if (type_ == STRING)
 	{
-		strcpy(str, &*(str_.begin()));
+		if (str_.empty()) *str = '\0';
+		else strcpy(str, &*(str_.begin()));
 		return true;
 	}
 	else return false;
@@ -5722,7 +5735,8 @@ bool BasicExcelCell::Get(wchar_t* str) const
 {
 	if (type_ == WSTRING)
 	{
-		wcscpy(str, &*(wstr_.begin()));
+		if (wstr_.empty()) *str = L'\0';
+		else wcscpy(str, &*(wstr_.begin()));
 		return true;
 	}
 	else return false;
@@ -5812,19 +5826,29 @@ void BasicExcelCell::SetDouble(double val)
 // Set content of current Excel cell to an ANSI string.
 void BasicExcelCell::SetString(const char* str) 
 {
-	type_ = STRING;
-	str_ = vector<char>(strlen(str)+1);
-	strcpy(&*(str_.begin()), str);
-	wstr_.clear();
+	size_t length = strlen(str);
+	if (length > 0)
+	{
+		type_ = STRING;
+		str_ = vector<char>(length+1);
+		strcpy(&*(str_.begin()), str);
+		wstr_.clear();
+	}
+	else EraseContents();
 }
 
 // Set content of current Excel cell to an Unicode string.
 void BasicExcelCell::SetWString(const wchar_t* str)	
 {
-	type_ = WSTRING;
-	wstr_ = vector<wchar_t>(wcslen(str)+1);
-	wcscpy(&*(wstr_.begin()), str);
-	str_.clear();
+	size_t length = wcslen(str);
+	if (length > 0)
+	{
+		type_ = WSTRING;
+		wstr_ = vector<wchar_t>(length+1);
+		wcscpy(&*(wstr_.begin()), str);
+		str_.clear();
+	}
+	else EraseContents();
 }
 
 // Erase the content of current Excel cell.

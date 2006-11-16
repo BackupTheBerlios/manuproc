@@ -37,6 +37,12 @@
 	// - Fixed bug with reading and writing Excel files containing many unicode and ANSI strings.
 // Version 1.12 (6 June 2006)
 	// - Fixed bug with reading and writing Excel files containing many unicode and ANSI strings.
+// Version 1.13 (1 August 2006)
+	// - Changed BasicExcelCell::Get() so that it will get a stored double as an integer or vice versa if necessary.
+	// - Changed BasicExcelCell::Get() so that it will not cause any errors if a string is empty.
+	// - Changed BasicExcelCell::SetString() and BasicExcelCell::SetWString() so that it will not save an empty string.
+// Version 1.14 (6 August 2006)
+	// - Fixed bug with reading Excel files that contain a null string.
 
 #ifndef BASICEXCEL_HPP
 #define BASICEXCEL_HPP
@@ -1206,8 +1212,8 @@ public:
 	enum {UNDEFINED, INT, DOUBLE, STRING, WSTRING};
 	int Type() const;		///< Get type of value stored in current Excel cell. Returns one of the above enums. 
 
-	bool Get(int& val) const;		///< Get an integer value. Returns false if cell does not contain an integer.
-	bool Get(double& val) const;	///< Get a double value. Returns false if cell does not contain a double.
+	bool Get(int& val) const;		///< Get an integer value. Returns false if cell does not contain an integer or a double.
+	bool Get(double& val) const;	///< Get a double value. Returns false if cell does not contain a double or an integer.
 	bool Get(char* str) const;	///< Get an ANSI string. Returns false if cell does not contain an ANSI string.
 	bool Get(wchar_t* str) const;	///< Get an Unicode string. Returns false if cell does not contain an Unicode string.
 	size_t GetStringLength() const;	///< Return length of ANSI or Unicode string (excluding null character).
