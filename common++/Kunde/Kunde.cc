@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.74 2006/11/16 15:32:06 christof Exp $
+// $Id: Kunde.cc,v 1.75 2006/11/16 15:32:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -484,7 +484,7 @@ std::string Kunde::Kontakt(const TelArt& art, Kunde::ID firmaid,
 {
  Kunde::ID fid=firmaid;
 
-#ifdef MANUPROC_DYNAMICENUMS_CREATED
+#ifdef HAS_ADDR_GROUP_Personal
  fid = isInGrp(KundengruppeID::Personal) ? Kunde::none_id : firmaid;
 #endif
 
