@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.73 2006/11/16 15:32:04 christof Exp $
+// $Id: Kunde.cc,v 1.74 2006/11/16 15:32:06 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -251,12 +251,6 @@ bool Kunde::isInGrp(const Kundengruppe::ID gid, std::string &aux) const
      return true;
     }
 
-// for(std::vector<Kundengruppe::ID>::const_iterator f=gruppen.begin(); 
-//	f!=gruppen.end(); ++f)
-//    {if(*f == gid) return true;
-//std::cout << "KgGrp" << *f << "gid:" << gid <<"\n";
-//    }
-
  return false;
 #else
  return false;
@@ -327,7 +321,7 @@ void Kunde::load_Gruppen() const throw(SQLerror)
 {
  gruppen.erase(gruppen.begin(),gruppen.end());
 
- ExtraColumns ec("ku_kunden_map","kundennr","grpnr");
+ ExtraColumns ec("ku_gruppen_map","kundennr","grpnr");
  std::string query("select grpnr");
 
  if(ec.hasColumn("aux")) query+=",aux";
@@ -346,7 +340,7 @@ void Kunde::load_Gruppen() const throw(SQLerror)
     std::string aux("");
 
     fi >> ret;
-    if(ec.hasColumn("aux")) fi >> aux;
+    if(ec.hasColumn("aux")) fi >> Query::Row::MapNull(aux,"");
     gruppen[(Kundengruppe::ID)ret]=aux;
     fi=q.Fetch();
    }
