@@ -1,4 +1,4 @@
-// $Id: Telefon_sql.pgcc,v 1.9 2006/02/20 09:55:05 christof Exp $
+// $Id: Telefon_sql.pgcc,v 1.10 2006/11/16 15:32:04 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -84,17 +84,20 @@ void Telefon::getTelIDs(std::vector<Telefon::ID> &vec, const TelArt &ta,
 
  std::string qu = std::string ("select telid from ku_telefon where ");
 
- if(pid < 20000)
+// if(pid < 20000)
+ if(kid==none_id)
   {
-  if (kid!=none_id){qu = qu+" kundennr="+itos(kid); need_and=true;}
-  if (pid!=none_id) 
-   {if(need_and) qu=qu+" and ";
-     qu = qu+"  persnr="+itos(pid); need_and=true;
-   }
+   qu+=" kundennr="+itos(pid);
   }
  else
   {
-   qu+=" kundennr="+itos(pid);
+   //if (kid!=none_id)
+   qu = qu+" kundennr="+itos(kid); need_and=true;
+
+   if (pid!=none_id) 
+    {if(need_and) qu=qu+" and ";
+     qu = qu+"  persnr="+itos(pid); need_and=true;
+    }
   }
 
   if (ta!=TEL_NONE)

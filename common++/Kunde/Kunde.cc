@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.72 2006/10/31 16:06:33 christof Exp $
+// $Id: Kunde.cc,v 1.73 2006/11/16 15:32:04 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -228,6 +228,12 @@ throw(SQLerror)
 
 bool Kunde::isInGrp(const Kundengruppe::ID gid) const 
 {
+ std::string s;
+ return isInGrp(gid,s);
+}
+
+bool Kunde::isInGrp(const Kundengruppe::ID gid, std::string &aux) const 
+{
 #ifdef MANUPROC_DYNAMICENUMS_CREATED
  
  if(gruppen.empty())
@@ -235,11 +241,21 @@ bool Kunde::isInGrp(const Kundengruppe::ID gid) const
 
  if(gruppen.empty()) return false;
 
- for(std::vector<Kundengruppe::ID>::const_iterator f=gruppen.begin(); 
-	f!=gruppen.end(); ++f)
-    {if(*f == gid) return true;
-//std::cout << "KgGrp" << *f << "gid:" << gid <<"\n";
+ std::map<Kundengruppe::ID,std::string>::const_iterator f;
+
+ f=gruppen.find(gid);
+
+ if(f!=gruppen.end())
+    {
+     aux=(*f).second;
+     return true;
     }
+
+// for(std::vector<Kundengruppe::ID>::const_iterator f=gruppen.begin(); 
+//	f!=gruppen.end(); ++f)
+//    {if(*f == gid) return true;
+//std::cout << "KgGrp" << *f << "gid:" << gid <<"\n";
+//    }
 
  return false;
 #else
@@ -257,7 +273,7 @@ void Kunde::putInGrp(const Kundengruppe::ID gid)
 	" obergruppe else null end from ku_gruppe where grpnr=?)") 
 	<< Id() << gid << gid;
 
-  gruppen.push_back(gid); 
+  gruppen[gid]=""; 
 #endif       
 }
 
@@ -305,24 +321,33 @@ void Kunde::isAuftragsadresse(bool is)
 }
 
 
-
+#include <Misc/ExtraColumns.h>
 
 void Kunde::load_Gruppen() const throw(SQLerror)
 {
  gruppen.erase(gruppen.begin(),gruppen.end());
 
- Query q("select grpnr from ku_gruppen_map"
- 	" where kundennr=?");
+ ExtraColumns ec("ku_kunden_map","kundennr","grpnr");
+ std::string query("select grpnr");
+
+ if(ec.hasColumn("aux")) query+=",aux";
+ 
+ query+=" from ku_gruppen_map where kundennr=?";
+
+ Query q(query);
  
  q << Id();
-
- int ret;
 
  Query::Row fi=q.Fetch();
 
  while(fi.good())
-   {fi >> ret;
-    gruppen.push_back((Kundengruppe::ID)ret);
+   {
+    int ret;
+    std::string aux("");
+
+    fi >> ret;
+    if(ec.hasColumn("aux")) fi >> aux;
+    gruppen[(Kundengruppe::ID)ret]=aux;
     fi=q.Fetch();
    }
 
@@ -463,10 +488,16 @@ fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art,
 std::string Kunde::Kontakt(const TelArt& art, Kunde::ID firmaid,
 		bool forcereload) const
 {
+ Kunde::ID fid=firmaid;
+
+#ifdef MANUPROC_DYNAMICENUMS_CREATED
+ fid = isInGrp(KundengruppeID::Personal) ? Kunde::none_id : firmaid;
+#endif
+
  if(kontakt.valid() && !forcereload)
-   return kontakt.get_first_kontakt(art,firmaid,Id());
- kontakt.reload(firmaid,Id());
- return kontakt.get_first_kontakt(art,firmaid,Id());   
+   return kontakt.get_first_kontakt(art,fid,Id());
+ kontakt.reload(fid,Id());
+ return kontakt.get_first_kontakt(art,fid,Id());   
 }
 
 #if !defined(__GNUC__) || __GNUC__ > 2

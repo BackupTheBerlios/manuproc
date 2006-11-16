@@ -1,4 +1,4 @@
-// $Id: KontaktListe.cc,v 1.5 2003/09/16 08:41:46 jacek Exp $
+// $Id: KontaktListe.cc,v 1.6 2006/11/16 15:32:04 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -20,6 +20,7 @@
 
 
 #include<KontaktListe.h>
+#include <Kunde/Kunde.h>
 
 void KontaktListe::load(ManuProcEntity<>::ID kundeid,
 			ManuProcEntity<>::ID personid)
@@ -58,13 +59,14 @@ std::string KontaktListe::get_first_kontakt(const TelArt &ta,
 	ManuProcEntity<>::ID kundeid, ManuProcEntity<>::ID personid)
 {
 
-if(personid<20000)
+// if(personid>=20000)  !!! do not understand what it means, replaced it
+// with the row below JJ
+if(kundeid==Kunde::none_id)
  {
- for(std::vector<cH_Telefon>::iterator i=kontakt.begin();i!=kontakt.end(); ++i)
+  for(std::vector<cH_Telefon>::iterator i=kontakt.begin();i!=kontakt.end(); ++i)
    {
     if(ta==(*i)->TelefonArt())
-      if(kundeid==(*i)->getKunde())
-        if(personid==(*i)->getPerson())
+      if(personid==(*i)->getKunde())
 	  return (*i)->Text();
    }
  }
@@ -72,9 +74,12 @@ else
  for(std::vector<cH_Telefon>::iterator i=kontakt.begin();i!=kontakt.end(); ++i)
    {
     if(ta==(*i)->TelefonArt())
-      if(personid==(*i)->getKunde())
+      if(kundeid==(*i)->getKunde())
+        if(personid==(*i)->getPerson())
 	  return (*i)->Text();
    }
+
+
 
  return "";
 }

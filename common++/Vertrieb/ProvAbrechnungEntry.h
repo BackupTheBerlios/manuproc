@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnungEntry.h,v 1.11 2006/10/31 16:04:21 christof Exp $ */
+/* $Id: ProvAbrechnungEntry.h,v 1.12 2006/11/16 15:32:04 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,7 +32,8 @@
 class ProvAbrechnungEntry : public ManuProcEntity<>
 {
 public:
- typedef enum {MAIN_ENTRY=1, SECOND_ENTRY=2, MAIN_ENTRY_MIT_ANTEIL=3} EntryRang;
+ typedef enum {MAIN_ENTRY=1, SECOND_ENTRY=2, MAIN_ENTRY_MIT_ANTEIL=3,
+               AUX_ENTRY=4} EntryRang;
  
 private: 
 

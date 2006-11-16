@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.86 2006/11/16 15:31:38 christof Exp $
+// $Id: Kunde.h,v 1.87 2006/11/16 15:32:04 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -131,7 +131,7 @@ private:
 	ExtBezSchema::ID schema;
 	std::string IDnr;
 
-  mutable std::vector<Kundengruppe::ID> gruppen;
+  mutable std::map<Kundengruppe::ID,std::string> gruppen;
 	
 	ID rngan;
 	ID lfran;
@@ -262,7 +262,8 @@ public:
 //        bool isLieferadresse() const;
 //        bool isRechnungsadresse() const;
 //        bool isAuftragsadresse() const;
-        bool isInGrp(const Kundengruppe::ID gid) const;
+       bool isInGrp(const Kundengruppe::ID gid) const;
+       bool isInGrp(const Kundengruppe::ID gid, std::string &aux) const;
        bool isInGrp(const std::string groupname) const throw(SQLerror); 
         void putInGrp(const Kundengruppe::ID gid); 
         void pullFromGrp(const Kundengruppe::ID gid);
