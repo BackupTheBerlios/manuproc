@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.43 2006/10/31 16:07:21 christof Exp $
+// $Id: Rechnung.cc,v 1.44 2006/11/16 15:31:35 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *  Copyright (C) 2006 Christof Petig
@@ -433,11 +433,21 @@ void Rechnung::Notiz(const std::string n) throw(SQLerror)
  notiz=n;
 }
 
-
+// Anzahl der entries
 int Rechnung::size() const throw(SQLerror)
 {
  int ret;
  Query("select count(*) from rechnungentry where rngid=?")
+	<< Id() >> ret;
+ return ret;
+}
+
+// Anzahl der entries aus einem Lieferschein
+int Rechnung::sizeLS() const throw(SQLerror)
+{
+ int ret;
+ Query("select count(*) from rechnungentry where rngid=? and "
+	" coalesce(lfrsid,0)>0")
 	<< Id() >> ret;
  return ret;
 }
