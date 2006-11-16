@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.57 2006/10/31 16:05:33 christof Exp $
+// $Id: db_upgrade.cc,v 1.58 2006/11/16 15:32:09 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -321,6 +321,7 @@ int main(int argc,char *argv[])
   if(check_column("ku_gruppen_map","uniq_obergrp","text"))
      Query_nt("create unique index ku_gruppen_map_uniq on "
 	      " ku_gruppen_map (kundennr, uniq_obergrp)");
+  check_column("ku_gruppen_map","aux","text");
 
   ManuProC::dbdisconnect();
   return 0;
