@@ -1,4 +1,4 @@
-// $Id: Auftrag_deserialize.cc,v 1.2 2006/11/16 15:31:58 christof Exp $
+// $Id: Auftrag_deserialize.cc,v 1.3 2006/11/16 15:32:00 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) Christof Petig
  *
@@ -21,6 +21,8 @@
 #include <AuftragFull.h>
 #include <Artikel/Einheiten.h>
 #include <Misc/compose.hpp>
+#include <Misc/create_parse.h>
+#include <Misc/i18n.h>
 
 ArtikelBase deserialize_Artikel(std::string& log, Tag const& a, bool anlegen=false)
 {
@@ -33,8 +35,8 @@ cP_Waehrung deserialize_waehrung(std::string& log, Tag const& k)
 cH_Kunde deserialize_kunde(std::string& log, Tag const& k, bool anlegen=false)
 { if (k.hasAttr("UnsereNummerBeiIhnen"))
   { int kdid=k.getAttr<int>("UnsereNummerBeiIhnen");
-    if (create(kdid)!=k.getAttr<std::string>("UnsereNummerBeiIhnen"))
-    { log+=String::Compose(_("Merkwürdige Formatierung der Kundennummer '%1'\n"),k.getAttr<std::string>("UnsereNummerBeiIhnen"));
+    if (ManuProC::create(kdid)!=k.getAttr<std::string>("UnsereNummerBeiIhnen"))
+    { log+=String::compose(_("Merkwürdige Formatierung der Kundennummer '%1'\n"),k.getAttr<std::string>("UnsereNummerBeiIhnen"));
       return cH_Kunde(Handle<const Kunde>());
     }
     cH_Kunde res=cH_Kunde(kdid);

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.32 2006/06/26 07:53:19 christof Exp $
+# $Id: Makefile.am,v 1.33 2006/11/16 15:32:00 christof Exp $
 
 ENDUSER=-DPETIG
 
@@ -17,7 +17,7 @@ libAuftrag_a_SOURCES=AufEintrag.cc AufEintragBase.cc AuftragBase.cc \
    ppsInstanzReparatur.cc AufEintrag_ro.cc AufEintrag_loops.cc \
    AufEintrag_Lager.cc AufEintrag_Produktion.cc AufEintrag_Menge.cc \
    delayed_reclaim.cc Verfuegbarkeit.cc SelectedFullAufList.cc \
-   Auftrag_serialize.cc
+   Auftrag_serialize.cc Auftrag_deserialize.cc
 
 libAuftrag.a: $(libAuftrag_a_OBJECTS) $(libAuftrag_a_DEPENDENCIES) Makefile
 	(for i in $(libAuftrag_a_OBJECTS) ; do echo Auftrag/$$i ; done ) >$@
