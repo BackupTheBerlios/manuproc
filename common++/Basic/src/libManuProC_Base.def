@@ -16,7 +16,6 @@ EXPORTS
 	_Z8itos0padii 
 	_ZN13HandleContentD0Ev 
 	_ZN13HandleContentD1Ev 
-	_ZN13HandleContentD2Ev 
 	_ZN13Kalenderwoche5errorD0Ev 
 	_ZN13Kalenderwoche5errorD1Ev 
 	_ZN13Zeitpunkt_newC1EPKc 
@@ -69,7 +68,6 @@ EXPORTS
 	_ZN3Tag19repair_back_pointerEv 
 	_ZN3Tag4findERKSs 
 	_ZN3Tag7attfindERKSs 
-	_ZN3Tag7setAttrERKSsS1_ 
 	_ZN3Tag8setValueERKSsS1_ 
 	_ZN3Tag9push_backES_ 
 	_ZN7IOerrorC1ERKSs 
