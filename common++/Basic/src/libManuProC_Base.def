@@ -56,6 +56,7 @@ EXPORTS
 	_ZN23EntryValueKalenderwocheD1Ev 
 	_ZN25EntryValueIntGermanStringD0Ev 
 	_ZN25EntryValueIntGermanStringD1Ev 
+	_ZN3Tag10setAttr_llERKSsS1_
 	_ZN3Tag11parse_valueISsEET_RKSs 
 	_ZN3Tag11parse_valueIbEET_RKSs 
 	_ZN3Tag11parse_valueIdEET_RKSs 
