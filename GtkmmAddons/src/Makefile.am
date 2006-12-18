@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.17 2006/10/31 16:14:11 christof Exp $
+# $Id: Makefile.am,v 1.18 2006/12/18 12:48:11 christof Exp $
 
 CLEANFILES = *~
 
@@ -20,7 +20,8 @@ libGtkmmAddons_a_SOURCES = Gtk_OStream_label.cc \
 		 gtksearchcombo.c Gtk_OStream_TreeView.cc \
 		 DoubleButton.cc doublebutton.c WinFileReq.cc \
 		 ChoiceButton.cc gtkhacks.cc Gtk2TeX.cc \
-		 expander_hook.c SearchCombo2.cc
+		 expander_hook.c 
+#		 SearchCombo2.cc
 
 BUILT_SOURCES=SearchCombo.cc SearchCombo.h gtksearchcombo.c gtksearchcombo.h \
 	gtkmm DoubleButton.h DoubleButton.cc doublebutton.c doublebutton.h \
