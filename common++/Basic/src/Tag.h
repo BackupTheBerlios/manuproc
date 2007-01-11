@@ -1,4 +1,4 @@
-// $Id: Tag.h,v 1.14 2006/08/03 11:17:31 christof Exp $
+// $Id: Tag.h,v 1.15 2007/01/11 14:13:39 christof Exp $
 /*  ManuProC_Base: Main ManuProC Library
  *  Copyright (C) 1998-2003  Christof Petig
  *
@@ -107,10 +107,7 @@ public:
 	template <class T>
 	 T getAttr(const std::string &name) const throw(std::out_of_range);
 	template <class T>
-	 T getAttr_def(const std::string &name, const T &def=T()) const throw()
-    	{  try { return getAttr<T>(name); } 
-    	   catch (std::out_of_range &e) { return def; }
-    	}
+	 T getAttr_def(const std::string &name, const T &def=T()) const throw();
 	bool hasAttr(const std::string &name) const throw();
 	void setAttr_ll(const std::string &name, const std::string &value);
 	template <class T>
@@ -124,10 +121,7 @@ public:
 	template <class T>
 	 T getValue(const std::string &key) const;
 	template <class T>
-	 T getValue_def(const std::string &key, const T &def) const throw()
-	{  try { return getValue<T>(key); } 
-    	   catch (std::out_of_range &e) { return def; }
-        }
+	 T getValue_def(const std::string &key, const T &def) const throw();
 	
 	bool operator==(const std::string &tp) const
 	{  return type==tp; }
@@ -242,10 +236,24 @@ template <class T>
 }
 
 template <class T>
+ T Tag::getAttr_def(const std::string &name, const T &def=T()) const throw()
+{  const_attiterator t=attfind(name);
+   if (t==attend()) return def;
+   return parse_value_def<T>(t->second,def);
+}
+
+template <class T>
  T Tag::getValue(const std::string &key) const
 {  const_iterator t=find(begin(),key);
    if (t==end()) throw std::out_of_range(key);
    return parse_value<T>(t->Value());
+}
+
+template <class T>
+ T Tag::getValue_def(const std::string &key, const T &def) const throw()
+{  const_iterator t=find(begin(),key);
+   if (t==end()) return def;
+   return parse_value_def<T>(t->Value(),def);
 }
 
 #endif
