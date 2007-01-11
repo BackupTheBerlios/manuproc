@@ -1,4 +1,4 @@
-// $Id: Tag.h,v 1.15 2007/01/11 14:13:39 christof Exp $
+// $Id: Tag.h,v 1.16 2007/01/11 14:18:16 christof Exp $
 /*  ManuProC_Base: Main ManuProC Library
  *  Copyright (C) 1998-2003  Christof Petig
  *
@@ -236,7 +236,7 @@ template <class T>
 }
 
 template <class T>
- T Tag::getAttr_def(const std::string &name, const T &def=T()) const throw()
+ T Tag::getAttr_def(const std::string &name, const T &def) const throw()
 {  const_attiterator t=attfind(name);
    if (t==attend()) return def;
    return parse_value_def<T>(t->second,def);
